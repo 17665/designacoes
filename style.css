@@ -1,10 +1,13 @@
 @media print {
   body {
-    zoom: 80%;
+    zoom: 80%; /* reduz o tamanho para caber */
   }
+
   .mes {
-    page-break-inside: avoid;
+    page-break-inside: avoid; /* evita que o mês seja cortado no meio */
+    page-break-before: always; /* força nova página a cada mês */
   }
+
   @page {
     size: A4;
     margin: 10mm;
