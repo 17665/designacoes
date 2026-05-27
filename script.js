@@ -99,3 +99,4 @@ function gerarDesignacoes(mes, ano) {
 // Gerar 4 meses a partir de junho/2026
 gerarDesignacoes(6, 2026); // Junho
 gerarDesignacoes(7, 2026); // Julho
+gerarDesignacoes(8, 2026); // Agosto
