@@ -1,0 +1,12 @@
+@media print {
+  body {
+    zoom: 80%;
+  }
+  .mes {
+    page-break-inside: avoid;
+  }
+  @page {
+    size: A4;
+    margin: 10mm;
+  }
+}
