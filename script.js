@@ -100,3 +100,4 @@ function gerarDesignacoes(mes, ano) {
 gerarDesignacoes(6, 2026); // Junho
 gerarDesignacoes(7, 2026); // Julho
 gerarDesignacoes(8, 2026); // Agosto
+gerarDesignacoes(9, 2026); // Setembro
