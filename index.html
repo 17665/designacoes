@@ -1166,8 +1166,8 @@ function renderPainelTrocas() {
       titulo = '<strong>' + t.solicitante + '</strong> quer trocar com <strong>' + t.destinatario + '</strong>';
       if (meuNome === t.destinatario) {
         acoes = '<div class="troca-acoes">' +
-          '<button class="btn-aceitar" onclick="responderTroca(''+t.id+'','aceita')">&#10004; Aceitar troca</button>' +
-          '<button class="btn-recusar" onclick="responderTroca(''+t.id+'','recusada')">&#10008; Recusar</button>' +
+          '<button class="btn-aceitar" onclick="responderTroca(\'' + t.id + '\',\'aceita\')">&#10004; Aceitar troca</button>' +
+          '<button class="btn-recusar" onclick="responderTroca(\'' + t.id + '\',\'recusada\')">&#10008; Recusar</button>' +
           '</div>';
       }
     } else if (t.status === 'aceita') {
