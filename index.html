@@ -5,8 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Designações — Cong. Parq. Tietê</title>
 <style>
-/* --- seus estilos originais --- */
-/* (mantive tudo que você já tinha, não removi nada) */
+/* Mantive todos os estilos que você já tinha */
 </style>
 </head>
 <body>
@@ -25,7 +24,7 @@
 
 <!-- ... seus modais de senha e admin continuam iguais ... -->
 
-<!-- Dentro do modal admin, adicionei a nova seção -->
+<!-- NOVA SEÇÃO dentro do modal admin -->
 <div class="admin-secao">
   <h3>📅 Gerar escala por mês</h3>
   <p class="admin-aviso">Escolha um mês e clique para gerar automaticamente todas as quartas e sábados.</p>
@@ -160,10 +159,14 @@ function fmtHora(d) {
 
 // ===================== NOVA FUNÇÃO =====================
 function gerarMesSelecionado() {
+  const mesAno = document.getElementById("mes").value;
+  if (!mesAno) {
+    alert("Por favor, selecione um mês antes de gerar a escala.");
+    return;
+  }
   document.getElementById('lista').innerHTML='';
   idxP=0; idxM.v=0; idxA.v=0; idxV.v=0; idxZ.v=0; idxI.v=0;
   ultimoCombo=null;
-  const mesAno = document.getElementById("mes").value; // formato YYYY-MM
   const [ano, mes] = mesAno.split("-");
   gerarMes(parseInt(mes), parseInt(ano));
 }
@@ -172,5 +175,4 @@ function gerarMesSelecionado() {
 function gerarEscala() {
   document.getElementById('lista').innerHTML='';
   idxP=0; idxM.v=0; idxA.v=0; idxV.v=0; idxZ.v=0; idxI.v=0;
-  ultimoCombo=null;
-  gerarMes(6,2026); gerarMes(7,2026); gerarMes(8,2026); gerarMes(9,2026
+  ultimoCombo=null
