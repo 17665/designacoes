@@ -1,22 +1,397 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Designações — Cong. Parq. Tietê</title>
-  <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Designações — Cong. Parq. Tietê</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: Arial, sans-serif; background: #f0f2f7; color: #1a1a2e; padding: 20px; }
+
+.topo { display:flex; align-items:flex-start; justify-content:space-between; flex-wrap:wrap; gap:12px; margin-bottom:24px; }
+h1 { font-size:22px; font-weight:700; color:#1a4fa3; margin-bottom:4px; }
+.subtitulo { font-size:13px; color:#5e6370; }
+.topo-acoes { display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
+
+.btn-imprimir { background:#1a4fa3; color:white; border:none; padding:9px 18px; border-radius:8px; font-size:14px; font-weight:bold; cursor:pointer; }
+.btn-imprimir:hover { background:#163e82; }
+.btn-config { background:white; color:#1a4fa3; border:2px solid #1a4fa3; padding:8px 16px; border-radius:8px; font-size:14px; font-weight:bold; cursor:pointer; }
+.btn-config:hover { background:#e8f0fb; }
+
+/* OVERLAY */
+.overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:999; align-items:center; justify-content:center; padding:20px; }
+.overlay.aberto { display:flex; }
+.modal { background:white; border-radius:12px; width:100%; max-width:700px; max-height:90vh; overflow-y:auto; box-shadow:0 8px 40px rgba(0,0,0,0.2); }
+.modal-cab { display:flex; align-items:center; justify-content:space-between; padding:16px 20px; border-bottom:1px solid #d0d5dd; font-size:16px; font-weight:bold; color:#1a4fa3; position:sticky; top:0; background:white; z-index:2; }
+.btn-fechar { background:none; border:none; font-size:20px; cursor:pointer; color:#888; padding:0 4px; }
+.modal-desc { padding:14px 20px 6px; font-size:13px; color:#5e6370; line-height:1.6; }
+#lista-eventos { padding:10px 20px; display:flex; flex-direction:column; gap:14px; }
+
+/* CARD DO EVENTO NO MODAL */
+.ev-card { background:#f4f4f2; border-radius:10px; overflow:hidden; border:1px solid #d0d5dd; }
+.ev-card-topo { display:grid; grid-template-columns:1fr 1fr 1fr 1fr auto; gap:8px; align-items:end; padding:10px 12px; background:#f4f4f2; }
+.ev-card-extra { padding:8px 12px 10px; background:#fafafa; border-top:1px solid #e8e8e8; }
+.ev-label { font-size:11px; font-weight:bold; color:#5e6370; display:block; margin-bottom:4px; text-transform:uppercase; letter-spacing:0.3px; }
+.ev-card input[type=date], .ev-card input[type=text], .ev-card select { width:100%; padding:6px 8px; border:1px solid #d0d5dd; border-radius:6px; font-size:13px; font-family:Arial,sans-serif; background:white; }
+.ev-card select { cursor:pointer; }
+.ev-ausentes-wrap { display:flex; flex-direction:column; gap:4px; }
+.ev-ausentes-grid { display:flex; flex-wrap:wrap; gap:6px; margin-top:4px; }
+.ausente-chip { display:flex; align-items:center; gap:4px; background:#e8f0fb; color:#1a4fa3; border-radius:20px; padding:3px 10px; font-size:12px; font-weight:bold; }
+.ausente-chip button { background:none; border:none; color:#1a4fa3; cursor:pointer; font-size:14px; line-height:1; padding:0 0 0 2px; }
+.ev-add-ausente { display:flex; gap:6px; }
+.ev-add-ausente select { flex:1; }
+.ev-add-ausente button { background:#1a4fa3; color:white; border:none; border-radius:6px; padding:6px 12px; font-size:12px; font-weight:bold; cursor:pointer; white-space:nowrap; }
+
+.badge-tipo-sem { display:inline-block; padding:2px 8px; border-radius:4px; font-size:11px; font-weight:bold; background:#fee2e2; color:#991b1b; }
+.badge-tipo-muda { display:inline-block; padding:2px 8px; border-radius:4px; font-size:11px; font-weight:bold; background:#e1f5ee; color:#0f6e56; }
+
+.btn-remover { background:#fee2e2; color:#991b1b; border:none; border-radius:6px; width:32px; height:32px; font-size:16px; cursor:pointer; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+.btn-remover:hover { background:#fca5a5; }
+
+.modal-rodape { display:flex; justify-content:space-between; align-items:center; padding:14px 20px; border-top:1px solid #d0d5dd; position:sticky; bottom:0; background:white; }
+.btn-add { background:none; border:2px dashed #d0d5dd; color:#1a4fa3; padding:7px 14px; border-radius:7px; font-size:13px; font-weight:bold; cursor:pointer; }
+.btn-add:hover { border-color:#1a4fa3; background:#e8f0fb; }
+.btn-aplicar { background:#1a4fa3; color:white; border:none; padding:9px 20px; border-radius:8px; font-size:14px; font-weight:bold; cursor:pointer; }
+.btn-aplicar:hover { background:#163e82; }
+
+/* MÊS */
+.mes-bloco { background:white; border:1px solid #d0d5dd; border-radius:12px; margin-bottom:28px; overflow:hidden; }
+.mes-cab { background:#1a4fa3; color:white; padding:10px 18px; display:flex; align-items:center; justify-content:space-between; }
+.mes-nome { font-size:15px; font-weight:bold; text-transform:capitalize; }
+.mes-resp { font-size:11px; opacity:.8; }
+.reunioes-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(310px,1fr)); gap:1px; background:#d0d5dd; }
+
+/* CARD REUNIÃO */
+.card { background:white; padding:12px 14px; }
+.card-topo { display:flex; align-items:center; gap:8px; margin-bottom:10px; padding-bottom:8px; border-bottom:1px solid #f4f4f2; }
+.badge { font-size:10px; font-weight:bold; padding:2px 7px; border-radius:4px; text-transform:uppercase; letter-spacing:.5px; white-space:nowrap; }
+.badge-quarta { background:#e8f0fb; color:#1a4fa3; }
+.badge-terca  { background:#f3e8ff; color:#6b21a8; }
+.badge-sabado { background:#e1f5ee; color:#0f6e56; }
+.card-data { font-size:13px; font-weight:bold; }
+.card-hora { font-size:11px; color:#5e6370; margin-left:auto; }
+.linha { display:flex; align-items:flex-start; gap:6px; padding:4px 0; font-size:12px; border-bottom:1px solid #f9f9f9; }
+.linha:last-child { border-bottom:none; }
+.linha-icone { font-size:13px; line-height:1.4; width:16px; flex-shrink:0; }
+.linha-label { font-weight:bold; color:#5e6370; min-width:120px; font-size:11px; line-height:1.6; flex-shrink:0; }
+.linha-nomes { color:#1a1a2e; line-height:1.5; font-size:12px; }
+
+/* CARD EVENTO */
+.card-evento { background:#fff7ed; padding:12px 14px; display:flex; align-items:flex-start; gap:10px; }
+.ev-icone { font-size:22px; flex-shrink:0; margin-top:2px; }
+.ev-titulo { font-size:13px; font-weight:bold; color:#c2410c; margin-bottom:3px; }
+.ev-detalhe { font-size:12px; color:#9a3412; line-height:1.5; }
+
+/* CARD MUDANÇA DE DIA */
+.card-muda { background:#f0fdf4; padding:12px 14px; display:flex; align-items:flex-start; gap:10px; }
+.muda-icone { font-size:22px; flex-shrink:0; margin-top:2px; }
+.muda-titulo { font-size:13px; font-weight:bold; color:#166534; margin-bottom:3px; }
+.muda-detalhe { font-size:12px; color:#166534; line-height:1.5; }
+
+/* IMPRESSÃO */
+@media print {
+  body { background:white; padding:0; }
+  .topo,.overlay { display:none !important; }
+  .mes-bloco { page-break-before:always; break-before:page; page-break-inside:avoid; break-inside:avoid; border:none; border-radius:0; margin:0; }
+  .mes-bloco:first-child { page-break-before:avoid; break-before:avoid; }
+  .mes-cab { background:#1a4fa3 !important; color:white !important; -webkit-print-color-adjust:exact; print-color-adjust:exact; padding:8px 14px; }
+  .reunioes-grid { grid-template-columns:repeat(2,1fr); gap:1px; background:#d0d5dd; }
+  .card { background:white !important; padding:8px 10px; break-inside:avoid; }
+  .card-evento { background:#fff7ed !important; -webkit-print-color-adjust:exact; print-color-adjust:exact; padding:8px 10px; break-inside:avoid; }
+  .card-muda { background:#f0fdf4 !important; -webkit-print-color-adjust:exact; print-color-adjust:exact; padding:8px 10px; break-inside:avoid; }
+  .badge-quarta { background:#e8f0fb !important; color:#1a4fa3 !important; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+  .badge-terca  { background:#f3e8ff !important; color:#6b21a8 !important; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+  .badge-sabado { background:#e1f5ee !important; color:#0f6e56 !important; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+  .linha { padding:2px 0; }
+  .linha-label { min-width:100px; font-size:10px; }
+  .linha-nomes { font-size:10px; }
+  .card-data { font-size:12px; }
+  @page { size:A4 portrait; margin:10mm 8mm; }
+}
+</style>
 </head>
 <body>
 
-  <h1 class="titulo-geral">Escala de Designações</h1>
-  <p class="subtitulo">Congregação Parque Tietê &nbsp;·&nbsp; Jun – Set 2026</p>
+<div class="topo">
+  <div>
+    <h1>&#128203; Escala de Designações</h1>
+    <p class="subtitulo">Congregação Parque Tietê &nbsp;&middot;&nbsp; Jun – Set 2026</p>
+  </div>
+  <div class="topo-acoes">
+    <button class="btn-config" onclick="abrirModal()">&#9881; Eventos especiais</button>
+    <button class="btn-imprimir" onclick="window.print()">&#128424; Imprimir escala</button>
+  </div>
+</div>
 
-  <button class="btn-imprimir" onclick="window.print()">
-    🖨 Imprimir escala
-  </button>
+<div class="overlay" id="overlay" onclick="fecharFora(event)">
+  <div class="modal" id="modal">
+    <div class="modal-cab">
+      <span>&#9881; Eventos Especiais</span>
+      <button class="btn-fechar" onclick="fecharModal()">&#10005;</button>
+    </div>
+    <p class="modal-desc">
+      Configure períodos especiais. Escolha o <strong>tipo</strong>: sem reunião (congresso) ou reunião com
+      <strong>mudança de dia</strong> (visita do superintendente — quarta vira terça).
+      Informe também quem estará <strong>ausente/ocupado</strong> naquela semana para não ser designado.
+    </p>
+    <div id="lista-eventos"></div>
+    <div class="modal-rodape">
+      <button class="btn-add" onclick="adicionarEvento()">+ Adicionar evento</button>
+      <button class="btn-aplicar" onclick="aplicar()">&#10004; Aplicar e gerar escala</button>
+    </div>
+  </div>
+</div>
 
-  <div id="lista"></div>
+<div id="lista"></div>
 
-  <script src="script.js"></script>
+<script>
+// ===================== LISTAS DE IRMÃOS =====================
+var todosBracos = [
+  "Eriton Oliveira","Daniel Fernandes","Ivo Julião","Pedro Macumbi",
+  "Endrik Araújo","Renan Carvalho","Carlos Silva","Jucelino Cruz",
+  "Claudio Borges","Franklin Dantas","Juscelino Alves","José Murilo",
+  "Manoel Martins","Márcio Motta","Luiz Oliveira","Francisco Valério",
+  "Caio Andrade","Felipe Santos","Rodrigo Albuquerque"
+];
+
+var palcoCombos = [
+  ["Eriton Oliveira","Daniel Fernandes"],
+  ["Ivo Julião","Pedro Macumbi"],
+  ["Eriton Oliveira","Pedro Macumbi"],
+  ["Ivo Julião","Daniel Fernandes"]
+];
+var microfoneVolantes = ["Endrik Araújo","Renan Carvalho","Carlos Silva","Jucelino Cruz","Pedro Macumbi"];
+var indicadores = [
+  "Claudio Borges","Franklin Dantas","Carlos Silva","Juscelino Alves","José Murilo",
+  "Manoel Martins","Pedro Macumbi","Eriton Oliveira","Márcio Motta","Luiz Oliveira",
+  "Ivo Julião","Francisco Valério"
+];
+var audioRodizio = ["Caio Andrade","Felipe Santos"];
+var videoRodizio = ["Daniel Fernandes","Rodrigo Albuquerque"];
+var zoomRodizio  = ["Caio Andrade","Felipe Santos","Daniel Fernandes","Rodrigo Albuquerque"];
+
+// ===================== EVENTOS =====================
+// tipo: "sem-reuniao" | "muda-dia"
+// muda-dia: a quarta daquela semana vira TERÇA no mesmo horário 19:00
+// ausentes: array de nomes que não podem ser designados nessa semana
+var eventos = [
+  { inicio:"2026-07-03", fim:"2026-07-04", tipo:"sem-reuniao", descricao:"Congresso Regional", ausentes:[] },
+  { inicio:"2026-09-22", fim:"2026-09-27", tipo:"muda-dia",    descricao:"Visita do Superintendente", ausentes:["Eriton Oliveira","Ivo Julião"] }
+];
+
+// ===================== MODAL =====================
+function abrirModal() { renderEventos(); document.getElementById("overlay").classList.add("aberto"); }
+function fecharModal() { document.getElementById("overlay").classList.remove("aberto"); }
+function fecharFora(e) { if(e.target===document.getElementById("overlay")) fecharModal(); }
+function aplicar() { fecharModal(); gerarEscala(); }
+
+function adicionarEvento() {
+  eventos.push({ inicio:"", fim:"", tipo:"sem-reuniao", descricao:"", ausentes:[] });
+  renderEventos();
+}
+function removerEvento(i) { eventos.splice(i,1); renderEventos(); }
+
+function adicionarAusente(i, nome) {
+  if (!nome) return;
+  if (eventos[i].ausentes.indexOf(nome) < 0) eventos[i].ausentes.push(nome);
+  renderEventos();
+}
+function removerAusente(i, a) {
+  eventos[i].ausentes.splice(a, 1);
+  renderEventos();
+}
+
+function renderEventos() {
+  var c = document.getElementById("lista-eventos");
+  c.innerHTML = "";
+  if (eventos.length === 0) {
+    c.innerHTML = '<p style="text-align:center;color:#888;font-size:13px;padding:12px 0">Nenhum evento cadastrado.</p>';
+    return;
+  }
+  eventos.forEach(function(ev, i) {
+    var chips = (ev.ausentes||[]).map(function(nome,a){
+      return '<span class="ausente-chip">'+nome+
+        '<button onclick="removerAusente('+i+','+a+')" title="Remover">&#10005;</button></span>';
+    }).join('');
+
+    // select de irmãos ainda não ausentes
+    var optsAusentes = todosBracos.filter(function(n){ return (ev.ausentes||[]).indexOf(n)<0; })
+      .map(function(n){ return '<option value="'+n+'">'+n+'</option>'; }).join('');
+
+    var card = document.createElement('div');
+    card.className = 'ev-card';
+    card.innerHTML =
+      '<div class="ev-card-topo">'+
+        '<div><label class="ev-label">Início</label>'+
+          '<input type="date" value="'+ev.inicio+'" onchange="eventos['+i+'].inicio=this.value"></div>'+
+        '<div><label class="ev-label">Fim</label>'+
+          '<input type="date" value="'+ev.fim+'" onchange="eventos['+i+'].fim=this.value"></div>'+
+        '<div><label class="ev-label">Tipo</label>'+
+          '<select onchange="eventos['+i+'].tipo=this.value;renderEventos()">'+
+            '<option value="sem-reuniao"'+(ev.tipo==='sem-reuniao'?' selected':'')+'>&#128683; Sem reunião</option>'+
+            '<option value="muda-dia"'+(ev.tipo==='muda-dia'?' selected':'')+'>&#128197; Muda para terça</option>'+
+          '</select></div>'+
+        '<div><label class="ev-label">Descrição</label>'+
+          '<input type="text" value="'+ev.descricao+'" placeholder="Ex: Congresso Regional" '+
+            'onchange="eventos['+i+'].descricao=this.value"></div>'+
+        '<button class="btn-remover" onclick="removerEvento('+i+')" title="Remover evento">&#10005;</button>'+
+      '</div>'+
+      '<div class="ev-card-extra">'+
+        '<label class="ev-label">&#128683; Ausentes / não designar nessa semana</label>'+
+        '<div class="ev-ausentes-grid" id="chips-'+i+'">'+
+          (chips || '<span style="font-size:12px;color:#aaa">Nenhum ausente cadastrado</span>')+
+        '</div>'+
+        '<div class="ev-add-ausente" style="margin-top:8px">'+
+          '<select id="sel-ausente-'+i+'"><option value="">— selecionar irmão —</option>'+optsAusentes+'</select>'+
+          '<button onclick="adicionarAusente('+i+',document.getElementById(\'sel-ausente-'+i+'\').value)">+ Adicionar</button>'+
+        '</div>'+
+      '</div>';
+    c.appendChild(card);
+  });
+}
+
+// ===================== LÓGICA =====================
+function toISO(d) {
+  return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+}
+
+function eventoNaSemana(data) {
+  var seg = new Date(data); seg.setDate(data.getDate()-((data.getDay()+6)%7));
+  var dom = new Date(seg); dom.setDate(seg.getDate()+6);
+  var s=toISO(seg), e=toISO(dom);
+  for (var j=0;j<eventos.length;j++) {
+    var ev=eventos[j];
+    if (ev.inicio && ev.fim && ev.fim>=s && ev.inicio<=e) return ev;
+  }
+  return null;
+}
+
+function gerarReunioes(mes, ano) {
+  var list=[], d=new Date(ano,mes-1,1);
+  while (d.getMonth()===mes-1) {
+    if (d.getDay()===3) list.push({data:new Date(ano,mes-1,d.getDate(),19,0), tipo:"Quarta"});
+    else if (d.getDay()===6) list.push({data:new Date(ano,mes-1,d.getDate(),18,30), tipo:"Sábado"});
+    d.setDate(d.getDate()+1);
+  }
+  return list;
+}
+
+function rodizio(fila, idx, usados) {
+  var t=0,c;
+  do { c=fila[idx.v%fila.length]; idx.v++; t++; }
+  while (usados.indexOf(c)>=0 && t<=fila.length*2);
+  usados.push(c); return c;
+}
+
+var idxP=0,idxM={v:0},idxA={v:0},idxV={v:0},idxZ={v:0},idxI={v:0};
+
+function gerarMes(mes, ano) {
+  var reunioes = gerarReunioes(mes, ano);
+  var nomeMes = new Date(ano,mes-1,1).toLocaleString('pt-BR',{month:'long'});
+  var bloco = document.createElement('div');
+  bloco.className = 'mes-bloco';
+  bloco.innerHTML =
+    '<div class="mes-cab"><span class="mes-nome">'+nomeMes+' '+ano+'</span>'+
+    '<span class="mes-resp">Responsável: Eriton Oliveira</span></div>';
+  var grid = document.createElement('div');
+  grid.className = 'reunioes-grid';
+
+  reunioes.forEach(function(r) {
+    var ev = eventoNaSemana(r.data);
+
+    // ---- SEM REUNIÃO ----
+    if (ev && ev.tipo === 'sem-reuniao') {
+      var c = document.createElement('div');
+      c.className = 'card-evento';
+      var ini = ev.inicio.split('-').reverse().join('/');
+      var fim = ev.fim.split('-').reverse().join('/');
+      c.innerHTML =
+        '<span class="ev-icone">&#128683;</span>'+
+        '<div><div class="ev-titulo">Sem reunião — '+ev.descricao+'</div>'+
+        '<div class="ev-detalhe">'+
+          fmtData(r.data)+' · '+fmtHora(r.data)+'<br>'+
+          'Período: '+ini+' a '+fim+
+        '</div></div>';
+      grid.appendChild(c); return;
+    }
+
+    // ---- MUDA DE DIA (quarta → terça) ----
+    var dataReal = r.data;
+    var tipoLabel = r.tipo;
+    var badgeClass = r.tipo==='Quarta' ? 'badge-quarta' : 'badge-sabado';
+    var notaMuda = '';
+
+    if (ev && ev.tipo === 'muda-dia') {
+      if (r.tipo === 'Quarta') {
+        // quarta vira terça
+        dataReal = new Date(r.data);
+        dataReal.setDate(r.data.getDate() - 1);
+        tipoLabel = 'Terça';
+        badgeClass = 'badge-terca';
+        notaMuda = '<div style="font-size:11px;color:#6b21a8;margin-bottom:6px;padding:3px 6px;background:#f3e8ff;border-radius:4px;">&#128197; Reunião antecipada para terça — '+ev.descricao+'</div>';
+      } else if (r.tipo === 'Sábado') {
+        // sábado acontece normalmente mas é identificado como semana de visita
+        notaMuda = '<div style="font-size:11px;color:#0f6e56;margin-bottom:6px;padding:3px 6px;background:#dcfce7;border-radius:4px;">&#11088; Reunião de visita — '+ev.descricao+'</div>';
+      }
+    }
+
+    // Ausentes da semana (evento + ninguém duplicado)
+    var ausentes = (ev && ev.ausentes) ? ev.ausentes.slice() : [];
+    var usados = ausentes.slice(); // bloqueia ausentes já no início
+
+    var combo = palcoCombos[idxP % palcoCombos.length]; idxP++;
+    var coord = combo[0], ajud = combo[1];
+    // Se coord ou ajudante estiver ausente, pular (simples: apenas avisa)
+    usados.push(coord, ajud);
+
+    var mic1 = rodizio(microfoneVolantes, idxM, usados);
+    var mic2 = rodizio(microfoneVolantes, idxM, usados);
+    var audio= rodizio(audioRodizio,      idxA, usados);
+    var video= rodizio(videoRodizio,      idxV, usados);
+    var zoom = rodizio(zoomRodizio,       idxZ, usados);
+    var aud  = rodizio(indicadores,       idxI, usados);
+    var pat  = rodizio(indicadores,       idxI, usados);
+
+    var c = document.createElement('div');
+    c.className = 'card';
+    c.innerHTML =
+      notaMuda+
+      '<div class="card-topo">'+
+        '<span class="badge '+badgeClass+'">'+tipoLabel+'</span>'+
+        '<span class="card-data">'+fmtData(dataReal)+'</span>'+
+        '<span class="card-hora">'+fmtHora(dataReal)+'</span>'+
+      '</div>'+
+      linha('&#127963;','Palco',coord+' &amp; '+ajud)+
+      linha('&#127908;','Mic. Volante',mic1+' &amp; '+mic2)+
+      linha('&#127911;','Áudio',audio)+
+      linha('&#127909;','Vídeo',video)+
+      linha('&#127760;','Zoom',zoom)+
+      linha('&#128101;','Indicadores','Auditório → '+aud+' &nbsp;|&nbsp; Pátio → '+pat);
+    grid.appendChild(c);
+  });
+
+  bloco.appendChild(grid);
+  document.getElementById('lista').appendChild(bloco);
+}
+
+function linha(ic, lb, val) {
+  return '<div class="linha"><span class="linha-icone">'+ic+'</span>'+
+    '<span class="linha-label">'+lb+'</span><span class="linha-nomes">'+val+'</span></div>';
+}
+function fmtData(d) {
+  return d.toLocaleDateString('pt-BR',{weekday:'long',day:'2-digit',month:'2-digit',year:'numeric'});
+}
+function fmtHora(d) {
+  return d.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
+}
+
+function gerarEscala() {
+  document.getElementById('lista').innerHTML='';
+  idxP=0; idxM.v=0; idxA.v=0; idxV.v=0; idxZ.v=0; idxI.v=0;
+  gerarMes(6,2026); gerarMes(7,2026); gerarMes(8,2026); gerarMes(9,2026);
+}
+
+gerarEscala();
+</script>
 </body>
 </html>
