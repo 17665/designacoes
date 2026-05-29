@@ -136,9 +136,35 @@ h1 { font-size:22px; font-weight:700; color:#1a4fa3; margin-bottom:4px; }
 .ev-detalhe { font-size:12px; line-height:1.6; }
 .ev-tema { margin-top:5px; padding:5px 7px; background:rgba(0,0,0,0.06); border-radius:4px; font-style:italic; white-space:pre-line; font-size:11px; }
 
+/* TROCAS */
+.troca-card { border-radius:10px; padding:14px 16px; margin-bottom:10px; border-left:5px solid; display:flex; align-items:flex-start; gap:12px; }
+.troca-pendente  { background:#fffbeb; border-color:#f59e0b; }
+.troca-aceita    { background:#f0fdf4; border-color:#22c55e; }
+.troca-recusada  { background:#fef2f2; border-color:#ef4444; }
+.troca-expirada  { background:#f4f4f2; border-color:#9ca3af; }
+.troca-icone { font-size:22px; flex-shrink:0; }
+.troca-info { flex:1; }
+.troca-titulo { font-size:13px; font-weight:bold; margin-bottom:4px; }
+.troca-detalhe { font-size:12px; color:#5e6370; line-height:1.6; }
+.troca-prazo { font-size:11px; font-weight:bold; margin-top:6px; }
+.troca-prazo.urgente { color:#dc2626; }
+.troca-prazo.ok { color:#16a34a; }
+.troca-acoes { display:flex; gap:8px; margin-top:10px; }
+.btn-aceitar  { background:#16a34a; color:white; border:none; padding:7px 16px; border-radius:7px; font-size:13px; font-weight:bold; cursor:pointer; }
+.btn-recusar  { background:#dc2626; color:white; border:none; padding:7px 16px; border-radius:7px; font-size:13px; font-weight:bold; cursor:pointer; }
+.badge-troca-pendente { background:#fef3c7; color:#92400e; border:1px solid #fcd34d; font-size:10px; font-weight:bold; padding:2px 7px; border-radius:10px; vertical-align:middle; margin-left:4px; }
+.badge-troca-aceita   { background:#dcfce7; color:#166534; border:1px solid #86efac; font-size:10px; font-weight:bold; padding:2px 7px; border-radius:10px; vertical-align:middle; margin-left:4px; }
+.badge-troca-recusada { background:#fee2e2; color:#991b1b; border:1px solid #fca5a5; font-size:10px; font-weight:bold; padding:2px 7px; border-radius:10px; vertical-align:middle; margin-left:4px; }
+.nome-troca { cursor:pointer; border-bottom:1px dashed #b45309; color:#b45309; }
+.nome-troca:hover { background:#fef3c7; border-radius:3px; }
+.painel-titulo { font-size:13px; font-weight:bold; color:#92400e; margin-bottom:10px; padding-bottom:6px; border-bottom:2px solid #fcd34d; display:flex; align-items:center; gap:8px; }
+.firebase-config-banner { background:#1e3a5f; color:#93c5fd; border-radius:10px; padding:14px 18px; margin-bottom:20px; font-size:13px; line-height:1.8; }
+.firebase-config-banner strong { color:white; }
+.firebase-config-banner code { background:rgba(255,255,255,0.15); padding:2px 6px; border-radius:4px; font-family:monospace; font-size:12px; }
+
 @media print {
   body { background:white; padding:0; }
-  .topo,.overlay { display:none !important; }
+  .topo,.overlay,#painel-trocas,.firebase-config-banner { display:none !important; }
   .mes-bloco { page-break-before:always; break-before:page; page-break-inside:avoid; break-inside:avoid; border:none; border-radius:0; margin:0; }
   .mes-bloco:first-child { page-break-before:avoid; break-before:avoid; }
   .mes-cab { background:#1a4fa3 !important; color:white !important; -webkit-print-color-adjust:exact; print-color-adjust:exact; padding:8px 14px; }
@@ -308,7 +334,51 @@ h1 { font-size:22px; font-weight:700; color:#1a4fa3; margin-bottom:4px; }
   </div>
 </div>
 
+<!-- PAINEL TROCAS PENDENTES -->
+<div id="painel-trocas" style="display:none;margin-bottom:20px"></div>
+
 <div id="lista"></div>
+
+<!-- OVERLAY TROCA -->
+<div class="overlay" id="ov-troca">
+  <div class="modal-subst" style="max-width:460px">
+    <div class="modal-subst-cab" style="background:#b45309">
+      <span>&#128260; Solicitar Troca de Designacao</span>
+      <button class="btn-fechar" onclick="fecharTroca()" style="color:white">&#10005;</button>
+    </div>
+    <div class="modal-subst-body">
+      <p>Voce esta em: <strong id="troca-setor"></strong></p>
+      <p style="margin-top:4px">Data: <strong id="troca-data"></strong></p>
+      <p style="margin-top:4px">Seu nome: <strong id="troca-solicitante"></strong></p>
+      <p style="margin-top:14px;font-size:13px;color:#5e6370">Selecione com quem quer trocar:</p>
+      <select id="troca-select" style="width:100%;margin-top:8px;padding:9px 10px;border:1.5px solid #d0d5dd;border-radius:8px;font-size:14px;font-family:Arial,sans-serif"></select>
+      <p style="margin-top:12px;font-size:12px;color:#92400e;background:#fef3c7;padding:8px 10px;border-radius:6px;border-left:3px solid #f59e0b">
+        &#9888; O irmao selecionado vera o pedido ao abrir o site. A troca so ocorre apos o aceite. Prazo: 48h.
+      </p>
+      <div class="subst-btns">
+        <button class="btn-cancelar" onclick="fecharTroca()">Cancelar</button>
+        <button class="btn-confirmar" style="background:#b45309" onclick="enviarSolicitacaoTroca()">&#128228; Enviar pedido</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- OVERLAY IDENTIFICACAO -->
+<div class="overlay" id="ov-identidade">
+  <div class="modal-senha">
+    <div class="modal-senha-cab" style="background:#b45309">&#128100; Quem e voce?</div>
+    <div class="modal-senha-body">
+      <p>Selecione seu nome para continuar com a solicitacao de troca.</p>
+      <select id="sel-identidade" style="width:100%;padding:10px 12px;border:1.5px solid #d0d5dd;border-radius:8px;font-size:14px;margin-bottom:14px;font-family:Arial,sans-serif">
+        <option value="">-- selecione seu nome --</option>
+      </select>
+      <div class="senha-btns">
+        <button class="btn-cancelar" onclick="fecharIdentidade()">Cancelar</button>
+        <button class="btn-entrar" style="background:#b45309" onclick="confirmarIdentidade()">Confirmar &#8594;</button>
+      </div>
+    </div>
+  </div>
+</div>
 
 <script>
 // ===================== SENHA =====================
@@ -881,7 +951,253 @@ function gerarEscalaAtual(){
   adicionarMeses(mes,ano,periodoAtual.qtd);
 }
 
+
+// ===================== FIREBASE CONFIG =====================
+// INSTRUCOES: substitua os valores abaixo pelos do seu projeto Firebase
+// Console: https://console.firebase.google.com -> Configuracoes do projeto -> Seus apps -> SDK
+var FIREBASE_CONFIG = {
+  apiKey: "AIzaSyA2gzHNa_r3ZFEd8MT8q7mU76FDbqkIFvo",
+  authDomain: "scale-designation.firebaseapp.com",
+  databaseURL: "https://scale-designation-default-rtdb.firebaseio.com",
+  projectId: "scale-designation",
+  storageBucket: "scale-designation.firebasestorage.app",
+  messagingSenderId: "14896538802",
+  appId: "1:14896538802:web:96ddd7faf79dad0b6c55ab",
+  measurementId: "G-DGZCM8ZE8M"
+};
+
+var db = null;
+var firebaseOk = false;
+
+function iniciarFirebase() {
+  // Carrega scripts do Firebase dinamicamente (funciona em file:// e http://)
+  function carregarScript(url, cb) {
+    var s = document.createElement('script');
+    s.src = url;
+    s.onload = cb;
+    s.onerror = function(){ console.warn('Falha ao carregar', url); mostrarBannerConfig(); };
+    document.head.appendChild(s);
+  }
+  carregarScript('https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js', function() {
+    carregarScript('https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js', function() {
+      try {
+        if (FIREBASE_CONFIG.apiKey === 'COLE_AQUI') { mostrarBannerConfig(); return; }
+        if (!firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG);
+        db = firebase.database();
+        firebaseOk = true;
+        ouvirTrocas();
+      } catch(e) {
+        console.warn('Firebase erro:', e);
+        mostrarBannerConfig();
+      }
+    });
+  });
+}
+
+function mostrarBannerConfig() {
+  var b = document.createElement('div');
+  b.className = 'firebase-config-banner';
+  b.innerHTML = '<strong>&#128274; Firebase nao configurado</strong><br>' +
+    '1. Acesse <strong>console.firebase.google.com</strong> e crie um projeto<br>' +
+    '2. Va em <strong>Realtime Database</strong> → Criar banco → modo teste<br>' +
+    '3. Va em <strong>Configuracoes do projeto</strong> → Seus apps → Adicionar app Web<br>' +
+    '4. Copie os valores e substitua em <code>FIREBASE_CONFIG</code> neste arquivo<br>' +
+    '<em style="color:#64b5f6">Enquanto isso, as trocas funcionam so localmente nesta aba.</em>';
+  document.querySelector('.topo').after(b);
+}
+
+// ===================== IDENTIDADE LOCAL =====================
+var meuNome = localStorage.getItem('designacoes_nome') || '';
+
+function pedirIdentidade(callback) {
+  if (meuNome) { callback(meuNome); return; }
+  var sel = document.getElementById('sel-identidade');
+  sel.innerHTML = '<option value="">-- selecione seu nome --</option>' +
+    todosIrmaos.map(function(n){ return '<option value="'+n+'">'+n+'</option>'; }).join('');
+  identidadeCallback = callback;
+  document.getElementById('ov-identidade').classList.add('aberto');
+}
+var identidadeCallback = null;
+function fecharIdentidade() { document.getElementById('ov-identidade').classList.remove('aberto'); }
+function confirmarIdentidade() {
+  var v = document.getElementById('sel-identidade').value;
+  if (!v) { alert('Selecione seu nome.'); return; }
+  meuNome = v;
+  localStorage.setItem('designacoes_nome', v);
+  fecharIdentidade();
+  if (identidadeCallback) { identidadeCallback(v); identidadeCallback = null; }
+}
+
+// ===================== TROCAS =====================
+var trocasCache = {}; // id -> troca
+var trocaAtual = null; // dados do clique atual
+
+// Abre modal de troca quando irmao clica no proprio nome
+function abrirTroca(chave, setor, dataLabel, nomeAtual) {
+  pedirIdentidade(function(meuNomeConfirmado) {
+    if (meuNomeConfirmado !== nomeAtual) {
+      alert('Voce so pode solicitar troca da sua propria designacao.');
+      return;
+    }
+    trocaAtual = { chave: chave, setor: setor, dataLabel: dataLabel, solicitante: nomeAtual };
+    document.getElementById('troca-setor').textContent = setor;
+    document.getElementById('troca-data').textContent = dataLabel;
+    document.getElementById('troca-solicitante').textContent = nomeAtual;
+    // Lista todos menos ele mesmo
+    var sel = document.getElementById('troca-select');
+    sel.innerHTML = todosIrmaos.filter(function(n){ return n !== nomeAtual; })
+      .map(function(n){ return '<option value="'+n+'">'+n+'</option>'; }).join('');
+    document.getElementById('ov-troca').classList.add('aberto');
+  });
+}
+function fecharTroca() { document.getElementById('ov-troca').classList.remove('aberto'); trocaAtual = null; }
+
+function enviarSolicitacaoTroca() {
+  if (!trocaAtual) return;
+  var destinatario = document.getElementById('troca-select').value;
+  var troca = {
+    chave:       trocaAtual.chave,
+    setor:       trocaAtual.setor,
+    dataLabel:   trocaAtual.dataLabel,
+    solicitante: trocaAtual.solicitante,
+    destinatario: destinatario,
+    status:      'pendente',
+    criadoEm:    Date.now(),
+    expiraEm:    Date.now() + 48 * 60 * 60 * 1000
+  };
+  if (firebaseOk && db) {
+    db.ref('trocas').push(troca).then(function() {
+      fecharTroca();
+      alert('Pedido enviado! ' + destinatario + ' vera ao abrir o site.');
+    }).catch(function(e) {
+      alert('Erro ao enviar: ' + e.message);
+    });
+  } else {
+    // fallback local
+    var id = 'local_' + Date.now();
+    trocasCache[id] = Object.assign({ id: id }, troca);
+    renderPainelTrocas();
+    fecharTroca();
+    alert('(Sem Firebase) Pedido registrado so nesta aba.');
+  }
+}
+
+function responderTroca(id, resposta) {
+  if (firebaseOk && db) {
+    db.ref('trocas/' + id).update({ status: resposta }).catch(function(e){
+      alert('Erro: ' + e.message);
+    });
+  } else {
+    if (trocasCache[id]) {
+      trocasCache[id].status = resposta;
+      if (resposta === 'aceita') aplicarTrocaNaEscala(trocasCache[id]);
+      renderPainelTrocas();
+    }
+  }
+}
+
+function aplicarTrocaNaEscala(troca) {
+  // Troca os dois nomes na chave correspondente
+  var chaveA = troca.chave;
+  var nomeA  = troca.solicitante;
+  var nomeB  = troca.destinatario;
+  // Encontra a chave do destinatario na mesma data/setor
+  var partes = chaveA.split('|'); // formato: dataISO|setor|nome
+  var chaveB = partes[0] + '|' + partes[1] + '|' + nomeB;
+  substituicoes[chaveA] = nomeB;
+  substituicoes[chaveB] = nomeA;
+  // Atualiza o DOM sem regeracao completa
+  document.querySelectorAll('.nome-clicavel,.nome-troca').forEach(function(el) {
+    var onclick = el.getAttribute('onclick') || '';
+    if (onclick.indexOf("'" + chaveA + "'") >= 0) el.textContent = nomeB;
+    if (onclick.indexOf("'" + chaveB + "'") >= 0) el.textContent = nomeA;
+  });
+}
+
+// Escuta trocas em tempo real no Firebase
+function ouvirTrocas() {
+  if (!db) return;
+  db.ref('trocas').on('value', function(snap) {
+    trocasCache = {};
+    snap.forEach(function(child) {
+      var t = child.val();
+      t.id = child.key;
+      trocasCache[child.key] = t;
+      // Aplica trocas aceitas na escala
+      if (t.status === 'aceita') aplicarTrocaNaEscala(t);
+    });
+    renderPainelTrocas();
+    // Limpa expiradas automaticamente
+    Object.keys(trocasCache).forEach(function(id) {
+      var t = trocasCache[id];
+      if (t.status === 'pendente' && Date.now() > t.expiraEm) {
+        db.ref('trocas/' + id).update({ status: 'expirada' });
+      }
+    });
+  });
+}
+
+function renderPainelTrocas() {
+  var painel = document.getElementById('painel-trocas');
+  var lista = Object.values(trocasCache).filter(function(t) {
+    // Mostra: pendentes para mim, minhas proprias, ou aceitas/recusadas recentes (24h)
+    var recente = Date.now() - t.criadoEm < 24 * 60 * 60 * 1000;
+    return t.status === 'pendente' ||
+           (recente && (t.solicitante === meuNome || t.destinatario === meuNome));
+  }).sort(function(a,b){ return b.criadoEm - a.criadoEm; });
+
+  if (lista.length === 0) { painel.style.display = 'none'; return; }
+  painel.style.display = 'block';
+
+  var html = '<div class="painel-titulo">&#128260; Pedidos de Troca</div>';
+  lista.forEach(function(t) {
+    var msRestante = t.expiraEm - Date.now();
+    var horas = Math.max(0, Math.floor(msRestante / 3600000));
+    var mins  = Math.max(0, Math.floor((msRestante % 3600000) / 60000));
+    var prazoTxt = t.status === 'pendente'
+      ? (msRestante > 0 ? 'Expira em ' + horas + 'h ' + mins + 'min' : 'Expirado')
+      : '';
+    var prazoClass = horas < 6 ? 'urgente' : 'ok';
+
+    var icone, cls, titulo, acoes = '';
+    if (t.status === 'pendente') {
+      icone = '&#9203;'; cls = 'troca-pendente';
+      titulo = '<strong>' + t.solicitante + '</strong> quer trocar com <strong>' + t.destinatario + '</strong>';
+      if (meuNome === t.destinatario) {
+        acoes = '<div class="troca-acoes">' +
+          '<button class="btn-aceitar" onclick="responderTroca(''+t.id+'','aceita')">&#10004; Aceitar troca</button>' +
+          '<button class="btn-recusar" onclick="responderTroca(''+t.id+'','recusada')">&#10008; Recusar</button>' +
+          '</div>';
+      }
+    } else if (t.status === 'aceita') {
+      icone = '&#9989;'; cls = 'troca-aceita';
+      titulo = 'Troca aceita: <strong>' + t.solicitante + '</strong> &#8644; <strong>' + t.destinatario + '</strong>';
+    } else if (t.status === 'recusada') {
+      icone = '&#10060;'; cls = 'troca-recusada';
+      titulo = 'Troca recusada por <strong>' + t.destinatario + '</strong>';
+    } else {
+      icone = '&#128683;'; cls = 'troca-expirada';
+      titulo = 'Troca expirada: <strong>' + t.solicitante + '</strong> &#8644; <strong>' + t.destinatario + '</strong>';
+    }
+
+    html += '<div class="troca-card ' + cls + '">' +
+      '<span class="troca-icone">' + icone + '</span>' +
+      '<div class="troca-info">' +
+        '<div class="troca-titulo">' + titulo + '</div>' +
+        '<div class="troca-detalhe">Setor: ' + t.setor + ' &nbsp;|&nbsp; Data: ' + t.dataLabel + '</div>' +
+        (prazoTxt ? '<div class="troca-prazo ' + prazoClass + '">' + prazoTxt + '</div>' : '') +
+        acoes +
+      '</div></div>';
+  });
+  painel.innerHTML = html;
+}
+
+// Atualiza contagem regressiva a cada minuto
+setInterval(renderPainelTrocas, 60000);
+
+// ===================== nomeSpan ATUALIZADO =====================
 gerarEscalaAtual();
+iniciarFirebase();
 </script>
 </body>
 </html>
