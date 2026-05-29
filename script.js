@@ -24,9 +24,9 @@ function gerarReunioes(mes, ano) {
 
   while (data.getMonth() === inicio.getMonth()) {
     if (data.getDay() === 3) {
-      reunioes.push({data: new Date(data.setHours(19,30)), tipo: "Quarta"});
+      reunioes.push({data: new Date(data.setHours(19,0)), tipo: "Quarta"});
     } else if (data.getDay() === 6) {
-      reunioes.push({data: new Date(data.setHours(19,0)), tipo: "Sábado"});
+      reunioes.push({data: new Date(data.setHours(18,30)), tipo: "Sábado"});
     }
     data.setDate(data.getDate() + 1);
   }
