@@ -769,6 +769,9 @@ function escolherIndicadores(usados){
   return {aud:aud, pat:pat};
 }
 
+var trocasCache = {};
+var trocaAtual = null;
+
 function nomeSpan(n,chave,setor,dataLabel){
   var atual=substituicoes[chave]||n;
   if(modoResponsavel){
@@ -1029,8 +1032,6 @@ function confirmarIdentidade() {
 }
 
 // ===================== TROCAS =====================
-var trocasCache = {}; // id -> troca
-var trocaAtual = null; // dados do clique atual
 
 // Abre modal de troca quando irmao clica no proprio nome
 function abrirTroca(chave, setor, dataLabel, nomeAtual) {
