@@ -109,6 +109,8 @@ h1 { font-size:22px; font-weight:700; color:#1a4fa3; margin-bottom:4px; }
 .mes-cab { background:#1a4fa3; color:white; padding:10px 18px; display:flex; align-items:center; justify-content:space-between; }
 .mes-nome { font-size:15px; font-weight:bold; text-transform:capitalize; }
 .mes-resp { font-size:11px; opacity:.8; }
+.btn-apagar-mes { background:rgba(255,255,255,0.15); color:white; border:1px solid rgba(255,255,255,0.4); border-radius:6px; padding:3px 10px; font-size:11px; cursor:pointer; white-space:nowrap; }
+.btn-apagar-mes:hover { background:rgba(255,80,80,0.6); border-color:rgba(255,80,80,0.8); }
 .reunioes-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(310px,1fr)); gap:1px; background:#d0d5dd; }
 .card { background:white; padding:12px 14px; }
 .card-topo { display:flex; align-items:center; gap:8px; margin-bottom:10px; padding-bottom:8px; border-bottom:1px solid #f4f4f2; flex-wrap:wrap; }
@@ -140,6 +142,7 @@ h1 { font-size:22px; font-weight:700; color:#1a4fa3; margin-bottom:4px; }
   .mes-bloco { page-break-before:always; break-before:page; page-break-inside:avoid; break-inside:avoid; border:none; border-radius:0; margin:0; }
   .mes-bloco:first-child { page-break-before:avoid; break-before:avoid; }
   .mes-cab { background:#1a4fa3 !important; color:white !important; -webkit-print-color-adjust:exact; print-color-adjust:exact; padding:8px 14px; }
+  .btn-apagar-mes { display:none !important; }
   .reunioes-grid { grid-template-columns:repeat(2,1fr); gap:1px; background:#d0d5dd; }
   .card { background:white !important; padding:8px 10px; break-inside:avoid; }
   .card-evento { break-inside:avoid; padding:8px 10px; }
@@ -247,7 +250,7 @@ h1 { font-size:22px; font-weight:700; color:#1a4fa3; margin-bottom:4px; }
         <p style="font-size:13px;color:#5e6370;margin-bottom:14px;line-height:1.6">
           Escolha o mês/ano de início e quantos meses gerar.
         </p>
-        <div class="aviso">&#9888; As substituições manuais da escala atual serão perdidas ao gerar novamente.</div>
+        <div class="aviso" id="aviso-gerar">&#128197; Os meses selecionados serão <strong>adicionados</strong> à escala existente. Meses já gerados não serão duplicados.</div>
         <div class="gerar-form">
           <div>
             <label>Mês início</label>
@@ -273,7 +276,8 @@ h1 { font-size:22px; font-weight:700; color:#1a4fa3; margin-bottom:4px; }
             </select>
           </div>
         </div>
-        <button class="btn-gerar-ok" onclick="gerarDoForm()">&#128260; Gerar escala agora</button>
+        <button class="btn-gerar-ok" onclick="adicionarMesesDoForm()" style="margin-bottom:10px">&#128197; Adicionar meses à escala</button>
+        <button class="btn-gerar-ok" onclick="regenerarTudoDoForm()" style="background:#8b0000;margin-top:0">&#9888; Regenerar tudo (apaga escala atual)</button>
       </div>
 
     </div>
@@ -707,8 +711,13 @@ function gerarMes(mes,ano){
   var reunioes=gerarReunioes(mes,ano);
   var nomeMes=new Date(ano,mes-1,1).toLocaleString('pt-BR',{month:'long'});
   var bloco=document.createElement('div'); bloco.className='mes-bloco';
+  bloco.dataset.chavemes=chaveMes(mes,ano);
+  var chave=chaveMes(mes,ano);
   bloco.innerHTML='<div class="mes-cab"><span class="mes-nome">'+nomeMes+' '+ano+'</span>'+
-    '<span class="mes-resp">Responsável: Eriton Oliveira</span></div>';
+    '<div style="display:flex;align-items:center;gap:12px">'+
+    '<span class="mes-resp">Responsável: Eriton Oliveira</span>'+
+    '<button class="btn-apagar-mes" onclick="apagarMes(\''+chave+'\')" title="Remover este mês">&#128465; Remover</button>'+
+    '</div></div>';
   var grid=document.createElement('div'); grid.className='reunioes-grid';
 
   reunioes.forEach(function(r){
@@ -790,28 +799,86 @@ function fmtData(d){ return d.toLocaleDateString('pt-BR',{weekday:'long',day:'2-
 function fmtHora(d){ return d.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}); }
 function escHtml(s){ return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 
-function gerarDoForm(){
+// Conjunto de chaves "ano-mes" dos blocos já gerados na tela
+var mesesGerados = {};
+
+function chaveMes(m,a){ return a+'-'+(m<10?'0':'')+m; }
+
+function adicionarMesesDoForm(){
   var mes=parseInt(document.getElementById('gerar-mes').value);
   var ano=parseInt(document.getElementById('gerar-ano').value);
   var qtd=parseInt(document.getElementById('gerar-qtd').value);
-  periodoAtual={mesInicio:mes,ano:ano,qtd:qtd};
-  fecharPrincipal(); gerarEscalaAtual();
+  fecharPrincipal();
+  adicionarMeses(mes,ano,qtd);
+}
+
+function regenerarTudoDoForm(){
+  if(!confirm('Isso apagará toda a escala atual e as substituições manuais. Continuar?')) return;
+  var mes=parseInt(document.getElementById('gerar-mes').value);
+  var ano=parseInt(document.getElementById('gerar-ano').value);
+  var qtd=parseInt(document.getElementById('gerar-qtd').value);
+  fecharPrincipal();
+  // Reset completo
+  substituicoes={}; contadorPulo={}; aparicoes={}; ultimoAuditorio={};
+  mesesGerados={};
+  document.getElementById('lista').innerHTML='';
+  idxM.v=0;idxA.v=0;idxV.v=0;idxZ.v=0;idxI.v=0;ultimoPar=-1;
+  adicionarMeses(mes,ano,qtd);
+}
+
+function apagarMes(chave){
+  var bloco=document.querySelector('[data-chavemes="'+chave+'"]');
+  if(bloco){ bloco.remove(); }
+  delete mesesGerados[chave];
+  atualizarSubtitulo();
+}
+
+function adicionarMeses(mesInicio,ano,qtd){
+  var lista=document.getElementById('lista');
+  var novos=[];
+  for(var i=0;i<qtd;i++){
+    var m=((mesInicio-1+i)%12)+1;
+    var a=ano+Math.floor((mesInicio-1+i)/12);
+    var chave=chaveMes(m,a);
+    if(mesesGerados[chave]) continue; // já existe, pula
+    mesesGerados[chave]=true;
+    novos.push({m:m,a:a});
+  }
+  if(novos.length===0){
+    alert('Todos os meses selecionados já foram gerados.');
+    return;
+  }
+  // Gera os blocos dos novos meses
+  novos.forEach(function(item){
+    gerarMes(item.m,item.a);
+  });
+  // Re-ordena todos os blocos no DOM por data (ano-mes)
+  var blocos=Array.from(lista.querySelectorAll('.mes-bloco'));
+  blocos.sort(function(a,b){
+    return (a.dataset.chavemes||'').localeCompare(b.dataset.chavemes||'');
+  });
+  blocos.forEach(function(b){ lista.appendChild(b); });
+  atualizarSubtitulo();
+}
+
+function atualizarSubtitulo(){
+  var chaves=Object.keys(mesesGerados).sort();
+  if(chaves.length===0){ document.getElementById('subtitulo-periodo').textContent='Congregação Parque Tietê'; return; }
+  function nomeChave(c){
+    var p=c.split('-'); var a=parseInt(p[0]); var m=parseInt(p[1]);
+    return new Date(a,m-1,1).toLocaleString('pt-BR',{month:'long'})+' '+a;
+  }
+  document.getElementById('subtitulo-periodo').textContent=
+    'Congregação Parque Tietê · '+nomeChave(chaves[0])+' a '+nomeChave(chaves[chaves.length-1]);
 }
 
 function gerarEscalaAtual(){
   substituicoes={}; contadorPulo={}; aparicoes={}; ultimoAuditorio={};
+  mesesGerados={};
   document.getElementById('lista').innerHTML='';
   idxM.v=0;idxA.v=0;idxV.v=0;idxZ.v=0;idxI.v=0;ultimoPar=-1;
   var mes=periodoAtual.mesInicio, ano=periodoAtual.ano;
-  var nomes=[];
-  for(var i=0;i<periodoAtual.qtd;i++){
-    var m=((mes-1+i)%12)+1;
-    var a=ano+Math.floor((mes-1+i)/12);
-    gerarMes(m,a);
-    nomes.push(new Date(a,m-1,1).toLocaleString('pt-BR',{month:'long'})+' '+a);
-  }
-  document.getElementById('subtitulo-periodo').textContent=
-    'Congregação Parque Tietê · '+nomes[0]+' a '+nomes[nomes.length-1];
+  adicionarMeses(mes,ano,periodoAtual.qtd);
 }
 
 gerarEscalaAtual();
