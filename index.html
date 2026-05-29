@@ -418,7 +418,23 @@ function trocarAba(id,btn) {
   if(id==='aba-irmaos') renderGerenciarIrmaos();
   if(id==='aba-treino') renderTreino();
 }
-function aplicarTudo() { fecharPrincipal(); gerarEscalaAtual(); }
+function aplicarTudo() {
+  // Aplica mudancas de irmaos/eventos sem apagar meses ja gerados
+  fecharPrincipal();
+  // Re-renderiza os meses existentes preservando a lista
+  var chaves = Object.keys(mesesGerados).sort();
+  if(chaves.length === 0){ gerarEscalaAtual(); return; }
+  substituicoes={}; contadorPulo={}; aparicoes={}; ultimoAuditorio={};
+  idxM.v=0;idxA.v=0;idxV.v=0;idxZ.v=0;idxI.v=0;ultimoPar=-1;
+  var backup = Object.keys(mesesGerados);
+  mesesGerados = {};
+  document.getElementById('lista').innerHTML='';
+  backup.forEach(function(chave){
+    var parts = chave.split('-');
+    var a = parseInt(parts[0]), m = parseInt(parts[1]);
+    adicionarMeses(m, a, 1);
+  });
+}
 
 // ===================== DADOS =====================
 var listas = {
@@ -774,10 +790,20 @@ var trocaAtual = null;
 
 function nomeSpan(n,chave,setor,dataLabel){
   var atual=substituicoes[chave]||n;
+  // badge de troca pendente/aceita/recusada
+  var badgeTroca='';
+  Object.values(trocasCache).forEach(function(t){
+    if(t.dataLabel===dataLabel && t.setor===setor){
+      if(t.status==='pendente') badgeTroca=' <span class="badge-troca-pendente">&#9203; pendente</span>';
+      else if(t.status==='aceita') badgeTroca=' <span class="badge-troca-aceita">&#9989; aceita</span>';
+      else if(t.status==='recusada') badgeTroca=' <span class="badge-troca-recusada">&#10060; recusada</span>';
+    }
+  });
   if(modoResponsavel){
-    return '<span class="nome-clicavel" onclick="abrirSubst(\''+chave+'\',\''+escHtml(setor)+'\',\''+escHtml(dataLabel)+'\',this.textContent,this)">'+escHtml(atual)+'</span>';
+    return '<span class="nome-clicavel" onclick="abrirSubst(\'' + chave + '\',\'' + escHtml(setor) + '\',\'' + escHtml(dataLabel) + '\',this.textContent,this)">' + escHtml(atual) + '</span>' + badgeTroca;
   }
-  return escHtml(atual);
+  // qualquer irmao clica no nome para pedir troca
+  return '<span class="nome-troca" onclick="abrirTroca(\'' + chave + '\',\'' + escHtml(setor) + '\',\'' + escHtml(dataLabel) + '\',\'' + escHtml(atual) + '\')">' + escHtml(atual) + '</span>' + badgeTroca;
 }
 
 function gerarMes(mes,ano){
