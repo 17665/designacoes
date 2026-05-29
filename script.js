@@ -1,103 +1,174 @@
-// Listas de nomes (fontes para o rodízio)
+// =====================================================
+// FONTES DE DADOS
+// =====================================================
+
 const palcoCombos = [
-  ["Eriton Oliveira","Daniel Fernandes"],
-  ["Ivo Julião","Pedro Macumbi"],
-  ["Eriton Oliveira","Pedro Macumbi"],
-  ["Ivo Julião","Daniel Fernandes"]
+  ["Eriton Oliveira", "Daniel Fernandes"],
+  ["Ivo Julião", "Pedro Macumbi"],
+  ["Eriton Oliveira", "Pedro Macumbi"],
+  ["Ivo Julião", "Daniel Fernandes"]
 ];
 
-const microfoneVolantes = ["Endrik Araújo","Renan Carvalho","Carlos Silva","Jucelino Cruz","Pedro Macumbi"];
+const microfoneVolantes = [
+  "Endrik Araújo", "Renan Carvalho", "Carlos Silva",
+  "Jucelino Cruz", "Pedro Macumbi"
+];
+
 const indicadoresAuditPatio = [
-  "Claudio Borges","Franklin Dantas","Carlos Silva","Juscelino Alves","José Murilo",
-  "Manoel Martins","Pedro Macumbi","Eriton Oliveira","Márcio Motta","Luiz Oliveira",
-  "Ivo Julião","Francisco Valério"
+  "Claudio Borges", "Franklin Dantas", "Carlos Silva", "Juscelino Alves",
+  "José Murilo", "Manoel Martins", "Pedro Macumbi", "Eriton Oliveira",
+  "Márcio Motta", "Luiz Oliveira", "Ivo Julião", "Francisco Valério"
 ];
-const audioRodizio = ["Caio Andrade","Felipe Santos"];
-const videoRodizio = ["Daniel Fernandes","Rodrigo Albuquerque"];
-const zoomRodizio = ["Caio Andrade","Felipe Santos","Daniel Fernandes","Rodrigo Albuquerque"];
 
-// Função para gerar reuniões de um mês específico
+const audioRodizio  = ["Caio Andrade", "Felipe Santos"];
+const videoRodizio  = ["Daniel Fernandes", "Rodrigo Albuquerque"];
+const zoomRodizio   = ["Caio Andrade", "Felipe Santos", "Daniel Fernandes", "Rodrigo Albuquerque"];
+
+// =====================================================
+// UTILITÁRIOS
+// =====================================================
+
 function gerarReunioes(mes, ano) {
-  const inicio = new Date(ano, mes-1, 1);
   const reunioes = [];
-  let data = new Date(inicio);
-
-  while (data.getMonth() === inicio.getMonth()) {
+  const data = new Date(ano, mes - 1, 1);
+  while (data.getMonth() === mes - 1) {
     if (data.getDay() === 3) {
-      reunioes.push({data: new Date(data.setHours(19,0)), tipo: "Quarta"});
+      reunioes.push({ data: new Date(ano, mes - 1, data.getDate(), 19, 0), tipo: "Quarta" });
     } else if (data.getDay() === 6) {
-      reunioes.push({data: new Date(data.setHours(18,30)), tipo: "Sábado"});
+      reunioes.push({ data: new Date(ano, mes - 1, data.getDate(), 18, 30), tipo: "Sábado" });
     }
     data.setDate(data.getDate() + 1);
   }
   return reunioes;
 }
 
-// Função rodízio sem duplicar
-function escolherRodizioUnico(fila, indexRef, usados) {
-  let candidato;
+function escolherRodizio(fila, idx, usados) {
   let tentativas = 0;
+  let candidato;
   do {
-    candidato = fila[indexRef.value % fila.length];
-    indexRef.value++;
+    candidato = fila[idx.v % fila.length];
+    idx.v++;
     tentativas++;
-  } while (usados.includes(candidato) && tentativas < fila.length);
+  } while (usados.includes(candidato) && tentativas <= fila.length);
   usados.push(candidato);
   return candidato;
 }
 
-// Função principal para gerar designações
-function gerarDesignacoes(mes, ano) {
-  const reunioes = gerarReunioes(mes, ano);
-  const lista = document.getElementById("lista");
+function formatarData(data) {
+  return data.toLocaleDateString('pt-BR', {
+    weekday: 'long', day: '2-digit', month: '2-digit', year: 'numeric'
+  });
+}
 
-  let mesAtual = -1;
-  let idxPalco = 0;
-  let idxMic = {value:0}, idxAudio = {value:0}, idxVideo = {value:0}, idxZoom = {value:0}, idxIndicador = {value:0};
+function formatarHora(data) {
+  return data.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+}
+
+// =====================================================
+// GERAÇÃO DO HTML
+// =====================================================
+
+// Índices globais (persistem entre meses para rodízio contínuo)
+let idxPalco = 0;
+const idxMic  = { v: 0 };
+const idxAud  = { v: 0 };
+const idxVid  = { v: 0 };
+const idxZoom = { v: 0 };
+const idxInd  = { v: 0 };
+
+function gerarMes(mes, ano) {
+  const reunioes = gerarReunioes(mes, ano);
+  const nomeMes = new Date(ano, mes - 1, 1)
+    .toLocaleString('pt-BR', { month: 'long' });
+
+  const blocoMes = document.createElement('div');
+  blocoMes.className = 'mes-bloco';
+
+  // Cabeçalho do mês
+  blocoMes.innerHTML = `
+    <div class="mes-header">
+      <span class="mes-nome">${nomeMes} ${ano}</span>
+      <span class="responsavel">Responsável: Eriton Oliveira</span>
+    </div>
+  `;
+
+  const grid = document.createElement('div');
+  grid.className = 'reunioes-grid';
 
   reunioes.forEach(r => {
     const usados = [];
-
-    if (r.data.getMonth() !== mesAtual) {
-      mesAtual = r.data.getMonth();
-      const cabecalho = document.createElement("div");
-      cabecalho.className = "cabecalho";
-      cabecalho.innerHTML = `
-        <strong>${r.data.toLocaleString('pt-BR',{month:'long'})} ${ano}</strong><br>
-        Responsável: Eriton Oliveira
-      `;
-      lista.appendChild(cabecalho);
-    }
 
     const [coord, ajudante] = palcoCombos[idxPalco % palcoCombos.length];
     idxPalco++;
     usados.push(coord, ajudante);
 
-    const mic1 = escolherRodizioUnico(microfoneVolantes, idxMic, usados);
-    const mic2 = escolherRodizioUnico(microfoneVolantes, idxMic, usados);
-    const audio = escolherRodizioUnico(audioRodizio, idxAudio, usados);
-    const video = escolherRodizioUnico(videoRodizio, idxVideo, usados);
-    const zoom = escolherRodizioUnico(zoomRodizio, idxZoom, usados);
-    const auditorio = escolherRodizioUnico(indicadoresAuditPatio, idxIndicador, usados);
-    const patio = escolherRodizioUnico(indicadoresAuditPatio, idxIndicador, usados);
+    const mic1     = escolherRodizio(microfoneVolantes, idxMic,  usados);
+    const mic2     = escolherRodizio(microfoneVolantes, idxMic,  usados);
+    const audio    = escolherRodizio(audioRodizio,      idxAud,  usados);
+    const video    = escolherRodizio(videoRodizio,       idxVid,  usados);
+    const zoom     = escolherRodizio(zoomRodizio,        idxZoom, usados);
+    const auditorio = escolherRodizio(indicadoresAuditPatio, idxInd, usados);
+    const patio    = escolherRodizio(indicadoresAuditPatio, idxInd, usados);
 
-    const card = document.createElement("div");
-    card.className = "card";
+    const tipoClass = r.tipo === 'Quarta' ? 'quarta' : 'sabado';
+
+    const card = document.createElement('div');
+    card.className = 'card';
     card.innerHTML = `
-      <h2>📅 ${r.tipo} - ${r.data.toLocaleDateString()} ${r.data.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</h2>
-      <div class="setor palco">🏛️ <span>Palco:</span> ${coord}, ${ajudante}</div>
-      <div class="setor microfone">🎤 <span>Microfone Volante:</span> ${mic1}, ${mic2}</div>
-      <div class="setor audio">🎧 <span>Áudio:</span> ${audio}</div>
-      <div class="setor video">🎥 <span>Vídeo:</span> ${video}</div>
-      <div class="setor zoom">🌐 <span>Zoom:</span> ${zoom}</div>
-      <div class="setor indicadores">👥 <span>Indicadores:</span> Auditório → ${auditorio} | Pátio → ${patio}</div>
+      <div class="card-header">
+        <span class="tipo-badge ${tipoClass}">${r.tipo}</span>
+        <span class="card-data">${formatarData(r.data)}</span>
+        <span class="card-hora">${formatarHora(r.data)}</span>
+      </div>
+
+      <div class="setor-linha">
+        <span class="setor-icone">🏛</span>
+        <span class="setor-label">Palco</span>
+        <span class="setor-nomes">${coord} &amp; ${ajudante}</span>
+      </div>
+      <div class="setor-linha">
+        <span class="setor-icone">🎤</span>
+        <span class="setor-label">Mic. Volante</span>
+        <span class="setor-nomes">${mic1} &amp; ${mic2}</span>
+      </div>
+      <div class="setor-linha">
+        <span class="setor-icone">🎧</span>
+        <span class="setor-label">Áudio</span>
+        <span class="setor-nomes">${audio}</span>
+      </div>
+      <div class="setor-linha">
+        <span class="setor-icone">🎥</span>
+        <span class="setor-label">Vídeo</span>
+        <span class="setor-nomes">${video}</span>
+      </div>
+      <div class="setor-linha">
+        <span class="setor-icone">🌐</span>
+        <span class="setor-label">Zoom</span>
+        <span class="setor-nomes">${zoom}</span>
+      </div>
+      <div class="setor-linha">
+        <span class="setor-icone">👥</span>
+        <span class="setor-label">Indicadores</span>
+        <span class="setor-nomes">
+          Auditório → ${auditorio}
+          <span class="separador-indicador">|</span>
+          Pátio → ${patio}
+        </span>
+      </div>
     `;
-    lista.appendChild(card);
+
+    grid.appendChild(card);
   });
+
+  blocoMes.appendChild(grid);
+  document.getElementById('lista').appendChild(blocoMes);
 }
 
-// Gerar 4 meses a partir de junho/2026
-gerarDesignacoes(6, 2026); // Junho
-gerarDesignacoes(7, 2026); // Julho
-gerarDesignacoes(8, 2026); // Agosto
-gerarDesignacoes(9, 2026); // Setembro
+// =====================================================
+// INICIALIZAÇÃO
+// =====================================================
+
+gerarMes(6, 2026); // Junho
+gerarMes(7, 2026); // Julho
+gerarMes(8, 2026); // Agosto
+gerarMes(9, 2026); // Setembro
