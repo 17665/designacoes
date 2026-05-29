@@ -11,7 +11,7 @@ const palcoCombos = [
 
 const microfoneVolantes = [
   "Endrik Araújo", "Renan Carvalho", "Carlos Silva",
-  "Jucelino Cruz", "Pedro Macumbi"
+  "Jucelino Alves", "Pedro Macumbi"
 ];
 
 const indicadoresAuditPatio = [
