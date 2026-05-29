@@ -1,15 +1,260 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap');
+
+:root {
+  --azul: #1a4fa3;
+  --azul-claro: #e8f0fb;
+  --cinza: #f4f4f2;
+  --borda: #d0d5dd;
+  --texto: #1a1a2e;
+  --muted: #5e6370;
+  --acento: #2563eb;
+  --verde: #0f6e56;
+  --verde-bg: #e1f5ee;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: #f0f2f7;
+  color: var(--texto);
+  padding: 20px;
+}
+
+h1.titulo-geral {
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: -0.3px;
+  color: var(--azul);
+  margin-bottom: 8px;
+}
+
+.subtitulo {
+  font-size: 13px;
+  color: var(--muted);
+  margin-bottom: 28px;
+  font-family: 'DM Mono', monospace;
+}
+
+/* ---- BLOCO DE MÊS ---- */
+.mes-bloco {
+  background: white;
+  border: 1px solid var(--borda);
+  border-radius: 12px;
+  margin-bottom: 28px;
+  overflow: hidden;
+  break-inside: avoid;
+  page-break-inside: avoid;
+}
+
+.mes-header {
+  background: var(--azul);
+  color: white;
+  padding: 10px 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.mes-header .mes-nome {
+  font-size: 15px;
+  font-weight: 600;
+  text-transform: capitalize;
+  letter-spacing: 0.2px;
+}
+
+.mes-header .responsavel {
+  font-size: 11px;
+  opacity: 0.8;
+  font-family: 'DM Mono', monospace;
+}
+
+/* ---- GRID DE REUNIÕES ---- */
+.reunioes-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(310px, 1fr));
+  gap: 1px;
+  background: var(--borda);
+}
+
+/* ---- CARD DE REUNIÃO ---- */
+.card {
+  background: white;
+  padding: 12px 14px;
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--cinza);
+}
+
+.tipo-badge {
+  font-size: 10px;
+  font-weight: 600;
+  padding: 2px 7px;
+  border-radius: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-family: 'DM Mono', monospace;
+}
+
+.tipo-badge.quarta { background: #e8f0fb; color: #1a4fa3; }
+.tipo-badge.sabado { background: #e1f5ee; color: #0f6e56; }
+
+.card-data {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--texto);
+}
+
+.card-hora {
+  font-size: 11px;
+  color: var(--muted);
+  font-family: 'DM Mono', monospace;
+  margin-left: auto;
+}
+
+/* ---- LINHAS DE SETOR ---- */
+.setor-linha {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  padding: 4px 0;
+  font-size: 12px;
+  border-bottom: 1px solid #f9f9f9;
+}
+
+.setor-linha:last-child { border-bottom: none; }
+
+.setor-icone {
+  font-size: 13px;
+  line-height: 1.4;
+  width: 16px;
+  flex-shrink: 0;
+}
+
+.setor-label {
+  font-weight: 600;
+  color: var(--muted);
+  min-width: 120px;
+  font-size: 11px;
+  line-height: 1.6;
+  flex-shrink: 0;
+}
+
+.setor-nomes {
+  color: var(--texto);
+  line-height: 1.5;
+  font-size: 12px;
+}
+
+.separador-indicador {
+  color: var(--muted);
+  margin: 0 4px;
+  font-size: 10px;
+}
+
+/* ---- BOTÃO IMPRIMIR ---- */
+.btn-imprimir {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--azul);
+  color: white;
+  border: none;
+  padding: 9px 18px;
+  border-radius: 8px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  margin-bottom: 24px;
+  transition: background 0.15s;
+}
+
+.btn-imprimir:hover { background: #163e82; }
+
+/* ============================================================
+   IMPRESSÃO — cada mês em uma página A4
+   ============================================================ */
 @media print {
+
   body {
-    zoom: 80%; /* reduz o tamanho para caber */
+    background: white;
+    padding: 0;
+    font-size: 11px;
   }
 
-  .mes {
-    page-break-inside: avoid; /* evita que o mês seja cortado no meio */
-    page-break-before: always; /* força nova página a cada mês */
+  h1.titulo-geral,
+  .subtitulo,
+  .btn-imprimir {
+    display: none;
   }
+
+  .mes-bloco {
+    page-break-before: always;
+    page-break-after: always;
+    page-break-inside: avoid;
+    break-before: page;
+    break-after: page;
+    break-inside: avoid;
+    border: none;
+    border-radius: 0;
+    margin: 0;
+    width: 100%;
+  }
+
+  .mes-bloco:first-of-type {
+    page-break-before: avoid;
+    break-before: avoid;
+  }
+
+  .mes-header {
+    background: #1a4fa3 !important;
+    color: white !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+    padding: 8px 14px;
+  }
+
+  .reunioes-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1px;
+    background: #d0d5dd;
+  }
+
+  .card {
+    background: white !important;
+    padding: 8px 10px;
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  .tipo-badge.quarta {
+    background: #e8f0fb !important;
+    color: #1a4fa3 !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .tipo-badge.sabado {
+    background: #e1f5ee !important;
+    color: #0f6e56 !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .setor-linha { padding: 2px 0; }
+  .setor-label { min-width: 100px; font-size: 10px; }
+  .setor-nomes { font-size: 10px; }
+  .card-data { font-size: 12px; }
 
   @page {
-    size: A4;
-    margin: 10mm;
+    size: A4 portrait;
+    margin: 10mm 8mm;
   }
 }
