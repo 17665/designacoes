@@ -17,6 +17,45 @@ h1 { font-size:22px; font-weight:700; color:#1a4fa3; margin-bottom:4px; }
 .btn-imprimir:hover { background:#163e82; }
 .btn-config { background:white; color:#1a4fa3; border:2px solid #1a4fa3; padding:8px 16px; border-radius:8px; font-size:14px; font-weight:bold; cursor:pointer; }
 .btn-config:hover { background:#e8f0fb; }
+.btn-admin { background:white; color:#c2410c; border:2px solid #c2410c; padding:8px 16px; border-radius:8px; font-size:14px; font-weight:bold; cursor:pointer; }
+.btn-admin:hover { background:#fff7ed; }
+
+/* MODAL DE SENHA */
+.senha-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:1100; align-items:center; justify-content:center; }
+.senha-overlay.aberto { display:flex; }
+.senha-box { background:white; border-radius:14px; padding:28px 28px 22px; width:100%; max-width:340px; box-shadow:0 8px 40px rgba(0,0,0,0.25); text-align:center; }
+.senha-titulo { font-size:17px; font-weight:bold; color:#1a4fa3; margin-bottom:6px; }
+.senha-sub { font-size:13px; color:#5e6370; margin-bottom:18px; }
+.senha-input { width:100%; padding:10px 14px; border:2px solid #d0d5dd; border-radius:8px; font-size:16px; text-align:center; letter-spacing:4px; font-family:monospace; outline:none; margin-bottom:6px; }
+.senha-input:focus { border-color:#1a4fa3; }
+.senha-erro { font-size:12px; color:#dc2626; min-height:18px; margin-bottom:8px; }
+.senha-btns { display:flex; gap:10px; justify-content:center; }
+.senha-ok { background:#1a4fa3; color:white; border:none; padding:9px 24px; border-radius:8px; font-size:14px; font-weight:bold; cursor:pointer; }
+.senha-ok:hover { background:#163e82; }
+.senha-cancel { background:#f4f4f4; color:#555; border:none; padding:9px 18px; border-radius:8px; font-size:14px; cursor:pointer; }
+.senha-cancel:hover { background:#e8e8e8; }
+
+/* MODAL ADMIN */
+.admin-modal { background:white; border-radius:12px; width:100%; max-width:750px; max-height:92vh; overflow-y:auto; box-shadow:0 8px 40px rgba(0,0,0,0.2); }
+.admin-cab { display:flex; align-items:center; justify-content:space-between; padding:16px 20px; border-bottom:1px solid #d0d5dd; font-size:16px; font-weight:bold; color:#c2410c; position:sticky; top:0; background:white; z-index:2; }
+.admin-secao { padding:16px 20px; border-bottom:1px solid #f0f0f0; }
+.admin-secao h3 { font-size:14px; font-weight:bold; color:#1a4fa3; margin-bottom:12px; display:flex; align-items:center; gap:6px; }
+.admin-row { display:flex; gap:10px; align-items:flex-end; flex-wrap:wrap; margin-bottom:10px; }
+.admin-col { display:flex; flex-direction:column; gap:4px; flex:1; min-width:140px; }
+.admin-label { font-size:11px; font-weight:bold; color:#5e6370; text-transform:uppercase; letter-spacing:.3px; }
+.admin-select, .admin-input { padding:8px 10px; border:1px solid #d0d5dd; border-radius:7px; font-size:13px; width:100%; font-family:Arial,sans-serif; }
+.admin-select:focus, .admin-input:focus { outline:none; border-color:#1a4fa3; }
+.btn-acao { background:#1a4fa3; color:white; border:none; padding:9px 18px; border-radius:8px; font-size:13px; font-weight:bold; cursor:pointer; white-space:nowrap; height:38px; }
+.btn-acao:hover { background:#163e82; }
+.btn-acao-verde { background:#166534; }
+.btn-acao-verde:hover { background:#14532d; }
+.admin-lista-tags { display:flex; flex-wrap:wrap; gap:6px; margin-top:8px; }
+.admin-tag { display:flex; align-items:center; gap:4px; background:#e8f0fb; color:#1a4fa3; border-radius:20px; padding:4px 12px; font-size:12px; font-weight:bold; }
+.admin-tag button { background:none; border:none; color:#1a4fa3; cursor:pointer; font-size:14px; line-height:1; padding:0 0 0 2px; }
+.admin-tag.verde { background:#e1f5ee; color:#0f6e56; }
+.admin-tag.verde button { color:#0f6e56; }
+.admin-aviso { font-size:12px; color:#5e6370; background:#f4f4f2; padding:8px 12px; border-radius:6px; margin-bottom:10px; }
+.admin-rodape { padding:14px 20px; display:flex; justify-content:flex-end; gap:10px; position:sticky; bottom:0; background:white; border-top:1px solid #d0d5dd; }
 
 /* OVERLAY */
 .overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:999; align-items:center; justify-content:center; padding:20px; }
@@ -118,7 +157,8 @@ h1 { font-size:22px; font-weight:700; color:#1a4fa3; margin-bottom:4px; }
     <p class="subtitulo">Congregação Parque Tietê &nbsp;&middot;&nbsp; Jun – Set 2026</p>
   </div>
   <div class="topo-acoes">
-    <button class="btn-config" onclick="abrirModal()">&#9881; Eventos especiais</button>
+    <button class="btn-config" onclick="pedirSenhaEventos()">&#9881; Eventos especiais</button>
+    <button class="btn-admin" onclick="pedirSenhaAdmin()">&#128100; Área do responsável</button>
     <button class="btn-imprimir" onclick="window.print()">&#128424; Imprimir escala</button>
   </div>
 </div>
@@ -144,11 +184,122 @@ h1 { font-size:22px; font-weight:700; color:#1a4fa3; margin-bottom:4px; }
 
 <div id="lista"></div>
 
+<!-- MODAL SENHA EVENTOS -->
+<div class="senha-overlay" id="overlay-senha-ev">
+  <div class="senha-box">
+    <div style="font-size:36px;margin-bottom:8px">🔒</div>
+    <div class="senha-titulo">Área restrita</div>
+    <div class="senha-sub">Digite a senha para acessar<br><strong>Eventos Especiais</strong></div>
+    <input class="senha-input" type="password" id="inp-senha-ev" maxlength="20" placeholder="••••••" onkeydown="if(event.key==='Enter')confirmarSenhaEv()">
+    <div class="senha-erro" id="err-senha-ev"></div>
+    <div class="senha-btns">
+      <button class="senha-cancel" onclick="fecharSenhaEv()">Cancelar</button>
+      <button class="senha-ok" onclick="confirmarSenhaEv()">Entrar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL SENHA ADMIN -->
+<div class="senha-overlay" id="overlay-senha-adm">
+  <div class="senha-box">
+    <div style="font-size:36px;margin-bottom:8px">🔐</div>
+    <div class="senha-titulo">Área do Responsável</div>
+    <div class="senha-sub">Digite a senha para acessar<br>as ferramentas de administração</div>
+    <input class="senha-input" type="password" id="inp-senha-adm" maxlength="20" placeholder="••••••" onkeydown="if(event.key==='Enter')confirmarSenhaAdm()">
+    <div class="senha-erro" id="err-senha-adm"></div>
+    <div class="senha-btns">
+      <button class="senha-cancel" onclick="fecharSenhaAdm()">Cancelar</button>
+      <button class="senha-ok" onclick="confirmarSenhaAdm()">Entrar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL ADMIN -->
+<div class="overlay" id="overlay-admin">
+  <div class="admin-modal" id="modal-admin">
+    <div class="admin-cab">
+      <span>&#128100; Área do Responsável</span>
+      <button class="btn-fechar" onclick="fecharAdmin()">&#10005;</button>
+    </div>
+
+    <!-- GERAR ESCALA -->
+    <div class="admin-secao">
+      <h3>&#9881; Gerar nova escala</h3>
+      <p class="admin-aviso">Clique abaixo para regenerar toda a escala do zero com os dados atuais.</p>
+      <button class="btn-acao btn-acao-verde" onclick="gerarEscala();fecharAdmin()">&#10004; Gerar / Atualizar escala</button>
+    </div>
+
+    <!-- SUBSTITUIR PESSOA -->
+    <div class="admin-secao">
+      <h3>&#8635; Substituir pessoa em uma função</h3>
+      <p class="admin-aviso">Troca um irmão por outro em toda a lista de uma função específica (rodízio global).</p>
+      <div class="admin-row">
+        <div class="admin-col">
+          <span class="admin-label">Função</span>
+          <select class="admin-select" id="sub-funcao" onchange="atualizarSelectSub()">
+            <option value="palco">🏛️ Palco (coordenador)</option>
+            <option value="palcoAjud">🏛️ Palco (ajudante)</option>
+            <option value="mic">🎤 Microfone Volante</option>
+            <option value="audio">🎧 Áudio</option>
+            <option value="video">🎬 Vídeo</option>
+            <option value="zoom">🌐 Zoom</option>
+            <option value="indicador">👥 Indicadores</option>
+          </select>
+        </div>
+        <div class="admin-col">
+          <span class="admin-label">Substituir</span>
+          <select class="admin-select" id="sub-de"></select>
+        </div>
+        <div class="admin-col">
+          <span class="admin-label">Por</span>
+          <select class="admin-select" id="sub-para"></select>
+        </div>
+        <button class="btn-acao" onclick="fazerSubstituicao()" style="align-self:flex-end">Substituir</button>
+      </div>
+      <div id="sub-msg" style="font-size:12px;color:#166534;min-height:16px;margin-top:2px"></div>
+    </div>
+
+    <!-- ADICIONAR PESSOA -->
+    <div class="admin-secao">
+      <h3>&#43; Adicionar irmão a uma função</h3>
+      <div class="admin-row">
+        <div class="admin-col">
+          <span class="admin-label">Função</span>
+          <select class="admin-select" id="add-funcao">
+            <option value="palco">🏛️ Palco</option>
+            <option value="mic">🎤 Microfone Volante</option>
+            <option value="audio">🎧 Áudio</option>
+            <option value="video">🎬 Vídeo</option>
+            <option value="zoom">🌐 Zoom</option>
+            <option value="indicador">👥 Indicadores</option>
+            <option value="todos">📋 Apenas lista geral</option>
+          </select>
+        </div>
+        <div class="admin-col">
+          <span class="admin-label">Nome do irmão</span>
+          <input class="admin-input" type="text" id="add-nome" placeholder="Nome completo" onkeydown="if(event.key==='Enter')adicionarIrmao()">
+        </div>
+        <button class="btn-acao" onclick="adicionarIrmao()" style="align-self:flex-end">Adicionar</button>
+      </div>
+      <div id="add-msg" style="font-size:12px;color:#166534;min-height:16px;margin-top:2px"></div>
+      <div style="margin-top:10px">
+        <span class="admin-label" style="display:block;margin-bottom:6px">Irmãos cadastrados na lista geral</span>
+        <div class="admin-lista-tags" id="tags-todos"></div>
+      </div>
+    </div>
+
+    <div class="admin-rodape">
+      <button class="btn-acao" onclick="gerarEscala();fecharAdmin()">&#10004; Aplicar e gerar escala</button>
+    </div>
+  </div>
+</div>
+
 <script>
 // ===================== LISTAS DE IRMÃOS =====================
 var todosBracos = [
   "Eriton Oliveira","Daniel Fernandes","Ivo Julião","Pedro Macumbi",
-  "Endrik Araújo","Renan Carvalho","Carlos Silva","Claudio Borges","Franklin Dantas","Juscelino Alves","José Murilo",
+  "Endrik Araújo","Renan Carvalho","Carlos Silva","Juscelino Alves",
+  "Claudio Borges","Franklin Dantas","José Murilo",
   "Manoel Martins","Márcio Motta","Luiz Oliveira","Francisco Valério",
   "Caio Andrade","Felipe Santos","Rodrigo Albuquerque"
 ];
@@ -157,9 +308,11 @@ var palcoCombos = [
   ["Eriton Oliveira","Daniel Fernandes"],
   ["Ivo Julião","Pedro Macumbi"],
   ["Eriton Oliveira","Pedro Macumbi"],
-  ["Ivo Julião","Daniel Fernandes"]
+  ["Ivo Julião","Daniel Fernandes"],
+  ["Eriton Oliveira","Franklin Dantas"],
+  ["Ivo Julião","Franklin Dantas"]
 ];
-var microfoneVolantes = ["Endrik Araújo","Renan Carvalho","Carlos Silva","Jucelino Alves","Pedro Macumbi"];
+var microfoneVolantes = ["Endrik Araújo","Renan Carvalho","Carlos Silva","Juscelino Alves","Pedro Macumbi"];
 var indicadores = [
   "Claudio Borges","Franklin Dantas","Carlos Silva","Juscelino Alves","José Murilo",
   "Manoel Martins","Pedro Macumbi","Eriton Oliveira","Márcio Motta","Luiz Oliveira",
@@ -391,6 +544,147 @@ function gerarEscala() {
 }
 
 gerarEscala();
+
+// ===================== SENHAS =====================
+// Para alterar a senha, mude os valores abaixo:
+var SENHA_EVENTOS = "eventos123";
+var SENHA_ADMIN   = "admin123";
+
+// --- SENHA EVENTOS ESPECIAIS ---
+function pedirSenhaEventos() {
+  document.getElementById('inp-senha-ev').value='';
+  document.getElementById('err-senha-ev').textContent='';
+  document.getElementById('overlay-senha-ev').classList.add('aberto');
+  setTimeout(function(){ document.getElementById('inp-senha-ev').focus(); },120);
+}
+function fecharSenhaEv() { document.getElementById('overlay-senha-ev').classList.remove('aberto'); }
+function confirmarSenhaEv() {
+  var v = document.getElementById('inp-senha-ev').value;
+  if (v === SENHA_EVENTOS) { fecharSenhaEv(); abrirModal(); }
+  else {
+    document.getElementById('err-senha-ev').textContent = 'Senha incorreta. Tente novamente.';
+    document.getElementById('inp-senha-ev').value='';
+    document.getElementById('inp-senha-ev').focus();
+  }
+}
+
+// --- SENHA ADMIN ---
+function pedirSenhaAdmin() {
+  document.getElementById('inp-senha-adm').value='';
+  document.getElementById('err-senha-adm').textContent='';
+  document.getElementById('overlay-senha-adm').classList.add('aberto');
+  setTimeout(function(){ document.getElementById('inp-senha-adm').focus(); },120);
+}
+function fecharSenhaAdm() { document.getElementById('overlay-senha-adm').classList.remove('aberto'); }
+function confirmarSenhaAdm() {
+  var v = document.getElementById('inp-senha-adm').value;
+  if (v === SENHA_ADMIN) { fecharSenhaAdm(); abrirAdmin(); }
+  else {
+    document.getElementById('err-senha-adm').textContent = 'Senha incorreta. Tente novamente.';
+    document.getElementById('inp-senha-adm').value='';
+    document.getElementById('inp-senha-adm').focus();
+  }
+}
+
+// ===================== MODAL ADMIN =====================
+function abrirAdmin() {
+  atualizarSelectSub();
+  renderTagsTodos();
+  document.getElementById('overlay-admin').classList.add('aberto');
+}
+function fecharAdmin() { document.getElementById('overlay-admin').classList.remove('aberto'); }
+document.getElementById('overlay-admin').addEventListener('click', function(e){ if(e.target===this) fecharAdmin(); });
+
+function getFuncaoArray(funcao) {
+  if (funcao==='palco')      return { arr: palcoCombos.map(function(c){return c[0];}), write: function(arr){ palcoCombos = palcoCombos.map(function(c,i){ return [arr[i]||c[0], c[1]]; }); } };
+  if (funcao==='palcoAjud')  return { arr: palcoCombos.map(function(c){return c[1];}), write: function(arr){ palcoCombos = palcoCombos.map(function(c,i){ return [c[0], arr[i]||c[1]]; }); } };
+  if (funcao==='mic')        return { arr: microfoneVolantes, ref: microfoneVolantes };
+  if (funcao==='audio')      return { arr: audioRodizio, ref: audioRodizio };
+  if (funcao==='video')      return { arr: videoRodizio, ref: videoRodizio };
+  if (funcao==='zoom')       return { arr: zoomRodizio, ref: zoomRodizio };
+  if (funcao==='indicador')  return { arr: indicadores, ref: indicadores };
+  return null;
+}
+
+function atualizarSelectSub() {
+  var funcao = document.getElementById('sub-funcao').value;
+  var info = getFuncaoArray(funcao);
+  var nomes = info ? (info.arr.filter ? [...new Set(info.arr)] : []) : [];
+
+  var selDe = document.getElementById('sub-de');
+  var selPara = document.getElementById('sub-para');
+  selDe.innerHTML = nomes.map(function(n){ return '<option value="'+n+'">'+n+'</option>'; }).join('');
+  // Para: todos os irmãos
+  selPara.innerHTML = todosBracos.map(function(n){ return '<option value="'+n+'">'+n+'</option>'; }).join('');
+  document.getElementById('sub-msg').textContent='';
+}
+
+function fazerSubstituicao() {
+  var funcao = document.getElementById('sub-funcao').value;
+  var de = document.getElementById('sub-de').value;
+  var para = document.getElementById('sub-para').value;
+  if (!de || !para || de===para) { document.getElementById('sub-msg').style.color='#dc2626'; document.getElementById('sub-msg').textContent='Selecione dois irmãos diferentes.'; return; }
+
+  function replaceInArr(arr) {
+    for (var i=0;i<arr.length;i++) if(arr[i]===de) arr[i]=para;
+  }
+
+  if (funcao==='palco')      { palcoCombos.forEach(function(c){ if(c[0]===de) c[0]=para; }); }
+  else if (funcao==='palcoAjud') { palcoCombos.forEach(function(c){ if(c[1]===de) c[1]=para; }); }
+  else if (funcao==='mic')   replaceInArr(microfoneVolantes);
+  else if (funcao==='audio') replaceInArr(audioRodizio);
+  else if (funcao==='video') replaceInArr(videoRodizio);
+  else if (funcao==='zoom')  replaceInArr(zoomRodizio);
+  else if (funcao==='indicador') replaceInArr(indicadores);
+
+  document.getElementById('sub-msg').style.color='#166534';
+  document.getElementById('sub-msg').textContent='✔ ' + de + ' substituído por ' + para + ' com sucesso!';
+  atualizarSelectSub();
+}
+
+function adicionarIrmao() {
+  var nome = document.getElementById('add-nome').value.trim();
+  var funcao = document.getElementById('add-funcao').value;
+  if (!nome) { document.getElementById('add-msg').style.color='#dc2626'; document.getElementById('add-msg').textContent='Digite o nome do irmão.'; return; }
+
+  // Adiciona à lista geral se não existe
+  if (todosBracos.indexOf(nome) < 0) todosBracos.push(nome);
+
+  var msgExtra = '';
+  if (funcao==='palco') {
+    palcoCombos.push([nome, palcoCombos[0]?palcoCombos[0][1]:nome]);
+    msgExtra = ' e adicionado ao palco';
+  } else if (funcao==='mic')   { microfoneVolantes.push(nome); msgExtra = ' e adicionado ao microfone'; }
+  else if (funcao==='audio')   { audioRodizio.push(nome); msgExtra = ' e adicionado ao áudio'; }
+  else if (funcao==='video')   { videoRodizio.push(nome); msgExtra = ' e adicionado ao vídeo'; }
+  else if (funcao==='zoom')    { zoomRodizio.push(nome); msgExtra = ' e adicionado ao zoom'; }
+  else if (funcao==='indicador') { indicadores.push(nome); msgExtra = ' e adicionado aos indicadores'; }
+
+  document.getElementById('add-msg').style.color='#166534';
+  document.getElementById('add-msg').textContent='✔ ' + nome + ' cadastrado' + msgExtra + '!';
+  document.getElementById('add-nome').value='';
+  renderTagsTodos();
+  atualizarSelectSub();
+}
+
+function removerIrmaoGeral(nome) {
+  var idx = todosBracos.indexOf(nome);
+  if (idx >= 0) todosBracos.splice(idx, 1);
+  // Remove também de todas as listas
+  function rem(arr) { var i=arr.indexOf(nome); if(i>=0) arr.splice(i,1); }
+  rem(microfoneVolantes); rem(indicadores); rem(audioRodizio); rem(videoRodizio); rem(zoomRodizio);
+  palcoCombos = palcoCombos.filter(function(c){ return c[0]!==nome && c[1]!==nome; });
+  renderTagsTodos();
+  atualizarSelectSub();
+}
+
+function renderTagsTodos() {
+  var c = document.getElementById('tags-todos');
+  c.innerHTML = todosBracos.map(function(n){
+    return '<span class="admin-tag">'+n+
+      '<button onclick="removerIrmaoGeral(\''+n.replace(/'/g,"\\'")+'\')" title="Remover">&#10005;</button></span>';
+  }).join('');
+}
 </script>
 </body>
 </html>
