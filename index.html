@@ -5,107 +5,104 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Designações — Cong. Parq. Tietê</title>
 <style>
-* { box-sizing:border-box; margin:0; padding:0; }
-body { font-family:Arial,sans-serif; background:#f0f2f7; color:#1a1a2e; padding:20px; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: Arial, sans-serif; background: #f0f2f7; color: #1a1a2e; padding: 20px; }
 
 .topo { display:flex; align-items:flex-start; justify-content:space-between; flex-wrap:wrap; gap:12px; margin-bottom:24px; }
 h1 { font-size:22px; font-weight:700; color:#1a4fa3; margin-bottom:4px; }
 .subtitulo { font-size:13px; color:#5e6370; }
 .topo-acoes { display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
-.btn-imprimir  { background:#1a4fa3; color:white; border:none; padding:9px 18px; border-radius:8px; font-size:14px; font-weight:bold; cursor:pointer; }
-.btn-imprimir:hover  { background:#163e82; }
-.btn-gerenciar { background:#0f6e56; color:white; border:none; padding:9px 18px; border-radius:8px; font-size:14px; font-weight:bold; cursor:pointer; }
-.btn-gerenciar:hover { background:#0a5240; }
 
-.overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.55); z-index:999; align-items:center; justify-content:center; padding:20px; }
+.btn-imprimir { background:#1a4fa3; color:white; border:none; padding:9px 18px; border-radius:8px; font-size:14px; font-weight:bold; cursor:pointer; }
+.btn-imprimir:hover { background:#163e82; }
+.btn-config { background:white; color:#1a4fa3; border:2px solid #1a4fa3; padding:8px 16px; border-radius:8px; font-size:14px; font-weight:bold; cursor:pointer; }
+.btn-config:hover { background:#e8f0fb; }
+.btn-admin { background:white; color:#c2410c; border:2px solid #c2410c; padding:8px 16px; border-radius:8px; font-size:14px; font-weight:bold; cursor:pointer; }
+.btn-admin:hover { background:#fff7ed; }
+
+/* MODAL DE SENHA */
+.senha-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:1100; align-items:center; justify-content:center; }
+.senha-overlay.aberto { display:flex; }
+.senha-box { background:white; border-radius:14px; padding:28px 28px 22px; width:100%; max-width:340px; box-shadow:0 8px 40px rgba(0,0,0,0.25); text-align:center; }
+.senha-titulo { font-size:17px; font-weight:bold; color:#1a4fa3; margin-bottom:6px; }
+.senha-sub { font-size:13px; color:#5e6370; margin-bottom:18px; }
+.senha-input { width:100%; padding:10px 14px; border:2px solid #d0d5dd; border-radius:8px; font-size:16px; text-align:center; letter-spacing:4px; font-family:monospace; outline:none; margin-bottom:6px; }
+.senha-input:focus { border-color:#1a4fa3; }
+.senha-erro { font-size:12px; color:#dc2626; min-height:18px; margin-bottom:8px; }
+.senha-btns { display:flex; gap:10px; justify-content:center; }
+.senha-ok { background:#1a4fa3; color:white; border:none; padding:9px 24px; border-radius:8px; font-size:14px; font-weight:bold; cursor:pointer; }
+.senha-ok:hover { background:#163e82; }
+.senha-cancel { background:#f4f4f4; color:#555; border:none; padding:9px 18px; border-radius:8px; font-size:14px; cursor:pointer; }
+.senha-cancel:hover { background:#e8e8e8; }
+
+/* MODAL ADMIN */
+.admin-modal { background:white; border-radius:12px; width:100%; max-width:750px; max-height:92vh; overflow-y:auto; box-shadow:0 8px 40px rgba(0,0,0,0.2); }
+.admin-cab { display:flex; align-items:center; justify-content:space-between; padding:16px 20px; border-bottom:1px solid #d0d5dd; font-size:16px; font-weight:bold; color:#c2410c; position:sticky; top:0; background:white; z-index:2; }
+.admin-secao { padding:16px 20px; border-bottom:1px solid #f0f0f0; }
+.admin-secao h3 { font-size:14px; font-weight:bold; color:#1a4fa3; margin-bottom:12px; display:flex; align-items:center; gap:6px; }
+.admin-row { display:flex; gap:10px; align-items:flex-end; flex-wrap:wrap; margin-bottom:10px; }
+.admin-col { display:flex; flex-direction:column; gap:4px; flex:1; min-width:140px; }
+.admin-label { font-size:11px; font-weight:bold; color:#5e6370; text-transform:uppercase; letter-spacing:.3px; }
+.admin-select, .admin-input { padding:8px 10px; border:1px solid #d0d5dd; border-radius:7px; font-size:13px; width:100%; font-family:Arial,sans-serif; }
+.admin-select:focus, .admin-input:focus { outline:none; border-color:#1a4fa3; }
+.btn-acao { background:#1a4fa3; color:white; border:none; padding:9px 18px; border-radius:8px; font-size:13px; font-weight:bold; cursor:pointer; white-space:nowrap; height:38px; }
+.btn-acao:hover { background:#163e82; }
+.btn-acao-verde { background:#166534; }
+.btn-acao-verde:hover { background:#14532d; }
+.admin-lista-tags { display:flex; flex-wrap:wrap; gap:6px; margin-top:8px; }
+.admin-tag { display:flex; align-items:center; gap:4px; background:#e8f0fb; color:#1a4fa3; border-radius:20px; padding:4px 12px; font-size:12px; font-weight:bold; }
+.admin-tag button { background:none; border:none; color:#1a4fa3; cursor:pointer; font-size:14px; line-height:1; padding:0 0 0 2px; }
+.admin-tag.verde { background:#e1f5ee; color:#0f6e56; }
+.admin-tag.verde button { color:#0f6e56; }
+.admin-aviso { font-size:12px; color:#5e6370; background:#f4f4f2; padding:8px 12px; border-radius:6px; margin-bottom:10px; }
+.admin-rodape { padding:14px 20px; display:flex; justify-content:flex-end; gap:10px; position:sticky; bottom:0; background:white; border-top:1px solid #d0d5dd; }
+
+/* OVERLAY */
+.overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:999; align-items:center; justify-content:center; padding:20px; }
 .overlay.aberto { display:flex; }
-
-/* MODAL SENHA */
-.modal-senha { background:white; border-radius:12px; width:100%; max-width:360px; box-shadow:0 8px 40px rgba(0,0,0,0.25); overflow:hidden; }
-.modal-senha-cab { background:#1a4fa3; color:white; padding:16px 20px; font-size:16px; font-weight:bold; }
-.modal-senha-body { padding:20px; }
-.modal-senha-body p { font-size:13px; color:#5e6370; margin-bottom:14px; }
-.modal-senha-body input { width:100%; padding:10px 12px; border:1.5px solid #d0d5dd; border-radius:8px; font-size:15px; letter-spacing:3px; margin-bottom:12px; }
-.modal-senha-body input:focus { outline:none; border-color:#1a4fa3; }
-.senha-erro { color:#991b1b; font-size:12px; margin-top:-8px; margin-bottom:10px; display:none; }
-.senha-btns { display:flex; gap:8px; justify-content:flex-end; }
-.btn-cancelar { background:none; border:1.5px solid #d0d5dd; color:#5e6370; padding:8px 16px; border-radius:7px; font-size:13px; cursor:pointer; }
-.btn-entrar   { background:#1a4fa3; color:white; border:none; padding:8px 18px; border-radius:7px; font-size:13px; font-weight:bold; cursor:pointer; }
-
-/* MODAL PRINCIPAL */
-.modal-principal { background:white; border-radius:12px; width:100%; max-width:760px; max-height:92vh; overflow:hidden; display:flex; flex-direction:column; box-shadow:0 8px 40px rgba(0,0,0,0.2); }
-.modal-cab { display:flex; align-items:center; justify-content:space-between; padding:16px 20px; border-bottom:1px solid #d0d5dd; background:white; flex-shrink:0; }
-.modal-cab-titulo { font-size:16px; font-weight:bold; color:#1a4fa3; }
+.modal { background:white; border-radius:12px; width:100%; max-width:700px; max-height:90vh; overflow-y:auto; box-shadow:0 8px 40px rgba(0,0,0,0.2); }
+.modal-cab { display:flex; align-items:center; justify-content:space-between; padding:16px 20px; border-bottom:1px solid #d0d5dd; font-size:16px; font-weight:bold; color:#1a4fa3; position:sticky; top:0; background:white; z-index:2; }
 .btn-fechar { background:none; border:none; font-size:20px; cursor:pointer; color:#888; padding:0 4px; }
-.modal-body { overflow-y:auto; flex:1; }
+.modal-desc { padding:14px 20px 6px; font-size:13px; color:#5e6370; line-height:1.6; }
+#lista-eventos { padding:10px 20px; display:flex; flex-direction:column; gap:14px; }
 
-.abas { display:flex; border-bottom:2px solid #e8e8e8; padding:0 20px; flex-shrink:0; overflow-x:auto; }
-.aba-btn { background:none; border:none; padding:10px 14px; font-size:13px; font-weight:bold; color:#5e6370; cursor:pointer; border-bottom:3px solid transparent; margin-bottom:-2px; white-space:nowrap; }
-.aba-btn.ativa { color:#1a4fa3; border-bottom-color:#1a4fa3; }
-.aba-conteudo { display:none; padding:16px 20px; }
-.aba-conteudo.ativa { display:block; }
-
-/* EVENTOS */
-.ev-card { background:#f4f4f2; border-radius:10px; border:1px solid #d0d5dd; overflow:hidden; margin-bottom:12px; }
-.ev-card-topo { display:grid; grid-template-columns:1fr 1fr 1fr auto; gap:8px; align-items:end; padding:10px 12px; }
-.ev-card-meio { display:grid; grid-template-columns:1fr 1fr; gap:8px; padding:0 12px 10px; }
+/* CARD DO EVENTO NO MODAL */
+.ev-card { background:#f4f4f2; border-radius:10px; overflow:hidden; border:1px solid #d0d5dd; }
+.ev-card-topo { display:grid; grid-template-columns:1fr 1fr 1fr 1fr auto; gap:8px; align-items:end; padding:10px 12px; background:#f4f4f2; }
 .ev-card-extra { padding:8px 12px 10px; background:#fafafa; border-top:1px solid #e8e8e8; }
-.ev-label { font-size:11px; font-weight:bold; color:#5e6370; display:block; margin-bottom:4px; text-transform:uppercase; letter-spacing:.3px; }
-.ev-card input[type=date], .ev-card input[type=text], .ev-card textarea, .ev-card select {
-  width:100%; padding:6px 8px; border:1px solid #d0d5dd; border-radius:6px; font-size:13px; font-family:Arial,sans-serif; background:white; }
-.ev-card textarea { resize:vertical; min-height:52px; line-height:1.4; }
-.btn-remover { background:#fee2e2; color:#991b1b; border:none; border-radius:6px; width:32px; height:32px; font-size:16px; cursor:pointer; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
-.btn-remover:hover { background:#fca5a5; }
-.ausente-chip { display:inline-flex; align-items:center; gap:4px; background:#e8f0fb; color:#1a4fa3; border-radius:20px; padding:3px 10px; font-size:12px; font-weight:bold; margin:2px; }
-.ausente-chip button { background:none; border:none; color:#1a4fa3; cursor:pointer; font-size:14px; line-height:1; }
-.ev-ausentes-grid { min-height:28px; display:flex; flex-wrap:wrap; gap:4px; margin:4px 0 8px; }
+.ev-label { font-size:11px; font-weight:bold; color:#5e6370; display:block; margin-bottom:4px; text-transform:uppercase; letter-spacing:0.3px; }
+.ev-card input[type=date], .ev-card input[type=text], .ev-card select { width:100%; padding:6px 8px; border:1px solid #d0d5dd; border-radius:6px; font-size:13px; font-family:Arial,sans-serif; background:white; }
+.ev-card select { cursor:pointer; }
+.ev-ausentes-wrap { display:flex; flex-direction:column; gap:4px; }
+.ev-ausentes-grid { display:flex; flex-wrap:wrap; gap:6px; margin-top:4px; }
+.ausente-chip { display:flex; align-items:center; gap:4px; background:#e8f0fb; color:#1a4fa3; border-radius:20px; padding:3px 10px; font-size:12px; font-weight:bold; }
+.ausente-chip button { background:none; border:none; color:#1a4fa3; cursor:pointer; font-size:14px; line-height:1; padding:0 0 0 2px; }
 .ev-add-ausente { display:flex; gap:6px; }
 .ev-add-ausente select { flex:1; }
-.ev-add-ausente button { background:#1a4fa3; color:white; border:none; border-radius:6px; padding:6px 12px; font-size:12px; font-weight:bold; cursor:pointer; }
-.btn-add-ev { background:none; border:2px dashed #d0d5dd; color:#1a4fa3; padding:7px 14px; border-radius:7px; font-size:13px; font-weight:bold; cursor:pointer; margin-top:4px; }
-.btn-add-ev:hover { border-color:#1a4fa3; background:#e8f0fb; }
+.ev-add-ausente button { background:#1a4fa3; color:white; border:none; border-radius:6px; padding:6px 12px; font-size:12px; font-weight:bold; cursor:pointer; white-space:nowrap; }
 
-/* IRMÃOS */
-.irmaos-secao { margin-bottom:20px; }
-.irmaos-secao h3 { font-size:13px; font-weight:bold; color:#1a4fa3; margin-bottom:10px; border-bottom:1px solid #e8e8e8; padding-bottom:6px; }
-.irmao-lista { display:flex; flex-wrap:wrap; gap:6px; margin-bottom:10px; min-height:32px; }
-.irmao-chip { display:inline-flex; align-items:center; gap:5px; background:#f4f4f2; border:1px solid #d0d5dd; border-radius:20px; padding:4px 12px; font-size:12px; }
-.irmao-chip button { background:none; border:none; color:#991b1b; cursor:pointer; font-size:14px; line-height:1; }
-.add-irmao-row { display:flex; gap:8px; align-items:center; }
-.add-irmao-row input { flex:1; padding:7px 10px; border:1px solid #d0d5dd; border-radius:7px; font-size:13px; font-family:Arial,sans-serif; }
-.add-irmao-row button { background:#0f6e56; color:white; border:none; border-radius:7px; padding:7px 14px; font-size:13px; font-weight:bold; cursor:pointer; white-space:nowrap; }
+.badge-tipo-sem { display:inline-block; padding:2px 8px; border-radius:4px; font-size:11px; font-weight:bold; background:#fee2e2; color:#991b1b; }
+.badge-tipo-muda { display:inline-block; padding:2px 8px; border-radius:4px; font-size:11px; font-weight:bold; background:#e1f5ee; color:#0f6e56; }
 
-/* ABA GERAR */
-.gerar-form { background:#f4f4f2; border-radius:10px; padding:16px; margin-bottom:16px; display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px; align-items:end; }
-.gerar-form label { font-size:11px; font-weight:bold; color:#5e6370; display:block; margin-bottom:4px; text-transform:uppercase; }
-.gerar-form select, .gerar-form input { width:100%; padding:8px 10px; border:1px solid #d0d5dd; border-radius:7px; font-size:13px; font-family:Arial,sans-serif; background:white; }
-.btn-gerar-ok { background:#0f6e56; color:white; border:none; padding:9px 20px; border-radius:8px; font-size:14px; font-weight:bold; cursor:pointer; width:100%; }
-.btn-gerar-ok:hover { background:#0a5240; }
-.aviso-laranja { background:#fff3cd; border-left:4px solid #f59e0b; padding:12px 14px; border-radius:6px; font-size:13px; color:#92400e; margin-bottom:16px; }
+.btn-remover { background:#fee2e2; color:#991b1b; border:none; border-radius:6px; width:32px; height:32px; font-size:16px; cursor:pointer; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+.btn-remover:hover { background:#fca5a5; }
 
-/* MODAL RODAPÉ */
-.modal-rodape { display:flex; justify-content:flex-end; padding:14px 20px; border-top:1px solid #d0d5dd; flex-shrink:0; gap:10px; }
-.btn-aplicar { background:#1a4fa3; color:white; border:none; padding:10px 24px; border-radius:8px; font-size:14px; font-weight:bold; cursor:pointer; }
+.modal-rodape { display:flex; justify-content:space-between; align-items:center; padding:14px 20px; border-top:1px solid #d0d5dd; position:sticky; bottom:0; background:white; }
+.btn-add { background:none; border:2px dashed #d0d5dd; color:#1a4fa3; padding:7px 14px; border-radius:7px; font-size:13px; font-weight:bold; cursor:pointer; }
+.btn-add:hover { border-color:#1a4fa3; background:#e8f0fb; }
+.btn-aplicar { background:#1a4fa3; color:white; border:none; padding:9px 20px; border-radius:8px; font-size:14px; font-weight:bold; cursor:pointer; }
 .btn-aplicar:hover { background:#163e82; }
 
-/* SUBSTITUIÇÃO */
-.modal-subst { background:white; border-radius:12px; width:100%; max-width:420px; box-shadow:0 8px 40px rgba(0,0,0,0.25); overflow:hidden; }
-.modal-subst-cab { background:#0f6e56; color:white; padding:14px 20px; font-size:15px; font-weight:bold; display:flex; justify-content:space-between; align-items:center; }
-.modal-subst-body { padding:18px 20px; }
-.modal-subst-body p { font-size:13px; color:#5e6370; margin-bottom:4px; }
-.modal-subst-body strong { font-size:14px; color:#1a1a2e; }
-.modal-subst-body select { width:100%; margin-top:14px; padding:9px 10px; border:1.5px solid #d0d5dd; border-radius:8px; font-size:14px; font-family:Arial,sans-serif; }
-.subst-btns { display:flex; gap:8px; justify-content:flex-end; margin-top:16px; }
-.btn-confirmar { background:#0f6e56; color:white; border:none; padding:9px 20px; border-radius:7px; font-size:13px; font-weight:bold; cursor:pointer; }
-
-/* ESCALA */
+/* MÊS */
 .mes-bloco { background:white; border:1px solid #d0d5dd; border-radius:12px; margin-bottom:28px; overflow:hidden; }
 .mes-cab { background:#1a4fa3; color:white; padding:10px 18px; display:flex; align-items:center; justify-content:space-between; }
 .mes-nome { font-size:15px; font-weight:bold; text-transform:capitalize; }
 .mes-resp { font-size:11px; opacity:.8; }
 .reunioes-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(310px,1fr)); gap:1px; background:#d0d5dd; }
+
+/* CARD REUNIÃO */
 .card { background:white; padding:12px 14px; }
-.card-topo { display:flex; align-items:center; gap:8px; margin-bottom:10px; padding-bottom:8px; border-bottom:1px solid #f4f4f2; flex-wrap:wrap; }
+.card-topo { display:flex; align-items:center; gap:8px; margin-bottom:10px; padding-bottom:8px; border-bottom:1px solid #f4f4f2; }
 .badge { font-size:10px; font-weight:bold; padding:2px 7px; border-radius:4px; text-transform:uppercase; letter-spacing:.5px; white-space:nowrap; }
 .badge-quarta { background:#e8f0fb; color:#1a4fa3; }
 .badge-terca  { background:#f3e8ff; color:#6b21a8; }
@@ -115,19 +112,22 @@ h1 { font-size:22px; font-weight:700; color:#1a4fa3; margin-bottom:4px; }
 .linha { display:flex; align-items:flex-start; gap:6px; padding:4px 0; font-size:12px; border-bottom:1px solid #f9f9f9; }
 .linha:last-child { border-bottom:none; }
 .linha-icone { font-size:13px; line-height:1.4; width:16px; flex-shrink:0; }
-.linha-label { font-weight:bold; color:#5e6370; min-width:110px; font-size:11px; line-height:1.6; flex-shrink:0; }
-.linha-nomes { color:#1a1a2e; line-height:1.5; font-size:12px; flex:1; }
-.nome-clicavel { cursor:pointer; border-bottom:1px dashed #1a4fa3; color:#1a4fa3; }
-.nome-clicavel:hover { background:#e8f0fb; border-radius:3px; }
-.banner-evento { font-size:11px; padding:5px 8px; border-radius:4px; margin-bottom:7px; line-height:1.5; }
-.banner-visita-terca { background:#f3e8ff; color:#6b21a8; border-left:3px solid #a855f7; }
-.banner-visita-sab   { background:#dcfce7; color:#166534; border-left:3px solid #22c55e; }
-.card-evento { padding:12px 14px; display:flex; align-items:flex-start; gap:10px; }
-.ev-icone { font-size:22px; flex-shrink:0; margin-top:2px; }
-.ev-titulo { font-size:13px; font-weight:bold; margin-bottom:4px; }
-.ev-detalhe { font-size:12px; line-height:1.6; }
-.ev-tema { margin-top:5px; padding:5px 7px; background:rgba(0,0,0,0.06); border-radius:4px; font-style:italic; white-space:pre-line; font-size:11px; }
+.linha-label { font-weight:bold; color:#5e6370; min-width:120px; font-size:11px; line-height:1.6; flex-shrink:0; }
+.linha-nomes { color:#1a1a2e; line-height:1.5; font-size:12px; }
 
+/* CARD EVENTO */
+.card-evento { background:#fff7ed; padding:12px 14px; display:flex; align-items:flex-start; gap:10px; }
+.ev-icone { font-size:22px; flex-shrink:0; margin-top:2px; }
+.ev-titulo { font-size:13px; font-weight:bold; color:#c2410c; margin-bottom:3px; }
+.ev-detalhe { font-size:12px; color:#9a3412; line-height:1.5; }
+
+/* CARD MUDANÇA DE DIA */
+.card-muda { background:#f0fdf4; padding:12px 14px; display:flex; align-items:flex-start; gap:10px; }
+.muda-icone { font-size:22px; flex-shrink:0; margin-top:2px; }
+.muda-titulo { font-size:13px; font-weight:bold; color:#166534; margin-bottom:3px; }
+.muda-detalhe { font-size:12px; color:#166534; line-height:1.5; }
+
+/* IMPRESSÃO */
 @media print {
   body { background:white; padding:0; }
   .topo,.overlay { display:none !important; }
@@ -136,13 +136,11 @@ h1 { font-size:22px; font-weight:700; color:#1a4fa3; margin-bottom:4px; }
   .mes-cab { background:#1a4fa3 !important; color:white !important; -webkit-print-color-adjust:exact; print-color-adjust:exact; padding:8px 14px; }
   .reunioes-grid { grid-template-columns:repeat(2,1fr); gap:1px; background:#d0d5dd; }
   .card { background:white !important; padding:8px 10px; break-inside:avoid; }
-  .card-evento { break-inside:avoid; padding:8px 10px; }
-  .banner-visita-terca { background:#f3e8ff !important; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
-  .banner-visita-sab   { background:#dcfce7 !important; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+  .card-evento { background:#fff7ed !important; -webkit-print-color-adjust:exact; print-color-adjust:exact; padding:8px 10px; break-inside:avoid; }
+  .card-muda { background:#f0fdf4 !important; -webkit-print-color-adjust:exact; print-color-adjust:exact; padding:8px 10px; break-inside:avoid; }
   .badge-quarta { background:#e8f0fb !important; color:#1a4fa3 !important; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
   .badge-terca  { background:#f3e8ff !important; color:#6b21a8 !important; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
   .badge-sabado { background:#e1f5ee !important; color:#0f6e56 !important; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
-  .nome-clicavel { border-bottom:none !important; color:#1a1a2e !important; cursor:default; }
   .linha { padding:2px 0; }
   .linha-label { min-width:100px; font-size:10px; }
   .linha-nomes { font-size:10px; }
@@ -156,508 +154,371 @@ h1 { font-size:22px; font-weight:700; color:#1a4fa3; margin-bottom:4px; }
 <div class="topo">
   <div>
     <h1>&#128203; Escala de Designações</h1>
-    <p class="subtitulo" id="subtitulo-periodo">Congregação Parque Tietê</p>
+    <p class="subtitulo">Congregação Parque Tietê &nbsp;&middot;&nbsp; Jun – Set 2026</p>
   </div>
   <div class="topo-acoes">
-    <button class="btn-gerenciar" onclick="pedirSenha('principal')">&#128100; Área do Responsável</button>
-    <button class="btn-imprimir"  onclick="window.print()">&#128424; Imprimir escala</button>
+    <button class="btn-config" onclick="pedirSenhaEventos()">&#9881; Eventos especiais</button>
+    <button class="btn-admin" onclick="pedirSenhaAdmin()">&#128100; Área do responsável</button>
+    <button class="btn-imprimir" onclick="window.print()">&#128424; Imprimir escala</button>
   </div>
 </div>
 
-<!-- OVERLAY SENHA -->
-<div class="overlay" id="ov-senha">
-  <div class="modal-senha">
-    <div class="modal-senha-cab">&#128274; Acesso Restrito</div>
-    <div class="modal-senha-body">
-      <p>Digite a senha do responsável para continuar.</p>
-      <input type="password" id="campo-senha" placeholder="••••••••"
-        onkeydown="if(event.key==='Enter')confirmarSenha()">
-      <div class="senha-erro" id="senha-erro">Senha incorreta. Tente novamente.</div>
-      <div class="senha-btns">
-        <button class="btn-cancelar" onclick="fecharSenha()">Cancelar</button>
-        <button class="btn-entrar"   onclick="confirmarSenha()">Entrar &#8594;</button>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- OVERLAY PRINCIPAL -->
-<div class="overlay" id="ov-principal">
-  <div class="modal-principal">
+<div class="overlay" id="overlay" onclick="fecharFora(event)">
+  <div class="modal" id="modal">
     <div class="modal-cab">
-      <span class="modal-cab-titulo">&#128100; Área do Responsável</span>
-      <button class="btn-fechar" onclick="fecharPrincipal()">&#10005;</button>
+      <span>&#9881; Eventos Especiais</span>
+      <button class="btn-fechar" onclick="fecharModal()">&#10005;</button>
     </div>
-    <div class="abas">
-      <button class="aba-btn ativa"  onclick="trocarAba('aba-eventos',this)">&#9881; Eventos</button>
-      <button class="aba-btn"        onclick="trocarAba('aba-irmaos',this)">&#128101; Irmãos</button>
-      <button class="aba-btn"        onclick="trocarAba('aba-gerar',this)">&#128197; Gerar Meses</button>
-    </div>
-    <div class="modal-body">
-
-      <!-- ABA EVENTOS -->
-      <div class="aba-conteudo ativa" id="aba-eventos">
-        <p style="font-size:13px;color:#5e6370;margin-bottom:14px;line-height:1.6">
-          Cadastre <strong>Congressos</strong>, <strong>Assembleias de Circuito</strong> ou
-          <strong>Visitas do Superintendente</strong>. Preencha o tema e informe ausentes da semana.
-        </p>
-        <div id="lista-eventos"></div>
-        <button class="btn-add-ev" onclick="adicionarEvento()">+ Adicionar evento</button>
-      </div>
-
-      <!-- ABA IRMÃOS -->
-      <div class="aba-conteudo" id="aba-irmaos">
-        <p style="font-size:13px;color:#5e6370;margin-bottom:14px;line-height:1.6">
-          Gerencie os irmãos de cada departamento. As alterações valem na próxima geração.
-        </p>
-        <div id="gerenciar-irmaos"></div>
-      </div>
-
-      <!-- ABA GERAR -->
-      <div class="aba-conteudo" id="aba-gerar">
-        <p style="font-size:13px;color:#5e6370;margin-bottom:14px;line-height:1.6">
-          Escolha o mês/ano de início e quantos meses gerar. O rodízio continua de onde parou.
-        </p>
-        <div class="aviso-laranja">&#9888; As substituições manuais da escala atual serão perdidas ao gerar novamente.</div>
-        <div class="gerar-form">
-          <div>
-            <label>Mês início</label>
-            <select id="gerar-mes">
-              <option value="1">Janeiro</option><option value="2">Fevereiro</option>
-              <option value="3">Março</option><option value="4">Abril</option>
-              <option value="5">Maio</option><option value="6" selected>Junho</option>
-              <option value="7">Julho</option><option value="8">Agosto</option>
-              <option value="9">Setembro</option><option value="10">Outubro</option>
-              <option value="11">Novembro</option><option value="12">Dezembro</option>
-            </select>
-          </div>
-          <div>
-            <label>Ano</label>
-            <input type="number" id="gerar-ano" value="2026" min="2024" max="2040">
-          </div>
-          <div>
-            <label>Qtd. de meses</label>
-            <select id="gerar-qtd">
-              <option value="1">1 mês</option><option value="2">2 meses</option>
-              <option value="3">3 meses</option><option value="4" selected>4 meses</option>
-              <option value="5">5 meses</option><option value="6">6 meses</option>
-            </select>
-          </div>
-        </div>
-        <button class="btn-gerar-ok" onclick="gerarDoForm()">&#128260; Gerar escala agora</button>
-      </div>
-
-    </div>
+    <p class="modal-desc">
+      Configure períodos especiais. Escolha o <strong>tipo</strong>: sem reunião (congresso) ou reunião com
+      <strong>mudança de dia</strong> (visita do superintendente — quarta vira terça).
+      Informe também quem estará <strong>ausente/ocupado</strong> naquela semana para não ser designado.
+    </p>
+    <div id="lista-eventos"></div>
     <div class="modal-rodape">
-      <button class="btn-cancelar" onclick="fecharPrincipal()">Fechar</button>
-      <button class="btn-aplicar"  onclick="aplicarTudo()">&#10004; Aplicar e atualizar escala</button>
-    </div>
-  </div>
-</div>
-
-<!-- OVERLAY SUBSTITUIÇÃO -->
-<div class="overlay" id="ov-subst">
-  <div class="modal-subst">
-    <div class="modal-subst-cab">
-      <span>&#128260; Substituir Designado</span>
-      <button class="btn-fechar" onclick="fecharSubst()" style="color:white">&#10005;</button>
-    </div>
-    <div class="modal-subst-body">
-      <p>Data: <strong id="subst-data"></strong></p>
-      <p style="margin-top:6px">Setor: <strong id="subst-setor"></strong></p>
-      <p style="margin-top:6px">Atual: <strong id="subst-atual"></strong></p>
-      <select id="subst-select"></select>
-      <div class="subst-btns">
-        <button class="btn-cancelar" onclick="fecharSubst()">Cancelar</button>
-        <button class="btn-confirmar" onclick="confirmarSubst()">&#10004; Confirmar</button>
-      </div>
+      <button class="btn-add" onclick="adicionarEvento()">+ Adicionar evento</button>
+      <button class="btn-aplicar" onclick="aplicar()">&#10004; Aplicar e gerar escala</button>
     </div>
   </div>
 </div>
 
 <div id="lista"></div>
 
+<!-- MODAL SENHA EVENTOS -->
+<div class="senha-overlay" id="overlay-senha-ev">
+  <div class="senha-box">
+    <div style="font-size:36px;margin-bottom:8px">🔒</div>
+    <div class="senha-titulo">Área restrita</div>
+    <div class="senha-sub">Digite a senha para acessar<br><strong>Eventos Especiais</strong></div>
+    <input class="senha-input" type="password" id="inp-senha-ev" maxlength="20" placeholder="••••••" onkeydown="if(event.key==='Enter')confirmarSenhaEv()">
+    <div class="senha-erro" id="err-senha-ev"></div>
+    <div class="senha-btns">
+      <button class="senha-cancel" onclick="fecharSenhaEv()">Cancelar</button>
+      <button class="senha-ok" onclick="confirmarSenhaEv()">Entrar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL SENHA ADMIN -->
+<div class="senha-overlay" id="overlay-senha-adm">
+  <div class="senha-box">
+    <div style="font-size:36px;margin-bottom:8px">🔐</div>
+    <div class="senha-titulo">Área do Responsável</div>
+    <div class="senha-sub">Digite a senha para acessar<br>as ferramentas de administração</div>
+    <input class="senha-input" type="password" id="inp-senha-adm" maxlength="20" placeholder="••••••" onkeydown="if(event.key==='Enter')confirmarSenhaAdm()">
+    <div class="senha-erro" id="err-senha-adm"></div>
+    <div class="senha-btns">
+      <button class="senha-cancel" onclick="fecharSenhaAdm()">Cancelar</button>
+      <button class="senha-ok" onclick="confirmarSenhaAdm()">Entrar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL ADMIN -->
+<div class="overlay" id="overlay-admin">
+  <div class="admin-modal" id="modal-admin">
+    <div class="admin-cab">
+      <span>&#128100; Área do Responsável</span>
+      <button class="btn-fechar" onclick="fecharAdmin()">&#10005;</button>
+    </div>
+
+    <!-- GERAR ESCALA -->
+    <div class="admin-secao">
+      <h3>&#9881; Gerar nova escala</h3>
+      <p class="admin-aviso">Clique abaixo para regenerar toda a escala do zero com os dados atuais.</p>
+      <button class="btn-acao btn-acao-verde" onclick="gerarEscala();fecharAdmin()">&#10004; Gerar / Atualizar escala</button>
+    </div>
+
+    <!-- SUBSTITUIR PESSOA -->
+    <div class="admin-secao">
+      <h3>&#8635; Substituir pessoa em uma função</h3>
+      <p class="admin-aviso">Troca um irmão por outro em toda a lista de uma função específica (rodízio global).</p>
+      <div class="admin-row">
+        <div class="admin-col">
+          <span class="admin-label">Função</span>
+          <select class="admin-select" id="sub-funcao" onchange="atualizarSelectSub()">
+            <option value="palco">🏛️ Palco (coordenador)</option>
+            <option value="palcoAjud">🏛️ Palco (ajudante)</option>
+            <option value="mic">🎤 Microfone Volante</option>
+            <option value="audio">🎧 Áudio</option>
+            <option value="video">🎬 Vídeo</option>
+            <option value="zoom">🌐 Zoom</option>
+            <option value="indicador">👥 Indicadores</option>
+          </select>
+        </div>
+        <div class="admin-col">
+          <span class="admin-label">Substituir</span>
+          <select class="admin-select" id="sub-de"></select>
+        </div>
+        <div class="admin-col">
+          <span class="admin-label">Por</span>
+          <select class="admin-select" id="sub-para"></select>
+        </div>
+        <button class="btn-acao" onclick="fazerSubstituicao()" style="align-self:flex-end">Substituir</button>
+      </div>
+      <div id="sub-msg" style="font-size:12px;color:#166534;min-height:16px;margin-top:2px"></div>
+    </div>
+
+    <!-- ADICIONAR PESSOA -->
+    <div class="admin-secao">
+      <h3>&#43; Adicionar irmão a uma função</h3>
+      <div class="admin-row">
+        <div class="admin-col">
+          <span class="admin-label">Função</span>
+          <select class="admin-select" id="add-funcao">
+            <option value="palco">🏛️ Palco</option>
+            <option value="mic">🎤 Microfone Volante</option>
+            <option value="audio">🎧 Áudio</option>
+            <option value="video">🎬 Vídeo</option>
+            <option value="zoom">🌐 Zoom</option>
+            <option value="indicador">👥 Indicadores</option>
+            <option value="todos">📋 Apenas lista geral</option>
+          </select>
+        </div>
+        <div class="admin-col">
+          <span class="admin-label">Nome do irmão</span>
+          <input class="admin-input" type="text" id="add-nome" placeholder="Nome completo" onkeydown="if(event.key==='Enter')adicionarIrmao()">
+        </div>
+        <button class="btn-acao" onclick="adicionarIrmao()" style="align-self:flex-end">Adicionar</button>
+      </div>
+      <div id="add-msg" style="font-size:12px;color:#166534;min-height:16px;margin-top:2px"></div>
+      <div style="margin-top:10px">
+        <span class="admin-label" style="display:block;margin-bottom:6px">Irmãos cadastrados na lista geral</span>
+        <div class="admin-lista-tags" id="tags-todos"></div>
+      </div>
+    </div>
+
+    <div class="admin-rodape">
+      <button class="btn-acao" onclick="gerarEscala();fecharAdmin()">&#10004; Aplicar e gerar escala</button>
+    </div>
+  </div>
+</div>
+
 <script>
-// ===================== SENHA =====================
-var SENHA = "1234";
-var acaoAposSenha = null;
-function pedirSenha(acao) {
-  acaoAposSenha = acao;
-  document.getElementById('campo-senha').value='';
-  document.getElementById('senha-erro').style.display='none';
-  document.getElementById('ov-senha').classList.add('aberto');
-  setTimeout(function(){ document.getElementById('campo-senha').focus(); },100);
-}
-function fecharSenha() { document.getElementById('ov-senha').classList.remove('aberto'); }
-function confirmarSenha() {
-  if (document.getElementById('campo-senha').value === SENHA) {
-    fecharSenha();
-    if (acaoAposSenha==='principal') abrirPrincipal('aba-eventos');
-  } else {
-    document.getElementById('senha-erro').style.display='block';
-    document.getElementById('campo-senha').value='';
-    document.getElementById('campo-senha').focus();
-  }
-}
-
-// ===================== MODAL PRINCIPAL =====================
-var modoResponsavel = false;
-function abrirPrincipal(abaId) {
-  modoResponsavel = true;
-  trocarAba(abaId, null);
-  renderEventos();
-  document.getElementById('ov-principal').classList.add('aberto');
-}
-function fecharPrincipal() { document.getElementById('ov-principal').classList.remove('aberto'); }
-function trocarAba(id, btn) {
-  document.querySelectorAll('.aba-conteudo').forEach(function(el){ el.classList.remove('ativa'); });
-  document.querySelectorAll('.aba-btn').forEach(function(el){ el.classList.remove('ativa'); });
-  document.getElementById(id).classList.add('ativa');
-  if (btn) btn.classList.add('ativa');
-  else {
-    document.querySelectorAll('.aba-btn').forEach(function(el){
-      if (el.getAttribute('onclick') && el.getAttribute('onclick').indexOf(id)>=0) el.classList.add('ativa');
-    });
-  }
-  if (id==='aba-irmaos') renderGerenciarIrmaos();
-}
-function aplicarTudo() {
-  fecharPrincipal();
-  gerarEscalaAtual();
-}
-
-// ===================== DADOS =====================
-var listas = {
-  // Palco: pares definidos — rodízio sem repetir o mesmo par
-  palcoPares: [
-    ["Eriton Oliveira","Daniel Fernandes"],
-    ["Ivo Julião","Pedro Macumbi"],
-    ["Eriton Oliveira","Pedro Macumbi"],
-    ["Ivo Julião","Daniel Fernandes"],
-    ["Eriton Oliveira","Ivo Julião"],
-    ["Daniel Fernandes","Pedro Macumbi"]
-  ],
-  microfone: ["Endrik Araújo","Renan Carvalho","Carlos Silva","Jucelino Alves","Pedro Macumbi"],
-  indicador: [
-    "Claudio Borges","Franklin Dantas","Carlos Silva","Jucelino Alves","José Murilo",
-    "Manoel Martins","Pedro Macumbi","Eriton Oliveira","Márcio Motta","Luiz Oliveira",
-    "Ivo Julião","Francisco Valério"
-  ],
-  audio: ["Caio Andrade","Felipe Santos"],
-  video: ["Daniel Fernandes","Rodrigo Albuquerque"],
-  zoom:  ["Caio Andrade","Felipe Santos","Daniel Fernandes","Rodrigo Albuquerque"]
-};
-
-var todosIrmaos = [
+// ===================== LISTAS DE IRMÃOS =====================
+var todosBracos = [
   "Eriton Oliveira","Daniel Fernandes","Ivo Julião","Pedro Macumbi",
-  "Endrik Araújo","Renan Carvalho","Carlos Silva","Jucelino Alves",
-  "Claudio Borges","Franklin Dantas","José Murilo","Manoel Martins",
-  "Márcio Motta","Luiz Oliveira","Francisco Valério",
+  "Endrik Araújo","Renan Carvalho","Carlos Silva","Juscelino Alves",
+  "Claudio Borges","Franklin Dantas","José Murilo",
+  "Manoel Martins","Márcio Motta","Luiz Oliveira","Francisco Valério",
   "Caio Andrade","Felipe Santos","Rodrigo Albuquerque"
 ];
 
-var eventos = [
-  { inicio:"2026-07-03", fim:"2026-07-04", tipo:"congresso",
-    descricao:"Congresso Regional",
-    tema:"FELICIDADE ETERNA\nCongresso de 2026 das Testemunhas de Jeová", ausentes:[] },
-  { inicio:"2026-09-22", fim:"2026-09-27", tipo:"muda-dia",
-    descricao:"Visita do Superintendente de Circuito", tema:"", ausentes:["Eriton Oliveira","Ivo Julião"] }
+var palcoCombos = [
+  ["Eriton Oliveira","Daniel Fernandes"],
+  ["Ivo Julião","Pedro Macumbi"],
+  ["Eriton Oliveira","Pedro Macumbi"],
+  ["Ivo Julião","Daniel Fernandes"],
+  ["Eriton Oliveira","Franklin Dantas"],
+  ["Ivo Julião","Franklin Dantas"]
 ];
-
-var substituicoes = {};
-
-// Período gerado atual
-var periodoAtual = { mesInicio:6, ano:2026, qtd:4 };
-
-// ===================== GERAR DO FORM =====================
-function gerarDoForm() {
-  var mes = parseInt(document.getElementById('gerar-mes').value);
-  var ano = parseInt(document.getElementById('gerar-ano').value);
-  var qtd = parseInt(document.getElementById('gerar-qtd').value);
-  periodoAtual = { mesInicio:mes, ano:ano, qtd:qtd };
-  fecharPrincipal();
-  gerarEscalaAtual();
-}
-
-// ===================== GERENCIAR IRMÃOS =====================
-var deptConfig = [
-  { key:'palcoPares', label:'&#127963; Palco (Pares de Rodízio)', tipo:'pares' },
-  { key:'microfone',  label:'&#127908; Microfone Volante',        tipo:'lista' },
-  { key:'indicador',  label:'&#128101; Indicadores',              tipo:'lista' },
-  { key:'audio',      label:'&#127911; Áudio',                    tipo:'lista' },
-  { key:'video',      label:'&#127909; Vídeo',                    tipo:'lista' },
-  { key:'zoom',       label:'&#127760; Zoom',                     tipo:'lista' }
+var microfoneVolantes = ["Endrik Araújo","Renan Carvalho","Carlos Silva","Juscelino Alves","Pedro Macumbi"];
+var indicadores = [
+  "Claudio Borges","Franklin Dantas","Carlos Silva","Juscelino Alves","José Murilo",
+  "Manoel Martins","Pedro Macumbi","Eriton Oliveira","Márcio Motta","Luiz Oliveira",
+  "Ivo Julião","Francisco Valério"
 ];
-
-function renderGerenciarIrmaos() {
-  var c = document.getElementById('gerenciar-irmaos');
-  c.innerHTML = '';
-  deptConfig.forEach(function(dept) {
-    var sec = document.createElement('div');
-    sec.className = 'irmaos-secao';
-    var chipsHtml = '';
-    if (dept.tipo === 'pares') {
-      chipsHtml = listas[dept.key].map(function(par, i) {
-        return '<span class="irmao-chip">'+par[0]+' &amp; '+par[1]+
-          '<button onclick="removerPar('+i+')" title="Remover par">&#10005;</button></span>';
-      }).join('');
-      var optsA = todosIrmaos.map(function(n){ return '<option value="'+n+'">'+n+'</option>'; }).join('');
-      sec.innerHTML =
-        '<h3>'+dept.label+'</h3>'+
-        '<div class="irmao-lista">'+chipsHtml+'</div>'+
-        '<div class="add-irmao-row" style="flex-wrap:wrap;gap:6px">'+
-          '<select id="par-a" style="flex:1;min-width:120px"><option value="">Irmão 1...</option>'+optsA+'</select>'+
-          '<select id="par-b" style="flex:1;min-width:120px"><option value="">Irmão 2...</option>'+optsA+'</select>'+
-          '<button onclick="adicionarPar()">+ Adicionar par</button>'+
-        '</div>';
-    } else {
-      chipsHtml = listas[dept.key].map(function(n, i) {
-        return '<span class="irmao-chip">'+n+
-          '<button onclick="removerIrmao(\''+dept.key+'\','+i+')">&#10005;</button></span>';
-      }).join('');
-      sec.innerHTML =
-        '<h3>'+dept.label+'</h3>'+
-        '<div class="irmao-lista">'+chipsHtml+'</div>'+
-        '<div class="add-irmao-row">'+
-          '<input type="text" id="novo-'+dept.key+'" placeholder="Nome do irmão...">'+
-          '<button onclick="adicionarIrmao(\''+dept.key+'\')">+ Adicionar</button>'+
-        '</div>';
-    }
-    c.appendChild(sec);
-  });
-}
-function removerIrmao(dept, idx) { listas[dept].splice(idx,1); renderGerenciarIrmaos(); }
-function removerPar(idx) { listas.palcoPares.splice(idx,1); renderGerenciarIrmaos(); }
-function adicionarIrmao(dept) {
-  var inp = document.getElementById('novo-'+dept);
-  var nome = inp.value.trim(); if(!nome) return;
-  if(listas[dept].indexOf(nome)<0) listas[dept].push(nome);
-  if(todosIrmaos.indexOf(nome)<0) todosIrmaos.push(nome);
-  inp.value=''; renderGerenciarIrmaos();
-}
-function adicionarPar() {
-  var a = document.getElementById('par-a').value;
-  var b = document.getElementById('par-b').value;
-  if(!a||!b||a===b) return;
-  // verifica se par já existe
-  var existe = listas.palcoPares.some(function(p){ return (p[0]===a&&p[1]===b)||(p[0]===b&&p[1]===a); });
-  if(!existe) listas.palcoPares.push([a,b]);
-  renderGerenciarIrmaos();
-}
+var audioRodizio = ["Caio Andrade","Felipe Santos"];
+var videoRodizio = ["Daniel Fernandes","Rodrigo Albuquerque"];
+var zoomRodizio  = ["Caio Andrade","Felipe Santos","Daniel Fernandes","Rodrigo Albuquerque"];
 
 // ===================== EVENTOS =====================
+// tipo: "sem-reuniao" | "muda-dia"
+// muda-dia: a quarta daquela semana vira TERÇA no mesmo horário 19:00
+// ausentes: array de nomes que não podem ser designados nessa semana
+var eventos = [
+  { inicio:"2026-07-03", fim:"2026-07-04", tipo:"sem-reuniao", descricao:"Congresso Regional", ausentes:[] },
+  { inicio:"2026-09-22", fim:"2026-09-27", tipo:"muda-dia",    descricao:"Visita do Superintendente", ausentes:["Eriton Oliveira","Ivo Julião"] }
+];
+
+// ===================== MODAL =====================
+function abrirModal() { renderEventos(); document.getElementById("overlay").classList.add("aberto"); }
+function fecharModal() { document.getElementById("overlay").classList.remove("aberto"); }
+function fecharFora(e) { if(e.target===document.getElementById("overlay")) fecharModal(); }
+function aplicar() { fecharModal(); gerarEscala(); }
+
 function adicionarEvento() {
-  eventos.push({inicio:'',fim:'',tipo:'congresso',descricao:'',tema:'',ausentes:[]});
+  eventos.push({ inicio:"", fim:"", tipo:"sem-reuniao", descricao:"", ausentes:[] });
   renderEventos();
 }
 function removerEvento(i) { eventos.splice(i,1); renderEventos(); }
-function adicionarAusente(i,nome) {
-  if(!nome) return;
-  if(eventos[i].ausentes.indexOf(nome)<0) eventos[i].ausentes.push(nome);
+
+function adicionarAusente(i, nome) {
+  if (!nome) return;
+  if (eventos[i].ausentes.indexOf(nome) < 0) eventos[i].ausentes.push(nome);
   renderEventos();
 }
-function removerAusente(i,a) { eventos[i].ausentes.splice(a,1); renderEventos(); }
+function removerAusente(i, a) {
+  eventos[i].ausentes.splice(a, 1);
+  renderEventos();
+}
 
 function renderEventos() {
-  var c=document.getElementById('lista-eventos'); c.innerHTML='';
-  if(!eventos.length){
-    c.innerHTML='<p style="text-align:center;color:#888;font-size:13px;padding:12px 0">Nenhum evento cadastrado.</p>';
+  var c = document.getElementById("lista-eventos");
+  c.innerHTML = "";
+  if (eventos.length === 0) {
+    c.innerHTML = '<p style="text-align:center;color:#888;font-size:13px;padding:12px 0">Nenhum evento cadastrado.</p>';
     return;
   }
-  eventos.forEach(function(ev,i){
-    var chips=(ev.ausentes||[]).map(function(n,a){
-      return '<span class="ausente-chip">'+n+
-        '<button onclick="removerAusente('+i+','+a+')">&#10005;</button></span>';
+  eventos.forEach(function(ev, i) {
+    var chips = (ev.ausentes||[]).map(function(nome,a){
+      return '<span class="ausente-chip">'+nome+
+        '<button onclick="removerAusente('+i+','+a+')" title="Remover">&#10005;</button></span>';
     }).join('');
-    var optsN=todosIrmaos.filter(function(n){return(ev.ausentes||[]).indexOf(n)<0;})
-      .map(function(n){return'<option value="'+n+'">'+n+'</option>';}).join('');
-    var extraAus = ev.tipo==='muda-dia'
-      ? '<div class="ev-card-extra">'+
-          '<label class="ev-label">&#128683; Ausentes nessa semana</label>'+
-          '<div class="ev-ausentes-grid">'+(chips||'<span style="font-size:12px;color:#aaa">Nenhum ausente</span>')+'</div>'+
-          '<div class="ev-add-ausente">'+
-            '<select id="sel-'+i+'"><option value="">— selecionar irmão —</option>'+optsN+'</select>'+
-            '<button onclick="adicionarAusente('+i+',document.getElementById(\'sel-'+i+'\').value)">+ Adicionar</button>'+
-          '</div></div>'
-      : '';
-    var card=document.createElement('div'); card.className='ev-card';
-    card.innerHTML=
+
+    // select de irmãos ainda não ausentes
+    var optsAusentes = todosBracos.filter(function(n){ return (ev.ausentes||[]).indexOf(n)<0; })
+      .map(function(n){ return '<option value="'+n+'">'+n+'</option>'; }).join('');
+
+    var card = document.createElement('div');
+    card.className = 'ev-card';
+    card.innerHTML =
       '<div class="ev-card-topo">'+
-        '<div><label class="ev-label">Início</label><input type="date" value="'+ev.inicio+'" onchange="eventos['+i+'].inicio=this.value"></div>'+
-        '<div><label class="ev-label">Fim</label><input type="date" value="'+ev.fim+'" onchange="eventos['+i+'].fim=this.value"></div>'+
+        '<div><label class="ev-label">Início</label>'+
+          '<input type="date" value="'+ev.inicio+'" onchange="eventos['+i+'].inicio=this.value"></div>'+
+        '<div><label class="ev-label">Fim</label>'+
+          '<input type="date" value="'+ev.fim+'" onchange="eventos['+i+'].fim=this.value"></div>'+
         '<div><label class="ev-label">Tipo</label>'+
           '<select onchange="eventos['+i+'].tipo=this.value;renderEventos()">'+
-            '<option value="congresso"'+(ev.tipo==='congresso'?' selected':'')+'>&#128683; Congresso</option>'+
-            '<option value="assembleia"'+(ev.tipo==='assembleia'?' selected':'')+'>&#128683; Assembleia de Circuito</option>'+
-            '<option value="muda-dia"'+(ev.tipo==='muda-dia'?' selected':'')+'>&#128197; Visita do Superintendente</option>'+
+            '<option value="sem-reuniao"'+(ev.tipo==='sem-reuniao'?' selected':'')+'>&#128683; Sem reunião</option>'+
+            '<option value="muda-dia"'+(ev.tipo==='muda-dia'?' selected':'')+'>&#128197; Muda para terça</option>'+
           '</select></div>'+
-        '<button class="btn-remover" onclick="removerEvento('+i+')">&#10005;</button>'+
-      '</div>'+
-      '<div class="ev-card-meio">'+
         '<div><label class="ev-label">Descrição</label>'+
-          '<input type="text" value="'+escHtml(ev.descricao)+'" placeholder="Ex: Congresso Regional" onchange="eventos['+i+'].descricao=this.value"></div>'+
-        '<div><label class="ev-label">Tema (opcional)</label>'+
-          '<textarea onchange="eventos['+i+'].tema=this.value">'+escHtml(ev.tema)+'</textarea></div>'+
-      '</div>'+extraAus;
+          '<input type="text" value="'+ev.descricao+'" placeholder="Ex: Congresso Regional" '+
+            'onchange="eventos['+i+'].descricao=this.value"></div>'+
+        '<button class="btn-remover" onclick="removerEvento('+i+')" title="Remover evento">&#10005;</button>'+
+      '</div>'+
+      '<div class="ev-card-extra">'+
+        '<label class="ev-label">&#128683; Ausentes / não designar nessa semana</label>'+
+        '<div class="ev-ausentes-grid" id="chips-'+i+'">'+
+          (chips || '<span style="font-size:12px;color:#aaa">Nenhum ausente cadastrado</span>')+
+        '</div>'+
+        '<div class="ev-add-ausente" style="margin-top:8px">'+
+          '<select id="sel-ausente-'+i+'"><option value="">— selecionar irmão —</option>'+optsAusentes+'</select>'+
+          '<button onclick="adicionarAusente('+i+',document.getElementById(\'sel-ausente-'+i+'\').value)">+ Adicionar</button>'+
+        '</div>'+
+      '</div>';
     c.appendChild(card);
   });
 }
 
-// ===================== SUBSTITUIÇÃO =====================
-var substAtual = null;
-function abrirSubst(chave,setor,dataLabel,nomeAtual,el) {
-  substAtual={chave:chave,setor:setor,dataLabel:dataLabel,nomeAtual:nomeAtual,el:el};
-  document.getElementById('subst-data').textContent=dataLabel;
-  document.getElementById('subst-setor').textContent=setor;
-  document.getElementById('subst-atual').textContent=nomeAtual;
-  var sel=document.getElementById('subst-select');
-  sel.innerHTML=todosIrmaos.filter(function(n){return n!==nomeAtual;})
-    .map(function(n){return'<option value="'+n+'">'+n+'</option>';}).join('');
-  document.getElementById('ov-subst').classList.add('aberto');
-}
-function fecharSubst() { document.getElementById('ov-subst').classList.remove('aberto'); substAtual=null; }
-function confirmarSubst() {
-  if(!substAtual) return;
-  var novo=document.getElementById('subst-select').value;
-  substituicoes[substAtual.chave]=novo;
-  if(substAtual.el) substAtual.el.textContent=novo;
-  fecharSubst();
-}
-
-// ===================== LÓGICA ESCALA =====================
-function toISO(d){
+// ===================== LÓGICA =====================
+function toISO(d) {
   return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
 }
-function eventoNaSemana(data){
-  var seg=new Date(data); seg.setDate(data.getDate()-((data.getDay()+6)%7));
-  var dom=new Date(seg); dom.setDate(seg.getDate()+6);
-  var s=toISO(seg),e=toISO(dom);
-  for(var j=0;j<eventos.length;j++){
+
+function eventoNaSemana(data) {
+  var seg = new Date(data); seg.setDate(data.getDate()-((data.getDay()+6)%7));
+  var dom = new Date(seg); dom.setDate(seg.getDate()+6);
+  var s=toISO(seg), e=toISO(dom);
+  for (var j=0;j<eventos.length;j++) {
     var ev=eventos[j];
-    if(ev.inicio&&ev.fim&&ev.fim>=s&&ev.inicio<=e) return ev;
+    if (ev.inicio && ev.fim && ev.fim>=s && ev.inicio<=e) return ev;
   }
   return null;
 }
-function gerarReunioes(mes,ano){
-  var list=[],d=new Date(ano,mes-1,1);
-  while(d.getMonth()===mes-1){
-    if(d.getDay()===3) list.push({data:new Date(ano,mes-1,d.getDate(),19,0),tipo:"Quarta"});
-    else if(d.getDay()===6) list.push({data:new Date(ano,mes-1,d.getDate(),18,30),tipo:"Sábado"});
+
+function gerarReunioes(mes, ano) {
+  var list=[], d=new Date(ano,mes-1,1);
+  while (d.getMonth()===mes-1) {
+    if (d.getDay()===3) list.push({data:new Date(ano,mes-1,d.getDate(),19,0), tipo:"Quarta"});
+    else if (d.getDay()===6) list.push({data:new Date(ano,mes-1,d.getDate(),18,30), tipo:"Sábado"});
     d.setDate(d.getDate()+1);
   }
   return list;
 }
 
-// Rodízio simples sem repetir consecutivos
-function rodizio(fila,idx,usados){
+function rodizio(fila, idx, usados) {
   var t=0,c;
-  do{ c=fila[idx.v%fila.length]; idx.v++; t++; }
-  while(usados.indexOf(c)>=0 && t<=fila.length*2);
+  do { c=fila[idx.v%fila.length]; idx.v++; t++; }
+  while (usados.indexOf(c)>=0 && t<=fila.length*2);
   usados.push(c); return c;
 }
 
-// Rodízio de PARES do palco — sem repetir o mesmo par consecutivamente
-var ultimoPar = -1;
-function proximoPar(ausentes){
-  var pares = listas.palcoPares;
-  var tentativas = 0;
-  var idx;
-  do {
-    idx = (ultimoPar + 1 + tentativas) % pares.length;
-    var par = pares[idx];
-    var bloqueado = ausentes.indexOf(par[0])>=0 || ausentes.indexOf(par[1])>=0;
-    if (!bloqueado && idx !== ultimoPar) { ultimoPar=idx; return par; }
-    tentativas++;
-  } while(tentativas < pares.length * 2);
-  // fallback: aceita qualquer
-  ultimoPar = (ultimoPar+1) % pares.length;
-  return pares[ultimoPar];
-}
+var idxP=0,idxM={v:0},idxA={v:0},idxV={v:0},idxZ={v:0},idxI={v:0};
 
-var idxM={v:0},idxA={v:0},idxV={v:0},idxZ={v:0},idxI={v:0};
-
-function nomeSpan(n, chave, setor, dataLabel) {
-  var atual = substituicoes[chave] || n;
-  if (modoResponsavel) {
-    return '<span class="nome-clicavel" onclick="abrirSubst(\''+chave+'\',\''+escHtml(setor)+'\',\''+escHtml(dataLabel)+'\',this.textContent,this)">'+escHtml(atual)+'</span>';
-  }
-  return escHtml(atual);
-}
-
-function gerarMes(mes,ano){
-  var reunioes=gerarReunioes(mes,ano);
-  var nomeMes=new Date(ano,mes-1,1).toLocaleString('pt-BR',{month:'long'});
-  var bloco=document.createElement('div'); bloco.className='mes-bloco';
-  bloco.innerHTML='<div class="mes-cab"><span class="mes-nome">'+nomeMes+' '+ano+'</span>'+
+function gerarMes(mes, ano) {
+  var reunioes = gerarReunioes(mes, ano);
+  var nomeMes = new Date(ano,mes-1,1).toLocaleString('pt-BR',{month:'long'});
+  var bloco = document.createElement('div');
+  bloco.className = 'mes-bloco';
+  bloco.innerHTML =
+    '<div class="mes-cab"><span class="mes-nome">'+nomeMes+' '+ano+'</span>'+
     '<span class="mes-resp">Responsável: Eriton Oliveira</span></div>';
-  var grid=document.createElement('div'); grid.className='reunioes-grid';
+  var grid = document.createElement('div');
+  grid.className = 'reunioes-grid';
 
-  reunioes.forEach(function(r){
-    var ev=eventoNaSemana(r.data);
-    var dataISO=toISO(r.data);
-    var dataLabel=fmtData(r.data);
+  reunioes.forEach(function(r) {
+    var ev = eventoNaSemana(r.data);
 
-    // SEM REUNIÃO
-    if(ev&&(ev.tipo==='congresso'||ev.tipo==='assembleia')){
-      var ini=ev.inicio.split('-').reverse().join('/');
-      var fim=ev.fim.split('-').reverse().join('/');
-      var temaHtml=ev.tema?'<div class="ev-tema">'+escHtml(ev.tema)+'</div>':'';
-      var cor=ev.tipo==='assembleia'?'#fdf2f8':'#fff7ed';
-      var corTit=ev.tipo==='assembleia'?'#9d174d':'#c2410c';
-      var corDet=ev.tipo==='assembleia'?'#831843':'#9a3412';
-      var c=document.createElement('div');
-      c.className='card-evento'; c.style.background=cor;
-      c.innerHTML='<span class="ev-icone">&#128683;</span>'+
-        '<div style="flex:1"><div class="ev-titulo" style="color:'+corTit+'">Sem reunião — '+escHtml(ev.descricao)+'</div>'+
-        '<div class="ev-detalhe" style="color:'+corDet+'">'+dataLabel+' · '+fmtHora(r.data)+'<br>Período: '+ini+' a '+fim+'</div>'+
-        temaHtml+'</div>';
+    // ---- SEM REUNIÃO ----
+    if (ev && ev.tipo === 'sem-reuniao') {
+      var c = document.createElement('div');
+      c.className = 'card-evento';
+      var ini = ev.inicio.split('-').reverse().join('/');
+      var fim = ev.fim.split('-').reverse().join('/');
+      c.innerHTML =
+        '<span class="ev-icone">&#128683;</span>'+
+        '<div><div class="ev-titulo">Sem reunião — '+ev.descricao+'</div>'+
+        '<div class="ev-detalhe">'+
+          fmtData(r.data)+' · '+fmtHora(r.data)+'<br>'+
+          'Período: '+ini+' a '+fim+
+        '</div></div>';
       grid.appendChild(c); return;
     }
 
-    // MUDA DE DIA / NORMAL
-    var dataReal=r.data, tipoLabel=r.tipo;
-    var badgeClass=r.tipo==='Quarta'?'badge-quarta':'badge-sabado';
-    var bannerHtml='';
-    if(ev&&ev.tipo==='muda-dia'){
-      var temaV=ev.tema?'<br><em>'+escHtml(ev.tema)+'</em>':'';
-      if(r.tipo==='Quarta'){
-        dataReal=new Date(r.data); dataReal.setDate(r.data.getDate()-1);
-        tipoLabel='Terça'; badgeClass='badge-terca';
-        bannerHtml='<div class="banner-evento banner-visita-terca">&#128197; Reunião antecipada para terça — '+escHtml(ev.descricao)+temaV+'</div>';
-      } else {
-        bannerHtml='<div class="banner-evento banner-visita-sab">&#11088; Reunião com visita — '+escHtml(ev.descricao)+temaV+'</div>';
+    // ---- MUDA DE DIA (quarta → terça) ----
+    var dataReal = r.data;
+    var tipoLabel = r.tipo;
+    var badgeClass = r.tipo==='Quarta' ? 'badge-quarta' : 'badge-sabado';
+    var notaMuda = '';
+
+    if (ev && ev.tipo === 'muda-dia') {
+      if (r.tipo === 'Quarta') {
+        // quarta vira terça
+        dataReal = new Date(r.data);
+        dataReal.setDate(r.data.getDate() - 1);
+        tipoLabel = 'Terça';
+        badgeClass = 'badge-terca';
+        notaMuda = '<div style="font-size:11px;color:#6b21a8;margin-bottom:6px;padding:3px 6px;background:#f3e8ff;border-radius:4px;">&#128197; Reunião antecipada para terça — '+ev.descricao+'</div>';
+      } else if (r.tipo === 'Sábado') {
+        // sábado acontece normalmente mas é identificado como semana de visita
+        notaMuda = '<div style="font-size:11px;color:#0f6e56;margin-bottom:6px;padding:3px 6px;background:#dcfce7;border-radius:4px;">&#11088; Reunião de visita — '+ev.descricao+'</div>';
       }
     }
 
-    var ausentes=(ev&&ev.ausentes)?ev.ausentes.slice():[];
-    var usados=ausentes.slice();
-    var combo=proximoPar(ausentes);
-    usados.push(combo[0],combo[1]);
+    // Ausentes da semana (evento + ninguém duplicado)
+    var ausentes = (ev && ev.ausentes) ? ev.ausentes.slice() : [];
+    var usados = ausentes.slice(); // bloqueia ausentes já no início
 
-    var mic1=rodizio(listas.microfone,idxM,usados);
-    var mic2=rodizio(listas.microfone,idxM,usados);
-    var audio=rodizio(listas.audio,idxA,usados);
-    var video=rodizio(listas.video,idxV,usados);
-    var zoom=rodizio(listas.zoom,idxZ,usados);
-    var aud=rodizio(listas.indicador,idxI,usados);
-    var pat=rodizio(listas.indicador,idxI,usados);
+    var combo = palcoCombos[idxP % palcoCombos.length]; idxP++;
+    var coord = combo[0], ajud = combo[1];
+    // Se coord ou ajudante estiver ausente, pular (simples: apenas avisa)
+    usados.push(coord, ajud);
 
-    function ns(n,s){ return nomeSpan(n,dataISO+'|'+s+'|'+n,s,dataLabel); }
+    var mic1 = rodizio(microfoneVolantes, idxM, usados);
+    var mic2 = rodizio(microfoneVolantes, idxM, usados);
+    var audio= rodizio(audioRodizio,      idxA, usados);
+    var video= rodizio(videoRodizio,      idxV, usados);
+    var zoom = rodizio(zoomRodizio,       idxZ, usados);
+    var aud  = rodizio(indicadores,       idxI, usados);
+    var pat  = rodizio(indicadores,       idxI, usados);
 
-    var c=document.createElement('div'); c.className='card';
-    c.innerHTML=
-      bannerHtml+
+    var c = document.createElement('div');
+    c.className = 'card';
+    c.innerHTML =
+      notaMuda+
       '<div class="card-topo">'+
         '<span class="badge '+badgeClass+'">'+tipoLabel+'</span>'+
         '<span class="card-data">'+fmtData(dataReal)+'</span>'+
         '<span class="card-hora">'+fmtHora(dataReal)+'</span>'+
       '</div>'+
-      linhaH('&#127963;','Palco',         ns(combo[0],'Palco-Coord')+' &amp; '+ns(combo[1],'Palco-Ajud'))+
-      linhaH('&#127908;','Mic. Volante',  ns(mic1,'Mic1')+' &amp; '+ns(mic2,'Mic2'))+
-      linhaH('&#127911;','Áudio',         ns(audio,'Audio'))+
-      linhaH('&#127909;','Vídeo',         ns(video,'Video'))+
-      linhaH('&#127760;','Zoom',          ns(zoom,'Zoom'))+
-      linhaH('&#128101;','Indicadores',   'Auditório → '+ns(aud,'Ind-Aud')+' &nbsp;|&nbsp; Pátio → '+ns(pat,'Ind-Pat'));
+      linha('&#127963;','Palco',coord+' &amp; '+ajud)+
+      linha('&#127908;','Mic. Volante',mic1+' &amp; '+mic2)+
+      linha('&#127911;','Áudio',audio)+
+      linha('&#127909;','Vídeo',video)+
+      linha('&#127760;','Zoom',zoom)+
+      linha('&#128101;','Indicadores','Auditório → '+aud+' &nbsp;|&nbsp; Pátio → '+pat);
     grid.appendChild(c);
   });
 
@@ -665,32 +526,165 @@ function gerarMes(mes,ano){
   document.getElementById('lista').appendChild(bloco);
 }
 
-function linhaH(ic,lb,val){
+function linha(ic, lb, val) {
   return '<div class="linha"><span class="linha-icone">'+ic+'</span>'+
     '<span class="linha-label">'+lb+'</span><span class="linha-nomes">'+val+'</span></div>';
 }
-function fmtData(d){ return d.toLocaleDateString('pt-BR',{weekday:'long',day:'2-digit',month:'2-digit',year:'numeric'}); }
-function fmtHora(d){ return d.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}); }
-function escHtml(s){ return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
-
-function gerarEscalaAtual() {
-  substituicoes={};
-  document.getElementById('lista').innerHTML='';
-  idxM.v=0;idxA.v=0;idxV.v=0;idxZ.v=0;idxI.v=0;ultimoPar=-1;
-  var mes=periodoAtual.mesInicio, ano=periodoAtual.ano;
-  var nomes=[];
-  for(var i=0;i<periodoAtual.qtd;i++){
-    var m=((mes-1+i)%12)+1;
-    var a=ano+Math.floor((mes-1+i)/12);
-    gerarMes(m,a);
-    nomes.push(new Date(a,m-1,1).toLocaleString('pt-BR',{month:'long'})+' '+a);
-  }
-  document.getElementById('subtitulo-periodo').textContent=
-    'Congregação Parque Tietê · '+nomes[0]+' a '+nomes[nomes.length-1];
+function fmtData(d) {
+  return d.toLocaleDateString('pt-BR',{weekday:'long',day:'2-digit',month:'2-digit',year:'numeric'});
+}
+function fmtHora(d) {
+  return d.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
 }
 
-// Iniciar com junho–setembro 2026
-gerarEscalaAtual();
+function gerarEscala() {
+  document.getElementById('lista').innerHTML='';
+  idxP=0; idxM.v=0; idxA.v=0; idxV.v=0; idxZ.v=0; idxI.v=0;
+  gerarMes(6,2026); gerarMes(7,2026); gerarMes(8,2026); gerarMes(9,2026);
+}
+
+gerarEscala();
+
+// ===================== SENHAS =====================
+// Para alterar a senha, mude os valores abaixo:
+var SENHA_EVENTOS = "eventos123";
+var SENHA_ADMIN   = "admin123";
+
+// --- SENHA EVENTOS ESPECIAIS ---
+function pedirSenhaEventos() {
+  document.getElementById('inp-senha-ev').value='';
+  document.getElementById('err-senha-ev').textContent='';
+  document.getElementById('overlay-senha-ev').classList.add('aberto');
+  setTimeout(function(){ document.getElementById('inp-senha-ev').focus(); },120);
+}
+function fecharSenhaEv() { document.getElementById('overlay-senha-ev').classList.remove('aberto'); }
+function confirmarSenhaEv() {
+  var v = document.getElementById('inp-senha-ev').value;
+  if (v === SENHA_EVENTOS) { fecharSenhaEv(); abrirModal(); }
+  else {
+    document.getElementById('err-senha-ev').textContent = 'Senha incorreta. Tente novamente.';
+    document.getElementById('inp-senha-ev').value='';
+    document.getElementById('inp-senha-ev').focus();
+  }
+}
+
+// --- SENHA ADMIN ---
+function pedirSenhaAdmin() {
+  document.getElementById('inp-senha-adm').value='';
+  document.getElementById('err-senha-adm').textContent='';
+  document.getElementById('overlay-senha-adm').classList.add('aberto');
+  setTimeout(function(){ document.getElementById('inp-senha-adm').focus(); },120);
+}
+function fecharSenhaAdm() { document.getElementById('overlay-senha-adm').classList.remove('aberto'); }
+function confirmarSenhaAdm() {
+  var v = document.getElementById('inp-senha-adm').value;
+  if (v === SENHA_ADMIN) { fecharSenhaAdm(); abrirAdmin(); }
+  else {
+    document.getElementById('err-senha-adm').textContent = 'Senha incorreta. Tente novamente.';
+    document.getElementById('inp-senha-adm').value='';
+    document.getElementById('inp-senha-adm').focus();
+  }
+}
+
+// ===================== MODAL ADMIN =====================
+function abrirAdmin() {
+  atualizarSelectSub();
+  renderTagsTodos();
+  document.getElementById('overlay-admin').classList.add('aberto');
+}
+function fecharAdmin() { document.getElementById('overlay-admin').classList.remove('aberto'); }
+document.getElementById('overlay-admin').addEventListener('click', function(e){ if(e.target===this) fecharAdmin(); });
+
+function getFuncaoArray(funcao) {
+  if (funcao==='palco')      return { arr: palcoCombos.map(function(c){return c[0];}), write: function(arr){ palcoCombos = palcoCombos.map(function(c,i){ return [arr[i]||c[0], c[1]]; }); } };
+  if (funcao==='palcoAjud')  return { arr: palcoCombos.map(function(c){return c[1];}), write: function(arr){ palcoCombos = palcoCombos.map(function(c,i){ return [c[0], arr[i]||c[1]]; }); } };
+  if (funcao==='mic')        return { arr: microfoneVolantes, ref: microfoneVolantes };
+  if (funcao==='audio')      return { arr: audioRodizio, ref: audioRodizio };
+  if (funcao==='video')      return { arr: videoRodizio, ref: videoRodizio };
+  if (funcao==='zoom')       return { arr: zoomRodizio, ref: zoomRodizio };
+  if (funcao==='indicador')  return { arr: indicadores, ref: indicadores };
+  return null;
+}
+
+function atualizarSelectSub() {
+  var funcao = document.getElementById('sub-funcao').value;
+  var info = getFuncaoArray(funcao);
+  var nomes = info ? (info.arr.filter ? [...new Set(info.arr)] : []) : [];
+
+  var selDe = document.getElementById('sub-de');
+  var selPara = document.getElementById('sub-para');
+  selDe.innerHTML = nomes.map(function(n){ return '<option value="'+n+'">'+n+'</option>'; }).join('');
+  // Para: todos os irmãos
+  selPara.innerHTML = todosBracos.map(function(n){ return '<option value="'+n+'">'+n+'</option>'; }).join('');
+  document.getElementById('sub-msg').textContent='';
+}
+
+function fazerSubstituicao() {
+  var funcao = document.getElementById('sub-funcao').value;
+  var de = document.getElementById('sub-de').value;
+  var para = document.getElementById('sub-para').value;
+  if (!de || !para || de===para) { document.getElementById('sub-msg').style.color='#dc2626'; document.getElementById('sub-msg').textContent='Selecione dois irmãos diferentes.'; return; }
+
+  function replaceInArr(arr) {
+    for (var i=0;i<arr.length;i++) if(arr[i]===de) arr[i]=para;
+  }
+
+  if (funcao==='palco')      { palcoCombos.forEach(function(c){ if(c[0]===de) c[0]=para; }); }
+  else if (funcao==='palcoAjud') { palcoCombos.forEach(function(c){ if(c[1]===de) c[1]=para; }); }
+  else if (funcao==='mic')   replaceInArr(microfoneVolantes);
+  else if (funcao==='audio') replaceInArr(audioRodizio);
+  else if (funcao==='video') replaceInArr(videoRodizio);
+  else if (funcao==='zoom')  replaceInArr(zoomRodizio);
+  else if (funcao==='indicador') replaceInArr(indicadores);
+
+  document.getElementById('sub-msg').style.color='#166534';
+  document.getElementById('sub-msg').textContent='✔ ' + de + ' substituído por ' + para + ' com sucesso!';
+  atualizarSelectSub();
+}
+
+function adicionarIrmao() {
+  var nome = document.getElementById('add-nome').value.trim();
+  var funcao = document.getElementById('add-funcao').value;
+  if (!nome) { document.getElementById('add-msg').style.color='#dc2626'; document.getElementById('add-msg').textContent='Digite o nome do irmão.'; return; }
+
+  // Adiciona à lista geral se não existe
+  if (todosBracos.indexOf(nome) < 0) todosBracos.push(nome);
+
+  var msgExtra = '';
+  if (funcao==='palco') {
+    palcoCombos.push([nome, palcoCombos[0]?palcoCombos[0][1]:nome]);
+    msgExtra = ' e adicionado ao palco';
+  } else if (funcao==='mic')   { microfoneVolantes.push(nome); msgExtra = ' e adicionado ao microfone'; }
+  else if (funcao==='audio')   { audioRodizio.push(nome); msgExtra = ' e adicionado ao áudio'; }
+  else if (funcao==='video')   { videoRodizio.push(nome); msgExtra = ' e adicionado ao vídeo'; }
+  else if (funcao==='zoom')    { zoomRodizio.push(nome); msgExtra = ' e adicionado ao zoom'; }
+  else if (funcao==='indicador') { indicadores.push(nome); msgExtra = ' e adicionado aos indicadores'; }
+
+  document.getElementById('add-msg').style.color='#166534';
+  document.getElementById('add-msg').textContent='✔ ' + nome + ' cadastrado' + msgExtra + '!';
+  document.getElementById('add-nome').value='';
+  renderTagsTodos();
+  atualizarSelectSub();
+}
+
+function removerIrmaoGeral(nome) {
+  var idx = todosBracos.indexOf(nome);
+  if (idx >= 0) todosBracos.splice(idx, 1);
+  // Remove também de todas as listas
+  function rem(arr) { var i=arr.indexOf(nome); if(i>=0) arr.splice(i,1); }
+  rem(microfoneVolantes); rem(indicadores); rem(audioRodizio); rem(videoRodizio); rem(zoomRodizio);
+  palcoCombos = palcoCombos.filter(function(c){ return c[0]!==nome && c[1]!==nome; });
+  renderTagsTodos();
+  atualizarSelectSub();
+}
+
+function renderTagsTodos() {
+  var c = document.getElementById('tags-todos');
+  c.innerHTML = todosBracos.map(function(n){
+    return '<span class="admin-tag">'+n+
+      '<button onclick="removerIrmaoGeral(\''+n.replace(/'/g,"\\'")+'\')" title="Remover">&#10005;</button></span>';
+  }).join('');
+}
 </script>
 </body>
 </html>
