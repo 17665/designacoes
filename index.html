@@ -1147,15 +1147,23 @@ function salvarConfigFirebase() {
     .catch(function(e){ console.warn('Erro ao salvar config:', e); });
 }
 
+var _configHash = '';
+
 function ouvirConfig() {
   if (!db) return;
   db.ref('escala/config').on('value', function(snap) {
     var d = snap.val(); if (!d) return;
+
+    // Detecta se houve mudança real
+    var novoHash = JSON.stringify(d);
+    var mudou = (novoHash !== _configHash);
+    _configHash = novoHash;
+
     // Atualiza listas
     if (d.listas) {
       Object.keys(d.listas).forEach(function(k){ listas[k]=d.listas[k]; });
     }
-    // Atualiza treinamento — substitui completamente pelo que está no Firebase
+    // Atualiza treinamento
     if (d.treinamento !== undefined) {
       Object.keys(treinamento).forEach(function(k){ delete treinamento[k]; });
       if(d.treinamento) {
@@ -1176,9 +1184,23 @@ function ouvirConfig() {
       [p[0],p[1]].forEach(function(n){ if(todos.indexOf(n)<0) todos.push(n); });
     });
     todosIrmaos.length=0; todos.forEach(function(n){ todosIrmaos.push(n); });
-    // Atualiza UI se modal estiver aberto
+
+    // Atualiza UI do modal se aberto
     if(document.getElementById('ov-principal').classList.contains('aberto')){
       renderEventos(); renderTreino(); renderGerenciarIrmaos();
+    }
+
+    // ── REGENERA A ESCALA para todos verem igual ──────────────
+    if(mudou && Object.keys(mesesGerados).length > 0){
+      var chavesAtivas = Object.keys(mesesGerados).sort();
+      substituicoes={}; contadorPulo={}; aparicoes={}; ultimoAuditorio={};
+      mesesGerados={};
+      idxM.v=0; idxA.v=0; idxV.v=0; idxZ.v=0; idxI.v=0; ultimoPar=-1;
+      document.getElementById('lista').innerHTML='';
+      chavesAtivas.forEach(function(chave){
+        var p=chave.split('-');
+        adicionarMeses(parseInt(p[1]), parseInt(p[0]), 1);
+      });
     }
   });
 }
@@ -1193,22 +1215,16 @@ function ouvirMeses() {
     var chavesLocais = Object.keys(mesesGerados).sort();
     var mesmoEstado = JSON.stringify(chavesSalvas) === JSON.stringify(chavesLocais);
     if (mesmoEstado) return; // nada mudou
-    // Adiciona meses que faltam
-    chavesSalvas.forEach(function(chave) {
-      if (!mesesGerados[chave]) {
-        var p = chave.split('-');
-        var a = parseInt(p[0]), m = parseInt(p[1]);
-        mesesGerados[chave] = true;
-        gerarMes(m, a);
-      }
-    });
-    // Remove meses que foram apagados remotamente
-    chavesLocais.forEach(function(chave) {
-      if (!dados[chave]) {
-        var bloco = document.querySelector('[data-chavemes="'+chave+'"]');
-        if (bloco) bloco.remove();
-        delete mesesGerados[chave];
-      }
+    // Regenera tudo do zero com os meses do Firebase
+    substituicoes={}; contadorPulo={}; aparicoes={}; ultimoAuditorio={};
+    mesesGerados={};
+    idxM.v=0; idxA.v=0; idxV.v=0; idxZ.v=0; idxI.v=0; ultimoPar=-1;
+    document.getElementById('lista').innerHTML='';
+    chavesSalvas.forEach(function(chave){
+      var p=chave.split('-');
+      var a=parseInt(p[0]), m=parseInt(p[1]);
+      mesesGerados[chave]=true;
+      gerarMes(m, a);
     });
     // Reordena
     var lista = document.getElementById('lista');
