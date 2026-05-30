@@ -1136,7 +1136,7 @@ function iniciarFirebase() {
     var s = document.createElement('script');
     s.src = url;
     s.onload = cb;
-    s.onerror = function(){ console.warn('Falha ao carregar', url); mostrarBannerConfig(); };
+    s.onerror = function(){ mostrarBannerConfigErro('Falha ao carregar SDK. Verifique sua conexao com a internet.'); };
     document.head.appendChild(s);
   }
   carregarScript('https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js', function() {
@@ -1151,21 +1151,34 @@ function iniciarFirebase() {
         ouvirConfig();
       } catch(e) {
         console.warn('Firebase erro:', e);
-        mostrarBannerConfig();
+        mostrarBannerConfigErro(e.message);
       }
     });
   });
 }
 
-function mostrarBannerConfig() {
+function mostrarBannerConfig() { mostrarBannerConfigErro(null); }
+function mostrarBannerConfigErro(msg) {
+  if(document.getElementById('firebase-banner')) return;
   var b = document.createElement('div');
+  b.id = 'firebase-banner';
   b.className = 'firebase-config-banner';
-  b.innerHTML = '<strong>&#128274; Firebase nao configurado</strong><br>' +
-    '1. Acesse <strong>console.firebase.google.com</strong> e crie um projeto<br>' +
-    '2. Va em <strong>Realtime Database</strong> → Criar banco → modo teste<br>' +
-    '3. Va em <strong>Configuracoes do projeto</strong> → Seus apps → Adicionar app Web<br>' +
-    '4. Copie os valores e substitua em <code>FIREBASE_CONFIG</code> neste arquivo<br>' +
-    '<em style="color:#64b5f6">Enquanto isso, as trocas funcionam so localmente nesta aba.</em>';
+  if(msg) {
+    b.innerHTML = '<strong>&#9888; Problema na conexao Firebase</strong><br>' +
+      '<span style="color:#fca5a5">' + msg + '</span><br><br>' +
+      'Para corrigir, verifique no <strong>console.firebase.google.com</strong>:<br>' +
+      '1. <strong>Realtime Database</strong> foi criado e esta ativo?<br>' +
+      '2. Regras do banco estao em <strong>modo teste</strong> (leitura e escrita abertas)?<br>' +
+      '3. Em <strong>Authentication → Settings → Authorized domains</strong> o dominio <strong>17665.github.io</strong> esta na lista?<br>' +
+      '<em style="color:#64b5f6">Enquanto isso, alteracoes ficam so localmente nesta aba.</em>';
+  } else {
+    b.innerHTML = '<strong>&#128274; Firebase nao configurado</strong><br>' +
+      '1. Acesse <strong>console.firebase.google.com</strong> e crie um projeto<br>' +
+      '2. Va em <strong>Realtime Database</strong> → Criar banco → modo teste<br>' +
+      '3. Va em <strong>Configuracoes do projeto</strong> → Seus apps → Adicionar app Web<br>' +
+      '4. Copie os valores e substitua em <code>FIREBASE_CONFIG</code> neste arquivo<br>' +
+      '<em style="color:#64b5f6">Enquanto isso, as trocas funcionam so localmente nesta aba.</em>';
+  }
   document.querySelector('.topo').after(b);
 }
 
