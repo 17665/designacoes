@@ -629,24 +629,35 @@ function estaEmTreinamento(nome) {
 }
 
 function deveSerPulado(nome, setor, dataISO) {
-  // Se irmão está cadastrado em alguma lista mas NÃO no treinamento: pula sempre
-  // (só entra na escala após ser cadastrado no treinamento)
+  // Irmão não cadastrado no treinamento: nunca aparece
   if(!estaEmTreinamento(nome)) return true;
   var cfg=treinamento[nome]||{};
-  // Respeita data de início do treinamento
+  // Respeita data de início
   if(cfg.dataInicio && dataISO){
     if(dataISO < cfg.dataInicio) return true;
   }
-  // Se está no treinamento mas setor não tem frequência reduzida: aparece normalmente
+  // Setor sem frequência reduzida: aparece normalmente no rodízio
   if(!emTreino(nome,setor)) return false;
-  var k=nome+'|'+setor;
-  if(contadorPulo[k]===undefined) contadorPulo[k]=0;
-  if(!aparicoes[k]) aparicoes[k]=0;
+
+  // Frequência reduzida:
+  // Nível 1 = aparece 1 vez a cada 4 reuniões (pula 3)
+  // Nível 2 = aparece 1 vez a cada 3 reuniões (pula 2)
   var nivel=cfg.nivel||1;
-  var skipNeeded=(nivel===1)?2:1;
-  if(contadorPulo[k] < skipNeeded){ contadorPulo[k]++; return true; }
-  contadorPulo[k]=0; aparicoes[k]++;
-  return false;
+  var skipNeeded=(nivel===1)?3:2;
+
+  var k=nome+'|'+setor;
+  if(contadorPulo[k]===undefined) contadorPulo[k]=skipNeeded; // começa liberado para aparecer na 1ª
+  if(!aparicoes[k]) aparicoes[k]=0;
+
+  if(contadorPulo[k] >= skipNeeded){
+    // Hora de aparecer — zera o contador
+    contadorPulo[k]=0;
+    aparicoes[k]++;
+    return false;
+  }
+  // Ainda pula
+  contadorPulo[k]++;
+  return true;
 }
 var aparicoes = {};
 
