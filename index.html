@@ -1167,10 +1167,22 @@ function ouvirTrocas() {
 function renderPainelTrocas() {
   var painel = document.getElementById('painel-trocas');
   var lista = Object.values(trocasCache).filter(function(t) {
-    // Mostra: pendentes para mim, minhas proprias, ou aceitas/recusadas recentes (24h)
+    // Mostra: pendentes, ou aceitas ate a data da reuniao passar, ou recusadas por 24h
+    if(t.status === 'pendente') return true;
+    if(t.status === 'aceita'){
+      // Extrai a data da reuniao do dataLabel (formato: weekday, DD/MM/YYYY)
+      var match = (t.dataLabel||'').match(/(\d{2})\/( \d{2})\/(\d{4})/);
+      if(!match) match = (t.dataLabel||'').match(/(\d{2})\/(\d{2})\/(\d{4})/);
+      if(match){
+        var dataReuniao = new Date(parseInt(match[3]), parseInt(match[2])-1, parseInt(match[1]));
+        dataReuniao.setHours(23,59,59,999);
+        return Date.now() <= dataReuniao.getTime();
+      }
+      return true;
+    }
+    // recusadas/expiradas: mostrar por 24h
     var recente = Date.now() - t.criadoEm < 24 * 60 * 60 * 1000;
-    return t.status === 'pendente' ||
-           (recente && (t.solicitante === meuNome || t.destinatario === meuNome));
+    return recente && (t.solicitante === meuNome || t.destinatario === meuNome);
   }).sort(function(a,b){ return b.criadoEm - a.criadoEm; });
 
   if (lista.length === 0) { painel.style.display = 'none'; return; }
