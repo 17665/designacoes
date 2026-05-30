@@ -3,6 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 <title>Designações — Cong. Parq. Tietê</title>
 <style>
 * { box-sizing:border-box; margin:0; padding:0; }
@@ -1131,30 +1133,19 @@ function ouvirMeses() {
 }
 
 function iniciarFirebase() {
-  // Carrega scripts do Firebase dinamicamente (funciona em file:// e http://)
-  function carregarScript(url, cb) {
-    var s = document.createElement('script');
-    s.src = url;
-    s.onload = cb;
-    s.onerror = function(){ mostrarBannerConfigErro('Falha ao carregar SDK. Verifique sua conexao com a internet.'); };
-    document.head.appendChild(s);
+  try {
+    if (typeof firebase === 'undefined') { mostrarBannerConfigErro('SDK do Firebase nao carregou. Verifique sua conexao.'); return; }
+    if (FIREBASE_CONFIG.apiKey === 'COLE_AQUI') { mostrarBannerConfig(); return; }
+    if (!firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG);
+    db = firebase.database();
+    firebaseOk = true;
+    ouvirTrocas();
+    ouvirMeses();
+    ouvirConfig();
+  } catch(e) {
+    console.warn('Firebase erro:', e);
+    mostrarBannerConfigErro(e.message);
   }
-  carregarScript('https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js', function() {
-    carregarScript('https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js', function() {
-      try {
-        if (FIREBASE_CONFIG.apiKey === 'COLE_AQUI') { mostrarBannerConfig(); return; }
-        if (!firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG);
-        db = firebase.database();
-        firebaseOk = true;
-        ouvirTrocas();
-        ouvirMeses();
-        ouvirConfig();
-      } catch(e) {
-        console.warn('Firebase erro:', e);
-        mostrarBannerConfigErro(e.message);
-      }
-    });
-  });
 }
 
 function mostrarBannerConfig() { mostrarBannerConfigErro(null); }
