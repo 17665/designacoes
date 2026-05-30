@@ -629,10 +629,10 @@ function estaEmTreinamento(nome) {
 }
 
 function deveSerPulado(nome, setor, dataISO) {
-  // Irmão não cadastrado no treinamento: nunca aparece
-  if(!estaEmTreinamento(nome)) return true;
+  // Irmão não cadastrado no treinamento: aparece normalmente
+  if(!estaEmTreinamento(nome)) return false;
   var cfg=treinamento[nome]||{};
-  // Respeita data de início
+  // Respeita data de início: antes da data de início, não aparece
   if(cfg.dataInicio && dataISO){
     if(dataISO < cfg.dataInicio) return true;
   }
@@ -882,7 +882,7 @@ function escolherIndicadores(usados){
     var i=(start+t)%fila.length;
     var nome=fila[i];
     if(usados.indexOf(nome)>=0) continue;
-    if(deveSerPulado(nome,'indicador')) continue;
+    if(deveSerPulado(nome,'indicador',null)) continue;
     escolhidos.push(nome);
     usados.push(nome);
   }
@@ -926,9 +926,17 @@ function nomeSpan(n,chave,setor,dataLabel){
     }
   });
   // Cor e badge de treinamento — visível APENAS para o responsável
-  var emTreinoAtual = estaEmTreinamento(atual);
-  var styleExtra = (modoResponsavel && emTreinoAtual) ? ' style="color:#b45309;font-style:italic;" title="Em treinamento"' : '';
-  var badgeTreino = (modoResponsavel && emTreinoAtual) ? ' <span style="font-size:9px;background:#fef3c7;color:#92400e;border:1px solid #fcd34d;border-radius:8px;padding:1px 5px;vertical-align:middle">treino</span>' : '';
+  // Badge só aparece se o irmão tem frequência reduzida neste setor específico
+  var setorChave = { 'Palco-Coord':'palco','Palco-Ajud':'palco','Palco':'palco',
+    'Mic1':'microfone','Mic2':'microfone','Microfone':'microfone',
+    'Audio':'audio','Áudio':'audio',
+    'Video':'video','Vídeo':'video',
+    'Zoom':'zoom',
+    'Ind-Aud':'indicador','Ind-Pat':'indicador','Indicador':'indicador' };
+  var setorKey = setorChave[setor] || setor.toLowerCase();
+  var emTreinoNesteSetor = estaEmTreinamento(atual) && treinamento[atual] && treinamento[atual][setorKey];
+  var styleExtra = (modoResponsavel && emTreinoNesteSetor) ? ' style="color:#b45309;font-style:italic;" title="Em treinamento"' : '';
+  var badgeTreino = (modoResponsavel && emTreinoNesteSetor) ? ' <span style="font-size:9px;background:#fef3c7;color:#92400e;border:1px solid #fcd34d;border-radius:8px;padding:1px 5px;vertical-align:middle">treino</span>' : '';
   if(modoResponsavel){
     return '<span class="nome-clicavel"'+styleExtra+' onclick="abrirSubst(\'' + chave + '\',\'' + escHtml(setor) + '\',\'' + escHtml(dataLabel) + '\',this.textContent,this)">' + escHtml(atual) + '</span>' + badgeTreino + badgeTroca;
   }
@@ -1140,9 +1148,16 @@ var firebaseOk = false;
 
 function salvarMesesFirebase() {
   if (!firebaseOk || !db) return;
-  // Salva objeto {chave: true} com todos os meses ativos
-  db.ref('escala/meses').set(mesesGerados).catch(function(e){
-    console.warn('Erro ao salvar meses:', e);
+  // Salva objeto {chave: true} com todos os meses ativos + estado do rodízio
+  var payload = {
+    meses: mesesGerados,
+    contadorPulo: contadorPulo,
+    aparicoes: aparicoes,
+    idxM: idxM.v, idxA: idxA.v, idxV: idxV.v, idxZ: idxZ.v, idxI: idxI.v,
+    ultimoPar: ultimoPar
+  };
+  db.ref('escala/estado').set(payload).catch(function(e){
+    console.warn('Erro ao salvar estado:', e);
   });
 }
 
@@ -1204,13 +1219,26 @@ function ouvirConfig() {
     // ── REGENERA A ESCALA para todos verem igual ──────────────
     if(mudou && Object.keys(mesesGerados).length > 0){
       var chavesAtivas = Object.keys(mesesGerados).sort();
-      substituicoes={}; contadorPulo={}; aparicoes={}; ultimoAuditorio={};
-      mesesGerados={};
-      idxM.v=0; idxA.v=0; idxV.v=0; idxZ.v=0; idxI.v=0; ultimoPar=-1;
-      document.getElementById('lista').innerHTML='';
-      chavesAtivas.forEach(function(chave){
-        var p=chave.split('-');
-        adicionarMeses(parseInt(p[1]), parseInt(p[0]), 1);
+      // Busca o estado salvo para restaurar os contadores antes de regenerar
+      db.ref('escala/estado').once('value', function(snapEstado) {
+        var dadosEstado = snapEstado.val() || {};
+        substituicoes={}; contadorPulo={}; aparicoes={}; ultimoAuditorio={};
+        mesesGerados={};
+        idxM.v=0; idxA.v=0; idxV.v=0; idxZ.v=0; idxI.v=0; ultimoPar=-1;
+        // Restaura estado do rodízio
+        if (dadosEstado.contadorPulo) Object.assign(contadorPulo, dadosEstado.contadorPulo);
+        if (dadosEstado.aparicoes)    Object.assign(aparicoes, dadosEstado.aparicoes);
+        if (dadosEstado.idxM !== undefined) idxM.v = dadosEstado.idxM;
+        if (dadosEstado.idxA !== undefined) idxA.v = dadosEstado.idxA;
+        if (dadosEstado.idxV !== undefined) idxV.v = dadosEstado.idxV;
+        if (dadosEstado.idxZ !== undefined) idxZ.v = dadosEstado.idxZ;
+        if (dadosEstado.idxI !== undefined) idxI.v = dadosEstado.idxI;
+        if (dadosEstado.ultimoPar !== undefined) ultimoPar = dadosEstado.ultimoPar;
+        document.getElementById('lista').innerHTML='';
+        chavesAtivas.forEach(function(chave){
+          var p=chave.split('-');
+          adicionarMeses(parseInt(p[1]), parseInt(p[0]), 1);
+        });
       });
     }
   });
@@ -1218,32 +1246,63 @@ function ouvirConfig() {
 
 function ouvirMeses() {
   if (!db) return;
-  db.ref('escala/meses').on('value', function(snap) {
+  db.ref('escala/estado').on('value', function(snap) {
     var dados = snap.val();
-    if (!dados) return;
-    // Compara com o que já está na tela
-    var chavesSalvas = Object.keys(dados).sort();
+    // Compatibilidade: tenta também o caminho antigo
+    if (!dados) {
+      db.ref('escala/meses').once('value', function(snapAntigo) {
+        var dadosAntigos = snapAntigo.val();
+        if (!dadosAntigos) return;
+        // Migra: gera sem estado salvo
+        processarMeses(dadosAntigos, {});
+      });
+      return;
+    }
+    var mesesSalvos = dados.meses || dados; // compatibilidade com formato antigo
+    if (typeof mesesSalvos !== 'object') return;
+
+    var chavesSalvas = Object.keys(mesesSalvos).sort();
     var chavesLocais = Object.keys(mesesGerados).sort();
     var mesmoEstado = JSON.stringify(chavesSalvas) === JSON.stringify(chavesLocais);
     if (mesmoEstado) return; // nada mudou
-    // Regenera tudo do zero com os meses do Firebase
-    substituicoes={}; contadorPulo={}; aparicoes={}; ultimoAuditorio={};
-    mesesGerados={};
-    idxM.v=0; idxA.v=0; idxV.v=0; idxZ.v=0; idxI.v=0; ultimoPar=-1;
-    document.getElementById('lista').innerHTML='';
-    chavesSalvas.forEach(function(chave){
-      var p=chave.split('-');
-      var a=parseInt(p[0]), m=parseInt(p[1]);
-      mesesGerados[chave]=true;
-      gerarMes(m, a);
-    });
-    // Reordena
-    var lista = document.getElementById('lista');
-    var blocos = Array.from(lista.querySelectorAll('.mes-bloco'));
-    blocos.sort(function(a,b){ return (a.dataset.chavemes||'').localeCompare(b.dataset.chavemes||''); });
-    blocos.forEach(function(b){ lista.appendChild(b); });
-    atualizarSubtitulo();
+
+    // Restaura o estado do rodízio e treinamento
+    if (dados.contadorPulo) Object.assign(contadorPulo, dados.contadorPulo);
+    if (dados.aparicoes)    Object.assign(aparicoes, dados.aparicoes);
+    if (dados.idxM !== undefined) idxM.v = dados.idxM;
+    if (dados.idxA !== undefined) idxA.v = dados.idxA;
+    if (dados.idxV !== undefined) idxV.v = dados.idxV;
+    if (dados.idxZ !== undefined) idxZ.v = dados.idxZ;
+    if (dados.idxI !== undefined) idxI.v = dados.idxI;
+    if (dados.ultimoPar !== undefined) ultimoPar = dados.ultimoPar;
+
+    processarMeses(mesesSalvos, dados);
   });
+}
+
+function processarMeses(mesesSalvos, dadosEstado) {
+  mesesGerados = {};
+  document.getElementById('lista').innerHTML = '';
+  var chavesSalvas = Object.keys(mesesSalvos).sort();
+
+  // Se não há estado salvo, precisa gerar do zero (reseta contadores)
+  if (!dadosEstado || !dadosEstado.contadorPulo) {
+    contadorPulo = {}; aparicoes = {}; ultimoAuditorio = {};
+    idxM.v=0; idxA.v=0; idxV.v=0; idxZ.v=0; idxI.v=0; ultimoPar=-1;
+  }
+
+  chavesSalvas.forEach(function(chave){
+    var p = chave.split('-');
+    var a = parseInt(p[0]), m = parseInt(p[1]);
+    mesesGerados[chave] = true;
+    gerarMes(m, a);
+  });
+  // Reordena
+  var lista = document.getElementById('lista');
+  var blocos = Array.from(lista.querySelectorAll('.mes-bloco'));
+  blocos.sort(function(a,b){ return (a.dataset.chavemes||'').localeCompare(b.dataset.chavemes||''); });
+  blocos.forEach(function(b){ lista.appendChild(b); });
+  atualizarSubtitulo();
 }
 
 function iniciarFirebase() {
