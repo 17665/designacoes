@@ -1096,6 +1096,33 @@ function salvarMesesFirebase() {
   });
 }
 
+function salvarConfigFirebase() {
+  if (!firebaseOk || !db) return;
+  db.ref('escala/config').set({ listas:listas, treinamento:treinamento, eventos:eventos })
+    .catch(function(e){ console.warn('Erro ao salvar config:', e); });
+}
+
+function ouvirConfig() {
+  if (!db) return;
+  db.ref('escala/config').on('value', function(snap) {
+    var d = snap.val(); if (!d) return;
+    if (d.listas) { Object.keys(d.listas).forEach(function(k){ listas[k]=d.listas[k]; }); }
+    if (d.treinamento) {
+      Object.keys(treinamento).forEach(function(k){ delete treinamento[k]; });
+      Object.keys(d.treinamento).forEach(function(k){ treinamento[k]=d.treinamento[k]; });
+    }
+    if (d.eventos) { eventos.length=0; d.eventos.forEach(function(ev){ eventos.push(ev); }); }
+    var todos=[];
+    ['microfone','indicador','audio','video','zoom'].forEach(function(s){
+      (listas[s]||[]).forEach(function(n){ if(todos.indexOf(n)<0) todos.push(n); });
+    });
+    (listas.palcoPares||[]).forEach(function(p){
+      [p[0],p[1]].forEach(function(n){ if(todos.indexOf(n)<0) todos.push(n); });
+    });
+    todosIrmaos.length=0; todos.forEach(function(n){ todosIrmaos.push(n); });
+  });
+}
+
 function ouvirMeses() {
   if (!db) return;
   db.ref('escala/meses').on('value', function(snap) {
