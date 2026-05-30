@@ -369,6 +369,24 @@ h1 { font-size:22px; font-weight:700; color:#1a4fa3; margin-bottom:4px; }
             &#128274; Salvar nova senha
           </button>
         </div>
+
+        <div style="background:#f4f4f2;border-radius:10px;padding:16px;max-width:340px;margin-top:16px">
+          <label class="ev-label" style="margin-bottom:4px">&#128273; Pergunta secreta para recuperação</label>
+          <p style="font-size:12px;color:#5e6370;margin-bottom:10px;line-height:1.5">
+            Usada para recuperar a senha sem precisar revelar a senha diretamente a qualquer pessoa.
+          </p>
+          <label class="ev-label" style="margin-bottom:4px">Pergunta</label>
+          <input type="text" id="cfg-pergunta" placeholder="Ex: Nome do meu primeiro animal de estimação"
+            style="width:100%;padding:8px 10px;border:1.5px solid #d0d5dd;border-radius:7px;font-size:13px;margin-bottom:10px">
+          <label class="ev-label" style="margin-bottom:4px">Resposta secreta</label>
+          <input type="text" id="cfg-resposta" placeholder="Resposta (não diferencia maiúsculas)"
+            style="width:100%;padding:8px 10px;border:1.5px solid #d0d5dd;border-radius:7px;font-size:13px;margin-bottom:12px">
+          <div id="cfg-pergunta-msg" style="font-size:12px;margin-bottom:10px;display:none"></div>
+          <button onclick="salvarPerguntaSecreta()"
+            style="background:#0f6e56;color:white;border:none;padding:9px 20px;border-radius:8px;font-size:14px;font-weight:bold;cursor:pointer;width:100%">
+            &#10003; Salvar pergunta secreta
+          </button>
+        </div>
       </div>
 
     </div>
@@ -450,6 +468,37 @@ h1 { font-size:22px; font-weight:700; color:#1a4fa3; margin-bottom:4px; }
 var SENHA = "1234";
 
 // Carrega senha do Firebase ao iniciar (se disponível)
+function salvarPerguntaSecreta() {
+  var pergunta = document.getElementById('cfg-pergunta').value.trim();
+  var resposta  = document.getElementById('cfg-resposta').value.trim();
+  var msg = document.getElementById('cfg-pergunta-msg');
+  msg.style.display = 'block';
+  if (!pergunta || !resposta) {
+    msg.style.color = '#991b1b'; msg.textContent = '✗ Preencha a pergunta e a resposta.'; return;
+  }
+  if (!firebaseOk || !db) {
+    msg.style.color = '#92400e'; msg.textContent = '⚠ Firebase não conectado. Não foi possível salvar.'; return;
+  }
+  db.ref('escala/perguntaSecreta').set(pergunta);
+  db.ref('escala/respostaSecreta').set(resposta.toLowerCase()).then(function() {
+    msg.style.color = '#166534'; msg.textContent = '✓ Pergunta secreta salva com sucesso!';
+    document.getElementById('cfg-pergunta').value = '';
+    document.getElementById('cfg-resposta').value = '';
+  }).catch(function(e) {
+    msg.style.color = '#991b1b'; msg.textContent = '✗ Erro: ' + e.message;
+  });
+}
+
+function carregarPerguntaAtual() {
+  if (!firebaseOk || !db) return;
+  db.ref('escala/perguntaSecreta').once('value', function(snap) {
+    var p = snap.val();
+    if (p && document.getElementById('cfg-pergunta')) {
+      document.getElementById('cfg-pergunta').placeholder = 'Atual: ' + p;
+    }
+  });
+}
+
 function carregarSenhaFirebase() {
   if (!firebaseOk || !db) return;
   db.ref('escala/senhaMestra').once('value', function(snap) {
@@ -497,21 +546,29 @@ function pedirSenha() {
 function fecharSenha() { document.getElementById('ov-senha').classList.remove('aberto'); }
 function pedirRecuperacaoSenha() {
   if (!firebaseOk || !db) {
-    alert('Sem conexão com Firebase. A senha padrão é: 1234');
+    alert('Sem conexão com Firebase. Não é possível recuperar a senha agora.');
     return;
   }
-  // Busca a senha salva no Firebase
-  db.ref('escala/config/senhaMestra').once('value', function(snap) {
-    var senhaAtual = snap.val();
-    if (!senhaAtual) {
-      // Tenta ler do nó alternativo (senha pode estar na raiz da config)
-      db.ref('escala/senhaMestra').once('value', function(snap2) {
-        var s2 = snap2.val();
-        alert(s2 ? 'A senha atual é: ' + s2 : 'Senha não encontrada no Firebase. A senha padrão é: 1234\n\nSe você alterou no código, verifique a variável SENHA.');
-      });
+  // Busca a pergunta secreta do Firebase (sem revelar a senha)
+  db.ref('escala/perguntaSecreta').once('value', function(snap) {
+    var pergunta = snap.val();
+    if (!pergunta) {
+      alert('Nenhuma pergunta secreta configurada.\n\nO responsável deve definir uma em:\nÁrea do Responsável → aba Senha → Pergunta secreta.');
       return;
     }
-    alert('A senha atual é: ' + senhaAtual);
+    var resposta = prompt('🔐 Recuperação de senha\n\nPergunta: ' + pergunta + '\n\nSua resposta:');
+    if (resposta === null) return; // cancelou
+    db.ref('escala/respostaSecreta').once('value', function(snap2) {
+      var respostaCorreta = (snap2.val() || '').trim().toLowerCase();
+      if (resposta.trim().toLowerCase() === respostaCorreta) {
+        db.ref('escala/senhaMestra').once('value', function(snap3) {
+          var senha = snap3.val() || SENHA;
+          alert('✓ Resposta correta!\n\nSua senha é: ' + senha);
+        });
+      } else {
+        alert('✗ Resposta incorreta. Tente novamente.');
+      }
+    });
   });
 }
 function confirmarSenha() {
@@ -593,6 +650,7 @@ function trocarAba(id,btn) {
   if(id==='aba-irmaos') renderGerenciarIrmaos();
   if(id==='aba-treino') renderTreino();
   if(id==='aba-trocas') renderGerenciarTrocas();
+  if(id==='aba-config') carregarPerguntaAtual();
 }
 function aplicarTudo() {
   // Aplica mudancas de irmaos/eventos sem apagar meses ja gerados
