@@ -215,7 +215,11 @@ h1 { font-size:22px; font-weight:700; color:#1a4fa3; margin-bottom:4px; }
     <p class="subtitulo" id="subtitulo-periodo">Congregação Parque Tietê</p>
   </div>
   <div class="topo-acoes">
-    <button class="btn-gerenciar" onclick="pedirSenha()">&#128100; Área do Responsável</button>
+    <div id="badge-responsavel" style="display:none;align-items:center;gap:8px;background:#dcfce7;border:1.5px solid #22c55e;border-radius:20px;padding:5px 14px">
+      <span style="font-size:13px;font-weight:bold;color:#166534">&#128274; Modo Responsável</span>
+      <button onclick="sairModoResponsavel()" style="background:#ef4444;color:white;border:none;border-radius:10px;padding:2px 10px;font-size:12px;font-weight:bold;cursor:pointer">Sair</button>
+    </div>
+    <button class="btn-gerenciar" id="btn-area-responsavel" onclick="pedirSenha()">&#128100; Área do Responsável</button>
     <button class="btn-imprimir"  onclick="window.print()">&#128424; Imprimir escala</button>
   </div>
 </div>
@@ -426,7 +430,7 @@ function pedirSenha() {
 function fecharSenha() { document.getElementById('ov-senha').classList.remove('aberto'); }
 function confirmarSenha() {
   if (document.getElementById('campo-senha').value===SENHA) {
-    fecharSenha(); modoResponsavel=true; abrirPrincipal('aba-eventos');
+    fecharSenha(); ativarModoResponsavel(); abrirPrincipal('aba-eventos');
   } else {
     document.getElementById('senha-erro').style.display='block';
     document.getElementById('campo-senha').value='';
@@ -436,6 +440,29 @@ function confirmarSenha() {
 
 // ===================== MODAL =====================
 var modoResponsavel = false;
+
+function ativarModoResponsavel() {
+  modoResponsavel = true;
+  document.getElementById('badge-responsavel').style.display = 'flex';
+  document.getElementById('btn-area-responsavel').style.display = 'none';
+}
+
+function sairModoResponsavel() {
+  modoResponsavel = false;
+  document.getElementById('badge-responsavel').style.display = 'none';
+  document.getElementById('btn-area-responsavel').style.display = '';
+  // Re-renderiza escala sem badges de treino
+  var chaves = Object.keys(mesesGerados).sort();
+  var backup = chaves.slice();
+  substituicoes = {}; contadorPulo = {}; aparicoes = {}; ultimoAuditorio = {};
+  mesesGerados = {};
+  idxM.v=0; idxA.v=0; idxV.v=0; idxZ.v=0; idxI.v=0; ultimoPar=-1;
+  document.getElementById('lista').innerHTML = '';
+  backup.forEach(function(chave){
+    var p = chave.split('-');
+    adicionarMeses(parseInt(p[1]), parseInt(p[0]), 1);
+  });
+}
 function abrirPrincipal(abaId) {
   trocarAba(abaId,null); renderEventos(); popularSelTreino();
   document.getElementById('ov-principal').classList.add('aberto');
@@ -597,12 +624,21 @@ function renderTreino() {
 function emTreino(nome, setor) {
   return treinamento[nome] && treinamento[nome][setor];
 }
+function estaEmTreinamento(nome) {
+  return treinamento.hasOwnProperty(nome);
+}
+
 function deveSerPulado(nome, setor, dataISO) {
-  if(!emTreino(nome,setor)) return false;
+  // Se irmão está cadastrado em alguma lista mas NÃO no treinamento: pula sempre
+  // (só entra na escala após ser cadastrado no treinamento)
+  if(!estaEmTreinamento(nome)) return true;
   var cfg=treinamento[nome]||{};
+  // Respeita data de início do treinamento
   if(cfg.dataInicio && dataISO){
     if(dataISO < cfg.dataInicio) return true;
   }
+  // Se está no treinamento mas setor não tem frequência reduzida: aparece normalmente
+  if(!emTreino(nome,setor)) return false;
   var k=nome+'|'+setor;
   if(contadorPulo[k]===undefined) contadorPulo[k]=0;
   if(!aparicoes[k]) aparicoes[k]=0;
@@ -869,7 +905,7 @@ var trocaAtual = null;
 
 function nomeSpan(n,chave,setor,dataLabel){
   var atual=substituicoes[chave]||n;
-  // badge de troca pendente/aceita/recusada
+  // badge de troca
   var badgeTroca='';
   Object.values(trocasCache).forEach(function(t){
     if(t.dataLabel===dataLabel && t.setor===setor){
@@ -878,10 +914,13 @@ function nomeSpan(n,chave,setor,dataLabel){
       else if(t.status==='recusada') badgeTroca=' <span class="badge-troca-recusada">&#10060; recusada</span>';
     }
   });
+  // Cor e badge de treinamento — visível APENAS para o responsável
+  var emTreinoAtual = estaEmTreinamento(atual);
+  var styleExtra = (modoResponsavel && emTreinoAtual) ? ' style="color:#b45309;font-style:italic;" title="Em treinamento"' : '';
+  var badgeTreino = (modoResponsavel && emTreinoAtual) ? ' <span style="font-size:9px;background:#fef3c7;color:#92400e;border:1px solid #fcd34d;border-radius:8px;padding:1px 5px;vertical-align:middle">treino</span>' : '';
   if(modoResponsavel){
-    return '<span class="nome-clicavel" onclick="abrirSubst(\'' + chave + '\',\'' + escHtml(setor) + '\',\'' + escHtml(dataLabel) + '\',this.textContent,this)">' + escHtml(atual) + '</span>' + badgeTroca;
+    return '<span class="nome-clicavel"'+styleExtra+' onclick="abrirSubst(\'' + chave + '\',\'' + escHtml(setor) + '\',\'' + escHtml(dataLabel) + '\',this.textContent,this)">' + escHtml(atual) + '</span>' + badgeTreino + badgeTroca;
   }
-  // qualquer irmao clica no nome para pedir troca
   return '<span class="nome-troca" onclick="abrirTroca(\'' + chave + '\',\'' + escHtml(setor) + '\',\'' + escHtml(dataLabel) + '\',\'' + escHtml(atual) + '\')">' + escHtml(atual) + '</span>' + badgeTroca;
 }
 
@@ -1098,7 +1137,13 @@ function salvarMesesFirebase() {
 
 function salvarConfigFirebase() {
   if (!firebaseOk || !db) return;
-  db.ref('escala/config').set({ listas:listas, treinamento:treinamento, eventos:eventos })
+  // Serializa corretamente mesmo quando objetos estão vazios
+  var payload = {
+    listas: JSON.parse(JSON.stringify(listas)),
+    treinamento: JSON.parse(JSON.stringify(treinamento)),
+    eventos: JSON.parse(JSON.stringify(eventos))
+  };
+  db.ref('escala/config').set(payload)
     .catch(function(e){ console.warn('Erro ao salvar config:', e); });
 }
 
@@ -1106,12 +1151,23 @@ function ouvirConfig() {
   if (!db) return;
   db.ref('escala/config').on('value', function(snap) {
     var d = snap.val(); if (!d) return;
-    if (d.listas) { Object.keys(d.listas).forEach(function(k){ listas[k]=d.listas[k]; }); }
-    if (d.treinamento) {
-      Object.keys(treinamento).forEach(function(k){ delete treinamento[k]; });
-      Object.keys(d.treinamento).forEach(function(k){ treinamento[k]=d.treinamento[k]; });
+    // Atualiza listas
+    if (d.listas) {
+      Object.keys(d.listas).forEach(function(k){ listas[k]=d.listas[k]; });
     }
-    if (d.eventos) { eventos.length=0; d.eventos.forEach(function(ev){ eventos.push(ev); }); }
+    // Atualiza treinamento — substitui completamente pelo que está no Firebase
+    if (d.treinamento !== undefined) {
+      Object.keys(treinamento).forEach(function(k){ delete treinamento[k]; });
+      if(d.treinamento) {
+        Object.keys(d.treinamento).forEach(function(k){ treinamento[k]=d.treinamento[k]; });
+      }
+    }
+    // Atualiza eventos
+    if (d.eventos !== undefined) {
+      eventos.length=0;
+      if(d.eventos) d.eventos.forEach(function(ev){ eventos.push(ev); });
+    }
+    // Reconstroi todosIrmaos
     var todos=[];
     ['microfone','indicador','audio','video','zoom'].forEach(function(s){
       (listas[s]||[]).forEach(function(n){ if(todos.indexOf(n)<0) todos.push(n); });
@@ -1120,6 +1176,10 @@ function ouvirConfig() {
       [p[0],p[1]].forEach(function(n){ if(todos.indexOf(n)<0) todos.push(n); });
     });
     todosIrmaos.length=0; todos.forEach(function(n){ todosIrmaos.push(n); });
+    // Atualiza UI se modal estiver aberto
+    if(document.getElementById('ov-principal').classList.contains('aberto')){
+      renderEventos(); renderTreino(); renderGerenciarIrmaos();
+    }
   });
 }
 
@@ -1225,6 +1285,29 @@ function confirmarIdentidade() {
 // ===================== TROCAS =====================
 
 // Abre modal de troca quando irmao clica no proprio nome
+function irmaosDoSetor(setor) {
+  // Normaliza setor para chave de lista
+  var mapa = {
+    'Palco-Coord': 'palcoPares', 'Palco': 'palcoPares',
+    'Mic. Volante': 'microfone', 'Microfone': 'microfone',
+    'Indicadores': 'indicador', 'Indicador': 'indicador',
+    'Áudio': 'audio', 'Audio': 'audio',
+    'Vídeo': 'video', 'Video': 'video',
+    'Zoom': 'zoom'
+  };
+  var chaveSetor = mapa[setor] || setor.toLowerCase();
+  if(chaveSetor === 'palcoPares'){
+    // Todos os irmãos que participam de pares do palco
+    var nomes = [];
+    (listas.palcoPares||[]).forEach(function(p){
+      if(nomes.indexOf(p[0])<0) nomes.push(p[0]);
+      if(nomes.indexOf(p[1])<0) nomes.push(p[1]);
+    });
+    return nomes;
+  }
+  return listas[chaveSetor] || [];
+}
+
 function abrirTroca(chave, setor, dataLabel, nomeAtual) {
   pedirIdentidade(function(meuNomeConfirmado) {
     if (meuNomeConfirmado !== nomeAtual) {
@@ -1235,10 +1318,14 @@ function abrirTroca(chave, setor, dataLabel, nomeAtual) {
     document.getElementById('troca-setor').textContent = setor;
     document.getElementById('troca-data').textContent = dataLabel;
     document.getElementById('troca-solicitante').textContent = nomeAtual;
-    // Lista todos menos ele mesmo
+    // Lista só irmãos do mesmo setor, excluindo ele mesmo
     var sel = document.getElementById('troca-select');
-    sel.innerHTML = todosIrmaos.filter(function(n){ return n !== nomeAtual; })
-      .map(function(n){ return '<option value="'+n+'">'+n+'</option>'; }).join('');
+    var irmaosSetor = irmaosDoSetor(setor).filter(function(n){ return n !== nomeAtual; });
+    if(irmaosSetor.length === 0){
+      alert('Não há outros irmãos no mesmo setor para trocar.');
+      return;
+    }
+    sel.innerHTML = irmaosSetor.map(function(n){ return '<option value="'+n+'">'+n+'</option>'; }).join('');
     document.getElementById('ov-troca').classList.add('aberto');
   });
 }
