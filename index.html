@@ -503,7 +503,7 @@ var todosIrmaos = [
 var setoresTreino = ['palco','microfone','indicador','audio','video','zoom'];
 var setorLabels   = { palco:'Palco', microfone:'Microfone', indicador:'Indicador', audio:'Áudio', video:'Vídeo', zoom:'Zoom' };
 var treinamento = {
-  "Pedro Macumbi": { palco:true, microfone:false, indicador:false, audio:false, video:false, zoom:false, nivel:1, dataInicio:'' }
+  "Pedro Macumbi": { palco:true, microfone:false, indicador:false, audio:false, video:false, zoom:false }
 };
 // Contador de vezes que cada irmão foi pulado no setor de treino
 var contadorPulo = {}; // contadorPulo[nome+setor] = n° de reuniões desde última aparição
@@ -528,22 +528,13 @@ function popularSelTreino() {
 }
 function adicionarTreino() {
   var sel=document.getElementById('sel-treino'); var nome=sel.value; if(!nome) return;
-  var hoje=new Date(); var dataHoje=hoje.getFullYear()+'-'+String(hoje.getMonth()+1).padStart(2,'0')+'-'+String(hoje.getDate()).padStart(2,'0');
-  treinamento[nome]={ palco:false,microfone:false,indicador:false,audio:false,video:false,zoom:false,nivel:1,dataInicio:dataHoje };
-  popularSelTreino(); renderTreino(); salvarConfigFirebase();
+  treinamento[nome]={ palco:false,microfone:false,indicador:false,audio:false,video:false,zoom:false };
+  popularSelTreino(); renderTreino();
 }
-function removerTreino(nome) { delete treinamento[nome]; popularSelTreino(); renderTreino(); salvarConfigFirebase(); }
+function removerTreino(nome) { delete treinamento[nome]; popularSelTreino(); renderTreino(); }
 function toggleSetor(nome,setor) {
   treinamento[nome][setor] = !treinamento[nome][setor];
-  renderTreino(); salvarConfigFirebase();
-}
-function setNivelTreino(nome,nivel){
-  treinamento[nome].nivel=parseInt(nivel);
-  salvarConfigFirebase();
-}
-function setDataInicioTreino(nome,data){
-  treinamento[nome].dataInicio=data;
-  salvarConfigFirebase();
+  renderTreino();
 }
 
 function renderTreino() {
@@ -581,28 +572,21 @@ function renderTreino() {
 function emTreino(nome, setor) {
   return treinamento[nome] && treinamento[nome][setor];
 }
-function deveSerPulado(nome, setor, dataReuniao) {
+function deveSerPulado(nome, setor) {
   if(!emTreino(nome,setor)) return false;
-  // Respeita data de início
-  var cfg=treinamento[nome]||{};
-  if(cfg.dataInicio && dataReuniao){
-    var dtInicio=new Date(cfg.dataInicio+'T00:00:00');
-    var dtReuniao=new Date(dataReuniao+'T00:00:00');
-    if(dtReuniao < dtInicio) return true; // antes da data de início, pula sempre
-  }
   var k=nome+'|'+setor;
   if(contadorPulo[k]===undefined) contadorPulo[k]=0;
+  // alterna: na 1a aparição pula 2, na 2a pula 3, na 3a pula 2...
+  // "aparição[nome|setor]" conta quantas vezes já apareceu
   if(!aparicoes[k]) aparicoes[k]=0;
-  // nivel 1 = a cada 3 reuniões (pula 2), nivel 2 = a cada 2 reuniões (pula 1)
-  var nivel=(cfg.nivel)||1;
-  var skipNeeded = (nivel===1) ? 2 : 1;
+  var skipNeeded = (aparicoes[k]%2===0) ? 2 : 3;
   if(contadorPulo[k] < skipNeeded) {
     contadorPulo[k]++;
-    return true;
+    return true; // pula
   }
   contadorPulo[k]=0;
   aparicoes[k]++;
-  return false;
+  return false; // usa
 }
 var aparicoes = {};
 
@@ -634,58 +618,35 @@ function renderGerenciarIrmaos() {
       var chips=listas[dept.key].map(function(n,i){
         return '<span class="irmao-chip">'+n+'<button onclick="removerIrmao(\''+dept.key+'\','+i+')">&#10005;</button></span>';
       }).join('');
-      // microfone e indicador: campo livre (porta de entrada)
-      // audio, video, zoom: select da lista geral cadastrada
-      var livreMic = (dept.key==='microfone'||dept.key==='indicador');
-      var addRow;
-      if(livreMic){
-        addRow='<div class="add-row">'+
+      sec.innerHTML='<h3>'+dept.label+'</h3><div class="chips-wrap">'+chips+'</div>'+
+        '<div class="add-row">'+
           '<input type="text" id="novo-'+dept.key+'" placeholder="Nome do irmão...">'+
-          '<button onclick="adicionarIrmaoLivre(\''+dept.key+'\')">+ Adicionar</button></div>';
-      } else {
-        // filtra quem já está na lista
-        var disponiveis = todosIrmaos.filter(function(n){ return listas[dept.key].indexOf(n)<0; });
-        var opts = '<option value="">— selecionar irmão —</option>'+
-          disponiveis.map(function(n){return'<option value="'+n+'">'+n+'</option>';}).join('');
-        addRow='<div class="add-row">'+
-          '<select id="novo-'+dept.key+'">'+opts+'</select>'+
-          '<button onclick="adicionarIrmaoSelect(\''+dept.key+'\')">+ Adicionar</button></div>';
-      }
-      sec.innerHTML='<h3>'+dept.label+'</h3><div class="chips-wrap">'+chips+'</div>'+addRow;
+          '<button onclick="adicionarIrmao(\''+dept.key+'\')">+ Adicionar</button></div>';
     }
     c.appendChild(sec);
   });
 }
-function removerIrmao(dept,idx){ listas[dept].splice(idx,1); renderGerenciarIrmaos(); salvarConfigFirebase(); }
-function removerPar(idx){ listas.palcoPares.splice(idx,1); renderGerenciarIrmaos(); salvarConfigFirebase(); }
-// Campo livre — microfone e indicador (porta de entrada de novos irmãos)
-function adicionarIrmaoLivre(dept){
+function removerIrmao(dept,idx){ listas[dept].splice(idx,1); renderGerenciarIrmaos(); }
+function removerPar(idx){ listas.palcoPares.splice(idx,1); renderGerenciarIrmaos(); }
+function adicionarIrmao(dept){
   var inp=document.getElementById('novo-'+dept); var nome=inp.value.trim(); if(!nome) return;
   if(listas[dept].indexOf(nome)<0) listas[dept].push(nome);
   if(todosIrmaos.indexOf(nome)<0) todosIrmaos.push(nome);
-  inp.value=''; renderGerenciarIrmaos(); salvarConfigFirebase();
+  inp.value=''; renderGerenciarIrmaos();
 }
-// Select da lista geral — audio, video, zoom
-function adicionarIrmaoSelect(dept){
-  var sel=document.getElementById('novo-'+dept); var nome=sel.value; if(!nome) return;
-  if(listas[dept].indexOf(nome)<0) listas[dept].push(nome);
-  sel.value=''; renderGerenciarIrmaos(); salvarConfigFirebase();
-}
-// Compatibilidade legada
-function adicionarIrmao(dept){ adicionarIrmaoLivre(dept); }
 function adicionarPar(){
   var a=document.getElementById('par-a').value, b=document.getElementById('par-b').value;
   if(!a||!b||a===b) return;
   var existe=listas.palcoPares.some(function(p){return(p[0]===a&&p[1]===b)||(p[0]===b&&p[1]===a);});
   if(!existe) listas.palcoPares.push([a,b]);
-  renderGerenciarIrmaos(); salvarConfigFirebase();
+  renderGerenciarIrmaos();
 }
 
 // ===================== EVENTOS =====================
-function adicionarEvento(){ eventos.push({inicio:'',fim:'',tipo:'congresso',descricao:'',tema:'',ausentes:[]}); renderEventos(); salvarConfigFirebase(); }
-function removerEvento(i){ eventos.splice(i,1); renderEventos(); salvarConfigFirebase(); }
-function adicionarAusente(i,nome){ if(!nome) return; if(eventos[i].ausentes.indexOf(nome)<0) eventos[i].ausentes.push(nome); renderEventos(); salvarConfigFirebase(); }
-function removerAusente(i,a){ eventos[i].ausentes.splice(a,1); renderEventos(); salvarConfigFirebase(); }
+function adicionarEvento(){ eventos.push({inicio:'',fim:'',tipo:'congresso',descricao:'',tema:'',ausentes:[]}); renderEventos(); }
+function removerEvento(i){ eventos.splice(i,1); renderEventos(); }
+function adicionarAusente(i,nome){ if(!nome) return; if(eventos[i].ausentes.indexOf(nome)<0) eventos[i].ausentes.push(nome); renderEventos(); }
+function removerAusente(i,a){ eventos[i].ausentes.splice(a,1); renderEventos(); }
 function renderEventos(){
   var c=document.getElementById('lista-eventos'); c.innerHTML='';
   if(!eventos.length){ c.innerHTML='<p style="text-align:center;color:#888;font-size:13px;padding:12px 0">Nenhum evento.</p>'; return; }
@@ -704,10 +665,10 @@ function renderEventos(){
     var card=document.createElement('div'); card.className='ev-card';
     card.innerHTML=
       '<div class="ev-card-topo">'+
-        '<div><label class="ev-label">Início</label><input type="date" value="'+ev.inicio+'" onchange="eventos['+i+'].inicio=this.value;salvarConfigFirebase()"></div>'+
-        '<div><label class="ev-label">Fim</label><input type="date" value="'+ev.fim+'" onchange="eventos['+i+'].fim=this.value;salvarConfigFirebase()"></div>'+
+        '<div><label class="ev-label">Início</label><input type="date" value="'+ev.inicio+'" onchange="eventos['+i+'].inicio=this.value"></div>'+
+        '<div><label class="ev-label">Fim</label><input type="date" value="'+ev.fim+'" onchange="eventos['+i+'].fim=this.value"></div>'+
         '<div><label class="ev-label">Tipo</label>'+
-          '<select onchange="eventos['+i+'].tipo=this.value;renderEventos();salvarConfigFirebase()">'+
+          '<select onchange="eventos['+i+'].tipo=this.value;renderEventos()">'+
             '<option value="congresso"'+(ev.tipo==='congresso'?' selected':'')+'>&#128683; Congresso</option>'+
             '<option value="assembleia"'+(ev.tipo==='assembleia'?' selected':'')+'>&#128683; Assembleia de Circuito</option>'+
             '<option value="muda-dia"'+(ev.tipo==='muda-dia'?' selected':'')+'>&#128197; Visita do Superintendente</option>'+
@@ -715,8 +676,8 @@ function renderEventos(){
         '<button class="btn-remover" onclick="removerEvento('+i+')">&#10005;</button>'+
       '</div>'+
       '<div class="ev-card-meio">'+
-        '<div><label class="ev-label">Descrição</label><input type="text" value="'+escHtml(ev.descricao)+'" placeholder="Ex: Congresso Regional" onchange="eventos['+i+'].descricao=this.value;salvarConfigFirebase()"></div>'+
-        '<div><label class="ev-label">Tema (opcional)</label><textarea onchange="eventos['+i+'].tema=this.value;salvarConfigFirebase()">'+escHtml(ev.tema)+'</textarea></div>'+
+        '<div><label class="ev-label">Descrição</label><input type="text" value="'+escHtml(ev.descricao)+'" placeholder="Ex: Congresso Regional" onchange="eventos['+i+'].descricao=this.value"></div>'+
+        '<div><label class="ev-label">Tema (opcional)</label><textarea onchange="eventos['+i+'].tema=this.value">'+escHtml(ev.tema)+'</textarea></div>'+
       '</div>'+extraAus;
     c.appendChild(card);
   });
@@ -766,15 +727,15 @@ function gerarReunioes(mes,ano){
 }
 
 // Rodízio simples respeitando ausentes e treinamento
-function rodizioSetor(fila, idx, usados, setor, dataISO) {
-  var c;
-  var ordem = fila.slice();
+function rodizioSetor(fila, idx, usados, setor) {
+  var tentativas=0, c;
+  var ordem = fila.slice(); // cópia
   var start = idx.v % ordem.length;
   for(var t=0; t<ordem.length*3; t++){
     var i=(start+t) % ordem.length;
     c = ordem[i];
     if(usados.indexOf(c)>=0) continue;
-    if(deveSerPulado(c, setor, dataISO)) continue;
+    if(deveSerPulado(c, setor)) continue;
     idx.v = i+1;
     usados.push(c);
     return c;
@@ -790,7 +751,7 @@ function rodizioSetor(fila, idx, usados, setor, dataISO) {
 
 // Rodízio de pares do palco — sem repetir consecutivo, respeitando treino
 var ultimoPar=-1;
-function proximoPar(ausentes, dataISO){
+function proximoPar(ausentes){
   var pares=listas.palcoPares, n=pares.length;
   for(var t=0; t<n*3; t++){
     var idx=(ultimoPar+1+t) % n;
@@ -798,8 +759,8 @@ function proximoPar(ausentes, dataISO){
     if(ausentes.indexOf(par[0])>=0||ausentes.indexOf(par[1])>=0) continue;
     if(idx===ultimoPar) continue;
     // verifica treinamento no palco para ambos
-    var skip0=deveSerPulado(par[0],'palco',dataISO);
-    var skip1=deveSerPulado(par[1],'palco',dataISO);
+    var skip0=deveSerPulado(par[0],'palco');
+    var skip1=deveSerPulado(par[1],'palco');
     if(skip0||skip1) continue;
     ultimoPar=idx; return par;
   }
@@ -929,14 +890,14 @@ function gerarMes(mes,ano){
 
     var ausentes=(ev&&ev.ausentes)?ev.ausentes.slice():[];
     var usados=ausentes.slice();
-    var combo=proximoPar(ausentes, dataISO);
+    var combo=proximoPar(ausentes);
     usados.push(combo[0],combo[1]);
 
-    var mic1=rodizioSetor(listas.microfone,idxM,usados,'microfone',dataISO);
-    var mic2=rodizioSetor(listas.microfone,idxM,usados,'microfone',dataISO);
-    var audio=rodizioSetor(listas.audio,idxA,usados,'audio',dataISO);
-    var video=rodizioSetor(listas.video,idxV,usados,'video',dataISO);
-    var zoom=rodizioSetor(listas.zoom,idxZ,usados,'zoom',dataISO);
+    var mic1=rodizioSetor(listas.microfone,idxM,usados,'microfone');
+    var mic2=rodizioSetor(listas.microfone,idxM,usados,'microfone');
+    var audio=rodizioSetor(listas.audio,idxA,usados,'audio');
+    var video=rodizioSetor(listas.video,idxV,usados,'video');
+    var zoom=rodizioSetor(listas.zoom,idxZ,usados,'zoom');
     var ind=escolherIndicadores(usados);
 
     function ns(n,s){ return nomeSpan(n,dataISO+'|'+s+'|'+n,s,dataLabel); }
@@ -1071,57 +1032,9 @@ var firebaseOk = false;
 
 function salvarMesesFirebase() {
   if (!firebaseOk || !db) return;
+  // Salva objeto {chave: true} com todos os meses ativos
   db.ref('escala/meses').set(mesesGerados).catch(function(e){
     console.warn('Erro ao salvar meses:', e);
-  });
-}
-
-function salvarConfigFirebase() {
-  if (!firebaseOk || !db) return;
-  var config = {
-    listas: listas,
-    treinamento: treinamento,
-    eventos: eventos
-  };
-  db.ref('escala/config').set(config).catch(function(e){
-    console.warn('Erro ao salvar config:', e);
-  });
-}
-
-function ouvirConfig() {
-  if (!db) return;
-  db.ref('escala/config').on('value', function(snap) {
-    var dados = snap.val();
-    if (!dados) return;
-    // Atualiza listas
-    if (dados.listas) {
-      Object.keys(dados.listas).forEach(function(k){
-        listas[k] = dados.listas[k];
-      });
-    }
-    // Atualiza treinamento
-    if (dados.treinamento) {
-      Object.keys(treinamento).forEach(function(k){ delete treinamento[k]; });
-      Object.keys(dados.treinamento).forEach(function(k){
-        treinamento[k] = dados.treinamento[k];
-      });
-    }
-    // Atualiza eventos
-    if (dados.eventos) {
-      eventos.length = 0;
-      dados.eventos.forEach(function(ev){ eventos.push(ev); });
-    }
-    // Reconstroi todosIrmaos a partir das listas
-    var todos = [];
-    ['microfone','indicador','audio','video','zoom'].forEach(function(s){
-      (listas[s]||[]).forEach(function(n){ if(todos.indexOf(n)<0) todos.push(n); });
-    });
-    (listas.palcoPares||[]).forEach(function(p){
-      if(todos.indexOf(p[0])<0) todos.push(p[0]);
-      if(todos.indexOf(p[1])<0) todos.push(p[1]);
-    });
-    todosIrmaos.length = 0;
-    todos.forEach(function(n){ todosIrmaos.push(n); });
   });
 }
 
@@ -1179,7 +1092,6 @@ function iniciarFirebase() {
         firebaseOk = true;
         ouvirTrocas();
         ouvirMeses();
-        ouvirConfig();
       } catch(e) {
         console.warn('Firebase erro:', e);
         mostrarBannerConfig();
