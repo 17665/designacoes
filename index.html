@@ -80,6 +80,7 @@ h1 { font-size:22px; font-weight:700; color:#1a4fa3; margin-bottom:4px; }
 .setor-tag { display:inline-flex; align-items:center; gap:5px; padding:4px 10px; border-radius:6px; font-size:12px; font-weight:bold; cursor:pointer; border:2px solid transparent; transition:all .15s; }
 .setor-tag.inativo { background:#f4f4f2; color:#5e6370; border-color:#d0d5dd; }
 .setor-tag.ativo   { background:#fef3c7; color:#92400e; border-color:#f59e0b; }
+.setor-nivel2      { display:inline-flex; align-items:center; gap:5px; padding:4px 10px; border-radius:6px; font-size:12px; font-weight:bold; cursor:pointer; border:2px solid #f97316; background:#fff7ed; color:#c2410c; transition:all .15s; }
 .treino-freq { font-size:12px; color:#78350f; margin-top:6px; }
 
 /* ABA GERAR */
@@ -272,12 +273,15 @@ h1 { font-size:22px; font-weight:700; color:#1a4fa3; margin-bottom:4px; }
       <!-- ABA TREINAMENTO -->
       <div class="aba-conteudo" id="aba-treino">
         <p style="font-size:13px;color:#5e6370;margin-bottom:6px;line-height:1.6">
-          Irmãos em treinamento aparecem com <strong>menos frequência</strong> nos setores marcados
-          (alternando a cada 2–3 reuniões). Nos outros setores ficam no rodízio normal.
+          Irmãos em treinamento aparecem com <strong>menos frequência</strong> nos setores marcados.
+          <strong>Nível 1</strong> (&#127891;): aparece a cada <strong>3 reuniões</strong>.
+          <strong>Nível 2</strong> (&#9733;): aparece a cada <strong>2 reuniões</strong>.
+          Nos outros setores ficam no rodízio normal.
           Quando remover o irmão do treinamento, ele volta ao rodízio completo.
         </p>
         <div style="background:#fffbeb;border-left:3px solid #f59e0b;padding:8px 12px;border-radius:6px;font-size:12px;color:#92400e;margin-bottom:14px;">
-          &#127891; Exemplo: Pedro Macumbi em treinamento no <strong>Palco</strong> — aparecerá menos vezes no palco, mas normal no microfone e indicadores.
+          &#127891; Clique nos setores para alternar: <strong>desativado → Nível 1 → Nível 2 → desativado</strong>.
+          Use a <strong>data de início</strong> para não afetar escalas já impressas.
         </div>
         <div id="lista-treino"></div>
         <div style="margin-top:10px">
@@ -453,6 +457,9 @@ function trocarAba(id,btn) {
 }
 function aplicarTudo() {
   // Aplica mudancas de irmaos/eventos sem apagar meses ja gerados
+  salvarEventosFirebase();
+  salvarListasFirebase();
+  salvarTreinoFirebase();
   fecharPrincipal();
   // Re-renderiza os meses existentes preservando a lista
   var chaves = Object.keys(mesesGerados).sort();
@@ -498,15 +505,15 @@ var todosIrmaos = [
   "Caio Andrade","Felipe Santos","Rodrigo Albuquerque"
 ];
 
-// treinamento[nome] = { palco:true, microfone:false, ... }
+// treinamento[nome] = { palco:0, microfone:0, ... }  (0=desativado, 1=nível1 a cada 3, 2=nível2 a cada 2)
 // setores disponíveis para treinamento
 var setoresTreino = ['palco','microfone','indicador','audio','video','zoom'];
 var setorLabels   = { palco:'Palco', microfone:'Microfone', indicador:'Indicador', audio:'Áudio', video:'Vídeo', zoom:'Zoom' };
 var treinamento = {
-  "Pedro Macumbi": { palco:true, microfone:false, indicador:false, audio:false, video:false, zoom:false }
+  "Pedro Macumbi": { palco:1, microfone:0, indicador:0, audio:0, video:0, zoom:0, dataInicio:'' }
 };
 // Contador de vezes que cada irmão foi pulado no setor de treino
-var contadorPulo = {}; // contadorPulo[nome+setor] = n° de reuniões desde última aparição
+var contadorPulo = {}; // contadorPulo[nome|setor] = n° de reuniões desde última aparição
 
 var eventos = [
   { inicio:"2026-07-03", fim:"2026-07-04", tipo:"congresso",
@@ -528,13 +535,19 @@ function popularSelTreino() {
 }
 function adicionarTreino() {
   var sel=document.getElementById('sel-treino'); var nome=sel.value; if(!nome) return;
-  treinamento[nome]={ palco:false,microfone:false,indicador:false,audio:false,video:false,zoom:false };
-  popularSelTreino(); renderTreino();
+  treinamento[nome]={ palco:0,microfone:0,indicador:0,audio:0,video:0,zoom:0,dataInicio:'' };
+  popularSelTreino(); renderTreino(); salvarTreinoFirebase();
 }
-function removerTreino(nome) { delete treinamento[nome]; popularSelTreino(); renderTreino(); }
+function removerTreino(nome) { delete treinamento[nome]; popularSelTreino(); renderTreino(); salvarTreinoFirebase(); }
 function toggleSetor(nome,setor) {
-  treinamento[nome][setor] = !treinamento[nome][setor];
-  renderTreino();
+  // Cicla: 0 → 1 → 2 → 0
+  var atual = treinamento[nome][setor] || 0;
+  treinamento[nome][setor] = (atual + 1) % 3;
+  renderTreino(); salvarTreinoFirebase();
+}
+function setDataInicio(nome,val) {
+  treinamento[nome].dataInicio = val;
+  salvarTreinoFirebase();
 }
 
 function renderTreino() {
@@ -547,11 +560,20 @@ function renderTreino() {
   nomes.forEach(function(nome){
     var cfg=treinamento[nome];
     var setTags=setoresTreino.map(function(s){
-      return '<span class="setor-tag '+(cfg[s]?'ativo':'inativo')+'" onclick="toggleSetor(\''+nome+'\',\''+s+'\')">'+
-        (cfg[s]?'&#127891;':'+')+' '+setorLabels[s]+'</span>';
+      var nivel=cfg[s]||0;
+      var cls='setor-tag '+(nivel===0?'inativo':nivel===1?'ativo':'setor-nivel2');
+      var ico=nivel===0?'+':nivel===1?'&#127891;':'&#9733;';
+      var lbl=setorLabels[s]+(nivel===1?' (N1)':nivel===2?' (N2)':'');
+      return '<span class="'+cls+'" title="Clique para alternar: Desativado → Nível 1 (a cada 3) → Nível 2 (a cada 2)" onclick="toggleSetor(\''+nome+'\',\''+s+'\')">'+ico+' '+lbl+'</span>';
     }).join('');
-    var ativos=setoresTreino.filter(function(s){return cfg[s];});
-    var descFreq=ativos.length ? 'Frequência reduzida em: <strong>'+ativos.map(function(s){return setorLabels[s];}).join(', ')+'</strong>' : 'Nenhum setor marcado — rodízio normal em tudo.';
+    var ativos=setoresTreino.filter(function(s){return (cfg[s]||0)>0;});
+    var descFreq=ativos.length
+      ? 'Frequência reduzida em: <strong>'+ativos.map(function(s){
+          var lbl=setorLabels[s];
+          return lbl+(cfg[s]===2?' (N2: a cada 2)':' (N1: a cada 3)');
+        }).join(', ')+'</strong>'
+      : 'Nenhum setor marcado — rodízio normal em tudo.';
+    var dataIni=cfg.dataInicio||'';
     var div=document.createElement('div'); div.className='treino-card';
     div.innerHTML=
       '<div class="treino-card-cab">'+
@@ -559,7 +581,11 @@ function renderTreino() {
         '<button class="btn-remover" onclick="removerTreino(\''+nome+'\')" title="Remover do treinamento">&#10005;</button>'+
       '</div>'+
       '<div class="treino-body">'+
-        '<label class="ev-label" style="margin-bottom:6px">Setores com frequência reduzida (clique para marcar/desmarcar):</label>'+
+        '<label class="ev-label" style="margin-bottom:2px">Data de início na escala</label>'+
+        '<input type="date" value="'+dataIni+'" style="width:180px;padding:5px 8px;border:1px solid #d0d5dd;border-radius:6px;font-size:13px;margin-bottom:10px" onchange="setDataInicio(\''+nome+'\',this.value)" title="Reuniões antes desta data não incluirão este irmão">'+
+        '<p style="font-size:11px;color:#92400e;margin:-6px 0 8px">Deixe vazio para incluir desde a primeira reunião gerada.</p>'+
+        '<label class="ev-label" style="margin-bottom:6px">Setores com frequência reduzida (clique para marcar/alternar nível):</label>'+
+        '<div style="font-size:11px;color:#5e6370;margin-bottom:6px">&#127891; = Nível 1 (aparece a cada 3 reuniões) &nbsp;|&nbsp; &#9733; = Nível 2 (aparece a cada 2 reuniões)</div>'+
         '<div class="treino-setores">'+setTags+'</div>'+
         '<div class="treino-freq">'+descFreq+'</div>'+
       '</div>';
@@ -568,18 +594,23 @@ function renderTreino() {
 }
 
 // Verifica se irmão em treino deve ser pulado neste setor
-// Lógica: alterna skip de 2 e 3 reuniões → contador de pulos
+// Nível 1: aparece a cada 3 reuniões (skip 2)
+// Nível 2: aparece a cada 2 reuniões (skip 1)
 function emTreino(nome, setor) {
-  return treinamento[nome] && treinamento[nome][setor];
+  return treinamento[nome] && treinamento[nome][setor] > 0;
 }
-function deveSerPulado(nome, setor) {
+function deveSerPulado(nome, setor, dataISO) {
   if(!emTreino(nome,setor)) return false;
+  var nivel = treinamento[nome][setor]; // 1 ou 2
+  var dataIni = treinamento[nome].dataInicio || '';
+  // Se há data de início e a reunião é antes dela, pula sempre (não escalar)
+  if(dataIni && dataISO && dataISO < dataIni) return true;
   var k=nome+'|'+setor;
   if(contadorPulo[k]===undefined) contadorPulo[k]=0;
-  // alterna: na 1a aparição pula 2, na 2a pula 3, na 3a pula 2...
-  // "aparição[nome|setor]" conta quantas vezes já apareceu
   if(!aparicoes[k]) aparicoes[k]=0;
-  var skipNeeded = (aparicoes[k]%2===0) ? 2 : 3;
+  // Nível 1: skip 2 (aparece na 3ª reunião)
+  // Nível 2: skip 1 (aparece na 2ª reunião)
+  var skipNeeded = (nivel===2) ? 1 : 2;
   if(contadorPulo[k] < skipNeeded) {
     contadorPulo[k]++;
     return true; // pula
@@ -618,35 +649,39 @@ function renderGerenciarIrmaos() {
       var chips=listas[dept.key].map(function(n,i){
         return '<span class="irmao-chip">'+n+'<button onclick="removerIrmao(\''+dept.key+'\','+i+')">&#10005;</button></span>';
       }).join('');
+      var optsDisp=todosIrmaos.filter(function(n){return listas[dept.key].indexOf(n)<0;})
+        .map(function(n){return'<option value="'+n+'">'+n+'</option>';}).join('');
       sec.innerHTML='<h3>'+dept.label+'</h3><div class="chips-wrap">'+chips+'</div>'+
         '<div class="add-row">'+
-          '<input type="text" id="novo-'+dept.key+'" placeholder="Nome do irmão...">'+
+          '<select id="novo-'+dept.key+'"><option value="">— selecionar irmão —</option>'+optsDisp+'</select>'+
           '<button onclick="adicionarIrmao(\''+dept.key+'\')">+ Adicionar</button></div>';
     }
     c.appendChild(sec);
   });
 }
-function removerIrmao(dept,idx){ listas[dept].splice(idx,1); renderGerenciarIrmaos(); }
-function removerPar(idx){ listas.palcoPares.splice(idx,1); renderGerenciarIrmaos(); }
+function removerIrmao(dept,idx){ listas[dept].splice(idx,1); renderGerenciarIrmaos(); salvarListasFirebase(); }
+function removerPar(idx){ listas.palcoPares.splice(idx,1); renderGerenciarIrmaos(); salvarListasFirebase(); }
 function adicionarIrmao(dept){
-  var inp=document.getElementById('novo-'+dept); var nome=inp.value.trim(); if(!nome) return;
+  var el=document.getElementById('novo-'+dept);
+  var nome = el.tagName==='SELECT' ? el.value : el.value.trim();
+  if(!nome) return;
   if(listas[dept].indexOf(nome)<0) listas[dept].push(nome);
   if(todosIrmaos.indexOf(nome)<0) todosIrmaos.push(nome);
-  inp.value=''; renderGerenciarIrmaos();
+  renderGerenciarIrmaos(); salvarListasFirebase();
 }
 function adicionarPar(){
   var a=document.getElementById('par-a').value, b=document.getElementById('par-b').value;
   if(!a||!b||a===b) return;
   var existe=listas.palcoPares.some(function(p){return(p[0]===a&&p[1]===b)||(p[0]===b&&p[1]===a);});
   if(!existe) listas.palcoPares.push([a,b]);
-  renderGerenciarIrmaos();
+  renderGerenciarIrmaos(); salvarListasFirebase();
 }
 
 // ===================== EVENTOS =====================
-function adicionarEvento(){ eventos.push({inicio:'',fim:'',tipo:'congresso',descricao:'',tema:'',ausentes:[]}); renderEventos(); }
-function removerEvento(i){ eventos.splice(i,1); renderEventos(); }
-function adicionarAusente(i,nome){ if(!nome) return; if(eventos[i].ausentes.indexOf(nome)<0) eventos[i].ausentes.push(nome); renderEventos(); }
-function removerAusente(i,a){ eventos[i].ausentes.splice(a,1); renderEventos(); }
+function adicionarEvento(){ eventos.push({inicio:'',fim:'',tipo:'congresso',descricao:'',tema:'',ausentes:[]}); renderEventos(); salvarEventosFirebase(); }
+function removerEvento(i){ eventos.splice(i,1); renderEventos(); salvarEventosFirebase(); }
+function adicionarAusente(i,nome){ if(!nome) return; if(eventos[i].ausentes.indexOf(nome)<0) eventos[i].ausentes.push(nome); renderEventos(); salvarEventosFirebase(); }
+function removerAusente(i,a){ eventos[i].ausentes.splice(a,1); renderEventos(); salvarEventosFirebase(); }
 function renderEventos(){
   var c=document.getElementById('lista-eventos'); c.innerHTML='';
   if(!eventos.length){ c.innerHTML='<p style="text-align:center;color:#888;font-size:13px;padding:12px 0">Nenhum evento.</p>'; return; }
@@ -665,10 +700,10 @@ function renderEventos(){
     var card=document.createElement('div'); card.className='ev-card';
     card.innerHTML=
       '<div class="ev-card-topo">'+
-        '<div><label class="ev-label">Início</label><input type="date" value="'+ev.inicio+'" onchange="eventos['+i+'].inicio=this.value"></div>'+
-        '<div><label class="ev-label">Fim</label><input type="date" value="'+ev.fim+'" onchange="eventos['+i+'].fim=this.value"></div>'+
+        '<div><label class="ev-label">Início</label><input type="date" value="'+ev.inicio+'" onchange="eventos['+i+'].inicio=this.value;salvarEventosFirebase()"></div>'+
+        '<div><label class="ev-label">Fim</label><input type="date" value="'+ev.fim+'" onchange="eventos['+i+'].fim=this.value;salvarEventosFirebase()"></div>'+
         '<div><label class="ev-label">Tipo</label>'+
-          '<select onchange="eventos['+i+'].tipo=this.value;renderEventos()">'+
+          '<select onchange="eventos['+i+'].tipo=this.value;renderEventos();salvarEventosFirebase()">'+
             '<option value="congresso"'+(ev.tipo==='congresso'?' selected':'')+'>&#128683; Congresso</option>'+
             '<option value="assembleia"'+(ev.tipo==='assembleia'?' selected':'')+'>&#128683; Assembleia de Circuito</option>'+
             '<option value="muda-dia"'+(ev.tipo==='muda-dia'?' selected':'')+'>&#128197; Visita do Superintendente</option>'+
@@ -676,8 +711,8 @@ function renderEventos(){
         '<button class="btn-remover" onclick="removerEvento('+i+')">&#10005;</button>'+
       '</div>'+
       '<div class="ev-card-meio">'+
-        '<div><label class="ev-label">Descrição</label><input type="text" value="'+escHtml(ev.descricao)+'" placeholder="Ex: Congresso Regional" onchange="eventos['+i+'].descricao=this.value"></div>'+
-        '<div><label class="ev-label">Tema (opcional)</label><textarea onchange="eventos['+i+'].tema=this.value">'+escHtml(ev.tema)+'</textarea></div>'+
+        '<div><label class="ev-label">Descrição</label><input type="text" value="'+escHtml(ev.descricao)+'" placeholder="Ex: Congresso Regional" onchange="eventos['+i+'].descricao=this.value;salvarEventosFirebase()"></div>'+
+        '<div><label class="ev-label">Tema (opcional)</label><textarea onchange="eventos['+i+'].tema=this.value;salvarEventosFirebase()">'+escHtml(ev.tema)+'</textarea></div>'+
       '</div>'+extraAus;
     c.appendChild(card);
   });
@@ -727,7 +762,7 @@ function gerarReunioes(mes,ano){
 }
 
 // Rodízio simples respeitando ausentes e treinamento
-function rodizioSetor(fila, idx, usados, setor) {
+function rodizioSetor(fila, idx, usados, setor, dataISO) {
   var tentativas=0, c;
   var ordem = fila.slice(); // cópia
   var start = idx.v % ordem.length;
@@ -735,7 +770,7 @@ function rodizioSetor(fila, idx, usados, setor) {
     var i=(start+t) % ordem.length;
     c = ordem[i];
     if(usados.indexOf(c)>=0) continue;
-    if(deveSerPulado(c, setor)) continue;
+    if(deveSerPulado(c, setor, dataISO)) continue;
     idx.v = i+1;
     usados.push(c);
     return c;
@@ -751,7 +786,7 @@ function rodizioSetor(fila, idx, usados, setor) {
 
 // Rodízio de pares do palco — sem repetir consecutivo, respeitando treino
 var ultimoPar=-1;
-function proximoPar(ausentes){
+function proximoPar(ausentes, dataISO){
   var pares=listas.palcoPares, n=pares.length;
   for(var t=0; t<n*3; t++){
     var idx=(ultimoPar+1+t) % n;
@@ -759,8 +794,8 @@ function proximoPar(ausentes){
     if(ausentes.indexOf(par[0])>=0||ausentes.indexOf(par[1])>=0) continue;
     if(idx===ultimoPar) continue;
     // verifica treinamento no palco para ambos
-    var skip0=deveSerPulado(par[0],'palco');
-    var skip1=deveSerPulado(par[1],'palco');
+    var skip0=deveSerPulado(par[0],'palco',dataISO);
+    var skip1=deveSerPulado(par[1],'palco',dataISO);
     if(skip0||skip1) continue;
     ultimoPar=idx; return par;
   }
@@ -780,7 +815,7 @@ var ultimoAuditorio = {}; // ultimoAuditorio[nome] = true se foi auditório da �
 
 var idxM={v:0},idxA={v:0},idxV={v:0},idxZ={v:0},idxI={v:0};
 
-function escolherIndicadores(usados){
+function escolherIndicadores(usados, dataISO){
   // pega os 2 próximos da fila que não estejam em usados e respeitando treino
   var fila=listas.indicador;
   var escolhidos=[];
@@ -789,7 +824,7 @@ function escolherIndicadores(usados){
     var i=(start+t)%fila.length;
     var nome=fila[i];
     if(usados.indexOf(nome)>=0) continue;
-    if(deveSerPulado(nome,'indicador')) continue;
+    if(deveSerPulado(nome,'indicador',dataISO)) continue;
     escolhidos.push(nome);
     usados.push(nome);
   }
@@ -890,15 +925,15 @@ function gerarMes(mes,ano){
 
     var ausentes=(ev&&ev.ausentes)?ev.ausentes.slice():[];
     var usados=ausentes.slice();
-    var combo=proximoPar(ausentes);
+    var combo=proximoPar(ausentes, dataISO);
     usados.push(combo[0],combo[1]);
 
-    var mic1=rodizioSetor(listas.microfone,idxM,usados,'microfone');
-    var mic2=rodizioSetor(listas.microfone,idxM,usados,'microfone');
-    var audio=rodizioSetor(listas.audio,idxA,usados,'audio');
-    var video=rodizioSetor(listas.video,idxV,usados,'video');
-    var zoom=rodizioSetor(listas.zoom,idxZ,usados,'zoom');
-    var ind=escolherIndicadores(usados);
+    var mic1=rodizioSetor(listas.microfone,idxM,usados,'microfone',dataISO);
+    var mic2=rodizioSetor(listas.microfone,idxM,usados,'microfone',dataISO);
+    var audio=rodizioSetor(listas.audio,idxA,usados,'audio',dataISO);
+    var video=rodizioSetor(listas.video,idxV,usados,'video',dataISO);
+    var zoom=rodizioSetor(listas.zoom,idxZ,usados,'zoom',dataISO);
+    var ind=escolherIndicadores(usados, dataISO);
 
     function ns(n,s){ return nomeSpan(n,dataISO+'|'+s+'|'+n,s,dataLabel); }
 
@@ -1038,6 +1073,27 @@ function salvarMesesFirebase() {
   });
 }
 
+function salvarEventosFirebase() {
+  if (!firebaseOk || !db) return;
+  db.ref('escala/eventos').set(eventos).catch(function(e){
+    console.warn('Erro ao salvar eventos:', e);
+  });
+}
+
+function salvarListasFirebase() {
+  if (!firebaseOk || !db) return;
+  db.ref('escala/listas').set(listas).catch(function(e){
+    console.warn('Erro ao salvar listas:', e);
+  });
+}
+
+function salvarTreinoFirebase() {
+  if (!firebaseOk || !db) return;
+  db.ref('escala/treinamento').set(treinamento).catch(function(e){
+    console.warn('Erro ao salvar treinamento:', e);
+  });
+}
+
 function ouvirMeses() {
   if (!db) return;
   db.ref('escala/meses').on('value', function(snap) {
@@ -1074,6 +1130,47 @@ function ouvirMeses() {
   });
 }
 
+function ouvirEventos() {
+  if (!db) return;
+  db.ref('escala/eventos').once('value', function(snap) {
+    var dados = snap.val();
+    if (dados && Array.isArray(dados)) {
+      eventos = dados;
+    }
+  });
+}
+
+function ouvirListas() {
+  if (!db) return;
+  db.ref('escala/listas').once('value', function(snap) {
+    var dados = snap.val();
+    if (!dados) return;
+    // Mescla as listas salvas com as padrão
+    if (dados.palcoPares && Array.isArray(dados.palcoPares)) listas.palcoPares = dados.palcoPares;
+    if (dados.microfone  && Array.isArray(dados.microfone))  listas.microfone  = dados.microfone;
+    if (dados.indicador  && Array.isArray(dados.indicador))  listas.indicador  = dados.indicador;
+    if (dados.audio      && Array.isArray(dados.audio))      listas.audio      = dados.audio;
+    if (dados.video      && Array.isArray(dados.video))      listas.video      = dados.video;
+    if (dados.zoom       && Array.isArray(dados.zoom))       listas.zoom       = dados.zoom;
+    // Atualiza todosIrmaos com qualquer nome novo
+    var todos = new Set(todosIrmaos);
+    listas.microfone.concat(listas.indicador, listas.audio, listas.video, listas.zoom)
+      .forEach(function(n){ todos.add(n); });
+    listas.palcoPares.forEach(function(p){ todos.add(p[0]); todos.add(p[1]); });
+    todosIrmaos = Array.from(todos);
+  });
+}
+
+function ouvirTreinamento() {
+  if (!db) return;
+  db.ref('escala/treinamento').once('value', function(snap) {
+    var dados = snap.val();
+    if (dados && typeof dados === 'object') {
+      treinamento = dados;
+    }
+  });
+}
+
 function iniciarFirebase() {
   // Carrega scripts do Firebase dinamicamente (funciona em file:// e http://)
   function carregarScript(url, cb) {
@@ -1091,6 +1188,9 @@ function iniciarFirebase() {
         db = firebase.database();
         firebaseOk = true;
         ouvirTrocas();
+        ouvirEventos();
+        ouvirListas();
+        ouvirTreinamento();
         ouvirMeses();
       } catch(e) {
         console.warn('Firebase erro:', e);
