@@ -456,24 +456,27 @@ function trocarAba(id,btn) {
   if(id==='aba-trocas') renderGerenciarTrocas();
 }
 function aplicarTudo() {
-  // Aplica mudancas de irmaos/eventos sem apagar meses ja gerados
   salvarEventosFirebase();
   salvarListasFirebase();
   salvarTreinoFirebase();
   fecharPrincipal();
-  // Re-renderiza os meses existentes preservando a lista
+  // Re-renderiza todos os meses existentes do zero (reseta rodízio e reconstrói)
   var chaves = Object.keys(mesesGerados).sort();
   if(chaves.length === 0){ gerarEscalaAtual(); return; }
+  // Reset completo dos contadores
   substituicoes={}; contadorPulo={}; aparicoes={}; ultimoAuditorio={};
-  idxM.v=0;idxA.v=0;idxV.v=0;idxZ.v=0;idxI.v=0;ultimoPar=-1;
-  var backup = Object.keys(mesesGerados);
-  mesesGerados = {};
+  idxM.v=0; idxA.v=0; idxV.v=0; idxZ.v=0; idxI.v=0; ultimoPar=-1;
+  mesesGerados={};
   document.getElementById('lista').innerHTML='';
-  backup.forEach(function(chave){
+  // Re-gera na ordem correta
+  chaves.forEach(function(chave){
     var parts = chave.split('-');
     var a = parseInt(parts[0]), m = parseInt(parts[1]);
-    adicionarMeses(m, a, 1);
+    mesesGerados[chave] = true;
+    gerarMes(m, a);
   });
+  atualizarSubtitulo();
+  salvarMesesFirebase();
 }
 
 // ===================== DADOS =====================
@@ -606,11 +609,12 @@ function deveSerPulado(nome, setor, dataISO) {
   // Se há data de início e a reunião é antes dela, pula sempre (não escalar)
   if(dataIni && dataISO && dataISO < dataIni) return true;
   var k=nome+'|'+setor;
-  if(contadorPulo[k]===undefined) contadorPulo[k]=0;
-  if(!aparicoes[k]) aparicoes[k]=0;
-  // Nível 1: skip 2 (aparece na 3ª reunião)
-  // Nível 2: skip 1 (aparece na 2ª reunião)
+  // Inicializa: começa em skipNeeded para que a PRIMEIRA chamada NÃO pule (aparece logo)
+  // Nível 1: skip 2 (aparece na 1ª, pula 2, aparece na 4ª...)
+  // Nível 2: skip 1 (aparece na 1ª, pula 1, aparece na 3ª...)
   var skipNeeded = (nivel===2) ? 1 : 2;
+  if(contadorPulo[k]===undefined) contadorPulo[k]=skipNeeded; // começa "pronto para usar"
+  if(!aparicoes[k]) aparicoes[k]=0;
   if(contadorPulo[k] < skipNeeded) {
     contadorPulo[k]++;
     return true; // pula
@@ -651,22 +655,39 @@ function renderGerenciarIrmaos() {
       }).join('');
       var optsDisp=todosIrmaos.filter(function(n){return listas[dept.key].indexOf(n)<0;})
         .map(function(n){return'<option value="'+n+'">'+n+'</option>';}).join('');
+      // Campo misto: select de existentes + input de texto para novo
       sec.innerHTML='<h3>'+dept.label+'</h3><div class="chips-wrap">'+chips+'</div>'+
-        '<div class="add-row">'+
-          '<select id="novo-'+dept.key+'"><option value="">— selecionar irmão —</option>'+optsDisp+'</select>'+
-          '<button onclick="adicionarIrmao(\''+dept.key+'\')">+ Adicionar</button></div>';
+        '<div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-top:4px">'+
+          '<select id="novo-sel-'+dept.key+'" style="flex:1;min-width:140px;padding:6px 8px;border:1px solid #d0d5dd;border-radius:6px;font-size:13px;background:white" onchange="sincSelInput(\''+dept.key+'\',this.value)">'+
+            '<option value="">— selecionar existente —</option>'+optsDisp+
+          '</select>'+
+          '<span style="font-size:12px;color:#888">ou</span>'+
+          '<input type="text" id="novo-'+dept.key+'" placeholder="Digitar nome novo..." style="flex:1;min-width:140px;padding:6px 8px;border:1px solid #d0d5dd;border-radius:6px;font-size:13px" onkeydown="if(event.key===\'Enter\')adicionarIrmao(\''+dept.key+'\')">'+
+          '<button onclick="adicionarIrmao(\''+dept.key+'\')" style="background:#1a4fa3;color:white;border:none;border-radius:6px;padding:6px 12px;font-size:12px;font-weight:bold;cursor:pointer;white-space:nowrap">+ Adicionar</button>'+
+        '</div>';
     }
     c.appendChild(sec);
   });
 }
 function removerIrmao(dept,idx){ listas[dept].splice(idx,1); renderGerenciarIrmaos(); salvarListasFirebase(); }
 function removerPar(idx){ listas.palcoPares.splice(idx,1); renderGerenciarIrmaos(); salvarListasFirebase(); }
+function sincSelInput(dept, val) {
+  // Quando escolhe do select, coloca no input de texto
+  var inp = document.getElementById('novo-'+dept);
+  if(inp) inp.value = val;
+}
 function adicionarIrmao(dept){
-  var el=document.getElementById('novo-'+dept);
-  var nome = el.tagName==='SELECT' ? el.value : el.value.trim();
+  var inp = document.getElementById('novo-'+dept);
+  var nome = inp ? inp.value.trim() : '';
+  if(!nome){
+    // fallback: tenta o select
+    var sel = document.getElementById('novo-sel-'+dept);
+    nome = sel ? sel.value.trim() : '';
+  }
   if(!nome) return;
   if(listas[dept].indexOf(nome)<0) listas[dept].push(nome);
-  if(todosIrmaos.indexOf(nome)<0) todosIrmaos.push(nome);
+  if(todosIrmaos.indexOf(nome)<0) todosIrmaos.push(nome); // entra no rodízio global
+  if(inp) inp.value='';
   renderGerenciarIrmaos(); salvarListasFirebase();
 }
 function adicionarPar(){
@@ -678,7 +699,7 @@ function adicionarPar(){
 }
 
 // ===================== EVENTOS =====================
-function adicionarEvento(){ eventos.push({inicio:'',fim:'',tipo:'congresso',descricao:'',tema:'',ausentes:[]}); renderEventos(); salvarEventosFirebase(); }
+function adicionarEvento(){ eventos.push({inicio:'',fim:'',tipo:'congresso',descricao:'Congresso Regional',tema:'',ausentes:[]}); renderEventos(); salvarEventosFirebase(); }
 function removerEvento(i){ eventos.splice(i,1); renderEventos(); salvarEventosFirebase(); }
 function adicionarAusente(i,nome){ if(!nome) return; if(eventos[i].ausentes.indexOf(nome)<0) eventos[i].ausentes.push(nome); renderEventos(); salvarEventosFirebase(); }
 function removerAusente(i,a){ eventos[i].ausentes.splice(a,1); renderEventos(); salvarEventosFirebase(); }
@@ -697,25 +718,39 @@ function renderEventos(){
           '<div class="add-row"><select id="sel-'+i+'"><option value="">— selecionar —</option>'+optsN+'</select>'+
           '<button onclick="adicionarAusente('+i+',document.getElementById(\'sel-'+i+'\').value)">+ Adicionar</button></div></div>'
       : '';
+    // Tipos que bloqueiam a reunião (sem designação)
+    var isBloqueio = ev.tipo==='congresso'||ev.tipo==='assembleia'||ev.tipo==='outro-bloqueio';
+    var tipoSel = ev.tipo||'congresso';
     var card=document.createElement('div'); card.className='ev-card';
     card.innerHTML=
       '<div class="ev-card-topo">'+
         '<div><label class="ev-label">Início</label><input type="date" value="'+ev.inicio+'" onchange="eventos['+i+'].inicio=this.value;salvarEventosFirebase()"></div>'+
         '<div><label class="ev-label">Fim</label><input type="date" value="'+ev.fim+'" onchange="eventos['+i+'].fim=this.value;salvarEventosFirebase()"></div>'+
         '<div><label class="ev-label">Tipo</label>'+
-          '<select onchange="eventos['+i+'].tipo=this.value;renderEventos();salvarEventosFirebase()">'+
-            '<option value="congresso"'+(ev.tipo==='congresso'?' selected':'')+'>&#128683; Congresso</option>'+
-            '<option value="assembleia"'+(ev.tipo==='assembleia'?' selected':'')+'>&#128683; Assembleia de Circuito</option>'+
-            '<option value="muda-dia"'+(ev.tipo==='muda-dia'?' selected':'')+'>&#128197; Visita do Superintendente</option>'+
+          '<select onchange="eventos['+i+'].tipo=this.value;eventos['+i+'].descricao=eventoDescPadrao(this.value);renderEventos();salvarEventosFirebase()">'+
+            '<option value="congresso"'+(tipoSel==='congresso'?' selected':'')+'>&#128683; Congresso (sem reunião)</option>'+
+            '<option value="assembleia"'+(tipoSel==='assembleia'?' selected':'')+'>&#128683; Assembleia de Circuito (sem reunião)</option>'+
+            '<option value="muda-dia"'+(tipoSel==='muda-dia'?' selected':'')+'>&#128197; Visita do Superintendente</option>'+
+            '<option value="outro-bloqueio"'+(tipoSel==='outro-bloqueio'?' selected':'')+'>&#128683; Outro evento (sem reunião)</option>'+
+            '<option value="outro-aviso"'+(tipoSel==='outro-aviso'?' selected':'')+'>&#128276; Aviso / informação</option>'+
           '</select></div>'+
         '<button class="btn-remover" onclick="removerEvento('+i+')">&#10005;</button>'+
       '</div>'+
       '<div class="ev-card-meio">'+
-        '<div><label class="ev-label">Descrição</label><input type="text" value="'+escHtml(ev.descricao)+'" placeholder="Ex: Congresso Regional" onchange="eventos['+i+'].descricao=this.value;salvarEventosFirebase()"></div>'+
+        '<div><label class="ev-label">Descrição / nome do evento</label><input type="text" value="'+escHtml(ev.descricao)+'" placeholder="Ex: Congresso Regional" onchange="eventos['+i+'].descricao=this.value;salvarEventosFirebase()"></div>'+
         '<div><label class="ev-label">Tema (opcional)</label><textarea onchange="eventos['+i+'].tema=this.value;salvarEventosFirebase()">'+escHtml(ev.tema)+'</textarea></div>'+
       '</div>'+extraAus;
     c.appendChild(card);
   });
+}
+
+function eventoDescPadrao(tipo){
+  if(tipo==='congresso') return 'Congresso Regional';
+  if(tipo==='assembleia') return 'Assembleia de Circuito';
+  if(tipo==='muda-dia') return 'Visita do Superintendente de Circuito';
+  if(tipo==='outro-bloqueio') return 'Evento especial';
+  if(tipo==='outro-aviso') return 'Aviso';
+  return '';
 }
 
 // ===================== SUBSTITUIÇÃO =====================
@@ -893,22 +928,23 @@ function gerarMes(mes,ano){
     var dataLabel=fmtData(r.data);
 
     // SEM REUNIÃO
-    if(ev&&(ev.tipo==='congresso'||ev.tipo==='assembleia')){
+    if(ev&&(ev.tipo==='congresso'||ev.tipo==='assembleia'||ev.tipo==='outro-bloqueio')){
       var ini=ev.inicio.split('-').reverse().join('/');
       var fim=ev.fim.split('-').reverse().join('/');
       var temaHtml=ev.tema?'<div class="ev-tema">'+escHtml(ev.tema)+'</div>':'';
-      var cor=ev.tipo==='assembleia'?'#fdf2f8':'#fff7ed';
-      var corTit=ev.tipo==='assembleia'?'#9d174d':'#c2410c';
-      var corDet=ev.tipo==='assembleia'?'#831843':'#9a3412';
+      var cor='#fff7ed', corTit='#c2410c', corDet='#9a3412';
+      if(ev.tipo==='assembleia'){ cor='#fdf2f8'; corTit='#9d174d'; corDet='#831843'; }
+      if(ev.tipo==='outro-bloqueio'){ cor='#f4f4f2'; corTit='#374151'; corDet='#4b5563'; }
+      var descCard = ev.descricao || (ev.tipo==='assembleia'?'Assembleia de Circuito':ev.tipo==='outro-bloqueio'?'Evento especial':'Congresso');
       var c=document.createElement('div'); c.className='card-evento'; c.style.background=cor;
       c.innerHTML='<span class="ev-icone">&#128683;</span><div style="flex:1">'+
-        '<div class="ev-titulo" style="color:'+corTit+'">Sem reunião — '+escHtml(ev.descricao)+'</div>'+
+        '<div class="ev-titulo" style="color:'+corTit+'">Sem reunião — '+escHtml(descCard)+'</div>'+
         '<div class="ev-detalhe" style="color:'+corDet+'">'+dataLabel+' · '+fmtHora(r.data)+'<br>Período: '+ini+' a '+fim+'</div>'+
         temaHtml+'</div>';
       grid.appendChild(c); return;
     }
 
-    // MUDA DE DIA / NORMAL
+    // MUDA DE DIA / NORMAL / AVISO
     var dataReal=r.data, tipoLabel=r.tipo;
     var badgeClass=r.tipo==='Quarta'?'badge-quarta':'badge-sabado';
     var bannerHtml='';
@@ -921,6 +957,9 @@ function gerarMes(mes,ano){
       } else {
         bannerHtml='<div class="banner-evento banner-visita-sab">&#11088; Reunião com visita — '+escHtml(ev.descricao)+temaV+'</div>';
       }
+    } else if(ev&&ev.tipo==='outro-aviso'){
+      var temaV=ev.tema?'<br><em>'+escHtml(ev.tema)+'</em>':'';
+      bannerHtml='<div class="banner-evento banner-visita-sab" style="background:#eff6ff;border-color:#3b82f6;color:#1e40af">&#128276; '+escHtml(ev.descricao||'Aviso')+temaV+'</div>';
     }
 
     var ausentes=(ev&&ev.ausentes)?ev.ausentes.slice():[];
