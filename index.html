@@ -264,9 +264,14 @@ h1 { font-size:22px; font-weight:700; color:#1a4fa3; margin-bottom:4px; }
 
       <!-- ABA IRMÃOS -->
       <div class="aba-conteudo" id="aba-irmaos">
-        <p style="font-size:13px;color:#5e6370;margin-bottom:14px;line-height:1.6">
-          Gerencie os irmãos de cada departamento.
+        <p style="font-size:13px;color:#5e6370;margin-bottom:10px;line-height:1.6">
+          Gerencie os irmãos de cada departamento. Para adicionar um <strong>irmão novo</strong>, cadastre-o primeiro abaixo, depois selecione os setores onde ele vai atuar.
         </p>
+        <div style="background:#e8f0fb;border:1px solid #b6d0f7;border-radius:8px;padding:10px 14px;margin-bottom:16px;display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+          <span style="font-size:13px;font-weight:bold;color:#1a4fa3;white-space:nowrap">&#10133; Cadastrar irmão novo:</span>
+          <input type="text" id="inp-novo-irmao" placeholder="Nome completo..." style="flex:1;min-width:160px;padding:7px 10px;border:1px solid #b6d0f7;border-radius:6px;font-size:13px" onkeydown="if(event.key==='Enter')cadastrarNovoIrmao()">
+          <button onclick="cadastrarNovoIrmao()" style="background:#1a4fa3;color:white;border:none;border-radius:6px;padding:7px 14px;font-size:13px;font-weight:bold;cursor:pointer;white-space:nowrap">&#10003; Cadastrar</button>
+        </div>
         <div id="gerenciar-irmaos"></div>
       </div>
 
@@ -286,12 +291,15 @@ h1 { font-size:22px; font-weight:700; color:#1a4fa3; margin-bottom:4px; }
         <div id="lista-treino"></div>
         <div style="margin-top:10px">
           <label class="ev-label">Adicionar irmão em treinamento</label>
-          <div class="add-row">
-            <select id="sel-treino">
-              <option value="">— selecionar irmão —</option>
+          <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-top:4px">
+            <select id="sel-treino" style="flex:1;min-width:160px;padding:7px 10px;border:1px solid #d0d5dd;border-radius:6px;font-size:13px;background:white" onchange="document.getElementById('inp-treino-novo').value=''">
+              <option value="">— selecionar existente —</option>
             </select>
-            <button onclick="adicionarTreino()">+ Adicionar</button>
+            <span style="font-size:12px;color:#888">ou</span>
+            <input type="text" id="inp-treino-novo" placeholder="Nome novo..." style="flex:1;min-width:150px;padding:7px 10px;border:1px solid #d0d5dd;border-radius:6px;font-size:13px" onkeydown="if(event.key==='Enter')adicionarTreino()">
+            <button onclick="adicionarTreino()" style="background:#1a4fa3;color:white;border:none;border-radius:6px;padding:7px 14px;font-size:13px;font-weight:bold;cursor:pointer;white-space:nowrap">+ Adicionar</button>
           </div>
+          <p style="font-size:11px;color:#92400e;margin:6px 0 0">Use o campo de texto para cadastrar um irmão novo que ainda não está em nenhum setor.</p>
         </div>
       </div>
 
@@ -537,15 +545,33 @@ function popularSelTreino() {
   });
 }
 function adicionarTreino() {
-  var sel=document.getElementById('sel-treino'); var nome=sel.value; if(!nome) return;
+  // Prioridade: campo de texto (novo irmão); fallback: select (existente)
+  var inp = document.getElementById('inp-treino-novo');
+  var sel = document.getElementById('sel-treino');
+  var nome = (inp && inp.value.trim()) ? inp.value.trim() : (sel ? sel.value : '');
+  if(!nome) return;
+  if(treinamento[nome]){ alert(nome+' já está em treinamento.'); return; }
+  // Cadastra em todosIrmaos se for nome novo
+  if(todosIrmaos.indexOf(nome)<0) todosIrmaos.push(nome);
   treinamento[nome]={ palco:0,microfone:0,indicador:0,audio:0,video:0,zoom:0,dataInicio:'' };
+  if(inp) inp.value='';
+  if(sel) sel.value='';
   popularSelTreino(); renderTreino(); salvarTreinoFirebase();
 }
-function removerTreino(nome) { delete treinamento[nome]; popularSelTreino(); renderTreino(); salvarTreinoFirebase(); }
+function removerTreino(nome) {
+  // Limpa contadores de pulo para todos os setores — volta ao rodízio normal
+  setoresTreino.forEach(function(s){ delete contadorPulo[nome+'|'+s]; delete aparicoes[nome+'|'+s]; });
+  delete treinamento[nome];
+  popularSelTreino(); renderTreino(); salvarTreinoFirebase();
+}
 function toggleSetor(nome,setor) {
-  // Cicla: 0 → 1 → 2 → 0
   var atual = treinamento[nome][setor] || 0;
-  treinamento[nome][setor] = (atual + 1) % 3;
+  var prox = (atual + 1) % 3;
+  treinamento[nome][setor] = prox;
+  // Se setor foi desativado (volta a 0), limpa contador → rodízio normal imediato
+  if(prox === 0){ delete contadorPulo[nome+'|'+setor]; delete aparicoes[nome+'|'+setor]; }
+  // Se setor foi ativado (nível 1 ou 2), inicializa contador "pronto para usar"
+  if(prox > 0){ var skipNeeded=(prox===2)?1:2; contadorPulo[nome+'|'+setor]=skipNeeded; }
   renderTreino(); salvarTreinoFirebase();
 }
 function setDataInicio(nome,val) {
@@ -596,32 +622,49 @@ function renderTreino() {
   });
 }
 
-// Verifica se irmão em treino deve ser pulado neste setor
-// Nível 1: aparece a cada 3 reuniões (skip 2)
-// Nível 2: aparece a cada 2 reuniões (skip 1)
+// ===================== TREINAMENTO — LÓGICA DE RODÍZIO =====================
+// contadorPulo[k] = quantas reuniões já foram puladas desde a última aparição
+// Quando atinge skipNeeded → pode usar → zera contador
+// Inicializa em skipNeeded para aparecer na PRIMEIRA reunião válida
+
 function emTreino(nome, setor) {
-  return treinamento[nome] && treinamento[nome][setor] > 0;
+  return !!(treinamento[nome] && treinamento[nome][setor] > 0);
 }
+
+// Apenas CONSULTA se deve pular — NÃO avança o contador
 function deveSerPulado(nome, setor, dataISO) {
-  if(!emTreino(nome,setor)) return false;
-  var nivel = treinamento[nome][setor]; // 1 ou 2
-  var dataIni = treinamento[nome].dataInicio || '';
-  // Se há data de início e a reunião é antes dela, pula sempre (não escalar)
+  if(!emTreino(nome, setor)) return false;
+  var dataIni = (treinamento[nome] && treinamento[nome].dataInicio) || '';
+  // Antes da data de início: nunca escalar
   if(dataIni && dataISO && dataISO < dataIni) return true;
-  var k=nome+'|'+setor;
-  // Inicializa: começa em skipNeeded para que a PRIMEIRA chamada NÃO pule (aparece logo)
-  // Nível 1: skip 2 (aparece na 1ª, pula 2, aparece na 4ª...)
-  // Nível 2: skip 1 (aparece na 1ª, pula 1, aparece na 3ª...)
+  var k = nome+'|'+setor;
+  var nivel = treinamento[nome][setor]; // 1 ou 2
   var skipNeeded = (nivel===2) ? 1 : 2;
-  if(contadorPulo[k]===undefined) contadorPulo[k]=skipNeeded; // começa "pronto para usar"
-  if(!aparicoes[k]) aparicoes[k]=0;
-  if(contadorPulo[k] < skipNeeded) {
-    contadorPulo[k]++;
-    return true; // pula
-  }
-  contadorPulo[k]=0;
+  if(contadorPulo[k] === undefined) contadorPulo[k] = skipNeeded; // pronto para usar na 1ª vez
+  return contadorPulo[k] < skipNeeded; // true = ainda pulando
+}
+
+// AVANÇA o contador após o irmão ter sido USADO num setor
+function registrarUso(nome, setor) {
+  if(!emTreino(nome, setor)) return;
+  var k = nome+'|'+setor;
+  var nivel = treinamento[nome][setor];
+  var skipNeeded = (nivel===2) ? 1 : 2;
+  if(contadorPulo[k] === undefined) contadorPulo[k] = skipNeeded;
+  // Foi usado → zera o contador (começa a pular nas próximas)
+  contadorPulo[k] = 0;
+  if(!aparicoes[k]) aparicoes[k] = 0;
   aparicoes[k]++;
-  return false; // usa
+}
+
+// AVANÇA o contador quando o irmão foi PULADO numa reunião
+function registrarPulo(nome, setor) {
+  if(!emTreino(nome, setor)) return;
+  var k = nome+'|'+setor;
+  var nivel = treinamento[nome][setor];
+  var skipNeeded = (nivel===2) ? 1 : 2;
+  if(contadorPulo[k] === undefined) contadorPulo[k] = skipNeeded;
+  if(contadorPulo[k] < skipNeeded) contadorPulo[k]++;
 }
 var aparicoes = {};
 
@@ -651,19 +694,14 @@ function renderGerenciarIrmaos() {
           '<button onclick="adicionarPar()">+ Adicionar par</button></div>';
     } else {
       var chips=listas[dept.key].map(function(n,i){
-        return '<span class="irmao-chip">'+n+'<button onclick="removerIrmao(\''+dept.key+'\','+i+')">&#10005;</button></span>';
+        return '<span class="irmao-chip">'+n+'<button onclick="removerIrmao(''+dept.key+'','+i+')">&#10005;</button></span>';
       }).join('');
       var optsDisp=todosIrmaos.filter(function(n){return listas[dept.key].indexOf(n)<0;})
         .map(function(n){return'<option value="'+n+'">'+n+'</option>';}).join('');
-      // Campo misto: select de existentes + input de texto para novo
       sec.innerHTML='<h3>'+dept.label+'</h3><div class="chips-wrap">'+chips+'</div>'+
-        '<div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-top:4px">'+
-          '<select id="novo-sel-'+dept.key+'" style="flex:1;min-width:140px;padding:6px 8px;border:1px solid #d0d5dd;border-radius:6px;font-size:13px;background:white" onchange="sincSelInput(\''+dept.key+'\',this.value)">'+
-            '<option value="">— selecionar existente —</option>'+optsDisp+
-          '</select>'+
-          '<span style="font-size:12px;color:#888">ou</span>'+
-          '<input type="text" id="novo-'+dept.key+'" placeholder="Digitar nome novo..." style="flex:1;min-width:140px;padding:6px 8px;border:1px solid #d0d5dd;border-radius:6px;font-size:13px" onkeydown="if(event.key===\'Enter\')adicionarIrmao(\''+dept.key+'\')">'+
-          '<button onclick="adicionarIrmao(\''+dept.key+'\')" style="background:#1a4fa3;color:white;border:none;border-radius:6px;padding:6px 12px;font-size:12px;font-weight:bold;cursor:pointer;white-space:nowrap">+ Adicionar</button>'+
+        '<div class="add-row">'+
+          '<select id="novo-'+dept.key+'"><option value="">— selecionar irmão —</option>'+optsDisp+'</select>'+
+          '<button onclick="adicionarIrmaoSetor(''+dept.key+'')">+ Adicionar</button>'+
         '</div>';
     }
     c.appendChild(sec);
@@ -671,24 +709,25 @@ function renderGerenciarIrmaos() {
 }
 function removerIrmao(dept,idx){ listas[dept].splice(idx,1); renderGerenciarIrmaos(); salvarListasFirebase(); }
 function removerPar(idx){ listas.palcoPares.splice(idx,1); renderGerenciarIrmaos(); salvarListasFirebase(); }
-function sincSelInput(dept, val) {
-  // Quando escolhe do select, coloca no input de texto
-  var inp = document.getElementById('novo-'+dept);
-  if(inp) inp.value = val;
-}
-function adicionarIrmao(dept){
-  var inp = document.getElementById('novo-'+dept);
-  var nome = inp ? inp.value.trim() : '';
-  if(!nome){
-    // fallback: tenta o select
-    var sel = document.getElementById('novo-sel-'+dept);
-    nome = sel ? sel.value.trim() : '';
-  }
+// Adiciona irmão já cadastrado em todosIrmaos a um setor (por select)
+function adicionarIrmaoSetor(dept){
+  var sel = document.getElementById('novo-'+dept);
+  var nome = sel ? sel.value.trim() : '';
   if(!nome) return;
   if(listas[dept].indexOf(nome)<0) listas[dept].push(nome);
-  if(todosIrmaos.indexOf(nome)<0) todosIrmaos.push(nome); // entra no rodízio global
-  if(inp) inp.value='';
+  // Não adiciona a todosIrmaos aqui — ele já deve estar lá
   renderGerenciarIrmaos(); salvarListasFirebase();
+}
+// Cadastra irmão novo na lista geral (sem associar a setor)
+function cadastrarNovoIrmao(){
+  var inp = document.getElementById('inp-novo-irmao');
+  var nome = inp ? inp.value.trim() : '';
+  if(!nome){ alert('Digite o nome do irmão.'); return; }
+  if(todosIrmaos.indexOf(nome)>=0){ alert(nome+' já está cadastrado.'); return; }
+  todosIrmaos.push(nome);
+  inp.value='';
+  renderGerenciarIrmaos();
+  alert(nome+' cadastrado! Agora selecione os setores onde ele vai atuar.');
 }
 function adicionarPar(){
   var a=document.getElementById('par-a').value, b=document.getElementById('par-b').value;
@@ -798,50 +837,74 @@ function gerarReunioes(mes,ano){
 
 // Rodízio simples respeitando ausentes e treinamento
 function rodizioSetor(fila, idx, usados, setor, dataISO) {
-  var tentativas=0, c;
-  var ordem = fila.slice(); // cópia
+  var ordem = fila.slice();
   var start = idx.v % ordem.length;
+  var escolhido = null, idxEscolhido = -1;
   for(var t=0; t<ordem.length*3; t++){
     var i=(start+t) % ordem.length;
-    c = ordem[i];
+    var c = ordem[i];
     if(usados.indexOf(c)>=0) continue;
     if(deveSerPulado(c, setor, dataISO)) continue;
-    idx.v = i+1;
-    usados.push(c);
-    return c;
+    escolhido = c; idxEscolhido = i; break;
   }
-  // fallback sem filtro de treino
-  for(var t=0; t<ordem.length*2; t++){
-    var i=(start+t) % ordem.length;
-    c=ordem[i];
-    if(usados.indexOf(c)<0){ idx.v=i+1; usados.push(c); return c; }
+  if(escolhido === null){
+    // fallback sem filtro de treino
+    for(var t=0; t<ordem.length*2; t++){
+      var i=(start+t) % ordem.length;
+      var c=ordem[i];
+      if(usados.indexOf(c)<0){ escolhido=c; idxEscolhido=i; break; }
+    }
   }
-  idx.v++; usados.push(ordem[start]); return ordem[start];
+  if(escolhido === null){ escolhido=ordem[start]; idxEscolhido=start; }
+  idx.v = idxEscolhido+1;
+  usados.push(escolhido);
+  registrarUso(escolhido, setor);
+  // Registra pulo para quem ficou de fora nesta reunião (só os que não estão em usados)
+  for(var t=0; t<ordem.length; t++){
+    var c=ordem[t];
+    if(c !== escolhido && usados.indexOf(c)<0) registrarPulo(c, setor);
+  }
+  return escolhido;
 }
 
 // Rodízio de pares do palco — sem repetir consecutivo, respeitando treino
 var ultimoPar=-1;
 function proximoPar(ausentes, dataISO){
   var pares=listas.palcoPares, n=pares.length;
+  var parEscolhido=null, idxEscolhido=-1;
   for(var t=0; t<n*3; t++){
     var idx=(ultimoPar+1+t) % n;
     var par=pares[idx];
     if(ausentes.indexOf(par[0])>=0||ausentes.indexOf(par[1])>=0) continue;
     if(idx===ultimoPar) continue;
-    // verifica treinamento no palco para ambos
+    // Consulta sem efeito colateral — deveSerPulado só lê, não avança
     var skip0=deveSerPulado(par[0],'palco',dataISO);
     var skip1=deveSerPulado(par[1],'palco',dataISO);
     if(skip0||skip1) continue;
-    ultimoPar=idx; return par;
+    parEscolhido=par; idxEscolhido=idx; break;
   }
-  // fallback sem filtro de treino
-  for(var t=0; t<n*2; t++){
-    var idx=(ultimoPar+1+t)%n; var par=pares[idx];
-    if(ausentes.indexOf(par[0])<0&&ausentes.indexOf(par[1])<0&&idx!==ultimoPar){
-      ultimoPar=idx; return par;
+  if(parEscolhido===null){
+    // fallback sem filtro de treino
+    for(var t=0; t<n*2; t++){
+      var idx=(ultimoPar+1+t)%n; var par=pares[idx];
+      if(ausentes.indexOf(par[0])<0&&ausentes.indexOf(par[1])<0&&idx!==ultimoPar){
+        parEscolhido=par; idxEscolhido=idx; break;
+      }
     }
   }
-  ultimoPar=(ultimoPar+1)%n; return pares[ultimoPar];
+  if(parEscolhido===null){ idxEscolhido=(ultimoPar+1)%n; parEscolhido=pares[idxEscolhido]; }
+  ultimoPar=idxEscolhido;
+  // Registra uso para os dois do par escolhido
+  registrarUso(parEscolhido[0],'palco');
+  registrarUso(parEscolhido[1],'palco');
+  // Registra pulo para os pares que não foram escolhidos
+  pares.forEach(function(par,i){
+    if(i!==idxEscolhido && ausentes.indexOf(par[0])<0 && ausentes.indexOf(par[1])<0){
+      registrarPulo(par[0],'palco');
+      registrarPulo(par[1],'palco');
+    }
+  });
+  return parEscolhido;
 }
 
 // Indicadores com alternância auditório/pátio
@@ -870,6 +933,11 @@ function escolherIndicadores(usados, dataISO){
     if(usados.indexOf(nome)<0){ escolhidos.push(nome); usados.push(nome); }
   }
   idxI.v = (start + escolhidos.length) % fila.length;
+  // Registra uso/pulo para indicadores
+  fila.forEach(function(nome){
+    if(escolhidos.indexOf(nome)>=0) registrarUso(nome,'indicador');
+    else if(usados.indexOf(nome)<0) registrarPulo(nome,'indicador');
+  });
 
   // Alternância: quem foi auditório vai para pátio agora e vice-versa
   var a=escolhidos[0]||'', b=escolhidos[1]||'';
@@ -1206,6 +1274,19 @@ function ouvirTreinamento() {
     var dados = snap.val();
     if (dados && typeof dados === 'object') {
       treinamento = dados;
+      // Inicializa contadores para quem já estava em treino
+      Object.keys(treinamento).forEach(function(nome){
+        setoresTreino.forEach(function(s){
+          var nivel = treinamento[nome][s] || 0;
+          if(nivel > 0){
+            var k = nome+'|'+s;
+            var skipNeeded = (nivel===2)?1:2;
+            if(contadorPulo[k]===undefined) contadorPulo[k]=skipNeeded;
+          }
+        });
+      });
+      popularSelTreino();
+      renderTreino();
     }
   });
 }
