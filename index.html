@@ -956,6 +956,7 @@ function regenerarTudoDoForm(){
   document.getElementById('lista').innerHTML='';
   idxM.v=0;idxA.v=0;idxV.v=0;idxZ.v=0;idxI.v=0;ultimoPar=-1;
   adicionarMeses(mes,ano,qtd);
+  salvarMesesFirebase();
 }
 
 function apagarMes(chave){
@@ -963,6 +964,7 @@ function apagarMes(chave){
   if(bloco){ bloco.remove(); }
   delete mesesGerados[chave];
   atualizarSubtitulo();
+  salvarMesesFirebase();
 }
 
 function adicionarMeses(mesInicio,ano,qtd){
@@ -972,7 +974,7 @@ function adicionarMeses(mesInicio,ano,qtd){
     var m=((mesInicio-1+i)%12)+1;
     var a=ano+Math.floor((mesInicio-1+i)/12);
     var chave=chaveMes(m,a);
-    if(mesesGerados[chave]) continue; // já existe, pula
+    if(mesesGerados[chave]) continue;
     mesesGerados[chave]=true;
     novos.push({m:m,a:a});
   }
@@ -980,17 +982,12 @@ function adicionarMeses(mesInicio,ano,qtd){
     alert('Todos os meses selecionados já foram gerados.');
     return;
   }
-  // Gera os blocos dos novos meses
-  novos.forEach(function(item){
-    gerarMes(item.m,item.a);
-  });
-  // Re-ordena todos os blocos no DOM por data (ano-mes)
+  novos.forEach(function(item){ gerarMes(item.m,item.a); });
   var blocos=Array.from(lista.querySelectorAll('.mes-bloco'));
-  blocos.sort(function(a,b){
-    return (a.dataset.chavemes||'').localeCompare(b.dataset.chavemes||'');
-  });
+  blocos.sort(function(a,b){ return (a.dataset.chavemes||'').localeCompare(b.dataset.chavemes||''); });
   blocos.forEach(function(b){ lista.appendChild(b); });
   atualizarSubtitulo();
+  salvarMesesFirebase();
 }
 
 function atualizarSubtitulo(){
@@ -1031,6 +1028,52 @@ var FIREBASE_CONFIG = {
 var db = null;
 var firebaseOk = false;
 
+// ── PERSISTÊNCIA DE MESES NO FIREBASE ──────────────────────────────────────
+
+function salvarMesesFirebase() {
+  if (!firebaseOk || !db) return;
+  // Salva objeto {chave: true} com todos os meses ativos
+  db.ref('escala/meses').set(mesesGerados).catch(function(e){
+    console.warn('Erro ao salvar meses:', e);
+  });
+}
+
+function ouvirMeses() {
+  if (!db) return;
+  db.ref('escala/meses').on('value', function(snap) {
+    var dados = snap.val();
+    if (!dados) return;
+    // Compara com o que já está na tela
+    var chavesSalvas = Object.keys(dados).sort();
+    var chavesLocais = Object.keys(mesesGerados).sort();
+    var mesmoEstado = JSON.stringify(chavesSalvas) === JSON.stringify(chavesLocais);
+    if (mesmoEstado) return; // nada mudou
+    // Adiciona meses que faltam
+    chavesSalvas.forEach(function(chave) {
+      if (!mesesGerados[chave]) {
+        var p = chave.split('-');
+        var a = parseInt(p[0]), m = parseInt(p[1]);
+        mesesGerados[chave] = true;
+        gerarMes(m, a);
+      }
+    });
+    // Remove meses que foram apagados remotamente
+    chavesLocais.forEach(function(chave) {
+      if (!dados[chave]) {
+        var bloco = document.querySelector('[data-chavemes="'+chave+'"]');
+        if (bloco) bloco.remove();
+        delete mesesGerados[chave];
+      }
+    });
+    // Reordena
+    var lista = document.getElementById('lista');
+    var blocos = Array.from(lista.querySelectorAll('.mes-bloco'));
+    blocos.sort(function(a,b){ return (a.dataset.chavemes||'').localeCompare(b.dataset.chavemes||''); });
+    blocos.forEach(function(b){ lista.appendChild(b); });
+    atualizarSubtitulo();
+  });
+}
+
 function iniciarFirebase() {
   // Carrega scripts do Firebase dinamicamente (funciona em file:// e http://)
   function carregarScript(url, cb) {
@@ -1048,6 +1091,7 @@ function iniciarFirebase() {
         db = firebase.database();
         firebaseOk = true;
         ouvirTrocas();
+        ouvirMeses();
       } catch(e) {
         console.warn('Firebase erro:', e);
         mostrarBannerConfig();
