@@ -1782,6 +1782,7 @@ function ouvirMeses() {
   if (!db) return;
   db.ref('escala/estado').on('value', function(snap) {
     var dados = snap.val();
+    console.log('[Firebase] escala/estado recebido:', dados ? Object.keys(dados) : null);
 
     // Sem dados no Firebase — tenta caminho legado
     if (!dados) {
@@ -1793,8 +1794,24 @@ function ouvirMeses() {
     }
 
     // Extrai somente chaves de meses válidas (formato YYYY-M)
-    var mesesSalvos = extrairMeses(dados.meses || dados);
-    if (!Object.keys(mesesSalvos).length) return;
+    // dados.meses pode estar como objeto {chave:true} ou como chaves diretas no objeto raiz
+    var mesesSalvos = {};
+    if (dados.meses && typeof dados.meses === 'object') {
+      mesesSalvos = extrairMeses(dados.meses);
+    }
+    // fallback: chaves no objeto raiz (estrutura legada)
+    if (!Object.keys(mesesSalvos).length) {
+      mesesSalvos = extrairMeses(dados);
+    }
+    // fallback 2: campo "estado" aninhado
+    if (!Object.keys(mesesSalvos).length && dados.estado) {
+      mesesSalvos = extrairMeses(dados.estado.meses || dados.estado);
+    }
+    console.log('[Firebase] mesesSalvos encontrados:', Object.keys(mesesSalvos));
+    if (!Object.keys(mesesSalvos).length) {
+      console.warn('[Firebase] Nenhum mês encontrado no snapshot:', JSON.stringify(Object.keys(dados)));
+      return;
+    }
 
     // SEMPRE popula escalaGerada do Firebase (garante funcionamento em todos os dispositivos)
     if (dados.escalaGerada && Object.keys(dados.escalaGerada).length > 0) {
