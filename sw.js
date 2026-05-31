@@ -1,70 +1,47 @@
-// Service Worker — Designações Cong. Parque Tietê
 const CACHE = 'designacoes-v1';
-const STATIC = [
-  './',
-  './index.html',
-  'https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js',
-  'https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js'
+const ASSETS = [
+  '/designacoes/',
+  '/designacoes/index.html',
+  '/designacoes/manifest.json'
 ];
 
-self.addEventListener('install', function(e) {
-  e.waitUntil(
-    caches.open(CACHE).then(function(cache) {
-      return cache.addAll(STATIC).catch(function() {});
-    })
-  );
+self.addEventListener('install', e => {
+  e.waitUntil(caches.open(CACHE).then(c => c.addAll(ASSETS)));
   self.skipWaiting();
 });
 
-self.addEventListener('activate', function(e) {
-  e.waitUntil(
-    caches.keys().then(function(keys) {
-      return Promise.all(keys.filter(function(k){ return k !== CACHE; }).map(function(k){ return caches.delete(k); }));
-    })
-  );
+self.addEventListener('activate', e => {
+  e.waitUntil(caches.keys().then(keys =>
+    Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k)))
+  ));
   self.clients.claim();
 });
 
-self.addEventListener('fetch', function(e) {
-  // Firebase: sempre network-first
-  if (e.request.url.includes('firebase') || e.request.url.includes('googleapis')) {
-    e.respondWith(
-      fetch(e.request).catch(function() {
-        return caches.match(e.request);
-      })
-    );
+self.addEventListener('fetch', e => {
+  // Firebase sempre vai para rede
+  if (e.request.url.includes('firebase') || e.request.url.includes('gstatic')) {
     return;
   }
-  // Demais: cache-first com fallback para network
   e.respondWith(
-    caches.match(e.request).then(function(cached) {
-      var network = fetch(e.request).then(function(resp) {
-        if (resp && resp.status === 200) {
-          caches.open(CACHE).then(function(cache){ cache.put(e.request, resp.clone()); });
-        }
-        return resp;
-      });
-      return cached || network;
-    })
+    fetch(e.request).catch(() => caches.match(e.request))
   );
 });
 
-// Push notifications
-self.addEventListener('push', function(e) {
-  var data = {};
-  try { data = e.data.json(); } catch(err) { data = { title: 'Designações', body: e.data ? e.data.text() : '' }; }
+// Notificações push
+self.addEventListener('push', e => {
+  const data = e.data ? e.data.json() : {};
   e.waitUntil(
     self.registration.showNotification(data.title || 'Designações', {
       body: data.body || '',
-      icon: data.icon || '',
-      badge: data.badge || '',
-      data: data.url || '/',
-      vibrate: [200, 100, 200]
+      icon: '/designacoes/icon-192.png',
+      badge: '/designacoes/icon-192.png',
+      vibrate: [200, 100, 200],
+      data: data
     })
   );
 });
 
-self.addEventListener('notificationclick', function(e) {
+self.addEventListener('notificationclick', e => {
   e.notification.close();
-  e.waitUntil(clients.openWindow(e.notification.data || '/'));
+  e.waitUntil(clients.openWindow('/designacoes/'));
 });
