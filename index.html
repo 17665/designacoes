@@ -595,7 +595,8 @@ function ativarModoResponsavel() {
   if (chaves.length > 0) {
     var backup = chaves.slice();
     var restaurarEGerar = function(dadosEstado) {
-      substituicoes = {}; contadorPulo = {}; aparicoes = {}; ultimoAuditorio = {};
+      // NÃO zera substituicoes — são permanentes
+      contadorPulo = {}; aparicoes = {}; ultimoAuditorio = {};
       mesesGerados = {};
       idxM.v=0; idxA.v=0; idxV.v=0; idxZ.v=0; idxI.v=0; ultimoPar=-1;
       if (dadosEstado && dadosEstado.contadorPulo) Object.assign(contadorPulo, dadosEstado.contadorPulo);
@@ -606,11 +607,14 @@ function ativarModoResponsavel() {
       if (dadosEstado && dadosEstado.idxZ !== undefined) idxZ.v = dadosEstado.idxZ;
       if (dadosEstado && dadosEstado.idxI !== undefined) idxI.v = dadosEstado.idxI;
       if (dadosEstado && dadosEstado.ultimoPar !== undefined) ultimoPar = dadosEstado.ultimoPar;
+      // Carrega substituições do Firebase antes de renderizar
+      if (dadosEstado && dadosEstado.substituicoes) Object.assign(substituicoes, dadosEstado.substituicoes);
       document.getElementById('lista').innerHTML = '';
       backup.forEach(function(chave){
         var p = chave.split('-');
         adicionarMeses(parseInt(p[1]), parseInt(p[0]), 1);
       });
+      aplicarSubstituicoesNaTela();
     };
     if (firebaseOk && db) {
       db.ref('escala/estado').once('value', function(snap){ restaurarEGerar(snap.val()); });
@@ -627,7 +631,8 @@ function sairModoResponsavel() {
   // Re-renderiza escala sem badges de treino
   var chaves = Object.keys(mesesGerados).sort();
   var backup = chaves.slice();
-  substituicoes = {}; contadorPulo = {}; aparicoes = {}; ultimoAuditorio = {};
+  // NÃO zera substituicoes — elas são permanentes e devem persistir
+  contadorPulo = {}; aparicoes = {}; ultimoAuditorio = {};
   mesesGerados = {};
   idxM.v=0; idxA.v=0; idxV.v=0; idxZ.v=0; idxI.v=0; ultimoPar=-1;
   document.getElementById('lista').innerHTML = '';
@@ -635,6 +640,8 @@ function sairModoResponsavel() {
     var p = chave.split('-');
     adicionarMeses(parseInt(p[1]), parseInt(p[0]), 1);
   });
+  // Reaplica substituições após renderizar
+  aplicarSubstituicoesNaTela();
 }
 function abrirPrincipal(abaId) {
   trocarAba(abaId,null); renderEventos(); popularSelTreino();
@@ -1365,7 +1372,8 @@ function salvarMesesFirebase() {
     contadorPulo: contadorPulo,
     aparicoes: aparicoes,
     idxM: idxM.v, idxA: idxA.v, idxV: idxV.v, idxZ: idxZ.v, idxI: idxI.v,
-    ultimoPar: ultimoPar
+    ultimoPar: ultimoPar,
+    substituicoes: substituicoes
   };
   db.ref('escala/estado').set(payload).catch(function(e){
     console.warn('Erro ao salvar estado:', e);
@@ -1500,6 +1508,10 @@ function processarMeses(mesesSalvos, dadosEstado) {
   if (!dadosEstado || !dadosEstado.contadorPulo) {
     contadorPulo = {}; aparicoes = {}; ultimoAuditorio = {};
     idxM.v=0; idxA.v=0; idxV.v=0; idxZ.v=0; idxI.v=0; ultimoPar=-1;
+  }
+  // Restaura substituições permanentes do Firebase
+  if (dadosEstado && dadosEstado.substituicoes) {
+    Object.assign(substituicoes, dadosEstado.substituicoes);
   }
 
   chavesSalvas.forEach(function(chave){
