@@ -265,7 +265,6 @@ h1 { font-size:22px; font-weight:700; color:#1a4fa3; margin-bottom:4px; }
     <button class="btn-gerenciar" id="btn-area-responsavel" onclick="pedirSenha()">&#128100; Área do Responsável</button>
     <button class="btn-imprimir"  onclick="window.print()">&#128424; Imprimir escala</button>
     <a href="manual-usuario.html" target="_blank" style="background:#7c3aed;color:white;border:none;padding:9px 18px;border-radius:8px;font-size:14px;font-weight:bold;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:6px">&#128214; Manual do Irmão</a>
-    <a href="manual-responsavel.html" target="_blank" style="background:#0f6e56;color:white;border:none;padding:9px 18px;border-radius:8px;font-size:14px;font-weight:bold;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:6px">&#128203; Manual do Responsável</a>
     <button id="btn-minha-escala" onclick="abrirMinhaEscala()" style="background:#7c3aed;color:white;border:none;padding:9px 18px;border-radius:8px;font-size:14px;font-weight:bold;cursor:pointer">&#128100; Minha Escala</button>
     <button id="btn-notif" onclick="pedirPermissaoNotificacao()" style="display:none;background:#0f6e56;color:white;border:none;padding:9px 14px;border-radius:8px;font-size:14px;cursor:pointer" title="Ativar notificações">&#128276;</button>
     <button id="btn-instalar-pwa" onclick="instalarPWA()" style="display:none;background:#f59e0b;color:white;border:none;padding:9px 14px;border-radius:8px;font-size:13px;font-weight:bold;cursor:pointer">&#128187; Instalar App</button>
@@ -307,6 +306,7 @@ h1 { font-size:22px; font-weight:700; color:#1a4fa3; margin-bottom:4px; }
       <button class="aba-btn"       onclick="trocarAba('aba-trocas',this)">&#128260; Trocas</button>
       <button class="aba-btn"       onclick="trocarAba('aba-historico',this)">&#128202; Histórico</button>
       <button class="aba-btn"       onclick="trocarAba('aba-config',this)">&#128274; Senha</button>
+      <button class="aba-btn"       onclick="trocarAba('aba-manual-resp',this)">&#128203; Manual</button>
     </div>
     <div class="modal-body">
 
@@ -461,6 +461,17 @@ h1 { font-size:22px; font-weight:700; color:#1a4fa3; margin-bottom:4px; }
             &#10003; Salvar pergunta secreta
           </button>
         </div>
+      </div>
+
+      <!-- ABA MANUAL DO RESPONSÁVEL -->
+      <div class="aba-conteudo" id="aba-manual-resp">
+        <p style="font-size:13px;color:#5e6370;margin-bottom:16px;line-height:1.6">
+          Manual exclusivo para o responsável pelo sistema de designações.
+        </p>
+        <a href="manual-responsavel.html" target="_blank"
+          style="display:inline-flex;align-items:center;gap:10px;background:#0f6e56;color:white;text-decoration:none;padding:12px 22px;border-radius:10px;font-size:15px;font-weight:bold">
+          &#128203; Abrir Manual do Responsável
+        </a>
       </div>
 
     </div>
