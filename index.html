@@ -306,6 +306,7 @@ h1 { font-size:22px; font-weight:700; color:#1a4fa3; margin-bottom:4px; }
       <button class="aba-btn"       onclick="trocarAba('aba-trocas',this)">&#128260; Trocas</button>
       <button class="aba-btn"       onclick="trocarAba('aba-historico',this)">&#128202; Histórico</button>
       <button class="aba-btn"       onclick="trocarAba('aba-config',this)">&#128274; Senha</button>
+      <button class="aba-btn" onclick="trocarAba('aba-presencas',this)">&#128221; Presenças</button>
       <button class="aba-btn"       onclick="trocarAba('aba-manual-resp',this)">&#128203; Manual</button>
     </div>
     <div class="modal-body">
@@ -462,7 +463,11 @@ h1 { font-size:22px; font-weight:700; color:#1a4fa3; margin-bottom:4px; }
           </button>
         </div>
       </div>
-
+      <!-- ABA PRESENÇAS -->
+<div class="aba-conteudo" id="aba-presencas">
+  <p style="font-size:13px;color:#5e6370;margin-bottom:14px">Confirmações de presença e avisos de ausência.</p>
+  <div id="lista-presencas"><p style="text-align:center;color:#888;padding:20px">Carregando...</p></div>
+</div>
       <!-- ABA MANUAL DO RESPONSÁVEL -->
       <div class="aba-conteudo" id="aba-manual-resp">
         <p style="font-size:13px;color:#5e6370;margin-bottom:16px;line-height:1.6">
@@ -547,6 +552,8 @@ h1 { font-size:22px; font-weight:700; color:#1a4fa3; margin-bottom:4px; }
     </div>
   </div>
 </div>
+
+<div id="badge-avisos-ausencia" style="display:none;background:#fef2f2;border:1.5px solid #fca5a5;border-radius:8px;padding:8px 14px;margin-bottom:16px;font-size:13px;color:#991b1b;cursor:pointer" onclick="pedirSenha()"></div>
 
 <div id="lista"></div>
 
@@ -786,6 +793,7 @@ function trocarAba(id,btn) {
   if(id==='aba-treino') renderTreino();
   if(id==='aba-trocas') renderGerenciarTrocas();
   if(id==='aba-config') carregarPerguntaAtual();
+  if(id==='aba-presencas') carregarPresencas(); 
 }
 function aplicarTudo() {
   // Aplica mudancas de irmaos/eventos sem apagar meses ja gerados
@@ -2591,6 +2599,36 @@ function confirmarPresenca(resposta) {
 }
 
 // ===================== HISTÓRICO =====================
+function carregarPresencas() {
+  var cont = document.getElementById('lista-presencas');
+  if (!firebaseOk || !db) {
+    cont.innerHTML = '<p style="text-align:center;color:#888">Firebase não conectado.</p>';
+    return;
+  }
+  db.ref('confirmacoes').once('value', function(snap) {
+    var dados = snap.val() || {};
+    var html = '';
+    var tem = false;
+    Object.keys(dados).sort().forEach(function(nome) {
+      var confs = dados[nome] || {};
+      var linhas = '';
+      Object.keys(confs).sort().reverse().forEach(function(chave) {
+        var status = confs[chave];
+        var badge = status === 'confirmado' 
+          ? '<span style="background:#dcfce7;color:#166534;padding:2px 8px;border-radius:10px;font-size:11px">&#10003; Confirmado</span>'
+          : '<span style="background:#fee2e2;color:#991b1b;padding:2px 8px;border-radius:10px;font-size:11px">&#10007; Ausente</span>';
+        linhas += '<div style="padding:4px 0;font-size:12px">'+chave.replace(/__/g,'|')+' '+badge+'</div>';
+      });
+      if (linhas) {
+        tem = true;
+        html += '<div style="background:white;border:1px solid #e8e8e8;border-radius:8px;padding:12px;margin-bottom:8px">'+
+          '<strong style="color:#1a4fa3">'+nome+'</strong>'+linhas+'</div>';
+      }
+    });
+    cont.innerHTML = tem ? html : '<p style="text-align:center;color:#888;padding:20px">Nenhuma confirmação ainda.</p>';
+  });
+}
+
 function trocarAbaHistorico() {
   // Popula filtros
   var selIrmao = document.getElementById('hist-filtro-irmao');
@@ -2677,26 +2715,20 @@ function ouvirAvisosAusencia() {
   db.ref('avisos_ausencia').on('value', function(snap) {
     var avisos = [];
     snap.forEach(function(c) { avisos.push(c.val()); });
-    // Filtra avisos das próximas reuniões
     var hoje = new Date(); hoje.setHours(0,0,0,0);
     var relevantes = avisos.filter(function(a) {
       var d = new Date(a.dataISO);
       return d >= hoje;
     });
-    if (relevantes.length > 0 && modoResponsavel) {
-      var badge = document.getElementById('badge-avisos-ausencia');
-      if (!badge) {
-        badge = document.createElement('div');
-        badge.id = 'badge-avisos-ausencia';
-        badge.style.cssText = 'background:#fef2f2;border:1.5px solid #fca5a5;border-radius:8px;padding:8px 14px;margin-bottom:16px;font-size:13px;color:#991b1b;cursor:pointer';
-        badge.onclick = function(){ trocarAba('aba-conf-ausencias'); };
-        document.querySelector('.topo').after(badge);
-      }
-      badge.innerHTML = '\u26A0 <strong>'+relevantes.length+' aviso(s) de ausência</strong> para próximas reuniões. Clique para ver.';
+    var badge = document.getElementById('badge-avisos-ausencia');
+    if (relevantes.length > 0) {
+      badge.style.display = 'block';
+      badge.innerHTML = '&#128276; <strong>'+relevantes.length+' aviso(s) de ausência</strong> para próximas reuniões. Clique para ver.';
+    } else {
+      badge.style.display = 'none';
     }
   });
 }
-
 // Patching trocarAba to populate historico filters
 var _trocarAbaOriginal = trocarAba;
 trocarAba = function(id, btn) {
