@@ -1767,8 +1767,19 @@ function ouvirMeses() {
       });
       return;
     }
-    var mesesSalvos = dados.meses || dados; // compatibilidade com formato antigo
-    if (typeof mesesSalvos !== 'object') return;
+    // Extrai apenas os meses (chaves no formato YYYY-M), nunca o objeto todo
+    var mesesSalvos = {};
+    var fonte = dados.meses || dados;
+    if (typeof fonte === 'object') {
+      Object.keys(fonte).forEach(function(k) {
+        var p = k.split('-');
+        var a = parseInt(p[0]), m = parseInt(p[1]);
+        if (!isNaN(a) && !isNaN(m) && m >= 1 && m <= 12 && a >= 2020 && a <= 2040) {
+          mesesSalvos[k] = fonte[k];
+        }
+      });
+    }
+    if (!Object.keys(mesesSalvos).length && !dados.meses) return; // sem meses válidos
 
     var chavesSalvas = Object.keys(mesesSalvos).sort();
     var chavesLocais = Object.keys(mesesGerados).sort();
