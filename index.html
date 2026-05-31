@@ -1190,7 +1190,7 @@ function renderMesSalvo(mes, ano, escSalva, substs) {
   bloco.innerHTML = '<div class="mes-cab"><span class="mes-nome">'+nomeMes+' '+ano+'</span>'+
     '<div style="display:flex;align-items:center;gap:12px">'+
     '<span class="mes-resp">Responsável: Eriton Oliveira</span>'+
-    '<button class="btn-apagar-mes" onclick="apagarMes(''+chave+'')" title="Remover este mês">&#128465; Remover</button>'+
+    '<button class="btn-apagar-mes" onclick="apagarMes(\'' + chave + '\')" title="Remover este mês">&#128465; Remover</button>'+
     '</div></div>';
   var grid = document.createElement('div');
   grid.className = 'reunioes-grid';
