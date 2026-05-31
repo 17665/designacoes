@@ -1367,10 +1367,31 @@ function renderMesSalvo(mes, ano, escSalva, substs) {
     }
 
     var saved = escSalva[dataISO];
-    if (!saved) return; // reunião sem dados salvos, pula
+
+    // Se não há dados salvos para esta data, gera localmente
+    if (!saved) {
+      var ausEnv = (ev && ev.ausentes) ? ev.ausentes.slice() : [];
+      var usadosEnv = ausEnv.slice();
+      var comboEnv = proximoPar(ausEnv, dataISO);
+      usadosEnv.push(comboEnv[0], comboEnv[1]);
+      var mic1Env = rodizioSetor(listas.microfone, idxM, usadosEnv, 'microfone', dataISO);
+      var mic2Env = rodizioSetor(listas.microfone, idxM, usadosEnv, 'microfone', dataISO);
+      var audEnv  = rodizioSetor(listas.audio, idxA, usadosEnv, 'audio', dataISO);
+      var vidEnv  = rodizioSetor(listas.video, idxV, usadosEnv, 'video', dataISO);
+      var zmEnv   = rodizioSetor(listas.zoom,  idxZ, usadosEnv, 'zoom',  dataISO);
+      var indEnv  = escolherIndicadores(usadosEnv);
+      saved = {
+        palco1: comboEnv[0], palco2: comboEnv[1],
+        mic1: mic1Env, mic2: mic2Env,
+        audio: audEnv, video: vidEnv, zoom: zmEnv,
+        indAud: indEnv.aud, indPat: indEnv.pat
+      };
+      escalaGerada[dataISO] = saved;
+    }
 
     // Aplica substituições sobre os nomes salvos
     function nomeFinal(n, setorKey) {
+      if (!n) return '';
       var chaveSubst = dataISO + '|' + setorKey + '|' + n;
       return (substs && substs[chaveSubst]) ? substs[chaveSubst] : n;
     }
@@ -1385,10 +1406,12 @@ function renderMesSalvo(mes, ano, escSalva, substs) {
     var iA  = nomeFinal(saved.indAud, 'Ind-Aud');
     var iP  = nomeFinal(saved.indPat, 'Ind-Pat');
 
-    function ns(n, setor) { return nomeSpan(n, dataISO+'|'+setor+'|'+saved[{
-      'Palco-Coord':'palco1','Palco-Ajud':'palco2','Mic1':'mic1','Mic2':'mic2',
-      'Audio':'audio','Video':'video','Zoom':'zoom','Ind-Aud':'indAud','Ind-Pat':'indPat'
-    }[setor]], setor, dataLabel); }
+    var campoMap = {'Palco-Coord':'palco1','Palco-Ajud':'palco2','Mic1':'mic1','Mic2':'mic2',
+      'Audio':'audio','Video':'video','Zoom':'zoom','Ind-Aud':'indAud','Ind-Pat':'indPat'};
+    function ns(n, setor) {
+      var nomeOrig = saved[campoMap[setor]] || n;
+      return nomeSpan(n, dataISO+'|'+setor+'|'+nomeOrig, setor, dataLabel);
+    }
 
     var dataReal = r.data, tipoLabel = r.tipo;
     var badgeClass = r.tipo==='Quarta'?'badge-quarta':'badge-sabado';
@@ -1779,10 +1802,11 @@ function ouvirMeses() {
       Object.assign(escalaGerada, dados.escalaGerada);
     }
 
-    // Se os meses na tela já são os mesmos do Firebase, só atualiza escalaGerada e sai
+    // Se os meses na tela já são os mesmos do Firebase E escalaGerada está populado, sai
     var chavesSalvas = Object.keys(mesesSalvos).sort();
     var chavesLocais = Object.keys(mesesGerados).sort();
-    if (JSON.stringify(chavesSalvas) === JSON.stringify(chavesLocais)) return;
+    var escalaOk = dados.escalaGerada && Object.keys(dados.escalaGerada).length > 0;
+    if (JSON.stringify(chavesSalvas) === JSON.stringify(chavesLocais) && escalaOk) return;
 
     // Meses mudaram — re-renderiza tudo
     if (dados.contadorPulo) Object.assign(contadorPulo, dados.contadorPulo);
