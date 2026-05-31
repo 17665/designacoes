@@ -1752,7 +1752,14 @@ function ouvirMeses() {
     var chavesSalvas = Object.keys(mesesSalvos).sort();
     var chavesLocais = Object.keys(mesesGerados).sort();
     var mesmoEstado = JSON.stringify(chavesSalvas) === JSON.stringify(chavesLocais);
-    if (mesmoEstado) return; // nada mudou
+
+    // Sempre restaura escalaGerada para que "Minha Escala" funcione após reload
+    if (dados.escalaGerada && Object.keys(dados.escalaGerada).length > 0) {
+      escalaGerada = {};
+      Object.assign(escalaGerada, dados.escalaGerada);
+    }
+
+    if (mesmoEstado) return; // estrutura dos meses não mudou — não re-renderiza
 
     // Restaura o estado do rodízio e treinamento
     if (dados.contadorPulo) Object.assign(contadorPulo, dados.contadorPulo);
@@ -1825,6 +1832,7 @@ function iniciarFirebase() {
     ouvirMeses();
     ouvirConfig();
     carregarSenhaFirebase();
+    ouvirAvisosAusencia();
   } catch(e) {
     console.warn('Firebase erro:', e);
     mostrarBannerConfigErro(e.message);
