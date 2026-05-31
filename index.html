@@ -265,7 +265,6 @@ h1 { font-size:22px; font-weight:700; color:#1a4fa3; margin-bottom:4px; }
     <button class="btn-gerenciar" id="btn-area-responsavel" onclick="pedirSenha()">&#128100; Área do Responsável</button>
     <button class="btn-imprimir"  onclick="window.print()">&#128424; Imprimir escala</button>
     <a href="manual-usuario.html" target="_blank" style="background:#7c3aed;color:white;border:none;padding:9px 18px;border-radius:8px;font-size:14px;font-weight:bold;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:6px">&#128214; Manual do Irmão</a>
-    <a href="manual-responsavel.html" target="_blank" style="background:#0f6e56;color:white;border:none;padding:9px 18px;border-radius:8px;font-size:14px;font-weight:bold;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:6px">&#128203; Manual do Responsável</a>
     <button id="btn-minha-escala" onclick="abrirMinhaEscala()" style="background:#7c3aed;color:white;border:none;padding:9px 18px;border-radius:8px;font-size:14px;font-weight:bold;cursor:pointer">&#128100; Minha Escala</button>
     <button id="btn-notif" onclick="pedirPermissaoNotificacao()" style="display:none;background:#0f6e56;color:white;border:none;padding:9px 14px;border-radius:8px;font-size:14px;cursor:pointer" title="Ativar notificações">&#128276;</button>
     <button id="btn-instalar-pwa" onclick="instalarPWA()" style="display:none;background:#f59e0b;color:white;border:none;padding:9px 14px;border-radius:8px;font-size:13px;font-weight:bold;cursor:pointer">&#128187; Instalar App</button>
@@ -307,6 +306,8 @@ h1 { font-size:22px; font-weight:700; color:#1a4fa3; margin-bottom:4px; }
       <button class="aba-btn"       onclick="trocarAba('aba-trocas',this)">&#128260; Trocas</button>
       <button class="aba-btn"       onclick="trocarAba('aba-historico',this)">&#128202; Histórico</button>
       <button class="aba-btn"       onclick="trocarAba('aba-config',this)">&#128274; Senha</button>
+      <button class="aba-btn"       onclick="trocarAba('aba-ausencias',this)" id="btn-aba-ausencias">&#128680; Ausências</button>
+      <button class="aba-btn"       onclick="trocarAba('aba-manual-resp',this)">&#128203; Manual</button>
     </div>
     <div class="modal-body">
 
@@ -461,6 +462,27 @@ h1 { font-size:22px; font-weight:700; color:#1a4fa3; margin-bottom:4px; }
             &#10003; Salvar pergunta secreta
           </button>
         </div>
+      </div>
+
+      <!-- ABA AUSÊNCIAS -->
+      <div class="aba-conteudo" id="aba-ausencias">
+        <p style="font-size:13px;color:#5e6370;margin-bottom:14px;line-height:1.6">
+          Avisos de ausência enviados pelos irmãos pela tela <strong>Minha Escala</strong>.
+        </p>
+        <div id="lista-ausencias-conteudo">
+          <p style="font-size:13px;color:#888">Carregando...</p>
+        </div>
+      </div>
+
+      <!-- ABA MANUAL DO RESPONSÁVEL -->
+      <div class="aba-conteudo" id="aba-manual-resp">
+        <p style="font-size:13px;color:#5e6370;margin-bottom:16px;line-height:1.6">
+          Manual exclusivo para o responsável pelo sistema de designações.
+        </p>
+        <a href="manual-responsavel.html" target="_blank"
+          style="display:inline-flex;align-items:center;gap:10px;background:#0f6e56;color:white;text-decoration:none;padding:12px 22px;border-radius:10px;font-size:15px;font-weight:bold">
+          &#128203; Abrir Manual do Responsável
+        </a>
       </div>
 
     </div>
@@ -703,6 +725,11 @@ var modoResponsavel = false;
 
 function ativarModoResponsavel() {
   modoResponsavel = true;
+  // Mostra badge de ausências se houver avisos
+  var badge = document.getElementById('badge-avisos-ausencia');
+  if (badge && _avisosAusenciaCache.filter(function(a){ return new Date(a.dataISO) >= new Date(new Date().setHours(0,0,0,0)); }).length > 0) {
+    badge.style.display = 'block';
+  }
   document.getElementById('badge-responsavel').style.display = 'flex';
   document.getElementById('btn-area-responsavel').style.display = 'none';
   // Re-renderiza para mostrar badges de treino
@@ -741,6 +768,11 @@ function ativarModoResponsavel() {
 
 function sairModoResponsavel() {
   modoResponsavel = false;
+  // Re-renderiza badge sem o link de gerenciar (mantém visível para o responsável ver)
+  var badge = document.getElementById('badge-avisos-ausencia');
+  if (badge && badge.style.display === 'block') {
+    // deixa visível — próxima atualização do Firebase vai re-renderizar corretamente
+  }
   document.getElementById('badge-responsavel').style.display = 'none';
   document.getElementById('btn-area-responsavel').style.display = '';
   // Re-renderiza escala sem badges de treino
@@ -1693,29 +1725,31 @@ function ouvirConfig() {
       renderEventos(); renderTreino(); renderGerenciarIrmaos();
     }
 
-    // ── REGENERA A ESCALA para todos verem igual ──────────────
-    if(mudou && Object.keys(mesesGerados).length > 0){
-      var chavesAtivas = Object.keys(mesesGerados).sort();
-      // Busca o estado salvo para restaurar os contadores antes de regenerar
+    // Atualiza a tela se a escala já estiver visível (re-renderiza sem regrear)
+    if (mudou && Object.keys(mesesGerados).length > 0) {
+      // Apenas re-renderiza com os dados já salvos no Firebase — nunca regera do zero
       db.ref('escala/estado').once('value', function(snapEstado) {
         var dadosEstado = snapEstado.val() || {};
-        substituicoes={}; contadorPulo={}; aparicoes={}; ultimoAuditorio={};
-        mesesGerados={};
-        idxM.v=0; idxA.v=0; idxV.v=0; idxZ.v=0; idxI.v=0; ultimoPar=-1;
-        // Restaura estado do rodízio
-        if (dadosEstado.contadorPulo) Object.assign(contadorPulo, dadosEstado.contadorPulo);
-        if (dadosEstado.aparicoes)    Object.assign(aparicoes, dadosEstado.aparicoes);
-        if (dadosEstado.idxM !== undefined) idxM.v = dadosEstado.idxM;
-        if (dadosEstado.idxA !== undefined) idxA.v = dadosEstado.idxA;
-        if (dadosEstado.idxV !== undefined) idxV.v = dadosEstado.idxV;
-        if (dadosEstado.idxZ !== undefined) idxZ.v = dadosEstado.idxZ;
-        if (dadosEstado.idxI !== undefined) idxI.v = dadosEstado.idxI;
-        if (dadosEstado.ultimoPar !== undefined) ultimoPar = dadosEstado.ultimoPar;
-        document.getElementById('lista').innerHTML='';
-        chavesAtivas.forEach(function(chave){
-          var p=chave.split('-');
-          adicionarMeses(parseInt(p[1]), parseInt(p[0]), 1);
-        });
+        if (dadosEstado.escalaGerada && Object.keys(dadosEstado.escalaGerada).length > 0) {
+          escalaGerada = {};
+          Object.assign(escalaGerada, dadosEstado.escalaGerada);
+          if (dadosEstado.substituicoes) Object.assign(substituicoes, dadosEstado.substituicoes);
+          var chavesAtivas = Object.keys(mesesGerados).sort();
+          document.getElementById('lista').innerHTML = '';
+          mesesGerados = {};
+          chavesAtivas.forEach(function(chave) {
+            var p = chave.split('-');
+            var a = parseInt(p[0]), m = parseInt(p[1]);
+            mesesGerados[chave] = true;
+            renderMesSalvo(m, a, dadosEstado.escalaGerada, dadosEstado.substituicoes || substituicoes);
+          });
+          var lista = document.getElementById('lista');
+          var blocos = Array.from(lista.querySelectorAll('.mes-bloco'));
+          blocos.sort(function(a,b){ return (a.dataset.chavemes||'').localeCompare(b.dataset.chavemes||''); });
+          blocos.forEach(function(b){ lista.appendChild(b); });
+          aplicarSubstituicoesNaTela();
+          atualizarSubtitulo();
+        }
       });
     }
   });
@@ -1725,25 +1759,32 @@ function ouvirMeses() {
   if (!db) return;
   db.ref('escala/estado').on('value', function(snap) {
     var dados = snap.val();
-    // Compatibilidade: tenta também o caminho antigo
+
+    // Sem dados no Firebase — tenta caminho legado
     if (!dados) {
       db.ref('escala/meses').once('value', function(snapAntigo) {
         var dadosAntigos = snapAntigo.val();
-        if (!dadosAntigos) return;
-        // Migra: gera sem estado salvo
-        processarMeses(dadosAntigos, {});
+        if (dadosAntigos) processarMeses(extrairMeses(dadosAntigos), {});
       });
       return;
     }
-    var mesesSalvos = dados.meses || dados; // compatibilidade com formato antigo
-    if (typeof mesesSalvos !== 'object') return;
 
+    // Extrai somente chaves de meses válidas (formato YYYY-M)
+    var mesesSalvos = extrairMeses(dados.meses || dados);
+    if (!Object.keys(mesesSalvos).length) return;
+
+    // SEMPRE popula escalaGerada do Firebase (garante funcionamento em todos os dispositivos)
+    if (dados.escalaGerada && Object.keys(dados.escalaGerada).length > 0) {
+      escalaGerada = {};
+      Object.assign(escalaGerada, dados.escalaGerada);
+    }
+
+    // Se os meses na tela já são os mesmos do Firebase, só atualiza escalaGerada e sai
     var chavesSalvas = Object.keys(mesesSalvos).sort();
     var chavesLocais = Object.keys(mesesGerados).sort();
-    var mesmoEstado = JSON.stringify(chavesSalvas) === JSON.stringify(chavesLocais);
-    if (mesmoEstado) return; // nada mudou
+    if (JSON.stringify(chavesSalvas) === JSON.stringify(chavesLocais)) return;
 
-    // Restaura o estado do rodízio e treinamento
+    // Meses mudaram — re-renderiza tudo
     if (dados.contadorPulo) Object.assign(contadorPulo, dados.contadorPulo);
     if (dados.aparicoes)    Object.assign(aparicoes, dados.aparicoes);
     if (dados.idxM !== undefined) idxM.v = dados.idxM;
@@ -1752,40 +1793,55 @@ function ouvirMeses() {
     if (dados.idxZ !== undefined) idxZ.v = dados.idxZ;
     if (dados.idxI !== undefined) idxI.v = dados.idxI;
     if (dados.ultimoPar !== undefined) ultimoPar = dados.ultimoPar;
-    // Busca substituições do subpath (escrita por update) antes de renderizar
+
     db.ref('escala/estado/substituicoes').once('value', function(snapSubst) {
-      var subst = snapSubst.val() || {};
       substituicoes = {};
+      var subst = snapSubst.val() || {};
       Object.assign(substituicoes, subst);
-      // Também tenta do payload direto (compatibilidade)
       if (dados.substituicoes) Object.assign(substituicoes, dados.substituicoes);
       processarMeses(mesesSalvos, dados);
     });
   });
 }
 
+// Extrai apenas chaves no formato YYYY-M de um objeto
+function extrairMeses(obj) {
+  var result = {};
+  if (!obj || typeof obj !== 'object') return result;
+  Object.keys(obj).forEach(function(k) {
+    var p = k.split('-');
+    var a = parseInt(p[0]), m = parseInt(p[1]);
+    if (!isNaN(a) && !isNaN(m) && m >= 1 && m <= 12 && a >= 2020 && a <= 2040) {
+      result[k] = obj[k];
+    }
+  });
+  return result;
+}
+
 function processarMeses(mesesSalvos, dadosEstado) {
   mesesGerados = {};
   escalaGerada = {};
   document.getElementById('lista').innerHTML = '';
-  var chavesSalvas = Object.keys(mesesSalvos).sort();
 
-  // Se não há estado salvo, precisa gerar do zero (reseta contadores)
+  // Restaura contadores se disponíveis
   if (!dadosEstado || !dadosEstado.contadorPulo) {
     contadorPulo = {}; aparicoes = {}; ultimoAuditorio = {};
     idxM.v=0; idxA.v=0; idxV.v=0; idxZ.v=0; idxI.v=0; ultimoPar=-1;
   }
-  // Restaura substituições permanentes do Firebase
   if (dadosEstado && dadosEstado.substituicoes) {
     Object.assign(substituicoes, dadosEstado.substituicoes);
   }
 
   var temEscalaGerada = dadosEstado && dadosEstado.escalaGerada && Object.keys(dadosEstado.escalaGerada).length > 0;
 
-  chavesSalvas.forEach(function(chave){
+  // Popula escalaGerada ANTES de renderizar
+  if (temEscalaGerada) {
+    Object.assign(escalaGerada, dadosEstado.escalaGerada);
+  }
+
+  Object.keys(mesesSalvos).sort().forEach(function(chave) {
     var p = chave.split('-');
     var a = parseInt(p[0]), m = parseInt(p[1]);
-    if(isNaN(a)||isNaN(m)||m<1||m>12||a<2020||a>2040) return; // ignora inválido
     mesesGerados[chave] = true;
     if (temEscalaGerada) {
       renderMesSalvo(m, a, dadosEstado.escalaGerada, dadosEstado.substituicoes || substituicoes);
@@ -1793,7 +1849,8 @@ function processarMeses(mesesSalvos, dadosEstado) {
       gerarMes(m, a);
     }
   });
-  // Reordena
+
+  // Reordena blocos por data
   var lista = document.getElementById('lista');
   var blocos = Array.from(lista.querySelectorAll('.mes-bloco'));
   blocos.sort(function(a,b){ return (a.dataset.chavemes||'').localeCompare(b.dataset.chavemes||''); });
@@ -1814,6 +1871,7 @@ function iniciarFirebase() {
     ouvirMeses();
     ouvirConfig();
     carregarSenhaFirebase();
+    ouvirAvisosAusencia();
   } catch(e) {
     console.warn('Firebase erro:', e);
     mostrarBannerConfigErro(e.message);
@@ -1863,6 +1921,7 @@ function confirmarIdentidade() {
   if (!v) { alert('Selecione seu nome.'); return; }
   meuNome = v;
   localStorage.setItem('designacoes_nome', v);
+  renderPainelTrocas(); // atualiza painel com avisos do irmão identificado
   fecharIdentidade();
   if (identidadeCallback) { identidadeCallback(v); identidadeCallback = null; }
 }
@@ -2089,7 +2148,12 @@ function renderPainelTrocas() {
   if (lista.length === 0) { painel.style.display = 'none'; return; }
   painel.style.display = 'block';
 
-  var html = '<div class="painel-titulo">&#128260; Pedidos de Troca</div>';
+  // Conta quantos são relevantes para meuNome (destinatário pendente)
+  var paraMim = lista.filter(function(t){ return t.status === 'pendente' && t.destinatario === meuNome; });
+  var headerExtra = paraMim.length > 0
+    ? ' <span style="background:#ef4444;color:white;border-radius:12px;padding:2px 9px;font-size:12px;font-weight:bold;margin-left:8px">'+paraMim.length+' para você!</span>'
+    : '';
+  var html = '<div class="painel-titulo">&#128260; Pedidos de Troca' + headerExtra + '</div>';
   lista.forEach(function(t) {
     var msRestante = t.expiraEm - Date.now();
     var horas = Math.max(0, Math.floor(msRestante / 3600000));
@@ -2360,6 +2424,7 @@ function trocarNomeMinhaEscala() {
   meuNome = nome;
   localStorage.setItem('designacoes_nome', nome);
   renderMinhaEscala(nome);
+  renderPainelTrocas(); // atualiza painel com avisos do irmão selecionado
 }
 
 function buscarDesignacoesDe(nome) {
@@ -2422,6 +2487,22 @@ function buscarDesignacoesDe(nome) {
 function renderMinhaEscala(nome) {
   var cont = document.getElementById('conteudo-minha-escala');
   if (!nome) { cont.innerHTML='<p style="text-align:center;color:#888;font-size:14px;padding:30px 0">Selecione seu nome.</p>'; return; }
+
+  // Se escalaGerada ainda está vazia, busca do Firebase primeiro
+  if (firebaseOk && db && Object.keys(escalaGerada).length === 0) {
+    cont.innerHTML = '<p style="text-align:center;color:#888;font-size:14px;padding:30px 0">&#9203; Carregando...</p>';
+    db.ref('escala/estado').once('value', function(snap) {
+      var dados = snap.val();
+      if (dados && dados.escalaGerada) Object.assign(escalaGerada, dados.escalaGerada);
+      if (dados && dados.substituicoes) Object.assign(substituicoes, dados.substituicoes);
+      // Agora carrega confirmações e renderiza
+      db.ref('confirmacoes/' + nome.replace(/[.#$[\]]/g,'_')).once('value', function(snap2) {
+        minhaEscalaConfirmacoes = snap2.val() || {};
+        _renderMinhaEscalaComConf(nome, cont);
+      });
+    });
+    return;
+  }
 
   // Carrega confirmações do Firebase
   if (firebaseOk && db) {
@@ -2623,28 +2704,63 @@ function renderHistorico() {
 }
 
 // ===================== AVISOS DE AUSÊNCIA (responsável) =====================
+var _avisosAusenciaCache = [];
+
+function renderListaAusencias() {
+  var cont = document.getElementById('lista-ausencias-conteudo');
+  if (!cont) return;
+  var hoje = new Date(); hoje.setHours(0,0,0,0);
+  var relevantes = _avisosAusenciaCache.filter(function(a) {
+    return new Date(a.dataISO) >= hoje;
+  });
+  if (!relevantes.length) {
+    cont.innerHTML = '<p style="font-size:13px;color:#888;padding:10px 0">Nenhum aviso de ausência pendente.</p>';
+    return;
+  }
+  // Ordena por data
+  relevantes.sort(function(a,b){ return a.dataISO < b.dataISO ? -1 : 1; });
+  var html = relevantes.map(function(a) {
+    var dt = a.data || a.dataISO;
+    return '<div style="background:#fef2f2;border:1.5px solid #fca5a5;border-radius:10px;padding:12px 16px;margin-bottom:10px">' +
+      '<div style="font-size:15px;font-weight:bold;color:#991b1b;margin-bottom:4px">&#128680; ' + escHtml(a.nome) + '</div>' +
+      '<div style="font-size:13px;color:#7f1d1d">&#128205; Setor: <strong>' + escHtml(a.setor) + '</strong></div>' +
+      '<div style="font-size:13px;color:#7f1d1d">&#128197; Data: <strong>' + escHtml(dt) + '</strong></div>' +
+    '</div>';
+  }).join('');
+  cont.innerHTML = html;
+}
+
 function ouvirAvisosAusencia() {
   if (!db) return;
   db.ref('avisos_ausencia').on('value', function(snap) {
-    var avisos = [];
-    snap.forEach(function(c) { avisos.push(c.val()); });
-    // Filtra avisos das próximas reuniões
+    _avisosAusenciaCache = [];
+    snap.forEach(function(c) { _avisosAusenciaCache.push(c.val()); });
     var hoje = new Date(); hoje.setHours(0,0,0,0);
-    var relevantes = avisos.filter(function(a) {
-      var d = new Date(a.dataISO);
-      return d >= hoje;
+    var relevantes = _avisosAusenciaCache.filter(function(a) {
+      return new Date(a.dataISO) >= hoje;
     });
-    if (relevantes.length > 0 && modoResponsavel) {
-      var badge = document.getElementById('badge-avisos-ausencia');
+
+    // Mostra badge na página principal (visível sem precisar entrar na área do responsável)
+    var badge = document.getElementById('badge-avisos-ausencia');
+    if (relevantes.length > 0) {
       if (!badge) {
         badge = document.createElement('div');
         badge.id = 'badge-avisos-ausencia';
-        badge.style.cssText = 'background:#fef2f2;border:1.5px solid #fca5a5;border-radius:8px;padding:8px 14px;margin-bottom:16px;font-size:13px;color:#991b1b;cursor:pointer';
-        badge.onclick = function(){ trocarAba('aba-conf-ausencias'); };
+        badge.style.cssText = 'background:#fef2f2;border:1.5px solid #fca5a5;border-radius:8px;padding:10px 16px;margin:10px 20px;font-size:13px;color:#991b1b;cursor:pointer;display:none';
         document.querySelector('.topo').after(badge);
       }
-      badge.innerHTML = '\u26A0 <strong>'+relevantes.length+' aviso(s) de ausência</strong> para próximas reuniões. Clique para ver.';
+      var linkHtml = modoResponsavel
+        ? '<span style="text-decoration:underline;cursor:pointer" onclick="abrirPrincipal('aba-ausencias')">Ver ausências ↗</span>'
+        : '<span style="text-decoration:underline;cursor:pointer" onclick="pedirSenha()">Entrar como responsável →</span>';
+      badge.innerHTML = '&#9888;&#65039; <strong>' + relevantes.length + ' aviso(s) de ausência</strong> registrado(s). ' + linkHtml;
+      // Visível para todos — responsável vê sem precisar logar primeiro
+      badge.style.display = 'block';
+    } else if (badge) {
+      badge.style.display = 'none';
     }
+
+    // Atualiza lista dentro da aba se ela já estiver aberta
+    renderListaAusencias();
   });
 }
 
@@ -2652,6 +2768,7 @@ function ouvirAvisosAusencia() {
 var _trocarAbaOriginal = trocarAba;
 trocarAba = function(id, btn) {
   _trocarAbaOriginal(id, btn);
+  if (id === 'aba-ausencias') { renderListaAusencias(); }
   if (id === 'aba-historico') {
     var selIrmao = document.getElementById('hist-filtro-irmao');
     if (selIrmao) {
@@ -2662,10 +2779,13 @@ trocarAba = function(id, btn) {
   }
 };
 
-// ===================== nomeSpan ATUALIZADO =====================
-// Garante que erros no Firebase não quebrem a escala
-try { gerarEscalaAtual(); } catch(e) { console.error('Erro gerarEscalaAtual:', e); }
-try { iniciarFirebase(); } catch(e) { console.error('Erro iniciarFirebase:', e); }
+// ===================== INICIALIZAÇÃO =====================
+// Firebase carrega a escala. gerarEscalaAtual só roda se Firebase falhar.
+try { iniciarFirebase(); } catch(e) {
+  console.error('Erro iniciarFirebase:', e);
+  // Fallback: gera localmente se Firebase não conectar
+  try { gerarEscalaAtual(); } catch(e2) { console.error('Erro gerarEscalaAtual:', e2); }
+}
 atualizarBotaoNotif();
 // Verifica se já instalado como PWA
 if (window.matchMedia('(display-mode: standalone)').matches) {
