@@ -1725,29 +1725,31 @@ function ouvirConfig() {
       renderEventos(); renderTreino(); renderGerenciarIrmaos();
     }
 
-    // ── REGENERA A ESCALA para todos verem igual ──────────────
-    if(mudou && Object.keys(mesesGerados).length > 0){
-      var chavesAtivas = Object.keys(mesesGerados).sort();
-      // Busca o estado salvo para restaurar os contadores antes de regenerar
+    // Atualiza a tela se a escala já estiver visível (re-renderiza sem regrear)
+    if (mudou && Object.keys(mesesGerados).length > 0) {
+      // Apenas re-renderiza com os dados já salvos no Firebase — nunca regera do zero
       db.ref('escala/estado').once('value', function(snapEstado) {
         var dadosEstado = snapEstado.val() || {};
-        substituicoes={}; contadorPulo={}; aparicoes={}; ultimoAuditorio={};
-        mesesGerados={};
-        idxM.v=0; idxA.v=0; idxV.v=0; idxZ.v=0; idxI.v=0; ultimoPar=-1;
-        // Restaura estado do rodízio
-        if (dadosEstado.contadorPulo) Object.assign(contadorPulo, dadosEstado.contadorPulo);
-        if (dadosEstado.aparicoes)    Object.assign(aparicoes, dadosEstado.aparicoes);
-        if (dadosEstado.idxM !== undefined) idxM.v = dadosEstado.idxM;
-        if (dadosEstado.idxA !== undefined) idxA.v = dadosEstado.idxA;
-        if (dadosEstado.idxV !== undefined) idxV.v = dadosEstado.idxV;
-        if (dadosEstado.idxZ !== undefined) idxZ.v = dadosEstado.idxZ;
-        if (dadosEstado.idxI !== undefined) idxI.v = dadosEstado.idxI;
-        if (dadosEstado.ultimoPar !== undefined) ultimoPar = dadosEstado.ultimoPar;
-        document.getElementById('lista').innerHTML='';
-        chavesAtivas.forEach(function(chave){
-          var p=chave.split('-');
-          adicionarMeses(parseInt(p[1]), parseInt(p[0]), 1);
-        });
+        if (dadosEstado.escalaGerada && Object.keys(dadosEstado.escalaGerada).length > 0) {
+          escalaGerada = {};
+          Object.assign(escalaGerada, dadosEstado.escalaGerada);
+          if (dadosEstado.substituicoes) Object.assign(substituicoes, dadosEstado.substituicoes);
+          var chavesAtivas = Object.keys(mesesGerados).sort();
+          document.getElementById('lista').innerHTML = '';
+          mesesGerados = {};
+          chavesAtivas.forEach(function(chave) {
+            var p = chave.split('-');
+            var a = parseInt(p[0]), m = parseInt(p[1]);
+            mesesGerados[chave] = true;
+            renderMesSalvo(m, a, dadosEstado.escalaGerada, dadosEstado.substituicoes || substituicoes);
+          });
+          var lista = document.getElementById('lista');
+          var blocos = Array.from(lista.querySelectorAll('.mes-bloco'));
+          blocos.sort(function(a,b){ return (a.dataset.chavemes||'').localeCompare(b.dataset.chavemes||''); });
+          blocos.forEach(function(b){ lista.appendChild(b); });
+          aplicarSubstituicoesNaTela();
+          atualizarSubtitulo();
+        }
       });
     }
   });
