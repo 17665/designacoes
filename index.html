@@ -334,6 +334,7 @@ h1 { font-size:22px; font-weight:700; color:#1a4fa3; margin-bottom:4px; }
         </div>
         <button class="btn-gerar-ok" onclick="adicionarMesesDoForm()" style="margin-bottom:10px">&#128197; Adicionar meses à escala</button>
         <button class="btn-gerar-ok" onclick="regenerarTudoDoForm()" style="background:#8b0000;margin-top:0">&#9888; Regenerar tudo (apaga escala atual)</button>
+        <button class="btn-gerar-ok" onclick="limparFirebaseERecomecar()" style="background:#4b0082;margin-top:6px">&#128465; Limpar Firebase e recomeçar do zero</button>
       </div>
 
       <!-- ABA TROCAS -->
@@ -1403,6 +1404,23 @@ function adicionarMesesDoForm(){
   adicionarMeses(mes,ano,qtd);
 }
 
+function limparFirebaseERecomecar(){
+  if(!confirm('Isso apaga TODOS os dados do Firebase (meses, config, trocas) e recomeça do zero. Confirma?')) return;
+  if(!firebaseOk||!db){ alert('Firebase não conectado.'); return; }
+  db.ref('escala').remove().then(function(){
+    db.ref('trocas').remove().then(function(){
+      substituicoes={}; contadorPulo={}; aparicoes={}; ultimoAuditorio={};
+      mesesGerados={}; trocasCache={};
+      idxM.v=0; idxA.v=0; idxV.v=0; idxZ.v=0; idxI.v=0; ultimoPar=-1;
+      document.getElementById('lista').innerHTML='';
+      document.getElementById('painel-trocas').style.display='none';
+      atualizarSubtitulo();
+      fecharPrincipal();
+      alert('Firebase limpo! Agora gere os meses novamente.');
+    });
+  }).catch(function(e){ alert('Erro: '+e.message); });
+}
+
 function regenerarTudoDoForm(){
   if(!confirm('Isso apagará toda a escala atual e as substituições manuais. Continuar?')) return;
   var mes=parseInt(document.getElementById('gerar-mes').value);
@@ -1653,9 +1671,9 @@ function processarMeses(mesesSalvos, dadosEstado) {
   chavesSalvas.forEach(function(chave){
     var p = chave.split('-');
     var a = parseInt(p[0]), m = parseInt(p[1]);
+    if(isNaN(a)||isNaN(m)||m<1||m>12||a<2020||a>2040) return; // ignora inválido
     mesesGerados[chave] = true;
     if (temEscalaGerada) {
-      // Exibe a escala já salva — sem rodar rodízio novamente
       renderMesSalvo(m, a, dadosEstado.escalaGerada, dadosEstado.substituicoes || substituicoes);
     } else {
       gerarMes(m, a);
