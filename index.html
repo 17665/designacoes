@@ -2400,7 +2400,18 @@ function trocarNomeMinhaEscala() {
   if (!nome) return;
   meuNome = nome;
   localStorage.setItem('designacoes_nome', nome);
-  renderMinhaEscala(nome);
+  var cont = document.getElementById('conteudo-minha-escala');
+  if (Object.keys(escalaGerada).length === 0 && firebaseOk && db) {
+    cont.innerHTML = '<p style="text-align:center;color:#888;font-size:14px;padding:30px 0">&#9203; Carregando designações...</p>';
+    db.ref('escala/estado').once('value', function(snap) {
+      var dados = snap.val();
+      if (dados && dados.escalaGerada) Object.assign(escalaGerada, dados.escalaGerada);
+      if (dados && dados.substituicoes) Object.assign(substituicoes, dados.substituicoes);
+      renderMinhaEscala(nome);
+    });
+  } else {
+    renderMinhaEscala(nome);
+  }
 }
 
 function buscarDesignacoesDe(nome) {
