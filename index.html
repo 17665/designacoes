@@ -11,7 +11,6 @@
 <link rel="manifest" href="manifest.json">
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-messaging-compat.js"></script>
 <title>Designações — Cong. Parq. Tietê</title>
 <style>
 * { box-sizing:border-box; margin:0; padding:0; }
@@ -588,18 +587,18 @@ function salvarPerguntaSecreta() {
   var msg = document.getElementById('cfg-pergunta-msg');
   msg.style.display = 'block';
   if (!pergunta || !resposta) {
-    msg.style.color = '#991b1b'; msg.textContent = '✗ Preencha a pergunta e a resposta.'; return;
+    msg.style.color = '#991b1b'; msg.textContent = '\u2717 Preencha a pergunta e a resposta.'; return;
   }
   if (!firebaseOk || !db) {
-    msg.style.color = '#92400e'; msg.textContent = '⚠ Firebase não conectado. Não foi possível salvar.'; return;
+    msg.style.color = '#92400e'; msg.textContent = '\u26A0 Firebase não conectado. Não foi possível salvar.'; return;
   }
   db.ref('escala/perguntaSecreta').set(pergunta);
   db.ref('escala/respostaSecreta').set(resposta.toLowerCase()).then(function() {
-    msg.style.color = '#166534'; msg.textContent = '✓ Pergunta secreta salva com sucesso!';
+    msg.style.color = '#166534'; msg.textContent = '\u2713 Pergunta secreta salva com sucesso!';
     document.getElementById('cfg-pergunta').value = '';
     document.getElementById('cfg-resposta').value = '';
   }).catch(function(e) {
-    msg.style.color = '#991b1b'; msg.textContent = '✗ Erro: ' + e.message;
+    msg.style.color = '#991b1b'; msg.textContent = '\u2717 Erro: ' + e.message;
   });
 }
 
@@ -628,26 +627,26 @@ function alterarSenha() {
   var msg   = document.getElementById('cfg-senha-msg');
   msg.style.display = 'block';
   if (atual !== SENHA) {
-    msg.style.color = '#991b1b'; msg.textContent = '✗ Senha atual incorreta.'; return;
+    msg.style.color = '#991b1b'; msg.textContent = '\u2717 Senha atual incorreta.'; return;
   }
   if (!nova || nova.length < 4) {
-    msg.style.color = '#991b1b'; msg.textContent = '✗ A nova senha deve ter pelo menos 4 caracteres.'; return;
+    msg.style.color = '#991b1b'; msg.textContent = '\u2717 A nova senha deve ter pelo menos 4 caracteres.'; return;
   }
   if (nova !== conf) {
-    msg.style.color = '#991b1b'; msg.textContent = '✗ As senhas não coincidem.'; return;
+    msg.style.color = '#991b1b'; msg.textContent = '\u2717 As senhas não coincidem.'; return;
   }
   SENHA = nova;
   if (firebaseOk && db) {
     db.ref('escala/senhaMestra').set(nova).then(function() {
-      msg.style.color = '#166534'; msg.textContent = '✓ Senha alterada e salva no Firebase com sucesso!';
+      msg.style.color = '#166534'; msg.textContent = '\u2713 Senha alterada e salva no Firebase com sucesso!';
       document.getElementById('cfg-senha-atual').value = '';
       document.getElementById('cfg-senha-nova').value = '';
       document.getElementById('cfg-senha-conf').value = '';
     }).catch(function(e) {
-      msg.style.color = '#991b1b'; msg.textContent = '✗ Erro ao salvar: ' + e.message;
+      msg.style.color = '#991b1b'; msg.textContent = '\u2717 Erro ao salvar: ' + e.message;
     });
   } else {
-    msg.style.color = '#92400e'; msg.textContent = '⚠ Senha alterada só localmente (Firebase não conectado).';
+    msg.style.color = '#92400e'; msg.textContent = '\u26A0 Senha alterada só localmente (Firebase não conectado).';
   }
 }
 
@@ -677,10 +676,10 @@ function pedirRecuperacaoSenha() {
       if (resposta.trim().toLowerCase() === respostaCorreta) {
         db.ref('escala/senhaMestra').once('value', function(snap3) {
           var senha = snap3.val() || SENHA;
-          alert('✓ Resposta correta!\n\nSua senha é: ' + senha);
+          alert('\u2713 Resposta correta!\n\nSua senha é: ' + senha);
         });
       } else {
-        alert('✗ Resposta incorreta. Tente novamente.');
+        alert('\u2717 Resposta incorreta. Tente novamente.');
       }
     });
   });
@@ -2260,8 +2259,7 @@ function pedirPermissaoNotificacao() {
     return;
   }
   if (Notification.permission === 'granted') {
-    alert('Notificações já estão ativas! ✓
-Você será avisado quando for designado.');
+    alert('Notifica\u00e7\u00f5es j\u00e1 est\u00e3o ativas! \u2713 Voc\u00ea ser\u00e1 avisado quando for designado.');
     atualizarBotaoNotif();
     return;
   }
@@ -2269,7 +2267,7 @@ Você será avisado quando for designado.');
     atualizarBotaoNotif();
     if (perm === 'granted') {
       // Mostra notificação de teste
-      new Notification('Designações ✓', {
+      new Notification('Designações \u2713', {
         body: 'Notificações ativadas! Você será avisado quando for designado.',
         icon: ''
       });
@@ -2289,12 +2287,12 @@ function atualizarBotaoNotif() {
   if (!('Notification' in window)) return;
   btn.style.display = 'block';
   if (Notification.permission === 'granted') {
-    btn.textContent = '🔔 Avisos: ON';
+    btn.textContent = '\uD83D\uDD14 Avisos: ON';
     btn.title = 'Notificações ativas';
     btn.style.background = '#0f6e56';
-    if (btnEscala) { btnEscala.textContent = '🔔 Avisos ativos ✓'; btnEscala.style.background = '#374151'; }
+    if (btnEscala) { btnEscala.textContent = '\uD83D\uDD14 Avisos ativos \u2713'; btnEscala.style.background = '#374151'; }
   } else {
-    btn.textContent = '🔕';
+    btn.textContent = '\uD83D\uDD15';
     btn.title = 'Clique para ativar notificações';
     btn.style.background = '#9ca3af';
   }
@@ -2304,7 +2302,7 @@ function atualizarBotaoNotif() {
 function notificarSeDesignado(nome, designacoes) {
   if (!nome || Notification.permission !== 'granted' || !designacoes.length) return;
   var proxima = designacoes[0];
-  new Notification('📋 Você foi designado!', {
+  new Notification('\uD83D\uDCCB Você foi designado!', {
     body: proxima.setor + ' — ' + proxima.data,
     icon: '',
     tag: 'designacao-' + proxima.dataISO
@@ -2417,56 +2415,66 @@ function _renderMinhaEscalaComConf(nome, cont) {
   var passadas = des.filter(function(d){ return d.passada; }).slice(-6).reverse();
 
   if (!des.length) {
-    cont.innerHTML = '<div class="semana-vazia">&#128203; Nenhuma designação encontrada para <strong>'+nome+'</strong> nos meses gerados.</div>';
+    cont.innerHTML = '<div class="semana-vazia">&#128203; Nenhuma designa&#231;&#227;o encontrada para <strong>'+escHtml(nome)+'</strong> nos meses gerados.</div>';
     notificarSeDesignado(nome, []);
     return;
   }
-
-  // Notifica próxima designação
   if (futuras.length) notificarSeDesignado(nome, futuras);
 
-  var html = '';
+  // Guarda dados para os botões usarem via índice (evita problemas com aspas em onclick)
+  window._minhaEscalaFuturas = futuras;
 
-  // ── Futuras ──
+  var html = '';
   if (futuras.length) {
-    html += '<div style="font-size:12px;font-weight:bold;color:#6b21a8;text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px">Próximas designações ('+futuras.length+')</div>';
-    futuras.forEach(function(d) {
+    html += '<div style="font-size:12px;font-weight:bold;color:#6b21a8;text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px">Pr&#243;ximas designa&#231;&#245;es ('+futuras.length+')</div>';
+    futuras.forEach(function(d, idx) {
       var chaveConf = d.dataISO + '|' + d.campo;
       var conf = minhaEscalaConfirmacoes[chaveConf] || 'pendente';
-      var badgeTxt = conf==='confirmado'?'✓ Presença confirmada':conf==='ausente'?'✗ Avisou ausência':'⏳ Aguardando confirmação';
+      var badgeTxt = conf==='confirmado'
+        ? '&#10003; Presen&#231;a confirmada'
+        : conf==='ausente'
+        ? '&#10007; Avisou aus&#234;ncia'
+        : '&#9203; Aguardando confirma&#231;&#227;o';
       var badgeCls = 'conf-badge ' + conf;
-      var btns = conf !== 'confirmado'
-        ? '<button class="btn-confirmar-presence btn-conf-sim" onclick="abrirConfirmar(''+d.dataISO+'',''+d.campo+'',''+escHtml(d.setor)+'',''+escHtml(d.data)+'','confirmado')">✓ Confirmar presença</button>'
-        : '';
-      btns += conf !== 'ausente'
-        ? '<button class="btn-confirmar-presence btn-conf-nao" onclick="abrirConfirmar(''+d.dataISO+'',''+d.campo+'',''+escHtml(d.setor)+'',''+escHtml(d.data)+'','ausente')">✗ Avisar ausência</button>'
-        : '';
-      html += '<div class="minha-card">'+
-        '<div class="minha-card-cab">'+
-          '<span class="minha-card-data">'+d.data+'</span>'+
-          '<span class="minha-card-tipo">'+d.setor+'</span>'+
-        '</div>'+
-        '<div class="minha-card-body">'+
-          '<div class="minha-setor">📍 '+d.setor+'</div>'+
-          (d.parceiros.length?'<div class="minha-parceiros">'+d.parceiros.join(' ')+'</div>':'')+
-          '<span class="'+badgeCls+'">'+badgeTxt+'</span>'+
-          '<div>'+btns+'</div>'+
+      var btns = '';
+      if (conf !== 'confirmado') {
+        btns += '<button class="btn-confirmar-presence btn-conf-sim" onclick="clicarConfirmar(' + idx + ', &quot;confirmado&quot;)">&#10003; Confirmar presen&#231;a</button>';
+      }
+      if (conf !== 'ausente') {
+        btns += '<button class="btn-confirmar-presence btn-conf-nao" onclick="clicarConfirmar(' + idx + ', &quot;ausente&quot;)">&#10007; Avisar aus&#234;ncia</button>';
+      }
+      html += '<div class="minha-card">' +
+        '<div class="minha-card-cab">' +
+          '<span class="minha-card-data">'+escHtml(d.data)+'</span>' +
+          '<span class="minha-card-tipo">'+escHtml(d.setor)+'</span>' +
+        '</div>' +
+        '<div class="minha-card-body">' +
+          '<div class="minha-setor">&#128205; '+escHtml(d.setor)+'</div>' +
+          (d.parceiros.length ? '<div class="minha-parceiros">'+escHtml(d.parceiros.join(' '))+'</div>' : '') +
+          '<span class="'+badgeCls+'">'+badgeTxt+'</span>' +
+          '<div style="margin-top:8px">'+btns+'</div>' +
         '</div></div>';
     });
   }
 
-  // ── Passadas ──
   if (passadas.length) {
-    html += '<div style="font-size:12px;font-weight:bold;color:#9ca3af;text-transform:uppercase;letter-spacing:.5px;margin:16px 0 8px">Últimas designações</div>';
+    html += '<div style="font-size:12px;font-weight:bold;color:#9ca3af;text-transform:uppercase;letter-spacing:.5px;margin:16px 0 8px">&#218;ltimas designa&#231;&#245;es</div>';
     passadas.forEach(function(d) {
-      html += '<div style="background:#f9f9f9;border:1px solid #e8e8e8;border-radius:8px;padding:8px 12px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center">'+
-        '<span style="font-size:13px;color:#5e6370">'+d.data+'</span>'+
-        '<span style="font-size:12px;font-weight:bold;color:#6b21a8;background:#f5f3ff;padding:2px 10px;border-radius:10px">'+d.setor+'</span>'+
+      html += '<div style="background:#f9f9f9;border:1px solid #e8e8e8;border-radius:8px;padding:8px 12px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center">' +
+        '<span style="font-size:13px;color:#5e6370">'+escHtml(d.data)+'</span>' +
+        '<span style="font-size:12px;font-weight:bold;color:#6b21a8;background:#f5f3ff;padding:2px 10px;border-radius:10px">'+escHtml(d.setor)+'</span>' +
         '</div>';
     });
   }
 
   cont.innerHTML = html;
+}
+
+// Chamado pelos botões da Minha Escala via índice numérico (sem problema de aspas)
+function clicarConfirmar(idx, resposta) {
+  var d = window._minhaEscalaFuturas && window._minhaEscalaFuturas[idx];
+  if (!d) return;
+  abrirConfirmar(d.dataISO, d.campo, d.setor, d.data, resposta);
 }
 
 function abrirConfirmar(dataISO, campo, setor, data, sugestao) {
@@ -2609,7 +2617,7 @@ function ouvirAvisosAusencia() {
         badge.onclick = function(){ trocarAba('aba-conf-ausencias'); };
         document.querySelector('.topo').after(badge);
       }
-      badge.innerHTML = '⚠ <strong>'+relevantes.length+' aviso(s) de ausência</strong> para próximas reuniões. Clique para ver.';
+      badge.innerHTML = '\u26A0 <strong>'+relevantes.length+' aviso(s) de ausência</strong> para próximas reuniões. Clique para ver.';
     }
   });
 }
@@ -2629,8 +2637,9 @@ trocarAba = function(id, btn) {
 };
 
 // ===================== nomeSpan ATUALIZADO =====================
-gerarEscalaAtual();
-iniciarFirebase();
+// Garante que erros no Firebase não quebrem a escala
+try { gerarEscalaAtual(); } catch(e) { console.error('Erro gerarEscalaAtual:', e); }
+try { iniciarFirebase(); } catch(e) { console.error('Erro iniciarFirebase:', e); }
 atualizarBotaoNotif();
 // Verifica se já instalado como PWA
 if (window.matchMedia('(display-mode: standalone)').matches) {
