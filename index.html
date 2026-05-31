@@ -2367,56 +2367,7 @@ function abrirMinhaEscala() {
   atualizarBotaoNotif();
 
   if (meuNome) {
-    _carregarEExibirMinhaEscala(meuNome);
-  }
-}
-
-function _carregarEExibirMinhaEscala(nome) {
-  var cont = document.getElementById('conteudo-minha-escala');
-
-  // Se já tem dados, renderiza na hora
-  if (Object.keys(escalaGerada).length > 0) {
-    renderMinhaEscala(nome);
-    return;
-  }
-
-  // Sem dados ainda — tenta buscar do Firebase com timeout de segurança
-  if (firebaseOk && db) {
-    cont.innerHTML = '<p style="text-align:center;color:#888;font-size:14px;padding:30px 0">&#9203; Carregando...</p>';
-    var concluido = false;
-
-    // Timeout: se Firebase não responder em 5s, renderiza com o que tiver
-    var timer = setTimeout(function() {
-      if (!concluido) {
-        concluido = true;
-        renderMinhaEscala(nome);
-      }
-    }, 5000);
-
-    db.ref('escala/estado').once('value', function(snap) {
-      if (concluido) return;
-      concluido = true;
-      clearTimeout(timer);
-      var dados = snap.val();
-      if (dados && dados.escalaGerada && Object.keys(dados.escalaGerada).length > 0) {
-        escalaGerada = {};
-        Object.assign(escalaGerada, dados.escalaGerada);
-      }
-      if (dados && dados.substituicoes) {
-        substituicoes = {};
-        Object.assign(substituicoes, dados.substituicoes);
-      }
-      renderMinhaEscala(nome);
-    }, function(erro) {
-      // Erro de permissão ou conexão
-      if (!concluido) {
-        concluido = true;
-        clearTimeout(timer);
-        renderMinhaEscala(nome);
-      }
-    });
-  } else {
-    renderMinhaEscala(nome);
+    renderMinhaEscala(meuNome);
   }
 }
 
@@ -2430,7 +2381,7 @@ function trocarNomeMinhaEscala() {
   if (!nome) return;
   meuNome = nome;
   localStorage.setItem('designacoes_nome', nome);
-  _carregarEExibirMinhaEscala(nome);
+  renderMinhaEscala(nome);
 }
 
 function buscarDesignacoesDe(nome) {
@@ -2494,7 +2445,27 @@ function renderMinhaEscala(nome) {
   var cont = document.getElementById('conteudo-minha-escala');
   if (!nome) { cont.innerHTML='<p style="text-align:center;color:#888;font-size:14px;padding:30px 0">Selecione seu nome.</p>'; return; }
 
-  // Carrega confirmações do Firebase
+  // Se escalaGerada está vazia, busca do Firebase primeiro
+  if (Object.keys(escalaGerada).length === 0 && firebaseOk && db) {
+    cont.innerHTML = '<p style="text-align:center;color:#888;font-size:14px;padding:30px 0">&#9203; Carregando...</p>';
+    db.ref('escala/estado').once('value', function(snap) {
+      var dados = snap.val() || {};
+      if (dados.escalaGerada) Object.assign(escalaGerada, dados.escalaGerada);
+      if (dados.substituicoes) Object.assign(substituicoes, dados.substituicoes);
+      // Agora carrega confirmações e renderiza
+      if (firebaseOk && db) {
+        db.ref('confirmacoes/' + nome.replace(/[.#$[\]]/g,'_')).once('value', function(snap2) {
+          minhaEscalaConfirmacoes = snap2.val() || {};
+          _renderMinhaEscalaComConf(nome, cont);
+        });
+      } else {
+        _renderMinhaEscalaComConf(nome, cont);
+      }
+    });
+    return;
+  }
+
+  // Escala já carregada — só busca confirmações
   if (firebaseOk && db) {
     db.ref('confirmacoes/' + nome.replace(/[.#$[\]]/g,'_')).once('value', function(snap) {
       minhaEscalaConfirmacoes = snap.val() || {};
