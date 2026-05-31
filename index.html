@@ -2442,6 +2442,22 @@ function renderMinhaEscala(nome) {
   var cont = document.getElementById('conteudo-minha-escala');
   if (!nome) { cont.innerHTML='<p style="text-align:center;color:#888;font-size:14px;padding:30px 0">Selecione seu nome.</p>'; return; }
 
+  // Se escalaGerada ainda está vazia, busca do Firebase primeiro
+  if (firebaseOk && db && Object.keys(escalaGerada).length === 0) {
+    cont.innerHTML = '<p style="text-align:center;color:#888;font-size:14px;padding:30px 0">&#9203; Carregando...</p>';
+    db.ref('escala/estado').once('value', function(snap) {
+      var dados = snap.val();
+      if (dados && dados.escalaGerada) Object.assign(escalaGerada, dados.escalaGerada);
+      if (dados && dados.substituicoes) Object.assign(substituicoes, dados.substituicoes);
+      // Agora carrega confirmações e renderiza
+      db.ref('confirmacoes/' + nome.replace(/[.#$[\]]/g,'_')).once('value', function(snap2) {
+        minhaEscalaConfirmacoes = snap2.val() || {};
+        _renderMinhaEscalaComConf(nome, cont);
+      });
+    });
+    return;
+  }
+
   // Carrega confirmações do Firebase
   if (firebaseOk && db) {
     db.ref('confirmacoes/' + nome.replace(/[.#$[\]]/g,'_')).once('value', function(snap) {
