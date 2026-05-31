@@ -306,6 +306,7 @@ h1 { font-size:22px; font-weight:700; color:#1a4fa3; margin-bottom:4px; }
       <button class="aba-btn"       onclick="trocarAba('aba-trocas',this)">&#128260; Trocas</button>
       <button class="aba-btn"       onclick="trocarAba('aba-historico',this)">&#128202; Histórico</button>
       <button class="aba-btn"       onclick="trocarAba('aba-config',this)">&#128274; Senha</button>
+      <button class="aba-btn"       onclick="trocarAba('aba-ausencias',this)" id="btn-aba-ausencias">&#128680; Ausências</button>
       <button class="aba-btn"       onclick="trocarAba('aba-manual-resp',this)">&#128203; Manual</button>
     </div>
     <div class="modal-body">
@@ -460,6 +461,16 @@ h1 { font-size:22px; font-weight:700; color:#1a4fa3; margin-bottom:4px; }
             style="background:#0f6e56;color:white;border:none;padding:9px 20px;border-radius:8px;font-size:14px;font-weight:bold;cursor:pointer;width:100%">
             &#10003; Salvar pergunta secreta
           </button>
+        </div>
+      </div>
+
+      <!-- ABA AUSÊNCIAS -->
+      <div class="aba-conteudo" id="aba-ausencias">
+        <p style="font-size:13px;color:#5e6370;margin-bottom:14px;line-height:1.6">
+          Avisos de ausência enviados pelos irmãos pela tela <strong>Minha Escala</strong>.
+        </p>
+        <div id="lista-ausencias-conteudo">
+          <p style="font-size:13px;color:#888">Carregando...</p>
         </div>
       </div>
 
@@ -714,6 +725,11 @@ var modoResponsavel = false;
 
 function ativarModoResponsavel() {
   modoResponsavel = true;
+  // Mostra badge de ausências se houver avisos
+  var badge = document.getElementById('badge-avisos-ausencia');
+  if (badge && _avisosAusenciaCache.filter(function(a){ return new Date(a.dataISO) >= new Date(new Date().setHours(0,0,0,0)); }).length > 0) {
+    badge.style.display = 'block';
+  }
   document.getElementById('badge-responsavel').style.display = 'flex';
   document.getElementById('btn-area-responsavel').style.display = 'none';
   // Re-renderiza para mostrar badges de treino
@@ -752,6 +768,8 @@ function ativarModoResponsavel() {
 
 function sairModoResponsavel() {
   modoResponsavel = false;
+  var badge = document.getElementById('badge-avisos-ausencia');
+  if (badge) badge.style.display = 'none';
   document.getElementById('badge-responsavel').style.display = 'none';
   document.getElementById('btn-area-responsavel').style.display = '';
   // Re-renderiza escala sem badges de treino
@@ -2663,28 +2681,61 @@ function renderHistorico() {
 }
 
 // ===================== AVISOS DE AUSÊNCIA (responsável) =====================
+var _avisosAusenciaCache = [];
+
+function renderListaAusencias() {
+  var cont = document.getElementById('lista-ausencias-conteudo');
+  if (!cont) return;
+  var hoje = new Date(); hoje.setHours(0,0,0,0);
+  var relevantes = _avisosAusenciaCache.filter(function(a) {
+    return new Date(a.dataISO) >= hoje;
+  });
+  if (!relevantes.length) {
+    cont.innerHTML = '<p style="font-size:13px;color:#888;padding:10px 0">Nenhum aviso de ausência pendente.</p>';
+    return;
+  }
+  // Ordena por data
+  relevantes.sort(function(a,b){ return a.dataISO < b.dataISO ? -1 : 1; });
+  var html = relevantes.map(function(a) {
+    var dt = a.data || a.dataISO;
+    return '<div style="background:#fef2f2;border:1.5px solid #fca5a5;border-radius:10px;padding:12px 16px;margin-bottom:10px">' +
+      '<div style="font-size:15px;font-weight:bold;color:#991b1b;margin-bottom:4px">&#128680; ' + escHtml(a.nome) + '</div>' +
+      '<div style="font-size:13px;color:#7f1d1d">&#128205; Setor: <strong>' + escHtml(a.setor) + '</strong></div>' +
+      '<div style="font-size:13px;color:#7f1d1d">&#128197; Data: <strong>' + escHtml(dt) + '</strong></div>' +
+    '</div>';
+  }).join('');
+  cont.innerHTML = html;
+}
+
 function ouvirAvisosAusencia() {
   if (!db) return;
   db.ref('avisos_ausencia').on('value', function(snap) {
-    var avisos = [];
-    snap.forEach(function(c) { avisos.push(c.val()); });
-    // Filtra avisos das próximas reuniões
+    _avisosAusenciaCache = [];
+    snap.forEach(function(c) { _avisosAusenciaCache.push(c.val()); });
     var hoje = new Date(); hoje.setHours(0,0,0,0);
-    var relevantes = avisos.filter(function(a) {
-      var d = new Date(a.dataISO);
-      return d >= hoje;
+    var relevantes = _avisosAusenciaCache.filter(function(a) {
+      return new Date(a.dataISO) >= hoje;
     });
-    if (relevantes.length > 0 && modoResponsavel) {
-      var badge = document.getElementById('badge-avisos-ausencia');
+
+    // Mostra badge na página principal (visível sem precisar entrar na área do responsável)
+    var badge = document.getElementById('badge-avisos-ausencia');
+    if (relevantes.length > 0) {
       if (!badge) {
         badge = document.createElement('div');
         badge.id = 'badge-avisos-ausencia';
-        badge.style.cssText = 'background:#fef2f2;border:1.5px solid #fca5a5;border-radius:8px;padding:8px 14px;margin-bottom:16px;font-size:13px;color:#991b1b;cursor:pointer';
-        badge.onclick = function(){ trocarAba('aba-conf-ausencias'); };
+        badge.style.cssText = 'background:#fef2f2;border:1.5px solid #fca5a5;border-radius:8px;padding:10px 16px;margin:10px 20px;font-size:13px;color:#991b1b;cursor:pointer;display:none';
         document.querySelector('.topo').after(badge);
       }
-      badge.innerHTML = '\u26A0 <strong>'+relevantes.length+' aviso(s) de ausência</strong> para próximas reuniões. Clique para ver.';
+      badge.innerHTML = '&#9888;&#65039; <strong>' + relevantes.length + ' aviso(s) de ausência</strong> para próximas reuniões. Clique para gerenciar.';
+      badge.onclick = function() { pedirSenha(); };
+      // Mostra só para responsável logado
+      badge.style.display = modoResponsavel ? 'block' : 'none';
+    } else if (badge) {
+      badge.style.display = 'none';
     }
+
+    // Atualiza lista dentro da aba se ela já estiver aberta
+    renderListaAusencias();
   });
 }
 
@@ -2692,6 +2743,7 @@ function ouvirAvisosAusencia() {
 var _trocarAbaOriginal = trocarAba;
 trocarAba = function(id, btn) {
   _trocarAbaOriginal(id, btn);
+  if (id === 'aba-ausencias') { renderListaAusencias(); }
   if (id === 'aba-historico') {
     var selIrmao = document.getElementById('hist-filtro-irmao');
     if (selIrmao) {
