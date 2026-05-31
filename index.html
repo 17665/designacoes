@@ -1005,9 +1005,9 @@ function confirmarSubst(){
     }
   }
 
-  // Persiste no Firebase — salva em estado.substituicoes para manter junto com a escala
+  // Persiste no Firebase — usa update atômico para garantir que fica dentro de escala/estado
   if(firebaseOk && db) {
-    db.ref('escala/estado/substituicoes').set(substituicoes).catch(function(e){
+    db.ref('escala/estado').update({ substituicoes: substituicoes }).catch(function(e){
       console.warn('Erro ao salvar substituição:', e);
     });
   }
@@ -1494,10 +1494,15 @@ function ouvirMeses() {
     if (dados.idxZ !== undefined) idxZ.v = dados.idxZ;
     if (dados.idxI !== undefined) idxI.v = dados.idxI;
     if (dados.ultimoPar !== undefined) ultimoPar = dados.ultimoPar;
-    // Carrega substituições ANTES de renderizar para que nomeSpan já use o substituto
-    if (dados.substituicoes) Object.assign(substituicoes, dados.substituicoes);
-
-    processarMeses(mesesSalvos, dados);
+    // Busca substituições do subpath (escrita por update) antes de renderizar
+    db.ref('escala/estado/substituicoes').once('value', function(snapSubst) {
+      var subst = snapSubst.val() || {};
+      substituicoes = {};
+      Object.assign(substituicoes, subst);
+      // Também tenta do payload direto (compatibilidade)
+      if (dados.substituicoes) Object.assign(substituicoes, dados.substituicoes);
+      processarMeses(mesesSalvos, dados);
+    });
   });
 }
 
@@ -1711,24 +1716,38 @@ function aplicarTrocaNaEscala(troca) {
 // Escuta trocas em tempo real no Firebase
 function ouvirSubstituicoes() {
   if(!db) return;
-  // Escuta o caminho correto onde confirmarSubst salva
   db.ref('escala/estado/substituicoes').on('value', function(snap) {
     var dados = snap.val() || {};
-    // Atualiza memória
     substituicoes = {};
     Object.keys(dados).forEach(function(chave) {
       substituicoes[chave] = dados[chave];
     });
-    // Aplica nos spans do modo responsável
-    aplicarSubstituicoesNaTela();
+    // Aplica imediatamente se a escala já estiver renderizada
+    if(document.querySelectorAll('.mes-bloco').length > 0) {
+      aplicarSubstituicoesNaTela();
+    } else {
+      // Aguarda a escala renderizar e aplica depois
+      setTimeout(aplicarSubstituicoesNaTela, 800);
+    }
   });
 }
 
 function aplicarSubstituicoesNaTela() {
   Object.keys(substituicoes).forEach(function(chave) {
     var novo = substituicoes[chave];
+    // Aplica em spans do modo responsável (.nome-clicavel) E modo normal (.nome-troca)
+    // Usa data-chave para responsável, e onclick para modo normal
     var spans = document.querySelectorAll('.nome-clicavel[data-chave="' + chave + '"]');
-    spans.forEach(function(span) {
+    // Para modo normal, busca pelo onclick que contém a chave
+    var spansTroca = document.querySelectorAll('.nome-troca');
+    spansTroca.forEach(function(s) {
+      var oc = s.getAttribute('onclick') || '';
+      if (oc.indexOf("'" + chave + "'") >= 0) {
+        if (!spans.length) spans = [s]; // fallback se não há clicavel
+        else spans = Array.from(spans).concat(s);
+      }
+    });
+    Array.from(spans).forEach(function(span) {
       if(span.textContent !== novo) {
         span.textContent = novo;
         // Atualiza badge de treino
