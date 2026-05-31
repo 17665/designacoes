@@ -1277,7 +1277,6 @@ var trocaAtual = null;
 
 function nomeSpan(n,chave,setor,dataLabel){
   var atual=substituicoes[chave]||n;
-  // badge de troca
   var badgeTroca='';
   Object.values(trocasCache).forEach(function(t){
     if(t.dataLabel===dataLabel && t.setor===setor){
@@ -1286,8 +1285,6 @@ function nomeSpan(n,chave,setor,dataLabel){
       else if(t.status==='recusada') badgeTroca=' <span class="badge-troca-recusada">&#10060; recusada</span>';
     }
   });
-  // Cor e badge de treinamento — visível APENAS para o responsável
-  // Badge só aparece se o irmão tem frequência reduzida neste setor específico
   var setorChave = { 'Palco-Coord':'palco','Palco-Ajud':'palco','Palco':'palco',
     'Mic1':'microfone','Mic2':'microfone','Microfone':'microfone',
     'Audio':'audio','Áudio':'audio',
@@ -1299,11 +1296,10 @@ function nomeSpan(n,chave,setor,dataLabel){
   var styleExtra = (modoResponsavel && emTreinoNesteSetor) ? ' style="color:#b45309;font-style:italic;" title="Em treinamento"' : '';
   var badgeTreino = (modoResponsavel && emTreinoNesteSetor) ? ' <span style="font-size:9px;background:#fef3c7;color:#92400e;border:1px solid #fcd34d;border-radius:8px;padding:1px 5px;vertical-align:middle">treino</span>' : '';
   if(modoResponsavel){
-    return '<span class="nome-clicavel" data-chave="'+chave+'"'+styleExtra+' onclick="abrirSubst(\'' + chave + '\',\'' + escHtml(setor) + '\',\'' + escHtml(dataLabel) + '\',this.textContent,this)">' + escHtml(atual) + '</span>' + badgeTreino + badgeTroca;
+    return '<span class="nome-clicavel" data-chave="'+chave+'"'+styleExtra+' onclick="abrirSubst(\'' + chave + '\',\'' + setor.replace(/'/g, "\\'") + '\',\'' + dataLabel.replace(/'/g, "\\'") + '\',this.textContent,this)">' + escHtml(atual) + '</span>' + badgeTreino + badgeTroca;
   }
-  return '<span class="nome-troca" onclick="abrirTroca(\'' + chave + '\',\'' + escHtml(setor) + '\',\'' + escHtml(dataLabel) + '\',\'' + escHtml(atual) + '\')">' + escHtml(atual) + '</span>' + badgeTroca;
+  return '<span class="nome-troca" onclick="abrirTroca(\'' + chave + '\',\'' + setor.replace(/'/g, "\\'") + '\',\'' + dataLabel.replace(/'/g, "\\'") + '\',\'' + atual.replace(/'/g, "\\'") + '\')">' + escHtml(atual) + '</span>' + badgeTroca;
 }
-
 
 // Renderiza um mês usando a escala já salva no Firebase (sem rodar rodízio)
 function renderMesSalvo(mes, ano, escSalva, substs) {
@@ -1780,6 +1776,15 @@ function ouvirMeses() {
       escalaGerada = {};
       Object.assign(escalaGerada, dados.escalaGerada);
     }
+
+    if (mesmoEstado) return; // estrutura dos meses não mudou — não re-renderiza
+
+        // Sempre restaura escalaGerada para que "Minha Escala" funcione após reload
+    if (dados.escalaGerada && Object.keys(dados.escalaGerada).length > 0) {
+      escalaGerada = {};
+      Object.assign(escalaGerada, dados.escalaGerada);
+    }
+    if (dados.substituicoes) Object.assign(substituicoes, dados.substituicoes);
 
     if (mesmoEstado) return; // estrutura dos meses não mudou — não re-renderiza
 
