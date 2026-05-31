@@ -264,6 +264,8 @@ h1 { font-size:22px; font-weight:700; color:#1a4fa3; margin-bottom:4px; }
     </div>
     <button class="btn-gerenciar" id="btn-area-responsavel" onclick="pedirSenha()">&#128100; Área do Responsável</button>
     <button class="btn-imprimir"  onclick="window.print()">&#128424; Imprimir escala</button>
+    <a href="manual-usuario.html" target="_blank" style="background:#7c3aed;color:white;border:none;padding:9px 18px;border-radius:8px;font-size:14px;font-weight:bold;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:6px">&#128214; Manual do Irmão</a>
+    <a href="manual-responsavel.html" target="_blank" style="background:#0f6e56;color:white;border:none;padding:9px 18px;border-radius:8px;font-size:14px;font-weight:bold;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:6px">&#128203; Manual do Responsável</a>
     <button id="btn-minha-escala" onclick="abrirMinhaEscala()" style="background:#7c3aed;color:white;border:none;padding:9px 18px;border-radius:8px;font-size:14px;font-weight:bold;cursor:pointer">&#128100; Minha Escala</button>
     <button id="btn-notif" onclick="pedirPermissaoNotificacao()" style="display:none;background:#0f6e56;color:white;border:none;padding:9px 14px;border-radius:8px;font-size:14px;cursor:pointer" title="Ativar notificações">&#128276;</button>
     <button id="btn-instalar-pwa" onclick="instalarPWA()" style="display:none;background:#f59e0b;color:white;border:none;padding:9px 14px;border-radius:8px;font-size:13px;font-weight:bold;cursor:pointer">&#128187; Instalar App</button>
@@ -2321,8 +2323,30 @@ function abrirMinhaEscala() {
   sel.innerHTML = '<option value="">— selecione seu nome —</option>' +
     todosIrmaos.map(function(n){ return '<option value="'+n+'"'+(n===meuNome?' selected':'')+'>'+n+'</option>'; }).join('');
   document.getElementById('ov-minha-escala').classList.add('aberto');
-  if (meuNome) renderMinhaEscala(meuNome);
   atualizarBotaoNotif();
+
+  if (meuNome) {
+    if (Object.keys(escalaGerada).length > 0) {
+      // Escala já carregada — renderiza direto
+      renderMinhaEscala(meuNome);
+    } else if (firebaseOk && db) {
+      // Ainda carregando — busca do Firebase
+      document.getElementById('conteudo-minha-escala').innerHTML =
+        '<p style="text-align:center;color:#888;font-size:14px;padding:30px 0">&#9203; Carregando designações...</p>';
+      db.ref('escala/estado').once('value', function(snap) {
+        var dados = snap.val();
+        if (dados && dados.escalaGerada) {
+          Object.assign(escalaGerada, dados.escalaGerada);
+        }
+        if (dados && dados.substituicoes) {
+          Object.assign(substituicoes, dados.substituicoes);
+        }
+        renderMinhaEscala(meuNome);
+      });
+    } else {
+      renderMinhaEscala(meuNome);
+    }
+  }
 }
 
 function fecharMinhaEscala() {
