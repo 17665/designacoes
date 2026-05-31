@@ -1782,50 +1782,33 @@ function ouvirMeses() {
   if (!db) return;
   db.ref('escala/estado').on('value', function(snap) {
     var dados = snap.val();
-    console.log('[Firebase] escala/estado recebido:', dados ? Object.keys(dados) : null);
 
     // Sem dados no Firebase — tenta caminho legado
     if (!dados) {
       db.ref('escala/meses').once('value', function(snapAntigo) {
         var dadosAntigos = snapAntigo.val();
         if (dadosAntigos) processarMeses(extrairMeses(dadosAntigos), {});
+        else gerarEscalaAtual(); // fallback local se Firebase vazio
       });
       return;
     }
 
-    // Extrai somente chaves de meses válidas (formato YYYY-M)
-    // dados.meses pode estar como objeto {chave:true} ou como chaves diretas no objeto raiz
+    // Extrai meses salvos — tenta dados.meses primeiro, depois raiz (legado)
     var mesesSalvos = {};
     if (dados.meses && typeof dados.meses === 'object') {
       mesesSalvos = extrairMeses(dados.meses);
     }
-    // fallback: chaves no objeto raiz (estrutura legada)
     if (!Object.keys(mesesSalvos).length) {
       mesesSalvos = extrairMeses(dados);
     }
-    // fallback 2: campo "estado" aninhado
-    if (!Object.keys(mesesSalvos).length && dados.estado) {
-      mesesSalvos = extrairMeses(dados.estado.meses || dados.estado);
-    }
-    console.log('[Firebase] mesesSalvos encontrados:', Object.keys(mesesSalvos));
+
+    // Sem meses salvos — gera localmente como fallback
     if (!Object.keys(mesesSalvos).length) {
-      console.warn('[Firebase] Nenhum mês encontrado no snapshot:', JSON.stringify(Object.keys(dados)));
+      if (Object.keys(mesesGerados).length === 0) gerarEscalaAtual();
       return;
     }
 
-    // SEMPRE popula escalaGerada do Firebase (garante funcionamento em todos os dispositivos)
-    if (dados.escalaGerada && Object.keys(dados.escalaGerada).length > 0) {
-      escalaGerada = {};
-      Object.assign(escalaGerada, dados.escalaGerada);
-    }
-
-    // Se os meses na tela já são os mesmos do Firebase E escalaGerada está populado, sai
-    var chavesSalvas = Object.keys(mesesSalvos).sort();
-    var chavesLocais = Object.keys(mesesGerados).sort();
-    var escalaOk = dados.escalaGerada && Object.keys(dados.escalaGerada).length > 0;
-    if (JSON.stringify(chavesSalvas) === JSON.stringify(chavesLocais) && escalaOk) return;
-
-    // Meses mudaram — re-renderiza tudo
+    // Restaura contadores
     if (dados.contadorPulo) Object.assign(contadorPulo, dados.contadorPulo);
     if (dados.aparicoes)    Object.assign(aparicoes, dados.aparicoes);
     if (dados.idxM !== undefined) idxM.v = dados.idxM;
@@ -1835,13 +1818,13 @@ function ouvirMeses() {
     if (dados.idxI !== undefined) idxI.v = dados.idxI;
     if (dados.ultimoPar !== undefined) ultimoPar = dados.ultimoPar;
 
-    db.ref('escala/estado/substituicoes').once('value', function(snapSubst) {
+    // Substituições já vêm dentro do próprio snapshot — sem segunda chamada
+    if (dados.substituicoes) {
       substituicoes = {};
-      var subst = snapSubst.val() || {};
-      Object.assign(substituicoes, subst);
-      if (dados.substituicoes) Object.assign(substituicoes, dados.substituicoes);
-      processarMeses(mesesSalvos, dados);
-    });
+      Object.assign(substituicoes, dados.substituicoes);
+    }
+
+    processarMeses(mesesSalvos, dados);
   });
 }
 
@@ -1861,31 +1844,40 @@ function extrairMeses(obj) {
 
 function processarMeses(mesesSalvos, dadosEstado) {
   mesesGerados = {};
-  escalaGerada = {};
   document.getElementById('lista').innerHTML = '';
 
-  // Restaura contadores se disponíveis
-  if (!dadosEstado || !dadosEstado.contadorPulo) {
-    contadorPulo = {}; aparicoes = {}; ultimoAuditorio = {};
-    idxM.v=0; idxA.v=0; idxV.v=0; idxZ.v=0; idxI.v=0; ultimoPar=-1;
-  }
-  if (dadosEstado && dadosEstado.substituicoes) {
-    Object.assign(substituicoes, dadosEstado.substituicoes);
+  // Restaura contadores
+  contadorPulo = {}; aparicoes = {}; ultimoAuditorio = {};
+  idxM.v=0; idxA.v=0; idxV.v=0; idxZ.v=0; idxI.v=0; ultimoPar=-1;
+  if (dadosEstado) {
+    if (dadosEstado.contadorPulo) Object.assign(contadorPulo, dadosEstado.contadorPulo);
+    if (dadosEstado.aparicoes)    Object.assign(aparicoes, dadosEstado.aparicoes);
+    if (dadosEstado.idxM !== undefined) idxM.v = dadosEstado.idxM;
+    if (dadosEstado.idxA !== undefined) idxA.v = dadosEstado.idxA;
+    if (dadosEstado.idxV !== undefined) idxV.v = dadosEstado.idxV;
+    if (dadosEstado.idxZ !== undefined) idxZ.v = dadosEstado.idxZ;
+    if (dadosEstado.idxI !== undefined) idxI.v = dadosEstado.idxI;
+    if (dadosEstado.ultimoPar !== undefined) ultimoPar = dadosEstado.ultimoPar;
+    if (dadosEstado.substituicoes) Object.assign(substituicoes, dadosEstado.substituicoes);
   }
 
-  var temEscalaGerada = dadosEstado && dadosEstado.escalaGerada && Object.keys(dadosEstado.escalaGerada).length > 0;
-
-  // Popula escalaGerada ANTES de renderizar
+  // Carrega escalaGerada do Firebase ou reinicia
+  escalaGerada = {};
+  var escSalva = (dadosEstado && dadosEstado.escalaGerada) || {};
+  var temEscalaGerada = Object.keys(escSalva).length > 0;
   if (temEscalaGerada) {
-    Object.assign(escalaGerada, dadosEstado.escalaGerada);
+    Object.assign(escalaGerada, escSalva);
   }
+
+  var substs = (dadosEstado && dadosEstado.substituicoes) || substituicoes || {};
 
   Object.keys(mesesSalvos).sort().forEach(function(chave) {
     var p = chave.split('-');
     var a = parseInt(p[0]), m = parseInt(p[1]);
+    if (isNaN(a) || isNaN(m)) return;
     mesesGerados[chave] = true;
     if (temEscalaGerada) {
-      renderMesSalvo(m, a, dadosEstado.escalaGerada, dadosEstado.substituicoes || substituicoes);
+      renderMesSalvo(m, a, escSalva, substs);
     } else {
       gerarMes(m, a);
     }
