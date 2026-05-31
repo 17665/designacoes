@@ -466,8 +466,12 @@ h1 { font-size:22px; font-weight:700; color:#1a4fa3; margin-bottom:4px; }
       <!-- ABA PRESENÇAS -->
 <div class="aba-conteudo" id="aba-presencas">
   <p style="font-size:13px;color:#5e6370;margin-bottom:14px">Confirmações de presença e avisos de ausência.</p>
-  <div id="lista-presencas"><p style="text-align:center;color:#888;padding:20px">Carregando...</p></div>
+  <div style="display:flex;gap:6px;margin-bottom:12px">
+  <button onclick="limparAvisosAntigos();carregarPresencas();" style="background:#fef3c7;color:#92400e;border:1px solid #fcd34d;padding:6px 12px;border-radius:6px;font-size:12px;cursor:pointer">🗑 Limpar avisos antigos</button>
+  <button onclick="deletarTodasConfirmacoes()" style="background:#fee2e2;color:#991b1b;border:1px solid #fca5a5;padding:6px 12px;border-radius:6px;font-size:12px;cursor:pointer">🗑 Apagar tudo</button>
 </div>
+<div id="lista-presencas"><p style="text-align:center;color:#888;padding:20px">Carregando...</p></div>
+
       <!-- ABA MANUAL DO RESPONSÁVEL -->
       <div class="aba-conteudo" id="aba-manual-resp">
         <p style="font-size:13px;color:#5e6370;margin-bottom:16px;line-height:1.6">
@@ -1786,18 +1790,7 @@ function ouvirMeses() {
       escalaGerada = {};
       Object.assign(escalaGerada, dados.escalaGerada);
     }
-
-    if (mesmoEstado) return; // estrutura dos meses não mudou — não re-renderiza
-
-        // Sempre restaura escalaGerada para que "Minha Escala" funcione após reload
-    if (dados.escalaGerada && Object.keys(dados.escalaGerada).length > 0) {
-      escalaGerada = {};
-      Object.assign(escalaGerada, dados.escalaGerada);
-    }
-    if (dados.substituicoes) Object.assign(substituicoes, dados.substituicoes);
-
-    if (mesmoEstado) return; // estrutura dos meses não mudou — não re-renderiza
-
+    
     // Restaura o estado do rodízio e treinamento
     if (dados.contadorPulo) Object.assign(contadorPulo, dados.contadorPulo);
     if (dados.aparicoes)    Object.assign(aparicoes, dados.aparicoes);
@@ -2626,6 +2619,29 @@ function carregarPresencas() {
       }
     });
     cont.innerHTML = tem ? html : '<p style="text-align:center;color:#888;padding:20px">Nenhuma confirmação ainda.</p>';
+  });
+}
+
+function deletarTodasConfirmacoes() {
+  if (!firebaseOk || !db) return;
+  if (!confirm('Apagar TODAS as confirmações?')) return;
+  db.ref('confirmacoes').remove().then(function() {
+    db.ref('avisos_ausencia').remove().then(function() {
+      alert('Tudo apagado!');
+      carregarPresencas();
+    });
+  });
+}
+
+function limparAvisosAntigos() {
+  if (!firebaseOk || !db) return;
+  db.ref('avisos_ausencia').once('value', function(snap) {
+    var seteDias = 7 * 24 * 60 * 60 * 1000;
+    snap.forEach(function(child) {
+      if (Date.now() - child.val().criadoEm > seteDias) {
+        db.ref('avisos_ausencia/' + child.key).remove();
+      }
+    });
   });
 }
 
