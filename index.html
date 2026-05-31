@@ -401,14 +401,16 @@ h1 { font-size:22px; font-weight:700; color:#1a4fa3; margin-bottom:4px; }
 <div class="overlay" id="ov-subst">
   <div class="modal-subst">
     <div class="modal-subst-cab">
-      <span>&#128260; Substituir Designado</span>
+      <span>&#128260; Substituição Permanente</span>
       <button class="btn-fechar" onclick="fecharSubst()" style="color:white">&#10005;</button>
     </div>
     <div class="modal-subst-body">
       <p>Data: <strong id="subst-data"></strong></p>
       <p style="margin-top:6px">Setor: <strong id="subst-setor"></strong></p>
-      <p style="margin-top:6px">Atual: <strong id="subst-atual"></strong></p>
+      <p style="margin-top:6px">Substituir: <strong id="subst-atual"></strong></p>
+      <p style="margin-top:4px;font-size:12px;color:#888">Novo designado:</p>
       <select id="subst-select"></select>
+      <p style="margin-top:8px;font-size:11px;color:#e67e22;font-style:italic">&#9888; A substituição é permanente e salva para todos os dispositivos.</p>
       <div class="subst-btns">
         <button class="btn-cancelar" onclick="fecharSubst()">Cancelar</button>
         <button class="btn-confirmar" onclick="confirmarSubst()">&#10004; Confirmar</button>
@@ -963,9 +965,46 @@ function abrirSubst(chave,setor,dataLabel,nomeAtual,el){
 function fecharSubst(){ document.getElementById('ov-subst').classList.remove('aberto'); substAtual=null; }
 function confirmarSubst(){
   if(!substAtual) return;
-  var novo=document.getElementById('subst-select').value;
-  substituicoes[substAtual.chave]=novo;
-  if(substAtual.el) substAtual.el.textContent=novo;
+  var novo = document.getElementById('subst-select').value;
+  var chave = substAtual.chave;
+  var setor = substAtual.setor;
+
+  // Salva substituição localmente
+  substituicoes[chave] = novo;
+
+  // Atualiza o nome na tela
+  if(substAtual.el) {
+    substAtual.el.textContent = novo;
+
+    // Atualiza badge de treino no span
+    var setorChave = { 'Palco-Coord':'palco','Palco-Ajud':'palco','Palco':'palco',
+      'Mic1':'microfone','Mic2':'microfone','Microfone':'microfone',
+      'Audio':'audio','Áudio':'audio','Video':'video','Vídeo':'video',
+      'Zoom':'zoom','Ind-Aud':'indicador','Ind-Pat':'indicador','Indicador':'indicador' };
+    var setorKey = setorChave[setor] || setor.toLowerCase();
+    var emTreinoNovo = estaEmTreinamento(novo) && treinamento[novo] && treinamento[novo][setorKey];
+    // Remove badge antigo se existir
+    var span = substAtual.el;
+    if(span && span.nextSibling && span.nextSibling.classList && span.nextSibling.classList.contains('badge-treino-inline')) {
+      span.parentNode.removeChild(span.nextSibling);
+    }
+    // Adiciona badge novo se necessário
+    if(modoResponsavel && emTreinoNovo) {
+      var badge = document.createElement('span');
+      badge.className = 'badge-treino-inline';
+      badge.style.cssText = 'font-size:9px;background:#fef3c7;color:#92400e;border:1px solid #fcd34d;border-radius:8px;padding:1px 5px;vertical-align:middle;margin-left:3px';
+      badge.textContent = 'treino';
+      span.parentNode.insertBefore(badge, span.nextSibling);
+    }
+  }
+
+  // Persiste no Firebase
+  if(firebaseOk && db) {
+    db.ref('escala/substituicoes').set(substituicoes).catch(function(e){
+      console.warn('Erro ao salvar substituição:', e);
+    });
+  }
+
   fecharSubst();
 }
 
@@ -1110,7 +1149,7 @@ function nomeSpan(n,chave,setor,dataLabel){
   var styleExtra = (modoResponsavel && emTreinoNesteSetor) ? ' style="color:#b45309;font-style:italic;" title="Em treinamento"' : '';
   var badgeTreino = (modoResponsavel && emTreinoNesteSetor) ? ' <span style="font-size:9px;background:#fef3c7;color:#92400e;border:1px solid #fcd34d;border-radius:8px;padding:1px 5px;vertical-align:middle">treino</span>' : '';
   if(modoResponsavel){
-    return '<span class="nome-clicavel"'+styleExtra+' onclick="abrirSubst(\'' + chave + '\',\'' + escHtml(setor) + '\',\'' + escHtml(dataLabel) + '\',this.textContent,this)">' + escHtml(atual) + '</span>' + badgeTreino + badgeTroca;
+    return '<span class="nome-clicavel" data-chave="'+chave+'"'+styleExtra+' onclick="abrirSubst(\'' + chave + '\',\'' + escHtml(setor) + '\',\'' + escHtml(dataLabel) + '\',this.textContent,this)">' + escHtml(atual) + '</span>' + badgeTreino + badgeTroca;
   }
   return '<span class="nome-troca" onclick="abrirTroca(\'' + chave + '\',\'' + escHtml(setor) + '\',\'' + escHtml(dataLabel) + '\',\'' + escHtml(atual) + '\')">' + escHtml(atual) + '</span>' + badgeTroca;
 }
@@ -1474,6 +1513,8 @@ function processarMeses(mesesSalvos, dadosEstado) {
   var blocos = Array.from(lista.querySelectorAll('.mes-bloco'));
   blocos.sort(function(a,b){ return (a.dataset.chavemes||'').localeCompare(b.dataset.chavemes||''); });
   blocos.forEach(function(b){ lista.appendChild(b); });
+  // Reaplica substituições salvas no Firebase após renderizar os meses
+  aplicarSubstituicoesNaTela();
   atualizarSubtitulo();
 }
 
@@ -1485,6 +1526,7 @@ function iniciarFirebase() {
     db = firebase.database();
     firebaseOk = true;
     ouvirTrocas();
+    ouvirSubstituicoes();
     ouvirMeses();
     ouvirConfig();
     carregarSenhaFirebase();
@@ -1653,6 +1695,54 @@ function aplicarTrocaNaEscala(troca) {
 }
 
 // Escuta trocas em tempo real no Firebase
+function ouvirSubstituicoes() {
+  if(!db) return;
+  db.ref('escala/substituicoes').on('value', function(snap) {
+    var dados = snap.val() || {};
+    // Guarda todas as substituições na memória
+    Object.keys(dados).forEach(function(chave) {
+      substituicoes[chave] = dados[chave];
+    });
+    // Aplica na tela (spans já renderizados)
+    aplicarSubstituicoesNaTela();
+  });
+}
+
+function aplicarSubstituicoesNaTela() {
+  Object.keys(substituicoes).forEach(function(chave) {
+    var novo = substituicoes[chave];
+    var spans = document.querySelectorAll('.nome-clicavel[data-chave="' + chave + '"]');
+    spans.forEach(function(span) {
+      if(span.textContent !== novo) {
+        span.textContent = novo;
+        // Atualiza badge de treino
+        var setorChave = { 'Palco-Coord':'palco','Palco-Ajud':'palco','Palco':'palco',
+          'Mic1':'microfone','Mic2':'microfone','Microfone':'microfone',
+          'Audio':'audio','Áudio':'audio','Video':'video','Vídeo':'video',
+          'Zoom':'zoom','Ind-Aud':'indicador','Ind-Pat':'indicador','Indicador':'indicador' };
+        // Extrai setor do onclick
+        var onclick = span.getAttribute('onclick') || '';
+        var m = onclick.match(/abrirSubst\('[^']+','([^']+)'/);
+        var setorKey = m ? (setorChave[m[1]] || m[1].toLowerCase()) : '';
+        var emTreino = setorKey && estaEmTreinamento(novo) && treinamento[novo] && treinamento[novo][setorKey];
+        // Remove badge antigo
+        var next = span.nextSibling;
+        while(next && next.nodeType===1 && (next.classList.contains('badge-treino-inline') || next.className==='')) {
+          var tmp = next.nextSibling; span.parentNode.removeChild(next); next = tmp;
+        }
+        // Adiciona badge novo
+        if(modoResponsavel && emTreino) {
+          var badge = document.createElement('span');
+          badge.className = 'badge-treino-inline';
+          badge.style.cssText = 'font-size:9px;background:#fef3c7;color:#92400e;border:1px solid #fcd34d;border-radius:8px;padding:1px 5px;vertical-align:middle;margin-left:3px';
+          badge.textContent = 'treino';
+          span.parentNode.insertBefore(badge, span.nextSibling);
+        }
+      }
+    });
+  });
+}
+
 function ouvirTrocas() {
   if (!db) return;
   db.ref('trocas').on('value', function(snap) {
