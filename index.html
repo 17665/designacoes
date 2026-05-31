@@ -1757,43 +1757,32 @@ function ouvirMeses() {
   if (!db) return;
   db.ref('escala/estado').on('value', function(snap) {
     var dados = snap.val();
-    // Compatibilidade: tenta também o caminho antigo
+
+    // Sem dados no Firebase — tenta caminho legado
     if (!dados) {
       db.ref('escala/meses').once('value', function(snapAntigo) {
         var dadosAntigos = snapAntigo.val();
-        if (!dadosAntigos) return;
-        // Migra: gera sem estado salvo
-        processarMeses(dadosAntigos, {});
+        if (dadosAntigos) processarMeses(extrairMeses(dadosAntigos), {});
       });
       return;
     }
-    // Extrai apenas os meses (chaves no formato YYYY-M), nunca o objeto todo
-    var mesesSalvos = {};
-    var fonte = dados.meses || dados;
-    if (typeof fonte === 'object') {
-      Object.keys(fonte).forEach(function(k) {
-        var p = k.split('-');
-        var a = parseInt(p[0]), m = parseInt(p[1]);
-        if (!isNaN(a) && !isNaN(m) && m >= 1 && m <= 12 && a >= 2020 && a <= 2040) {
-          mesesSalvos[k] = fonte[k];
-        }
-      });
-    }
-    if (!Object.keys(mesesSalvos).length && !dados.meses) return; // sem meses válidos
 
-    var chavesSalvas = Object.keys(mesesSalvos).sort();
-    var chavesLocais = Object.keys(mesesGerados).sort();
-    var mesmoEstado = JSON.stringify(chavesSalvas) === JSON.stringify(chavesLocais);
+    // Extrai somente chaves de meses válidas (formato YYYY-M)
+    var mesesSalvos = extrairMeses(dados.meses || dados);
+    if (!Object.keys(mesesSalvos).length) return;
 
-    // Sempre restaura escalaGerada para que "Minha Escala" funcione após reload
+    // SEMPRE popula escalaGerada do Firebase (garante funcionamento em todos os dispositivos)
     if (dados.escalaGerada && Object.keys(dados.escalaGerada).length > 0) {
       escalaGerada = {};
       Object.assign(escalaGerada, dados.escalaGerada);
     }
 
-    if (mesmoEstado) return; // estrutura dos meses não mudou — não re-renderiza
+    // Se os meses na tela já são os mesmos do Firebase, só atualiza escalaGerada e sai
+    var chavesSalvas = Object.keys(mesesSalvos).sort();
+    var chavesLocais = Object.keys(mesesGerados).sort();
+    if (JSON.stringify(chavesSalvas) === JSON.stringify(chavesLocais)) return;
 
-    // Restaura o estado do rodízio e treinamento
+    // Meses mudaram — re-renderiza tudo
     if (dados.contadorPulo) Object.assign(contadorPulo, dados.contadorPulo);
     if (dados.aparicoes)    Object.assign(aparicoes, dados.aparicoes);
     if (dados.idxM !== undefined) idxM.v = dados.idxM;
@@ -1802,45 +1791,55 @@ function ouvirMeses() {
     if (dados.idxZ !== undefined) idxZ.v = dados.idxZ;
     if (dados.idxI !== undefined) idxI.v = dados.idxI;
     if (dados.ultimoPar !== undefined) ultimoPar = dados.ultimoPar;
-    // Busca substituições do subpath (escrita por update) antes de renderizar
+
     db.ref('escala/estado/substituicoes').once('value', function(snapSubst) {
-      var subst = snapSubst.val() || {};
       substituicoes = {};
+      var subst = snapSubst.val() || {};
       Object.assign(substituicoes, subst);
-      // Também tenta do payload direto (compatibilidade)
       if (dados.substituicoes) Object.assign(substituicoes, dados.substituicoes);
       processarMeses(mesesSalvos, dados);
     });
   });
 }
 
+// Extrai apenas chaves no formato YYYY-M de um objeto
+function extrairMeses(obj) {
+  var result = {};
+  if (!obj || typeof obj !== 'object') return result;
+  Object.keys(obj).forEach(function(k) {
+    var p = k.split('-');
+    var a = parseInt(p[0]), m = parseInt(p[1]);
+    if (!isNaN(a) && !isNaN(m) && m >= 1 && m <= 12 && a >= 2020 && a <= 2040) {
+      result[k] = obj[k];
+    }
+  });
+  return result;
+}
+
 function processarMeses(mesesSalvos, dadosEstado) {
   mesesGerados = {};
   escalaGerada = {};
   document.getElementById('lista').innerHTML = '';
-  var chavesSalvas = Object.keys(mesesSalvos).sort();
 
-  // Se não há estado salvo, precisa gerar do zero (reseta contadores)
+  // Restaura contadores se disponíveis
   if (!dadosEstado || !dadosEstado.contadorPulo) {
     contadorPulo = {}; aparicoes = {}; ultimoAuditorio = {};
     idxM.v=0; idxA.v=0; idxV.v=0; idxZ.v=0; idxI.v=0; ultimoPar=-1;
   }
-  // Restaura substituições permanentes do Firebase
   if (dadosEstado && dadosEstado.substituicoes) {
     Object.assign(substituicoes, dadosEstado.substituicoes);
   }
 
   var temEscalaGerada = dadosEstado && dadosEstado.escalaGerada && Object.keys(dadosEstado.escalaGerada).length > 0;
 
-  // Popula escalaGerada com os dados do Firebase para todos os dispositivos
+  // Popula escalaGerada ANTES de renderizar
   if (temEscalaGerada) {
     Object.assign(escalaGerada, dadosEstado.escalaGerada);
   }
 
-  chavesSalvas.forEach(function(chave){
+  Object.keys(mesesSalvos).sort().forEach(function(chave) {
     var p = chave.split('-');
     var a = parseInt(p[0]), m = parseInt(p[1]);
-    if(isNaN(a)||isNaN(m)||m<1||m>12||a<2020||a>2040) return; // ignora inválido
     mesesGerados[chave] = true;
     if (temEscalaGerada) {
       renderMesSalvo(m, a, dadosEstado.escalaGerada, dadosEstado.substituicoes || substituicoes);
@@ -1848,7 +1847,8 @@ function processarMeses(mesesSalvos, dadosEstado) {
       gerarMes(m, a);
     }
   });
-  // Reordena
+
+  // Reordena blocos por data
   var lista = document.getElementById('lista');
   var blocos = Array.from(lista.querySelectorAll('.mes-bloco'));
   blocos.sort(function(a,b){ return (a.dataset.chavemes||'').localeCompare(b.dataset.chavemes||''); });
@@ -2777,10 +2777,13 @@ trocarAba = function(id, btn) {
   }
 };
 
-// ===================== nomeSpan ATUALIZADO =====================
-// Garante que erros no Firebase não quebrem a escala
-try { gerarEscalaAtual(); } catch(e) { console.error('Erro gerarEscalaAtual:', e); }
-try { iniciarFirebase(); } catch(e) { console.error('Erro iniciarFirebase:', e); }
+// ===================== INICIALIZAÇÃO =====================
+// Firebase carrega a escala. gerarEscalaAtual só roda se Firebase falhar.
+try { iniciarFirebase(); } catch(e) {
+  console.error('Erro iniciarFirebase:', e);
+  // Fallback: gera localmente se Firebase não conectar
+  try { gerarEscalaAtual(); } catch(e2) { console.error('Erro gerarEscalaAtual:', e2); }
+}
 atualizarBotaoNotif();
 // Verifica se já instalado como PWA
 if (window.matchMedia('(display-mode: standalone)').matches) {
