@@ -727,6 +727,7 @@ var eventos = [
 ];
 
 var substituicoes = {};
+var escalaGerada = {}; // designações geradas: {dataISO: {palco1,palco2,mic1,...}}
 var periodoAtual  = { mesInicio:6, ano:2026, qtd:4 };
 
 // ===================== TREINAMENTO =====================
@@ -1005,9 +1006,25 @@ function confirmarSubst(){
     }
   }
 
-  // Persiste no Firebase — usa update atômico para garantir que fica dentro de escala/estado
+  // Atualiza escalaGerada com o nome substituto para que recarregar mostre o nome certo
+  var partesChave = substAtual.chave.split('|'); // dataISO|setor|nomeOriginal
+  if (partesChave.length === 3 && escalaGerada[partesChave[0]]) {
+    var setorMap = {
+      'Palco-Coord':'palco1','Palco-Ajud':'palco2',
+      'Mic1':'mic1','Mic2':'mic2',
+      'Audio':'audio','Video':'video','Zoom':'zoom',
+      'Ind-Aud':'indAud','Ind-Pat':'indPat'
+    };
+    var campo = setorMap[partesChave[1]];
+    if (campo) escalaGerada[partesChave[0]][campo] = novo;
+  }
+
+  // Persiste no Firebase — salva substituicoes E escalaGerada atualizados
   if(firebaseOk && db) {
-    db.ref('escala/estado').update({ substituicoes: substituicoes }).catch(function(e){
+    db.ref('escala/estado').update({
+      substituicoes: substituicoes,
+      escalaGerada: escalaGerada
+    }).catch(function(e){
       console.warn('Erro ao salvar substituição:', e);
     });
   }
@@ -1161,6 +1178,106 @@ function nomeSpan(n,chave,setor,dataLabel){
   return '<span class="nome-troca" onclick="abrirTroca(\'' + chave + '\',\'' + escHtml(setor) + '\',\'' + escHtml(dataLabel) + '\',\'' + escHtml(atual) + '\')">' + escHtml(atual) + '</span>' + badgeTroca;
 }
 
+
+// Renderiza um mês usando a escala já salva no Firebase (sem rodar rodízio)
+function renderMesSalvo(mes, ano, escSalva, substs) {
+  var reunioes = gerarReunioes(mes, ano);
+  var nomeMes = new Date(ano,mes-1,1).toLocaleString('pt-BR',{month:'long'});
+  var chave = chaveMes(mes, ano);
+  var bloco = document.createElement('div');
+  bloco.className = 'mes-bloco';
+  bloco.dataset.chavemes = chave;
+  bloco.innerHTML = '<div class="mes-cab"><span class="mes-nome">'+nomeMes+' '+ano+'</span>'+
+    '<div style="display:flex;align-items:center;gap:12px">'+
+    '<span class="mes-resp">Responsável: Eriton Oliveira</span>'+
+    '<button class="btn-apagar-mes" onclick="apagarMes(''+chave+'')" title="Remover este mês">&#128465; Remover</button>'+
+    '</div></div>';
+  var grid = document.createElement('div');
+  grid.className = 'reunioes-grid';
+
+  reunioes.forEach(function(r) {
+    var ev = eventoNaSemana(r.data);
+    var dataISO = toISO(r.data);
+    var dataLabel = fmtData(r.data);
+
+    if(ev&&ev.tipo==='celebracao'&&r.tipo!=='Quarta') ev=null;
+    var evCancela = ev&&(ev.tipo==='congresso'||ev.tipo==='assembleia'||ev.tipo==='manutencao'||
+      (ev.tipo==='celebracao')||(ev.tipo==='limpeza'&&ev.cancelar));
+    if(evCancela){
+      var ini=ev.inicio.split('-').reverse().join('/');
+      var fim=ev.fim.split('-').reverse().join('/');
+      var temaHtml=ev.tema?'<div class="ev-tema">'+escHtml(ev.tema)+'</div>':'';
+      var corMap={congresso:['#fff7ed','#c2410c','#9a3412'],assembleia:['#fdf2f8','#9d174d','#831843'],
+        manutencao:['#f0fdf4','#15803d','#166534'],celebracao:['#fdf4ff','#7e22ce','#6b21a8'],limpeza:['#eff6ff','#1d4ed8','#1e3a8a']};
+      var cols=corMap[ev.tipo]||corMap.congresso;
+      var iconeMap={congresso:'&#128683;',assembleia:'&#128683;',manutencao:'&#128296;',celebracao:'&#127881;',limpeza:'&#129529;'};
+      var card=document.createElement('div'); card.className='card-evento'; card.style.background=cols[0];
+      card.innerHTML='<span class="ev-icone">'+iconeMap[ev.tipo]+'</span><div style="flex:1">'+
+        '<div class="ev-titulo" style="color:'+cols[1]+'">Sem reunião — '+escHtml(ev.descricao)+'</div>'+
+        '<div class="ev-detalhe" style="color:'+cols[2]+'">'+dataLabel+' · '+fmtHora(r.data)+'<br>Período: '+ini+' a '+fim+'</div>'+
+        temaHtml+'</div>';
+      grid.appendChild(card); return;
+    }
+
+    var saved = escSalva[dataISO];
+    if (!saved) return; // reunião sem dados salvos, pula
+
+    // Aplica substituições sobre os nomes salvos
+    function nomeFinal(n, setorKey) {
+      var chaveSubst = dataISO + '|' + setorKey + '|' + n;
+      return (substs && substs[chaveSubst]) ? substs[chaveSubst] : n;
+    }
+
+    var p1  = nomeFinal(saved.palco1, 'Palco-Coord');
+    var p2  = nomeFinal(saved.palco2, 'Palco-Ajud');
+    var m1  = nomeFinal(saved.mic1,   'Mic1');
+    var m2  = nomeFinal(saved.mic2,   'Mic2');
+    var aud = nomeFinal(saved.audio,  'Audio');
+    var vid = nomeFinal(saved.video,  'Video');
+    var zm  = nomeFinal(saved.zoom,   'Zoom');
+    var iA  = nomeFinal(saved.indAud, 'Ind-Aud');
+    var iP  = nomeFinal(saved.indPat, 'Ind-Pat');
+
+    function ns(n, setor) { return nomeSpan(n, dataISO+'|'+setor+'|'+saved[{
+      'Palco-Coord':'palco1','Palco-Ajud':'palco2','Mic1':'mic1','Mic2':'mic2',
+      'Audio':'audio','Video':'video','Zoom':'zoom','Ind-Aud':'indAud','Ind-Pat':'indPat'
+    }[setor]], setor, dataLabel); }
+
+    var dataReal = r.data, tipoLabel = r.tipo;
+    var badgeClass = r.tipo==='Quarta'?'badge-quarta':'badge-sabado';
+    var bannerHtml = '';
+    if(ev&&ev.tipo==='muda-dia'){
+      var temaV=ev.tema?'<br><em>'+escHtml(ev.tema)+'</em>':'';
+      if(r.tipo==='Quarta'){
+        dataReal=new Date(r.data); dataReal.setDate(r.data.getDate()-1);
+        tipoLabel='Terça'; badgeClass='badge-terca';
+        bannerHtml='<div class="banner-evento banner-visita-terca">&#128197; Reunião antecipada para terça — '+escHtml(ev.descricao)+temaV+'</div>';
+      } else {
+        bannerHtml='<div class="banner-evento banner-visita-sab">&#11088; Reunião com visita — '+escHtml(ev.descricao)+temaV+'</div>';
+      }
+    }
+
+    var c = document.createElement('div'); c.className = 'card';
+    c.innerHTML =
+      bannerHtml+
+      '<div class="card-topo">'+
+        '<span class="badge '+badgeClass+'">'+tipoLabel+'</span>'+
+        '<span class="card-data">'+fmtData(dataReal)+'</span>'+
+        '<span class="card-hora">'+fmtHora(dataReal)+'</span>'+
+      '</div>'+
+      linhaH('&#127963;','Palco',        ns(p1,'Palco-Coord')+' &amp; '+ns(p2,'Palco-Ajud'))+
+      linhaH('&#127908;','Mic. Volante', ns(m1,'Mic1')+' &amp; '+ns(m2,'Mic2'))+
+      linhaH('&#127911;','Áudio',        ns(aud,'Audio'))+
+      linhaH('&#127909;','Vídeo',        ns(vid,'Video'))+
+      linhaH('&#127760;','Zoom',         ns(zm,'Zoom'))+
+      linhaH('&#128101;','Indicadores',  'Auditório → '+ns(iA,'Ind-Aud')+' &nbsp;|&nbsp; Pátio → '+ns(iP,'Ind-Pat'));
+    grid.appendChild(c);
+  });
+
+  bloco.appendChild(grid);
+  document.getElementById('lista').appendChild(bloco);
+}
+
 function gerarMes(mes,ano){
   var reunioes=gerarReunioes(mes,ano);
   var nomeMes=new Date(ano,mes-1,1).toLocaleString('pt-BR',{month:'long'});
@@ -1235,6 +1352,14 @@ function gerarMes(mes,ano){
     var ind=escolherIndicadores(usados);
 
     function ns(n,s){ return nomeSpan(n,dataISO+'|'+s+'|'+n,s,dataLabel); }
+
+    // Salva designações desta reunião para persistência
+    escalaGerada[dataISO] = {
+      palco1: combo[0], palco2: combo[1],
+      mic1: mic1, mic2: mic2,
+      audio: audio, video: video, zoom: zoom,
+      indAud: ind.aud, indPat: ind.pat
+    };
 
     var c=document.createElement('div'); c.className='card';
     c.innerHTML=
@@ -1373,7 +1498,8 @@ function salvarMesesFirebase() {
     aparicoes: aparicoes,
     idxM: idxM.v, idxA: idxA.v, idxV: idxV.v, idxZ: idxZ.v, idxI: idxI.v,
     ultimoPar: ultimoPar,
-    substituicoes: substituicoes
+    substituicoes: substituicoes,
+    escalaGerada: escalaGerada
   };
   db.ref('escala/estado').set(payload).catch(function(e){
     console.warn('Erro ao salvar estado:', e);
@@ -1508,6 +1634,7 @@ function ouvirMeses() {
 
 function processarMeses(mesesSalvos, dadosEstado) {
   mesesGerados = {};
+  escalaGerada = {};
   document.getElementById('lista').innerHTML = '';
   var chavesSalvas = Object.keys(mesesSalvos).sort();
 
@@ -1521,18 +1648,24 @@ function processarMeses(mesesSalvos, dadosEstado) {
     Object.assign(substituicoes, dadosEstado.substituicoes);
   }
 
+  var temEscalaGerada = dadosEstado && dadosEstado.escalaGerada && Object.keys(dadosEstado.escalaGerada).length > 0;
+
   chavesSalvas.forEach(function(chave){
     var p = chave.split('-');
     var a = parseInt(p[0]), m = parseInt(p[1]);
     mesesGerados[chave] = true;
-    gerarMes(m, a);
+    if (temEscalaGerada) {
+      // Exibe a escala já salva — sem rodar rodízio novamente
+      renderMesSalvo(m, a, dadosEstado.escalaGerada, dadosEstado.substituicoes || substituicoes);
+    } else {
+      gerarMes(m, a);
+    }
   });
   // Reordena
   var lista = document.getElementById('lista');
   var blocos = Array.from(lista.querySelectorAll('.mes-bloco'));
   blocos.sort(function(a,b){ return (a.dataset.chavemes||'').localeCompare(b.dataset.chavemes||''); });
   blocos.forEach(function(b){ lista.appendChild(b); });
-  // Reaplica substituições salvas no Firebase após renderizar os meses
   aplicarSubstituicoesNaTela();
   atualizarSubtitulo();
 }
