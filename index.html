@@ -1150,6 +1150,8 @@ function confirmarSubst(){
     db.ref('escala/estado').update({
       substituicoes: substituicoes,
       escalaGerada: escalaGerada
+    }).then(function() {
+      salvarMesesFirebase();
     }).catch(function(e){
       console.warn('Erro ao salvar substituição:', e);
     });
