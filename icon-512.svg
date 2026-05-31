@@ -1,0 +1,59 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 680" width="512" height="512">
+<defs>
+  <radialGradient id="bgGrad" cx="40%" cy="35%" r="65%">
+    <stop offset="0%" stop-color="#1a3a6e"/>
+    <stop offset="100%" stop-color="#060f1e"/>
+  </radialGradient>
+  <radialGradient id="goldGrad" cx="50%" cy="0%" r="100%">
+    <stop offset="0%" stop-color="#f0d080"/>
+    <stop offset="100%" stop-color="#a07820"/>
+  </radialGradient>
+  <clipPath id="circClip">
+    <circle cx="340" cy="340" r="298"/>
+  </clipPath>
+</defs>
+<circle cx="344" cy="346" r="298" fill="#000" opacity="0.3"/>
+<circle cx="340" cy="340" r="298" fill="url(#bgGrad)"/>
+<circle cx="340" cy="340" r="293" fill="none" stroke="url(#goldGrad)" stroke-width="6"/>
+<circle cx="340" cy="340" r="278" fill="none" stroke="#c8a84b" stroke-width="1"/>
+<circle cx="340" cy="340" r="260" fill="none" stroke="#1a4fa3" stroke-width="0.8" stroke-dasharray="5 9"/>
+<g clip-path="url(#circClip)" opacity="0.04" stroke="#4a90d9" stroke-width="1" fill="none">
+  <line x1="42" y1="160" x2="638" y2="440"/>
+  <line x1="42" y1="220" x2="638" y2="500"/>
+  <line x1="42" y1="280" x2="638" y2="560"/>
+  <line x1="638" y1="160" x2="42" y2="440"/>
+  <line x1="638" y1="220" x2="42" y2="500"/>
+</g>
+<g fill="url(#goldGrad)">
+  <polygon points="340,54 354,70 340,86 326,70"/>
+  <polygon points="340,594 354,610 340,626 326,610"/>
+  <polygon points="54,340 70,354 86,340 70,326"/>
+  <polygon points="594,340 610,354 626,340 610,326"/>
+</g>
+<line x1="110" y1="448" x2="570" y2="448" stroke="#c8a84b" stroke-width="0.8" opacity="0.5"/>
+<circle cx="340" cy="108" r="5" fill="#c8a84b"/>
+<circle cx="340" cy="108" r="10" fill="none" stroke="#c8a84b" stroke-width="0.8" opacity="0.5"/>
+<!-- C -->
+<path d="M 248 204 A 100 106 0 1 0 248 422" fill="none" stroke="white" stroke-width="26" stroke-linecap="butt"/>
+<line x1="218" y1="204" x2="264" y2="204" stroke="white" stroke-width="11" stroke-linecap="square"/>
+<line x1="218" y1="422" x2="264" y2="422" stroke="white" stroke-width="11" stroke-linecap="square"/>
+<circle cx="254" cy="313" r="8" fill="#c8a84b"/>
+<!-- P -->
+<line x1="305" y1="200" x2="305" y2="426" stroke="white" stroke-width="24" stroke-linecap="butt"/>
+<path d="M 305 200 Q 426 200 426 290 Q 426 380 305 380" fill="none" stroke="white" stroke-width="24" stroke-linecap="butt"/>
+<line x1="291" y1="200" x2="320" y2="200" stroke="white" stroke-width="11" stroke-linecap="square"/>
+<line x1="291" y1="426" x2="320" y2="426" stroke="white" stroke-width="11" stroke-linecap="square"/>
+<circle cx="424" cy="290" r="8" fill="#c8a84b"/>
+<!-- T -->
+<line x1="450" y1="200" x2="574" y2="200" stroke="white" stroke-width="24" stroke-linecap="butt"/>
+<line x1="512" y1="200" x2="512" y2="426" stroke="white" stroke-width="24" stroke-linecap="butt"/>
+<line x1="450" y1="188" x2="450" y2="212" stroke="white" stroke-width="11" stroke-linecap="square"/>
+<line x1="574" y1="188" x2="574" y2="212" stroke="white" stroke-width="11" stroke-linecap="square"/>
+<line x1="498" y1="426" x2="526" y2="426" stroke="white" stroke-width="11" stroke-linecap="square"/>
+<circle cx="512" cy="200" r="8" fill="#c8a84b"/>
+<rect x="130" y="460" width="420" height="2.5" fill="url(#goldGrad)" rx="1" opacity="0.7"/>
+<circle cx="322" cy="484" r="4" fill="#c8a84b" opacity="0.8"/>
+<circle cx="340" cy="484" r="5" fill="#c8a84b"/>
+<circle cx="358" cy="484" r="4" fill="#c8a84b" opacity="0.8"/>
+<circle cx="340" cy="340" r="293" fill="none" stroke="#f0d080" stroke-width="1.5" opacity="0.3"/>
+</svg>
