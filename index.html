@@ -1005,9 +1005,9 @@ function confirmarSubst(){
     }
   }
 
-  // Persiste no Firebase
+  // Persiste no Firebase — salva em estado.substituicoes para manter junto com a escala
   if(firebaseOk && db) {
-    db.ref('escala/substituicoes').set(substituicoes).catch(function(e){
+    db.ref('escala/estado/substituicoes').set(substituicoes).catch(function(e){
       console.warn('Erro ao salvar substituição:', e);
     });
   }
@@ -1494,6 +1494,8 @@ function ouvirMeses() {
     if (dados.idxZ !== undefined) idxZ.v = dados.idxZ;
     if (dados.idxI !== undefined) idxI.v = dados.idxI;
     if (dados.ultimoPar !== undefined) ultimoPar = dados.ultimoPar;
+    // Carrega substituições ANTES de renderizar para que nomeSpan já use o substituto
+    if (dados.substituicoes) Object.assign(substituicoes, dados.substituicoes);
 
     processarMeses(mesesSalvos, dados);
   });
@@ -1709,13 +1711,15 @@ function aplicarTrocaNaEscala(troca) {
 // Escuta trocas em tempo real no Firebase
 function ouvirSubstituicoes() {
   if(!db) return;
-  db.ref('escala/substituicoes').on('value', function(snap) {
+  // Escuta o caminho correto onde confirmarSubst salva
+  db.ref('escala/estado/substituicoes').on('value', function(snap) {
     var dados = snap.val() || {};
-    // Guarda todas as substituições na memória
+    // Atualiza memória
+    substituicoes = {};
     Object.keys(dados).forEach(function(chave) {
       substituicoes[chave] = dados[chave];
     });
-    // Aplica na tela (spans já renderizados)
+    // Aplica nos spans do modo responsável
     aplicarSubstituicoesNaTela();
   });
 }
