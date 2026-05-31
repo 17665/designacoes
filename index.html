@@ -768,8 +768,11 @@ function ativarModoResponsavel() {
 
 function sairModoResponsavel() {
   modoResponsavel = false;
+  // Re-renderiza badge sem o link de gerenciar (mantém visível para o responsável ver)
   var badge = document.getElementById('badge-avisos-ausencia');
-  if (badge) badge.style.display = 'none';
+  if (badge && badge.style.display === 'block') {
+    // deixa visível — próxima atualização do Firebase vai re-renderizar corretamente
+  }
   document.getElementById('badge-responsavel').style.display = 'none';
   document.getElementById('btn-area-responsavel').style.display = '';
   // Re-renderiza escala sem badges de treino
@@ -1905,6 +1908,7 @@ function confirmarIdentidade() {
   if (!v) { alert('Selecione seu nome.'); return; }
   meuNome = v;
   localStorage.setItem('designacoes_nome', v);
+  renderPainelTrocas(); // atualiza painel com avisos do irmão identificado
   fecharIdentidade();
   if (identidadeCallback) { identidadeCallback(v); identidadeCallback = null; }
 }
@@ -2131,7 +2135,12 @@ function renderPainelTrocas() {
   if (lista.length === 0) { painel.style.display = 'none'; return; }
   painel.style.display = 'block';
 
-  var html = '<div class="painel-titulo">&#128260; Pedidos de Troca</div>';
+  // Conta quantos são relevantes para meuNome (destinatário pendente)
+  var paraMim = lista.filter(function(t){ return t.status === 'pendente' && t.destinatario === meuNome; });
+  var headerExtra = paraMim.length > 0
+    ? ' <span style="background:#ef4444;color:white;border-radius:12px;padding:2px 9px;font-size:12px;font-weight:bold;margin-left:8px">'+paraMim.length+' para você!</span>'
+    : '';
+  var html = '<div class="painel-titulo">&#128260; Pedidos de Troca' + headerExtra + '</div>';
   lista.forEach(function(t) {
     var msRestante = t.expiraEm - Date.now();
     var horas = Math.max(0, Math.floor(msRestante / 3600000));
@@ -2402,6 +2411,7 @@ function trocarNomeMinhaEscala() {
   meuNome = nome;
   localStorage.setItem('designacoes_nome', nome);
   renderMinhaEscala(nome);
+  renderPainelTrocas(); // atualiza painel com avisos do irmão selecionado
 }
 
 function buscarDesignacoesDe(nome) {
@@ -2726,10 +2736,12 @@ function ouvirAvisosAusencia() {
         badge.style.cssText = 'background:#fef2f2;border:1.5px solid #fca5a5;border-radius:8px;padding:10px 16px;margin:10px 20px;font-size:13px;color:#991b1b;cursor:pointer;display:none';
         document.querySelector('.topo').after(badge);
       }
-      badge.innerHTML = '&#9888;&#65039; <strong>' + relevantes.length + ' aviso(s) de ausência</strong> para próximas reuniões. Clique para gerenciar.';
-      badge.onclick = function() { pedirSenha(); };
-      // Mostra só para responsável logado
-      badge.style.display = modoResponsavel ? 'block' : 'none';
+      var linkHtml = modoResponsavel
+        ? '<span style="text-decoration:underline;cursor:pointer" onclick="abrirPrincipal('aba-ausencias')">Ver ausências ↗</span>'
+        : '<span style="text-decoration:underline;cursor:pointer" onclick="pedirSenha()">Entrar como responsável →</span>';
+      badge.innerHTML = '&#9888;&#65039; <strong>' + relevantes.length + ' aviso(s) de ausência</strong> registrado(s). ' + linkHtml;
+      // Visível para todos — responsável vê sem precisar logar primeiro
+      badge.style.display = 'block';
     } else if (badge) {
       badge.style.display = 'none';
     }
