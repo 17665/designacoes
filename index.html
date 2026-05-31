@@ -2367,19 +2367,18 @@ function abrirMinhaEscala() {
   atualizarBotaoNotif();
 
   if (meuNome) {
-    if (Object.keys(escalaGerada).length > 0) {
-      // Escala já carregada — renderiza direto
-      renderMinhaEscala(meuNome);
-    } else if (firebaseOk && db) {
-      // Ainda carregando — busca do Firebase
-      document.getElementById('conteudo-minha-escala').innerHTML =
-        '<p style="text-align:center;color:#888;font-size:14px;padding:30px 0">&#9203; Carregando designações...</p>';
+    var cont = document.getElementById('conteudo-minha-escala');
+    if (firebaseOk && db) {
+      // Sempre busca do Firebase para garantir dados atualizados em qualquer dispositivo
+      cont.innerHTML = '<p style="text-align:center;color:#888;font-size:14px;padding:30px 0">&#9203; Carregando designações...</p>';
       db.ref('escala/estado').once('value', function(snap) {
         var dados = snap.val();
-        if (dados && dados.escalaGerada) {
+        if (dados && dados.escalaGerada && Object.keys(dados.escalaGerada).length > 0) {
+          escalaGerada = {};
           Object.assign(escalaGerada, dados.escalaGerada);
         }
         if (dados && dados.substituicoes) {
+          substituicoes = {};
           Object.assign(substituicoes, dados.substituicoes);
         }
         renderMinhaEscala(meuNome);
