@@ -2610,37 +2610,49 @@ function carregarPresencas() {
     cont.innerHTML = '<p style="text-align:center;color:#888">Firebase não conectado.</p>';
     return;
   }
-  db.ref('confirmacoes').once('value', function(snap) {
-    var dados = snap.val() || {};
-    var html = '';
-    var tem = false;
-    Object.keys(dados).sort().forEach(function(nome) {
-      var confs = dados[nome] || {};
-      var linhas = '';
-      Object.keys(confs).sort().reverse().forEach(function(chave) {
-        var status = confs[chave];
-        var badge = status === 'confirmado' 
-          ? '<span style="background:#dcfce7;color:#166534;padding:2px 8px;border-radius:10px;font-size:11px">&#10003; Confirmado</span>'
-          : '<span style="background:#fee2e2;color:#991b1b;padding:2px 8px;border-radius:10px;font-size:11px">&#10007; Ausente</span>';
-        linhas += '<div style="padding:4px 0;font-size:12px">'+chave.replace(/__/g,'|')+' '+badge+'</div>';
+  db.ref('confirmacoes').once('value', function(snapConf) {
+    var dadosConf = snapConf.val() || {};
+    
+    // Busca também avisos de ausência
+    db.ref('avisos_ausencia').once('value', function(snapAv) {
+      var avisos = [];
+      snapAv.forEach(function(c) { avisos.push(c.val()); });
+      
+      var html = '';
+      var tem = false;
+      
+      // Mostra confirmações
+      Object.keys(dadosConf).sort().forEach(function(nome) {
+        var confs = dadosConf[nome] || {};
+        var linhas = '';
+        Object.keys(confs).sort().reverse().forEach(function(chave) {
+          var status = typeof confs[chave] === 'string' ? confs[chave] : (confs[chave] && confs[chave].status);
+          var badge = status === 'confirmado' 
+            ? '<span style="background:#dcfce7;color:#166534;padding:2px 8px;border-radius:10px;font-size:11px">✅ Confirmado</span>'
+            : '<span style="background:#fee2e2;color:#991b1b;padding:2px 8px;border-radius:10px;font-size:11px">❌ Ausente</span>';
+          linhas += '<div style="padding:4px 0;font-size:12px">'+chave.replace(/__/g,' | ')+' '+badge+'</div>';
+        });
+        if (linhas) {
+          tem = true;
+          html += '<div style="background:white;border:1px solid #e8e8e8;border-radius:8px;padding:12px;margin-bottom:8px">'+
+            '<strong style="color:#1a4fa3">👤 '+nome+'</strong>'+linhas+'</div>';
+        }
       });
-      if (linhas) {
-        tem = true;
-        html += '<div style="background:white;border:1px solid #e8e8e8;border-radius:8px;padding:12px;margin-bottom:8px">'+
-          '<strong style="color:#1a4fa3">'+nome+'</strong>'+linhas+'</div>';
+      
+      // Mostra avisos de ausência (histórico)
+      if (avisos.length > 0) {
+        html += '<div style="margin-top:16px;border-top:2px solid #fca5a5;padding-top:12px">'+
+          '<strong style="color:#991b1b">📋 Histórico de Avisos de Ausência</strong></div>';
+        avisos.sort(function(a,b){ return (b.criadoEm||0) - (a.criadoEm||0); }).forEach(function(a) {
+          tem = true;
+          html += '<div style="background:#fef2f2;border:1px solid #fca5a5;border-radius:8px;padding:10px;margin-bottom:6px">'+
+            '<strong>'+a.nome+'</strong> - '+a.setor+'<br>'+
+            '<span style="font-size:11px;color:#5e6370">Data: '+a.data+' | Avisado em: '+new Date(a.criadoEm).toLocaleString('pt-BR')+'</span>'+
+            '</div>';
+        });
       }
-    });
-    cont.innerHTML = tem ? html : '<p style="text-align:center;color:#888;padding:20px">Nenhuma confirmação ainda.</p>';
-  });
-}
-
-function deletarTodasConfirmacoes() {
-  if (!firebaseOk || !db) return;
-  if (!confirm('Apagar TODAS as confirmações?')) return;
-  db.ref('confirmacoes').remove().then(function() {
-    db.ref('avisos_ausencia').remove().then(function() {
-      alert('Tudo apagado!');
-      carregarPresencas();
+      
+      cont.innerHTML = tem ? html : '<p style="text-align:center;color:#888;padding:20px">Nenhuma confirmação ou aviso ainda.</p>';
     });
   });
 }
@@ -2658,7 +2670,6 @@ function limparAvisosAntigos() {
 }
 
 function trocarAbaHistorico() {
-  // Popula filtros
   var selIrmao = document.getElementById('hist-filtro-irmao');
   selIrmao.innerHTML = '<option value="">Todos</option>' +
     todosIrmaos.sort().map(function(n){ return '<option value="'+n+'">'+n+'</option>'; }).join('');
