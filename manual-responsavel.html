@@ -4,473 +4,315 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Manual do Responsável — Designações Parque Tietê</title>
-<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Nunito+Sans:wght@400;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800;900&family=Nunito+Sans:wght@400;600&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --verde: #0f6e56;
-    --verde-claro: #e1f5ee;
-    --azul: #1a4fa3;
-    --azul-claro: #e8f0fb;
-    --laranja: #b45309;
-    --laranja-claro: #fef3c7;
-    --roxo: #7c3aed;
-    --roxo-claro: #f5f3ff;
-    --vermelho: #991b1b;
-    --cinza: #5e6370;
-    --fundo: #f0f2f7;
-    --borda: #d0d5dd;
-  }
-  * { box-sizing:border-box; margin:0; padding:0; }
-  body { font-family:'Nunito Sans',sans-serif; background:var(--fundo); color:#1a1a2e; padding:0 0 60px; }
-
-  /* CAPA */
-  .capa { background:linear-gradient(135deg,#0f6e56 0%,#085e48 55%,#053d2f 100%); color:white; padding:48px 32px 40px; text-align:center; position:relative; overflow:hidden; }
-  .capa::before { content:''; position:absolute; top:-70px; right:-50px; width:200px; height:200px; border-radius:50%; background:rgba(255,255,255,0.06); }
-  .capa::after  { content:''; position:absolute; bottom:-50px; left:-30px; width:160px; height:160px; border-radius:50%; background:rgba(255,255,255,0.04); }
-  .capa-icone { font-size:52px; margin-bottom:14px; }
-  .capa h1 { font-family:'Nunito',sans-serif; font-size:26px; font-weight:900; line-height:1.3; margin-bottom:8px; }
-  .capa-sub { font-size:14px; opacity:.75; font-weight:600; letter-spacing:.5px; text-transform:uppercase; }
-  .capa-badge { display:inline-block; margin-top:20px; background:rgba(255,255,255,0.15); border:1px solid rgba(255,255,255,0.3); padding:6px 18px; border-radius:20px; font-size:13px; font-weight:700; }
-
-  /* ÍNDICE */
-  .indice { background:white; border-radius:14px; padding:20px 22px; margin:24px 20px 0; max-width:680px; margin-left:auto; margin-right:auto; box-shadow:0 2px 8px rgba(0,0,0,0.06); }
-  .indice-titulo { font-family:'Nunito',sans-serif; font-weight:800; font-size:14px; color:var(--verde); margin-bottom:12px; text-transform:uppercase; letter-spacing:.5px; }
-  .indice ul { list-style:none; }
-  .indice ul li { padding:6px 0; border-bottom:1px solid #f4f4f4; font-size:13px; color:#2a2a3e; display:flex; align-items:center; gap:8px; }
-  .indice ul li:last-child { border-bottom:none; }
-  .indice ul li .num { background:var(--verde); color:white; width:20px; height:20px; border-radius:50%; font-size:11px; font-weight:800; font-family:'Nunito',sans-serif; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
-
-  /* CONTEÚDO */
-  .conteudo { max-width:680px; margin:0 auto; padding:0 20px; }
-
-  /* SEÇÃO */
-  .secao { background:white; border-radius:14px; overflow:hidden; margin-bottom:22px; margin-top:22px; box-shadow:0 2px 8px rgba(0,0,0,0.06); }
-  .secao-cab { background:var(--verde); color:white; padding:14px 22px; display:flex; align-items:center; gap:10px; }
-  .secao-cab.azul     { background:var(--azul); }
-  .secao-cab.laranja  { background:var(--laranja); }
-  .secao-cab.cinza    { background:#4b5563; }
-  .secao-cab.vermelho { background:#7f1d1d; }
-  .secao-cab.roxo     { background:var(--roxo); }
-  .secao-cab.dourado  { background:#92400e; }
-  .secao-cab.grafite  { background:#1f2937; }
-  .secao-icone { font-size:20px; }
-  .secao-titulo { font-family:'Nunito',sans-serif; font-size:16px; font-weight:800; }
-  .secao-corpo { padding:20px 22px; }
-
-  /* PASSOS */
-  .passos { list-style:none; }
-  .passos li { display:flex; gap:14px; margin-bottom:16px; align-items:flex-start; }
-  .passos li:last-child { margin-bottom:0; }
-  .passo-num { background:var(--verde); color:white; font-family:'Nunito',sans-serif; font-weight:900; font-size:13px; width:28px; height:28px; border-radius:50%; display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:1px; }
-  .passos.azul    .passo-num { background:var(--azul); }
-  .passos.laranja .passo-num { background:var(--laranja); }
-  .passos.cinza   .passo-num { background:#4b5563; }
-  .passos.roxo    .passo-num { background:var(--roxo); }
-  .passo-txt { font-size:14px; line-height:1.7; color:#2a2a3e; }
-  .passo-txt strong { color:#1a1a2e; }
-  .passo-txt em { background:var(--verde-claro); color:var(--verde); padding:1px 7px; border-radius:4px; font-style:normal; font-weight:700; font-size:13px; }
-  .passos.azul    .passo-txt em { background:var(--azul-claro);   color:var(--azul); }
-  .passos.laranja .passo-txt em { background:var(--laranja-claro); color:var(--laranja); }
-  .passos.roxo    .passo-txt em { background:var(--roxo-claro);    color:var(--roxo); }
-
-  /* SUB-TÍTULO */
-  .sub { font-family:'Nunito',sans-serif; font-weight:800; font-size:14px; color:var(--verde); margin:20px 0 10px; padding-bottom:6px; border-bottom:2px solid var(--verde-claro); }
-  .sub.azul    { color:var(--azul);   border-color:var(--azul-claro); }
-  .sub.laranja { color:var(--laranja); border-color:var(--laranja-claro); }
-  .sub.roxo    { color:var(--roxo);   border-color:var(--roxo-claro); }
-
-  /* AVISO / DICA */
-  .aviso { background:#fffbeb; border-left:4px solid #f59e0b; border-radius:8px; padding:14px 16px; font-size:14px; line-height:1.7; color:#78350f; margin-top:14px; }
-  .aviso.vermelho { background:#fff1f1; border-color:#ef4444; color:#7f1d1d; }
-  .aviso strong { font-weight:700; }
-  .dica { background:var(--verde-claro); border-left:4px solid var(--verde); border-radius:8px; padding:14px 16px; font-size:13px; line-height:1.7; color:#064e3b; margin-top:14px; }
-  .dica.azul { background:var(--azul-claro); border-color:var(--azul); color:#1e3a5f; }
-  .dica.roxo { background:var(--roxo-claro); border-color:var(--roxo); color:#4c1d95; }
-
-  /* TABELA */
-  .tabela { width:100%; border-collapse:collapse; font-size:13px; margin-top:10px; }
-  .tabela th { background:#f4f4f2; font-family:'Nunito',sans-serif; font-weight:800; font-size:11px; text-transform:uppercase; letter-spacing:.4px; padding:9px 12px; text-align:left; border-bottom:2px solid var(--borda); color:var(--cinza); }
-  .tabela td { padding:10px 12px; border-bottom:1px solid #f4f4f2; vertical-align:top; font-size:13px; line-height:1.6; }
-  .tabela tr:last-child td { border-bottom:none; }
-  .tabela tr:hover td { background:#fafafa; }
-  .tabela td strong { color:#1a1a2e; }
-  .tabela td span { font-size:12px; color:var(--cinza); }
-
-  /* NÍVEL BADGE */
-  .nivel { display:inline-flex; align-items:center; gap:5px; border-radius:20px; padding:2px 10px; font-size:12px; font-weight:bold; }
-  .nivel-1 { background:#fef3c7; color:#92400e; border:1px solid #fcd34d; }
-  .nivel-2 { background:#fff7ed; color:#c2410c; border:1px solid #f97316; }
-
-  /* ACESSO */
-  .acesso-box { background:#f9fafb; border:1.5px solid var(--borda); border-radius:10px; padding:16px 18px; margin-bottom:14px; display:flex; align-items:flex-start; gap:14px; }
-  .acesso-icone { font-size:28px; flex-shrink:0; }
-  .acesso-txt { font-size:14px; line-height:1.7; }
-  .acesso-txt strong { color:#1a1a2e; }
-  .acesso-txt code { background:#e8f0fb; color:var(--azul); padding:2px 8px; border-radius:4px; font-size:13px; font-family:monospace; font-weight:bold; }
-
-  /* RODAPÉ */
-  .rodape { text-align:center; margin-top:30px; font-size:13px; color:var(--cinza); line-height:1.8; }
-  .rodape strong { color:var(--verde); }
+:root{--vd:#0f6e56;--vdcl:#d1fae5;--az:#1a4fa3;--azcl:#e8f0fb;--lar:#b45309;--larcl:#fef3c7;--rx:#7c3aed;--rxcl:#ede9fe;--cin:#374151;--am:#d97706;--amcl:#fffbeb;--verm:#991b1b;--br:white;--tx:#1f2937;--mt:#6b7280;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Nunito Sans',sans-serif;background:#f0f2f7;color:var(--tx);padding:0 0 60px;}
+.capa{background:linear-gradient(135deg,#0f6e56,#085e48 55%,#053d2f);color:white;padding:52px 32px 44px;text-align:center;position:relative;overflow:hidden;}
+.capa::before{content:'';position:absolute;top:-70px;right:-50px;width:200px;height:200px;border-radius:50%;background:rgba(255,255,255,.06);}
+.capa::after{content:'';position:absolute;bottom:-50px;left:-30px;width:160px;height:160px;border-radius:50%;background:rgba(255,255,255,.04);}
+.capa-ico{font-size:56px;margin-bottom:14px;}
+.capa h1{font-family:'Nunito',sans-serif;font-size:26px;font-weight:900;line-height:1.3;margin-bottom:8px;}
+.capa-sub{font-size:13px;opacity:.75;font-weight:700;letter-spacing:.5px;text-transform:uppercase;}
+.capa-badge{display:inline-block;margin-top:20px;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);padding:6px 20px;border-radius:20px;font-size:13px;font-weight:700;}
+.wrap{max-width:680px;margin:0 auto;padding:0 20px;}
+.indice{background:white;border-radius:14px;padding:18px 20px;margin:22px auto 0;max-width:680px;box-shadow:0 2px 8px rgba(0,0,0,.06);}
+.indice-tit{font-family:'Nunito',sans-serif;font-weight:800;font-size:13px;color:var(--vd);margin-bottom:11px;text-transform:uppercase;letter-spacing:.5px;}
+.indice ul{list-style:none;}
+.indice ul li{padding:6px 0;border-bottom:1px solid #f4f4f4;font-size:13px;display:flex;align-items:center;gap:8px;}
+.indice ul li:last-child{border-bottom:none;}
+.inum{background:var(--vd);color:white;width:20px;height:20px;border-radius:50%;font-size:11px;font-weight:800;font-family:'Nunito',sans-serif;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.sec{background:white;border-radius:14px;overflow:hidden;margin-top:20px;margin-bottom:4px;box-shadow:0 2px 8px rgba(0,0,0,.06);}
+.sec-cab{padding:13px 20px;display:flex;align-items:center;gap:10px;color:white;}
+.sec-cab.vd{background:var(--vd);}
+.sec-cab.az{background:var(--az);}
+.sec-cab.lar{background:var(--lar);}
+.sec-cab.rx{background:var(--rx);}
+.sec-cab.cin{background:var(--cin);}
+.sec-cab.verm{background:#7f1d1d;}
+.sec-cab.esc{background:#92400e;}
+.sec-cab.graf{background:#1f2937;}
+.sec-cab.ros{background:#be185d;}
+.sec-ico{font-size:20px;}
+.sec-tit{font-family:'Nunito',sans-serif;font-size:16px;font-weight:800;}
+.sec-body{padding:18px 20px;}
+.sub{font-family:'Nunito',sans-serif;font-weight:800;font-size:13px;text-transform:uppercase;letter-spacing:.4px;padding:10px 0 5px;border-bottom:2px solid;margin-bottom:10px;}
+.sub.vd{color:var(--vd);border-color:var(--vdcl);}
+.sub.az{color:var(--az);border-color:var(--azcl);}
+.sub.lar{color:var(--lar);border-color:var(--larcl);}
+.sub.rx{color:var(--rx);border-color:var(--rxcl);}
+ol.passos{list-style:none;}
+ol.passos li{display:flex;gap:13px;margin-bottom:13px;align-items:flex-start;}
+ol.passos li:last-child{margin-bottom:0;}
+.num{width:27px;height:27px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-family:'Nunito',sans-serif;font-weight:900;font-size:13px;color:white;margin-top:1px;}
+.num.vd{background:var(--vd);}
+.num.az{background:var(--az);}
+.num.lar{background:var(--lar);}
+.num.rx{background:var(--rx);}
+.num.cin{background:var(--cin);}
+.ptxt{font-size:14px;line-height:1.7;}
+.dica{border-left:4px solid;border-radius:6px;padding:11px 14px;font-size:13px;line-height:1.7;margin-top:12px;}
+.dica.vd{background:var(--vdcl);border-color:var(--vd);color:#064e3b;}
+.dica.az{background:var(--azcl);border-color:var(--az);color:#1e3a5f;}
+.dica.rx{background:var(--rxcl);border-color:var(--rx);color:#4c1d95;}
+.aviso{background:var(--amcl);border-left:4px solid var(--am);border-radius:6px;padding:11px 14px;font-size:13px;line-height:1.7;color:#78350f;margin-top:12px;}
+.aviso.verm{background:#fff1f1;border-color:#ef4444;color:#7f1d1d;}
+table.t{width:100%;border-collapse:collapse;font-size:13px;margin-top:8px;}
+table.t th{background:#f3f4f6;padding:8px 10px;text-align:left;font-size:11px;font-weight:700;color:var(--mt);border-bottom:2px solid #e5e7eb;text-transform:uppercase;letter-spacing:.3px;}
+table.t td{padding:8px 10px;border-bottom:1px solid #f3f4f6;line-height:1.6;vertical-align:top;}
+table.t tr:last-child td{border-bottom:none;}
+table.t tr:nth-child(even) td{background:#fafafa;}
+.nivel{display:inline-flex;align-items:center;gap:4px;border-radius:20px;padding:2px 10px;font-size:12px;font-weight:700;}
+.n1{background:#fef3c7;color:#92400e;border:1px solid #fcd34d;}
+.n2{background:#fff7ed;color:#c2410c;border:1px solid #f97316;}
+.box-acesso{background:#f9fafb;border:1.5px solid #e5e7eb;border-radius:10px;padding:14px 16px;margin-bottom:12px;display:flex;align-items:flex-start;gap:12px;}
+.box-ico{font-size:26px;flex-shrink:0;}
+.box-txt{font-size:14px;line-height:1.7;}
+.box-txt code{background:#e8f0fb;color:var(--az);padding:1px 7px;border-radius:4px;font-family:monospace;font-size:13px;font-weight:700;}
+.rodape{text-align:center;margin-top:30px;font-size:12px;color:var(--mt);line-height:1.8;}
+.rodape strong{color:var(--vd);}
 </style>
 </head>
 <body>
-
 <div class="capa">
-  <div class="capa-icone">⚙️</div>
+  <div class="capa-ico">⚙️</div>
   <h1>Manual do Responsável<br>Sistema de Designações</h1>
   <div class="capa-sub">Congregação Parque Tietê</div>
   <div class="capa-badge">🔒 Eriton Oliveira — Versão 2025</div>
 </div>
 
-<!-- ÍNDICE -->
-<div class="indice">
-  <div class="indice-titulo">📋 Índice</div>
+<div class="indice" style="margin:22px 20px 0;max-width:680px;margin-left:auto;margin-right:auto;">
+  <div class="indice-tit">📋 Índice</div>
   <ul>
-    <li><div class="num">1</div> Acessar a Área do Responsável</li>
-    <li><div class="num">2</div> Aba Eventos</li>
-    <li><div class="num">3</div> Aba Irmãos</li>
-    <li><div class="num">4</div> Aba Treinamento</li>
-    <li><div class="num">5</div> Aba Gerar Meses</li>
-    <li><div class="num">6</div> Aba Trocas</li>
-    <li><div class="num">7</div> Aba Histórico</li>
-    <li><div class="num">8</div> Aba Senha</li>
-    <li><div class="num">9</div> Substituição direta na escala</li>
-    <li><div class="num">10</div> Avisos de ausência dos irmãos</li>
+    <li><div class="inum">1</div> Acessar a Área do Responsável</li>
+    <li><div class="inum">2</div> Aba Eventos</li>
+    <li><div class="inum">3</div> Aba Irmãos</li>
+    <li><div class="inum">4</div> Aba Treinamento</li>
+    <li><div class="inum">5</div> Aba Gerar Meses</li>
+    <li><div class="inum">6</div> Aba Trocas</li>
+    <li><div class="inum">7</div> Aba Histórico</li>
+    <li><div class="inum">8</div> Aba Presenças <span style="background:#dcfce7;color:#166534;font-size:11px;font-weight:700;border-radius:10px;padding:1px 8px;margin-left:4px">NOVO</span></li>
+    <li><div class="inum">9</div> Aba Senha e Recuperação</li>
+    <li><div class="inum">10</div> Substituição direta na escala</li>
+    <li><div class="inum">11</div> Avisos de ausência</li>
+    <li><div class="inum">12</div> Badge de Status da Página Principal <span style="background:#dcfce7;color:#166534;font-size:11px;font-weight:700;border-radius:10px;padding:1px 8px;margin-left:4px">NOVO</span></li>
   </ul>
 </div>
 
-<div class="conteudo">
+<div class="wrap">
 
-  <!-- 1 — ACESSO -->
-  <div class="secao">
-    <div class="secao-cab">
-      <span class="secao-icone">🔒</span>
-      <span class="secao-titulo">1. Acessar a Área do Responsável</span>
-    </div>
-    <div class="secao-corpo">
-      <div class="acesso-box">
-        <div class="acesso-icone">🖥️</div>
-        <div class="acesso-txt">
-          <strong>No site:</strong> clique no botão verde <code>👤 Área do Responsável</code> no topo da página. Digite a senha quando solicitado.
-        </div>
-      </div>
-      <div class="acesso-box">
-        <div class="acesso-icone">📱</div>
-        <div class="acesso-txt">
-          <strong>No celular:</strong> o botão fica no topo da tela. Se instalou como app, abre direto na tela inicial.
-        </div>
-      </div>
-      <div class="dica azul">
-        💡 Dentro da Área do Responsável há 8 abas: <strong>Eventos, Irmãos, Treinamento, Gerar Meses, Trocas, Histórico</strong> e <strong>Senha</strong>. Cada uma é explicada abaixo.
-      </div>
-    </div>
+<!-- 1 ACESSO -->
+<div class="sec">
+  <div class="sec-cab vd"><span class="sec-ico">🔒</span><span class="sec-tit">1. Acessar a Área do Responsável</span></div>
+  <div class="sec-body">
+    <div class="box-acesso"><div class="box-ico">🖥️</div><div class="box-txt">Clique no botão verde <code>👤 Área do Responsável</code> no topo da página e digite a senha.</div></div>
+    <div class="box-acesso"><div class="box-ico">📱</div><div class="box-txt">No celular com app instalado, o botão fica na tela principal — sem barra do navegador.</div></div>
+    <div class="dica vd">💡 Dentro da Área há <strong>9 abas</strong>: Eventos · Irmãos · Treinamento · Gerar Meses · Trocas · Histórico · Presenças · Manual · Senha</div>
   </div>
+</div>
 
-  <!-- 2 — EVENTOS -->
-  <div class="secao">
-    <div class="secao-cab laranja">
-      <span class="secao-icone">📅</span>
-      <span class="secao-titulo">2. Aba Eventos</span>
-    </div>
-    <div class="secao-corpo">
-      <p style="font-size:14px;line-height:1.8;color:#2a2a3e;margin-bottom:16px">
-        Cadastre eventos que afetam o calendário de reuniões. Há 4 tipos disponíveis:
-      </p>
-      <table class="tabela">
-        <thead>
-          <tr><th>Tipo</th><th>Efeito na escala</th></tr>
-        </thead>
-        <tbody>
-          <tr><td><strong>🚫 Congresso (sem reunião)</strong></td><td>Bloqueia as reuniões do período. Aparece na escala como "Sem reunião — Congresso Regional".</td></tr>
-          <tr><td><strong>🚫 Assembleia de Circuito (sem reunião)</strong></td><td>Igual ao congresso — bloqueia o período.</td></tr>
-          <tr><td><strong>📅 Visita do Superintendente</strong></td><td>A reunião de quarta muda para terça. Permite cadastrar ausentes nessa semana.</td></tr>
-          <tr><td><strong>🚫 Outro evento (sem reunião)</strong></td><td>Qualquer outro evento que cancela a reunião. O nome é editável.</td></tr>
-          <tr><td><strong>🔔 Aviso / informação</strong></td><td>Não cancela a reunião. Aparece como banner informativo na escala.</td></tr>
-        </tbody>
-      </table>
-
-      <div class="sub laranja" style="margin-top:20px">Adicionar um evento</div>
-      <ol class="passos laranja">
-        <li>
-          <div class="passo-num">1</div>
-          <div class="passo-txt">Clique em <em>+ Adicionar evento</em>.</div>
-        </li>
-        <li>
-          <div class="passo-num">2</div>
-          <div class="passo-txt">Preencha as datas de <strong>início</strong> e <strong>fim</strong>, selecione o <strong>tipo</strong> e edite o <strong>nome do evento</strong> se necessário — o nome é preenchido automaticamente mas pode ser alterado.</div>
-        </li>
-        <li>
-          <div class="passo-num">3</div>
-          <div class="passo-txt">Clique em <em>✔ Aplicar e atualizar escala</em> para ver o efeito na escala.</div>
-        </li>
-      </ol>
-      <div class="aviso">
-        ⚠️ As alterações nos eventos são salvas automaticamente no Firebase. Clique em <strong>Aplicar e atualizar escala</strong> para ver a escala recalculada.
-      </div>
-    </div>
+<!-- 2 EVENTOS -->
+<div class="sec">
+  <div class="sec-cab lar"><span class="sec-ico">📅</span><span class="sec-tit">2. Aba Eventos</span></div>
+  <div class="sec-body">
+    <p style="font-size:14px;line-height:1.8;margin-bottom:12px">Cadastre eventos que afetam o calendário de reuniões. 5 tipos disponíveis:</p>
+    <table class="t">
+      <thead><tr><th>Tipo</th><th>Efeito na escala</th></tr></thead>
+      <tbody>
+        <tr><td>🚫 Congresso (sem reunião)</td><td>Bloqueia o período. Aparece como "Sem reunião — Congresso Regional".</td></tr>
+        <tr><td>🚫 Assembleia de Circuito</td><td>Igual ao congresso — bloqueia o período.</td></tr>
+        <tr><td>📅 Visita do Superintendente</td><td>Quarta muda para terça. Permite cadastrar ausentes nessa semana.</td></tr>
+        <tr><td>🚫 Outro evento (sem reunião)</td><td>Cancela a reunião. Nome do evento é editável livremente.</td></tr>
+        <tr><td>🔔 Aviso / informação</td><td>Não cancela. Aparece como banner informativo na escala.</td></tr>
+      </tbody>
+    </table>
+    <div class="sub lar" style="margin-top:18px">Como adicionar</div>
+    <ol class="passos">
+      <li><div class="num lar">1</div><div class="ptxt">Clique em <strong>+ Adicionar evento</strong>.</div></li>
+      <li><div class="num lar">2</div><div class="ptxt">Preencha datas de início e fim. Selecione o tipo — o nome é preenchido automaticamente mas pode ser editado.</div></li>
+      <li><div class="num lar">3</div><div class="ptxt">Clique em <strong>✔ Aplicar e atualizar escala</strong>.</div></li>
+    </ol>
   </div>
+</div>
 
-  <!-- 3 — IRMÃOS -->
-  <div class="secao">
-    <div class="secao-cab">
-      <span class="secao-icone">👥</span>
-      <span class="secao-titulo">3. Aba Irmãos</span>
-    </div>
-    <div class="secao-corpo">
-      <p style="font-size:14px;line-height:1.8;color:#2a2a3e;margin-bottom:16px">
-        Gerencie quem participa do rodízio de cada setor: <strong>Palco (Pares), Microfone, Indicador, Áudio, Vídeo</strong> e <strong>Zoom</strong>.
-      </p>
-
-      <div class="sub">Cadastrar um irmão novo</div>
-      <p style="font-size:14px;line-height:1.7;color:#2a2a3e;margin-bottom:10px">
-        No topo da aba há um campo azul <strong>"Cadastrar irmão novo"</strong>. Digite o nome completo e clique em <em>✓ Cadastrar</em>. O irmão entra na lista geral e fica disponível para ser adicionado aos setores.
-      </p>
-      <div class="aviso">
-        ⚠️ Irmãos novos <strong>não entram automaticamente</strong> em nenhum setor. Depois de cadastrar, adicione-o aos setores desejados usando o select de cada setor.
-      </div>
-
-      <div class="sub" style="margin-top:20px">Adicionar um irmão a um setor</div>
-      <ol class="passos">
-        <li>
-          <div class="passo-num">1</div>
-          <div class="passo-txt">Role até o setor desejado (ex: Microfone).</div>
-        </li>
-        <li>
-          <div class="passo-num">2</div>
-          <div class="passo-txt">Selecione o nome do irmão no menu <em>— selecionar irmão —</em> e clique em <em>+ Adicionar</em>.</div>
-        </li>
-      </ol>
-
-      <div class="sub" style="margin-top:20px">Palco — funciona por pares</div>
-      <p style="font-size:14px;line-height:1.7;color:#2a2a3e;margin-bottom:10px">
-        O palco usa <strong>pares de irmãos</strong> — o sistema sorteia um par por reunião. Para adicionar um par:
-      </p>
-      <ol class="passos">
-        <li><div class="passo-num">1</div><div class="passo-txt">Escolha o <strong>Irmão 1</strong> e o <strong>Irmão 2</strong> nos menus.</div></li>
-        <li><div class="passo-num">2</div><div class="passo-txt">Clique em <em>+ Adicionar par</em>.</div></li>
-      </ol>
-
-      <div class="sub" style="margin-top:20px">Remover um irmão ou par</div>
-      <p style="font-size:14px;line-height:1.7;color:#2a2a3e">
-        Clique no <strong>✕</strong> ao lado do nome ou par para removê-lo do setor. Depois clique em <em>✔ Aplicar e atualizar escala</em>.
-      </p>
-    </div>
+<!-- 3 IRMÃOS -->
+<div class="sec">
+  <div class="sec-cab az"><span class="sec-ico">👥</span><span class="sec-tit">3. Aba Irmãos</span></div>
+  <div class="sec-body">
+    <div class="sub az">Cadastrar irmão novo</div>
+    <p style="font-size:14px;line-height:1.7;margin-bottom:10px">No campo azul no topo da aba, digite o nome completo e clique em <strong>✓ Cadastrar</strong>. O irmão entra na lista geral e fica disponível para ser adicionado aos setores.</p>
+    <div class="aviso">⚠️ Irmãos novos <strong>não entram automaticamente</strong> em nenhum setor. Após cadastrar, adicione-o nos setores desejados usando o select de cada setor.</div>
+    <div class="sub az" style="margin-top:18px">Adicionar a um setor</div>
+    <ol class="passos">
+      <li><div class="num az">1</div><div class="ptxt">Role até o setor desejado (ex: Microfone).</div></li>
+      <li><div class="num az">2</div><div class="ptxt">Selecione o nome no menu <strong>"selecionar irmão"</strong> e clique em <strong>+ Adicionar</strong>.</div></li>
+    </ol>
+    <div class="sub az" style="margin-top:16px">Palco — funciona por pares</div>
+    <p style="font-size:14px;line-height:1.7">Escolha o <strong>Irmão 1</strong> e <strong>Irmão 2</strong> e clique em <strong>+ Adicionar par</strong>. O sistema sorteia um par por reunião.</p>
   </div>
+</div>
 
-  <!-- 4 — TREINAMENTO -->
-  <div class="secao">
-    <div class="secao-cab dourado">
-      <span class="secao-icone">🎓</span>
-      <span class="secao-titulo">4. Aba Treinamento</span>
-    </div>
-    <div class="secao-corpo">
-      <p style="font-size:14px;line-height:1.8;color:#2a2a3e;margin-bottom:14px">
-        Quando um irmão está aprendendo um setor, você pode <strong>reduzir a frequência</strong> com que ele aparece naquele setor, mantendo o rodízio normal nos demais.
-      </p>
-
-      <div class="sub laranja">Dois níveis de treinamento</div>
-      <table class="tabela">
-        <thead><tr><th>Nível</th><th>Símbolo</th><th>Frequência</th></tr></thead>
-        <tbody>
-          <tr>
-            <td><span class="nivel nivel-1">Nível 1</span></td>
-            <td>🎓</td>
-            <td>Aparece a cada <strong>3 reuniões</strong> (pula 2)</td>
-          </tr>
-          <tr>
-            <td><span class="nivel nivel-2">Nível 2</span></td>
-            <td>⭐</td>
-            <td>Aparece a cada <strong>2 reuniões</strong> (pula 1) — mais avançado</td>
-          </tr>
-        </tbody>
-      </table>
-
-      <div class="sub laranja" style="margin-top:20px">Como colocar um irmão em treinamento</div>
-      <ol class="passos laranja">
-        <li>
-          <div class="passo-num">1</div>
-          <div class="passo-txt">No campo <em>Adicionar irmão em treinamento</em>, selecione o nome (ou digite um nome novo no campo de texto ao lado).</div>
-        </li>
-        <li>
-          <div class="passo-num">2</div>
-          <div class="passo-txt">Clique em <em>+ Adicionar</em> — o card do irmão aparece.</div>
-        </li>
-        <li>
-          <div class="passo-num">3</div>
-          <div class="passo-txt">Defina a <strong>data de início</strong> — reuniões antes desta data não serão afetadas (a escala já impressa fica intacta).</div>
-        </li>
-        <li>
-          <div class="passo-num">4</div>
-          <div class="passo-txt">Clique nos <strong>setores</strong> para marcar o nível de treinamento. Cada clique cicla: <em>Desativado → Nível 1 → Nível 2 → Desativado</em>.</div>
-        </li>
-      </ol>
-
-      <div class="sub laranja" style="margin-top:20px">Quando o treinamento acabar</div>
-      <p style="font-size:14px;line-height:1.7;color:#2a2a3e">
-        Clique no <strong>✕</strong> no card do irmão. Ele voltará ao rodízio normal imediatamente — sem precisar regenerar a escala.
-      </p>
-      <div class="dica" style="background:var(--laranja-claro);border-color:#f59e0b;color:#78350f;margin-top:14px">
-        🎓 Exemplo: João está aprendendo o Palco. Marque o setor <strong>Palco</strong> como Nível 1. Resultado: no Palco aparece a cada 3 reuniões; nos demais setores continua normal.
-      </div>
-    </div>
+<!-- 4 TREINAMENTO -->
+<div class="sec">
+  <div class="sec-cab esc"><span class="sec-ico">🎓</span><span class="sec-tit">4. Aba Treinamento</span></div>
+  <div class="sec-body">
+    <p style="font-size:14px;line-height:1.7;margin-bottom:12px">Reduz a frequência de um irmão nos setores marcados enquanto aprende, mantendo o rodízio normal nos demais.</p>
+    <table class="t">
+      <thead><tr><th>Nível</th><th>Símbolo</th><th>Frequência</th></tr></thead>
+      <tbody>
+        <tr><td><span class="nivel n1">Nível 1</span></td><td>🎓</td><td>Aparece a cada <strong>3 reuniões</strong> (pula 2)</td></tr>
+        <tr><td><span class="nivel n2">Nível 2</span></td><td>⭐</td><td>Aparece a cada <strong>2 reuniões</strong> (pula 1) — mais avançado</td></tr>
+      </tbody>
+    </table>
+    <div class="sub lar" style="margin-top:16px">Como configurar</div>
+    <ol class="passos">
+      <li><div class="num lar">1</div><div class="ptxt">Selecione o nome (ou digite novo no campo de texto) e clique em <strong>+ Adicionar</strong>.</div></li>
+      <li><div class="num lar">2</div><div class="ptxt">Defina a <strong>data de início</strong> — reuniões anteriores não são afetadas (escala já impressa fica intacta).</div></li>
+      <li><div class="num lar">3</div><div class="ptxt">Clique nos setores para marcar o nível. Cada clique cicla: <strong>Desativado → N1 → N2 → Desativado</strong>.</div></li>
+      <li><div class="num lar">4</div><div class="ptxt">Para encerrar, clique no <strong>✕</strong> do card — o irmão volta ao rodízio normal imediatamente.</div></li>
+    </ol>
   </div>
+</div>
 
-  <!-- 5 — GERAR MESES -->
-  <div class="secao">
-    <div class="secao-cab azul">
-      <span class="secao-icone">📆</span>
-      <span class="secao-titulo">5. Aba Gerar Meses</span>
-    </div>
-    <div class="secao-corpo">
-      <p style="font-size:14px;line-height:1.8;color:#2a2a3e;margin-bottom:16px">Crie a escala para os próximos meses. Dois modos disponíveis:</p>
-
-      <div class="sub azul">Adicionar meses (modo normal)</div>
-      <ol class="passos azul">
-        <li><div class="passo-num">1</div><div class="passo-txt">Escolha o <strong>mês de início</strong>, o <strong>ano</strong> e a <strong>quantidade de meses</strong>.</div></li>
-        <li><div class="passo-num">2</div><div class="passo-txt">Clique em <em>📅 Adicionar meses à escala</em>.</div></li>
-      </ol>
-      <div class="dica azul">💡 Modo seguro — não apaga o que já existe. Meses já gerados não são duplicados.</div>
-
-      <div class="sub azul" style="margin-top:22px">Regenerar tudo (reset)</div>
-      <p style="font-size:14px;line-height:1.7;color:#2a2a3e;margin-bottom:10px">
-        O botão vermelho <strong>⚠ Regenerar tudo</strong> apaga toda a escala e cria uma nova do zero.
-      </p>
-      <div class="aviso vermelho">
-        🔴 Use com cuidado. Útil quando mudou muitos irmãos ou eventos e quer um recomeço limpo.
-      </div>
-    </div>
+<!-- 5 GERAR MESES -->
+<div class="sec">
+  <div class="sec-cab az"><span class="sec-ico">📆</span><span class="sec-tit">5. Aba Gerar Meses</span></div>
+  <div class="sec-body">
+    <table class="t">
+      <thead><tr><th>Botão</th><th>O que faz</th><th>Quando usar</th></tr></thead>
+      <tbody>
+        <tr><td>📅 Adicionar meses</td><td>Adiciona novos meses à escala existente. Não apaga nada.</td><td>Modo normal — uso frequente.</td></tr>
+        <tr><td>⚠ Regenerar tudo</td><td>Apaga toda a escala e recria do zero.</td><td>Após muitas mudanças de irmãos ou eventos.</td></tr>
+        <tr><td>🗑 Limpar Firebase e recomeçar</td><td>Apaga <strong>todos</strong> os dados do Firebase (escala, trocas, confirmações) e recomeça do zero.</td><td>Apenas em caso extremo.</td></tr>
+      </tbody>
+    </table>
+    <div class="aviso verm" style="margin-top:12px">🔴 <strong>Limpar Firebase</strong> é irreversível. Apaga escala, trocas, confirmações de presença e substituições. Use com muito cuidado.</div>
   </div>
+</div>
 
-  <!-- 6 — TROCAS -->
-  <div class="secao">
-    <div class="secao-cab cinza">
-      <span class="secao-icone">🔄</span>
-      <span class="secao-titulo">6. Aba Trocas</span>
-    </div>
-    <div class="secao-corpo">
-      <p style="font-size:14px;line-height:1.8;color:#2a2a3e;margin-bottom:14px">
-        Mostra <strong>todas as trocas solicitadas pelos irmãos</strong>. Você pode acompanhar o status de cada uma e apagar registros antigos.
-      </p>
-      <p style="font-size:14px;line-height:1.7;color:#2a2a3e;margin-bottom:14px">
-        Para cada troca aparece: os dois irmãos, o status (Pendente / Aceita / Recusada / Expirada), o setor, a data da reunião e quando o pedido foi criado.
-      </p>
-      <div class="sub">Apagar trocas</div>
-      <p style="font-size:14px;line-height:1.7;color:#2a2a3e">
-        Clique no ícone 🗑️ para apagar uma troca específica, ou em <strong>🗑️ Apagar todas</strong> para limpar tudo de uma vez.
-      </p>
-      <div class="aviso" style="margin-top:14px">
-        ⚠️ Limpe as trocas antigas quando publicar uma escala nova. Trocas de meses passados não afetam mais nada.
-      </div>
-    </div>
+<!-- 6 TROCAS -->
+<div class="sec">
+  <div class="sec-cab cin"><span class="sec-ico">🔄</span><span class="sec-tit">6. Aba Trocas</span></div>
+  <div class="sec-body">
+    <p style="font-size:14px;line-height:1.8;margin-bottom:12px">Mostra todas as trocas solicitadas pelos irmãos com status, setor, data e quando o pedido foi criado.</p>
+    <table class="t">
+      <thead><tr><th>Ação</th><th>Como fazer</th></tr></thead>
+      <tbody>
+        <tr><td>Apagar uma troca</td><td>Clique no ícone da lixeira na linha.</td></tr>
+        <tr><td>Apagar todas</td><td>Clique em <strong>🗑 Apagar todas as trocas</strong> no topo da aba.</td></tr>
+      </tbody>
+    </table>
+    <div class="aviso">⚠️ Limpe as trocas antigas ao publicar uma escala nova. Trocas de meses passados não afetam mais nada.</div>
   </div>
+</div>
 
-  <!-- 7 — HISTÓRICO -->
-  <div class="secao">
-    <div class="secao-cab roxo">
-      <span class="secao-icone">📊</span>
-      <span class="secao-titulo">7. Aba Histórico</span>
-    </div>
-    <div class="secao-corpo">
-      <p style="font-size:14px;line-height:1.8;color:#2a2a3e;margin-bottom:16px">
-        Mostra <strong>quantas vezes cada irmão foi designado</strong> em cada setor nos meses gerados. Útil para verificar se o rodízio está equilibrado.
-      </p>
-      <ol class="passos roxo">
-        <li>
-          <div class="passo-num">1</div>
-          <div class="passo-txt">Abra a aba <em>📊 Histórico</em>.</div>
-        </li>
-        <li>
-          <div class="passo-num">2</div>
-          <div class="passo-txt">Use os filtros <em>Filtrar por irmão</em> e <em>Setor</em> para focar em um irmão ou setor específico.</div>
-        </li>
-        <li>
-          <div class="passo-num">3</div>
-          <div class="passo-txt">A tabela mostra barras proporcionais e o total por irmão — fácil de identificar quem aparece mais ou menos.</div>
-        </li>
-      </ol>
-      <div class="dica roxo">
-        💡 Se um irmão aparece muito mais que os outros no mesmo setor, considere revisar a ordem da lista ou o treinamento.
-      </div>
-    </div>
+<!-- 7 HISTÓRICO -->
+<div class="sec">
+  <div class="sec-cab rx"><span class="sec-ico">📊</span><span class="sec-tit">7. Aba Histórico</span></div>
+  <div class="sec-body">
+    <p style="font-size:14px;line-height:1.8;margin-bottom:12px">Mostra quantas vezes cada irmão foi designado em cada setor nos meses gerados.</p>
+    <ol class="passos">
+      <li><div class="num rx">1</div><div class="ptxt">Abra a aba <strong>📊 Histórico</strong>.</div></li>
+      <li><div class="num rx">2</div><div class="ptxt">Use os filtros <strong>Irmão</strong> e <strong>Setor</strong> para focar.</div></li>
+      <li><div class="num rx">3</div><div class="ptxt">A tabela mostra barras proporcionais e total por irmão — fácil de ver quem aparece mais.</div></li>
+    </ol>
+    <div class="dica rx">💡 Se um irmão aparece muito mais que os outros, revise a lista do setor ou configure o treinamento.</div>
   </div>
+</div>
 
-  <!-- 8 — SENHA -->
-  <div class="secao">
-    <div class="secao-cab grafite">
-      <span class="secao-icone">🔑</span>
-      <span class="secao-titulo">8. Aba Senha</span>
-    </div>
-    <div class="secao-corpo">
-      <p style="font-size:14px;line-height:1.8;color:#2a2a3e;margin-bottom:14px">
-        Aqui você altera a senha de acesso à Área do Responsável.
-      </p>
-      <ol class="passos cinza">
-        <li><div class="passo-num">1</div><div class="passo-txt">Digite a <strong>senha atual</strong>.</div></li>
-        <li><div class="passo-num">2</div><div class="passo-txt">Digite a <strong>nova senha</strong> duas vezes para confirmar.</div></li>
-        <li><div class="passo-num">3</div><div class="passo-txt">Clique em <em>Salvar nova senha</em>.</div></li>
-      </ol>
-      <div class="aviso">
-        ⚠️ A senha fica salva no Firebase. Não compartilhe com os irmãos — a Área do Responsável dá acesso total ao sistema.
-      </div>
-    </div>
+<!-- 8 PRESENÇAS -->
+<div class="sec">
+  <div class="sec-cab ros"><span class="sec-ico">📋</span><span class="sec-tit">8. Aba Presenças <span style="background:rgba(255,255,255,.2);font-size:12px;padding:2px 10px;border-radius:10px;margin-left:6px">NOVO</span></span></div>
+  <div class="sec-body">
+    <p style="font-size:14px;line-height:1.8;margin-bottom:12px">Centraliza todas as <strong>confirmações de presença</strong> e <strong>avisos de ausência</strong> enviados pelos irmãos pela tela Minha Escala.</p>
+    <table class="t">
+      <thead><tr><th>Status</th><th>Significado</th></tr></thead>
+      <tbody>
+        <tr><td>✓ Confirmado</td><td>O irmão confirmou que vai estar presente.</td></tr>
+        <tr><td>✗ Ausente</td><td>O irmão avisou que não poderá ir — providencie um substituto.</td></tr>
+        <tr><td>⏳ Pendente</td><td>Ainda não respondeu.</td></tr>
+      </tbody>
+    </table>
+    <div class="sub vd" style="margin-top:16px">Gerenciar confirmações</div>
+    <table class="t">
+      <thead><tr><th>Botão</th><th>O que faz</th></tr></thead>
+      <tbody>
+        <tr><td>🗑 Limpar avisos antigos</td><td>Remove avisos de reuniões já passadas. Mantém os futuros.</td></tr>
+        <tr><td>🗑 Apagar tudo</td><td>Remove todas as confirmações do Firebase. Use ao iniciar um novo período.</td></tr>
+      </tbody>
+    </table>
+    <div class="dica vd">💡 Quando um irmão avisa ausência, você recebe um alerta na página principal. Use a <strong>Substituição Direta</strong> para colocar outro irmão no lugar.</div>
   </div>
+</div>
 
-  <!-- 9 — SUBSTITUIÇÃO DIRETA -->
-  <div class="secao">
-    <div class="secao-cab vermelho">
-      <span class="secao-icone">✏️</span>
-      <span class="secao-titulo">9. Substituição direta na escala</span>
-    </div>
-    <div class="secao-corpo">
-      <p style="font-size:14px;line-height:1.8;color:#2a2a3e;margin-bottom:16px">
-        Você pode substituir qualquer nome diretamente na escala, sem precisar entrar na Área do Responsável. Útil para trocas de última hora.
-      </p>
-      <ol class="passos cinza">
-        <li><div class="passo-num">1</div><div class="passo-txt">Na escala, clique no nome sublinhado que deseja substituir.</div></li>
-        <li><div class="passo-num">2</div><div class="passo-txt">Uma janela mostra o setor, data e nome atual.</div></li>
-        <li><div class="passo-num">3</div><div class="passo-txt">Escolha o novo irmão no menu e clique em <em>✔ Confirmar</em>.</div></li>
-      </ol>
-      <div class="aviso">
-        ⚠️ Esta substituição é <strong>salva no Firebase</strong> e fica visível para todos imediatamente. Para desfazer, clique no nome novamente e escolha o original.
-      </div>
-    </div>
+<!-- 9 SENHA -->
+<div class="sec">
+  <div class="sec-cab graf"><span class="sec-ico">🔑</span><span class="sec-tit">9. Aba Senha e Recuperação</span></div>
+  <div class="sec-body">
+    <div class="sub az">Alterar senha</div>
+    <ol class="passos">
+      <li><div class="num cin">1</div><div class="ptxt">Digite a <strong>senha atual</strong>.</div></li>
+      <li><div class="num cin">2</div><div class="ptxt">Digite a <strong>nova senha</strong> e repita para confirmar.</div></li>
+      <li><div class="num cin">3</div><div class="ptxt">Clique em <strong>🔒 Salvar nova senha</strong>.</div></li>
+    </ol>
+    <div class="sub az" style="margin-top:18px">Pergunta secreta para recuperação</div>
+    <p style="font-size:14px;line-height:1.7;margin-bottom:10px">Configure uma <strong>pergunta secreta e resposta</strong> para recuperar o acesso caso a senha seja esquecida — sem precisar revelar a senha a ninguém.</p>
+    <ol class="passos">
+      <li><div class="num cin">1</div><div class="ptxt">Na seção "Pergunta secreta", escreva a pergunta (ex: <em>Nome do meu primeiro animal de estimação</em>).</div></li>
+      <li><div class="num cin">2</div><div class="ptxt">Escreva a resposta (não diferencia maiúsculas).</div></li>
+      <li><div class="num cin">3</div><div class="ptxt">Clique em <strong>✓ Salvar pergunta secreta</strong>.</div></li>
+    </ol>
+    <p style="font-size:13px;line-height:1.7;color:#5e6370;margin-top:10px">Na tela de login aparece o link <strong>"Esqueci a senha"</strong> — ao clicar, o sistema exibe a pergunta secreta para verificação.</p>
+    <div class="aviso">⚠️ Não compartilhe a senha. A Área do Responsável dá acesso total ao sistema.</div>
   </div>
+</div>
 
-  <!-- 10 — AVISOS DE AUSÊNCIA -->
-  <div class="secao">
-    <div class="secao-cab" style="background:#dc2626">
-      <span class="secao-icone">⚠️</span>
-      <span class="secao-titulo">10. Avisos de ausência dos irmãos</span>
-    </div>
-    <div class="secao-corpo">
-      <p style="font-size:14px;line-height:1.8;color:#2a2a3e;margin-bottom:16px">
-        Quando um irmão abre a tela <strong>Minha Escala</strong> e clica em <em>✗ Avisar ausência</em>, você recebe um aviso automático.
-      </p>
-      <ul style="list-style:none;display:flex;flex-direction:column;gap:12px">
-        <li style="display:flex;gap:12px;align-items:flex-start">
-          <span style="font-size:20px">🔔</span>
-          <div style="font-size:14px;line-height:1.7;color:#2a2a3e">O aviso fica registrado no Firebase em tempo real.</div>
-        </li>
-        <li style="display:flex;gap:12px;align-items:flex-start">
-          <span style="font-size:20px">📋</span>
-          <div style="font-size:14px;line-height:1.7;color:#2a2a3e">O aviso mostra o nome do irmão, o setor e a data da reunião.</div>
-        </li>
-        <li style="display:flex;gap:12px;align-items:flex-start">
-          <span style="font-size:20px">✏️</span>
-          <div style="font-size:14px;line-height:1.7;color:#2a2a3e">Com o aviso em mãos, faça uma <strong>substituição direta</strong> na escala (item 9 acima) para colocar outro irmão no lugar.</div>
-        </li>
-      </ul>
-      <div class="dica" style="margin-top:16px">
-        💡 Use a aba <strong>Histórico</strong> para escolher o substituto mais adequado — escolha quem foi designado há mais tempo naquele setor.
-      </div>
-    </div>
+<!-- 10 SUBSTITUIÇÃO DIRETA -->
+<div class="sec">
+  <div class="sec-cab verm"><span class="sec-ico">✏️</span><span class="sec-tit">10. Substituição direta na escala</span></div>
+  <div class="sec-body">
+    <p style="font-size:14px;line-height:1.8;margin-bottom:12px">Substitua qualquer nome diretamente na escala — útil para trocas de última hora sem entrar na Área do Responsável.</p>
+    <ol class="passos">
+      <li><div class="num cin">1</div><div class="ptxt">Na escala, clique no nome sublinhado que deseja substituir.</div></li>
+      <li><div class="num cin">2</div><div class="ptxt">Uma janela mostra setor, data e nome atual.</div></li>
+      <li><div class="num cin">3</div><div class="ptxt">Escolha o novo irmão no menu e clique em <strong>✔ Confirmar</strong>.</div></li>
+    </ol>
+    <div class="aviso">⚠️ A substituição é salva no Firebase e fica visível para todos imediatamente. Para desfazer, clique no nome novamente e escolha o original.</div>
   </div>
+</div>
 
-  <div class="rodape">
-    Congregação Parque Tietê<br>
-    <strong>Manual do Responsável — Eriton Oliveira</strong>
+<!-- 11 AVISOS DE AUSÊNCIA -->
+<div class="sec">
+  <div class="sec-cab verm"><span class="sec-ico">⚠️</span><span class="sec-tit">11. Avisos de ausência dos irmãos</span></div>
+  <div class="sec-body">
+    <p style="font-size:14px;line-height:1.8;margin-bottom:12px">Quando um irmão clica em <strong>✗ Avisar ausência</strong> na tela Minha Escala, o sistema registra automaticamente.</p>
+    <ol class="passos">
+      <li><div class="num cin">1</div><div class="ptxt">O aviso aparece na aba <strong>Presenças</strong> com nome, setor e data.</div></li>
+      <li><div class="num cin">2</div><div class="ptxt">Use a <strong>Substituição Direta</strong> (item 10) para colocar outro irmão no lugar.</div></li>
+      <li><div class="num cin">3</div><div class="ptxt">Consulte o <strong>Histórico</strong> para escolher o substituto mais adequado — o que foi designado há mais tempo naquele setor.</div></li>
+    </ol>
   </div>
+</div>
 
+<!-- 12 BADGE STATUS -->
+<div class="sec">
+  <div class="sec-cab az"><span class="sec-ico">📋</span><span class="sec-tit">12. Badge de Status na página principal <span style="background:rgba(255,255,255,.2);font-size:12px;padding:2px 10px;border-radius:10px;margin-left:6px">NOVO</span></span></div>
+  <div class="sec-body">
+    <p style="font-size:14px;line-height:1.8;margin-bottom:12px">Na página principal aparece um card <strong>"Status das Designações"</strong> que mostra um resumo das confirmações e avisos de ausência das próximas reuniões.</p>
+    <table class="t">
+      <thead><tr><th>Informação</th><th>Detalhe</th></tr></thead>
+      <tbody>
+        <tr><td>Quantos confirmaram</td><td>Irmãos que clicaram em "Confirmar presença" para reuniões futuras.</td></tr>
+        <tr><td>Quantos avisaram ausência</td><td>Irmãos que precisam de substituto.</td></tr>
+        <tr><td>Botão "Ver ➔"</td><td>Clicando no card, abre a Área do Responsável direto na aba Presenças.</td></tr>
+      </tbody>
+    </table>
+    <div class="dica az">💡 O badge fica visível para todos na página principal — serve como painel rápido do estado das próximas reuniões.</div>
+  </div>
+</div>
+
+<div class="rodape">Congregação Parque Tietê<br><strong>Manual do Responsável — Eriton Oliveira — Versão 2025</strong></div>
 </div>
 </body>
 </html>
