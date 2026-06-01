@@ -2597,7 +2597,22 @@ function fecharConfirmar() {
 }
 
 function confirmarPresenca(resposta) {
-  if (!confAtual || !meuNome) return;
+  if (!confAtual || !meuNome) {
+    alert('Selecione seu nome primeiro!');
+    return;
+  }
+  
+  // Verifica se o nome selecionado está designado para esta data/setor
+  var des = buscarDesignacoesDe(meuNome);
+  var encontrado = des.some(function(d) {
+    return d.dataISO === confAtual.dataISO && d.campo === confAtual.campo;
+  });
+  
+  if (!encontrado) {
+    alert('Você não está designado para esta reunião!');
+    return;
+  }
+  
   var chave = confAtual.dataISO + '|' + confAtual.campo;
   minhaEscalaConfirmacoes[chave] = resposta;
   if (firebaseOk && db) {
