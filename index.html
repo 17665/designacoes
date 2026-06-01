@@ -2608,8 +2608,14 @@ function confirmarPresenca(resposta) {
     return;
   }
   
-  // Verifica se o nome selecionado está designado para esta data/setor
-  var des = buscarDesignacoesDe(meuNome);
+  // Usa o nome do seletor, não o localStorage
+  var nomeSelecionado = document.getElementById('sel-minha-escala-nome').value;
+  if (!nomeSelecionado) {
+    alert('Selecione seu nome!');
+    return;
+  }
+  
+  var des = buscarDesignacoesDe(nomeSelecionado);
   var encontrado = des.some(function(d) {
     return d.dataISO === confAtual.dataISO && d.campo === confAtual.campo;
   });
@@ -2622,12 +2628,11 @@ function confirmarPresenca(resposta) {
   var chave = confAtual.dataISO + '|' + confAtual.campo;
   minhaEscalaConfirmacoes[chave] = resposta;
   if (firebaseOk && db) {
-    var path = 'confirmacoes/' + meuNome.replace(/[.#$[\]]/g,'_') + '/' + chave.replace(/\|/g,'__');
+    var path = 'confirmacoes/' + nomeSelecionado.replace(/[.#$[\]]/g,'_') + '/' + chave.replace(/\|/g,'__');
     db.ref(path).set(resposta);
-    // Notifica responsável se ausente
     if (resposta === 'ausente') {
       db.ref('avisos_ausencia').push({
-        nome: meuNome,
+        nome: nomeSelecionado,
         setor: confAtual.setor,
         data: confAtual.data,
         dataISO: confAtual.dataISO,
@@ -2636,12 +2641,11 @@ function confirmarPresenca(resposta) {
     }
   }
   fecharConfirmar();
-  // Re-renderiza com nova confirmação
-  renderMinhaEscala(meuNome);
+  renderMinhaEscala(nomeSelecionado);
   if (resposta === 'ausente') {
     alert('Aviso de ausência enviado ao responsável!');
   }
-}
+} 
 
 // ===================== HISTÓRICO =====================
 function apagarConfirmacao(nome) {
