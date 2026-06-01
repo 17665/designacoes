@@ -2544,19 +2544,28 @@ function _renderMinhaEscalaComConf(nome, cont) {
         : '&#9203; Aguardando confirma&#231;&#227;o';
       var badgeCls = 'conf-badge ' + conf;
       var btns = '';
-      // Só mostra botões se for a designação do próprio irmão
-      var designacaoEminha = buscarDesignacoesDe(nome).some(function(dd) {
-    return dd.dataISO === d.dataISO && dd.campo === d.campo;
-    });
-      if (designacaoEminha) {
-    if (conf !== 'confirmado') {
-      btns += '<button class="btn-confirmar-presence btn-conf-sim" onclick="clicarConfirmar(' + idx + ', &quot;confirmado&quot;)">&#10003; Confirmar presen&#231;a</button>';
-    }
-    if (conf !== 'ausente') {
-      btns += '<button class="btn-confirmar-presence btn-conf-nao" onclick="clicarConfirmar(' + idx + ', &quot;ausente&quot;)">&#10007; Avisar aus&#234;ncia</button>';
-    }
-}
-html += '<div class="minha-card">' +
+      
+      // VERIFICAÇÃO: o nome selecionado é o designado?
+      var nomeSeletor = document.getElementById('sel-minha-escala-nome').value;
+      var designacoesDoNome = buscarDesignacoesDe(nomeSeletor);
+      var achou = false;
+      for (var dd = 0; dd < designacoesDoNome.length; dd++) {
+        if (designacoesDoNome[dd].dataISO === d.dataISO && designacoesDoNome[dd].campo === d.campo) {
+          achou = true;
+          break;
+        }
+      }
+      
+      if (achou) {
+        if (conf !== 'confirmado') {
+          btns += '<button class="btn-confirmar-presence btn-conf-sim" onclick="clicarConfirmar(' + idx + ', &quot;confirmado&quot;)">&#10003; Confirmar presen&#231;a</button>';
+        }
+        if (conf !== 'ausente') {
+          btns += '<button class="btn-confirmar-presence btn-conf-nao" onclick="clicarConfirmar(' + idx + ', &quot;ausente&quot;)">&#10007; Avisar aus&#234;ncia</button>';
+        }
+      }
+      
+      html += '<div class="minha-card">' +
         '<div class="minha-card-cab">' +
           '<span class="minha-card-data">'+escHtml(d.data)+'</span>' +
           '<span class="minha-card-tipo">'+escHtml(d.setor)+'</span>' +
@@ -2569,7 +2578,6 @@ html += '<div class="minha-card">' +
         '</div></div>';
     });
   }
-
   if (passadas.length) {
     html += '<div style="font-size:12px;font-weight:bold;color:#9ca3af;text-transform:uppercase;letter-spacing:.5px;margin:16px 0 8px">&#218;ltimas designa&#231;&#245;es</div>';
     passadas.forEach(function(d) {
