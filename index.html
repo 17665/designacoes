@@ -2622,49 +2622,48 @@ function fecharConfirmar() {
 }
 
 function confirmarPresenca(resposta) {
-  if (!confAtual || !meuNome) {
+  var nomeSeletor = document.getElementById('sel-minha-escala-nome').value;
+  
+  if (!confAtual || !nomeSeletor) {
     alert('Selecione seu nome primeiro!');
     return;
   }
   
-  // Usa o nome do seletor, não o localStorage
-  var nomeSelecionado = document.getElementById('sel-minha-escala-nome').value;
-  if (!nomeSelecionado) {
-    alert('Selecione seu nome!');
-    return;
-  }
-  
-  var des = buscarDesignacoesDe(nomeSelecionado);
+  // Verifica se o nome selecionado está designado para esta data/setor
+  var des = buscarDesignacoesDe(nomeSeletor);
   var encontrado = des.some(function(d) {
     return d.dataISO === confAtual.dataISO && d.campo === confAtual.campo;
   });
   
   if (!encontrado) {
-    alert('Você não está designado para esta reunião!');
+    alert('Você (' + nomeSeletor + ') não está designado para esta reunião!');
     return;
   }
   
   var chave = confAtual.dataISO + '|' + confAtual.campo;
-  minhaEscalaConfirmacoes[chave] = resposta;
-  if (firebaseOk && db) {
-    var path = 'confirmacoes/' + nomeSelecionado.replace(/[.#$[\]]/g,'_') + '/' + chave.replace(/\|/g,'__');
-    db.ref(path).set(resposta);
+minhaEscalaConfirmacoes[chave] = resposta;
+if (firebaseOk && db) {
+    var path = 'confirmacoes/' + nomeSeletor.replace(/[.#$[\]]/g,'_') + '/' + chave.replace(/\|/g,'__');
+    db.ref(path).set(resposta).then(function() {
+      ouvirAvisosAusencia();
+    });
     if (resposta === 'ausente') {
       db.ref('avisos_ausencia').push({
-        nome: nomeSelecionado,
+        nome: nomeSeletor,
         setor: confAtual.setor,
         data: confAtual.data,
         dataISO: confAtual.dataISO,
         criadoEm: Date.now()
       });
     }
-  }
+}
+
   fecharConfirmar();
-  renderMinhaEscala(nomeSelecionado);
+  renderMinhaEscala(nomeSeletor);
   if (resposta === 'ausente') {
     alert('Aviso de ausência enviado ao responsável!');
   }
-} 
+}
 
 // ===================== HISTÓRICO =====================
 function apagarConfirmacao(nome) {
