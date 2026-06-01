@@ -2604,6 +2604,29 @@ function confirmarPresenca(resposta) {
 }
 
 // ===================== HISTÓRICO =====================
+function deletarTodasConfirmacoes() {
+  if (!firebaseOk || !db) return;
+  if (!confirm('Apagar TODAS as confirmações?')) return;
+  db.ref('confirmacoes').remove().then(function() {
+    db.ref('avisos_ausencia').remove().then(function() {
+      alert('Tudo apagado!');
+      carregarPresencas();
+    });
+  });
+}
+
+function limparAvisosAntigos() {
+  if (!firebaseOk || !db) return;
+  db.ref('avisos_ausencia').once('value', function(snap) {
+    var seteDias = 7 * 24 * 60 * 60 * 1000;
+    snap.forEach(function(child) {
+      if (Date.now() - child.val().criadoEm > seteDias) {
+        db.ref('avisos_ausencia/' + child.key).remove();
+      }
+    });
+  });
+}
+
 function carregarPresencas() {
   var cont = document.getElementById('lista-presencas');
   if (!firebaseOk || !db) {
@@ -2653,18 +2676,6 @@ function carregarPresencas() {
       }
       
       cont.innerHTML = tem ? html : '<p style="text-align:center;color:#888;padding:20px">Nenhuma confirmação ou aviso ainda.</p>';
-    });
-  });
-}
-
-function limparAvisosAntigos() {
-  if (!firebaseOk || !db) return;
-  db.ref('avisos_ausencia').once('value', function(snap) {
-    var seteDias = 7 * 24 * 60 * 60 * 1000;
-    snap.forEach(function(child) {
-      if (Date.now() - child.val().criadoEm > seteDias) {
-        db.ref('avisos_ausencia/' + child.key).remove();
-      }
     });
   });
 }
