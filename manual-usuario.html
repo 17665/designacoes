@@ -4,364 +4,214 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Manual do Irmão — Designações Parque Tietê</title>
-<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Nunito+Sans:wght@400;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800;900&family=Nunito+Sans:wght@400;600&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --azul: #1a4fa3;
-    --azul-claro: #e8f0fb;
-    --verde: #0f6e56;
-    --verde-claro: #e1f5ee;
-    --laranja: #b45309;
-    --laranja-claro: #fef3c7;
-    --roxo: #7c3aed;
-    --roxo-claro: #f5f3ff;
-    --cinza: #5e6370;
-    --fundo: #f0f2f7;
-    --borda: #d0d5dd;
-  }
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: 'Nunito Sans', sans-serif; background: var(--fundo); color: #1a1a2e; padding: 0 0 60px; }
-
-  /* CAPA */
-  .capa {
-    background: linear-gradient(135deg, #1a4fa3 0%, #0d3276 60%, #0a2558 100%);
-    color: white; padding: 48px 32px 40px; text-align: center;
-    position: relative; overflow: hidden;
-  }
-  .capa::before { content:''; position:absolute; top:-60px; right:-60px; width:220px; height:220px; border-radius:50%; background:rgba(255,255,255,0.05); }
-  .capa::after  { content:''; position:absolute; bottom:-40px; left:-40px; width:160px; height:160px; border-radius:50%; background:rgba(255,255,255,0.04); }
-  .capa-icone { font-size:52px; margin-bottom:14px; }
-  .capa h1 { font-family:'Nunito',sans-serif; font-size:26px; font-weight:900; line-height:1.3; margin-bottom:8px; }
-  .capa-sub { font-size:14px; opacity:.75; font-weight:600; letter-spacing:.5px; text-transform:uppercase; }
-  .capa-badge { display:inline-block; margin-top:20px; background:rgba(255,255,255,0.15); border:1px solid rgba(255,255,255,0.3); padding:6px 18px; border-radius:20px; font-size:13px; font-weight:700; }
-
-  /* CONTEÚDO */
-  .conteudo { max-width:680px; margin:0 auto; padding:0 20px; }
-
-  /* INTRO */
-  .intro { background:white; border-radius:14px; padding:22px 24px; margin:24px 0 20px; border-left:5px solid var(--azul); box-shadow:0 2px 8px rgba(0,0,0,0.06); }
-  .intro p { font-size:15px; line-height:1.8; color:#2a2a3e; }
-  .intro strong { color:var(--azul); }
-
-  /* SEÇÃO */
-  .secao { background:white; border-radius:14px; overflow:hidden; margin-bottom:20px; box-shadow:0 2px 8px rgba(0,0,0,0.06); }
-  .secao-cab { background:var(--azul); color:white; padding:14px 22px; display:flex; align-items:center; gap:10px; }
-  .secao-cab.verde   { background:var(--verde); }
-  .secao-cab.laranja { background:var(--laranja); }
-  .secao-cab.roxo    { background:var(--roxo); }
-  .secao-cab.cinza   { background:#4b5563; }
-  .secao-cab.dourado { background:#92400e; }
-  .secao-icone { font-size:20px; }
-  .secao-titulo { font-family:'Nunito',sans-serif; font-size:16px; font-weight:800; }
-  .secao-corpo { padding:20px 22px; }
-
-  /* PASSOS */
-  .passos { list-style:none; }
-  .passos li { display:flex; gap:14px; margin-bottom:16px; align-items:flex-start; }
-  .passos li:last-child { margin-bottom:0; }
-  .passo-num { background:var(--azul); color:white; font-family:'Nunito',sans-serif; font-weight:900; font-size:13px; width:28px; height:28px; border-radius:50%; display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:1px; }
-  .passos.laranja .passo-num { background:var(--laranja); }
-  .passos.verde   .passo-num { background:var(--verde); }
-  .passos.roxo    .passo-num { background:var(--roxo); }
-  .passo-txt { font-size:14px; line-height:1.7; color:#2a2a3e; }
-  .passo-txt strong { color:#1a1a2e; }
-  .passo-txt em { background:var(--azul-claro); color:var(--azul); padding:1px 7px; border-radius:4px; font-style:normal; font-weight:700; font-size:13px; }
-  .passos.laranja .passo-txt em { background:var(--laranja-claro); color:var(--laranja); }
-  .passos.verde   .passo-txt em { background:var(--verde-claro);   color:var(--verde); }
-  .passos.roxo    .passo-txt em { background:var(--roxo-claro);    color:var(--roxo); }
-
-  /* DESTAQUE BOTÃO */
-  .btn-demo { display:inline-flex; align-items:center; gap:6px; border-radius:8px; padding:6px 14px; font-size:13px; font-weight:bold; margin:4px 2px; }
-  .btn-roxo   { background:var(--roxo);   color:white; }
-  .btn-verde  { background:#16a34a;        color:white; }
-  .btn-vermelho { background:#dc2626;      color:white; }
-  .btn-cinza  { background:#6b7280;        color:white; }
-
-  /* BADGE CONF */
-  .badge { display:inline-flex; align-items:center; gap:5px; border-radius:20px; padding:3px 12px; font-size:12px; font-weight:bold; margin:2px; }
-  .badge-verde    { background:#dcfce7; color:#166534; border:1px solid #86efac; }
-  .badge-vermelho { background:#fee2e2; color:#991b1b; border:1px solid #fca5a5; }
-  .badge-amarelo  { background:#fef3c7; color:#92400e; border:1px solid #fcd34d; }
-
-  /* CORES */
-  .cores { list-style:none; }
-  .cores li { display:flex; align-items:center; gap:12px; padding:11px 0; border-bottom:1px solid #f4f4f2; font-size:14px; line-height:1.6; }
-  .cores li:last-child { border-bottom:none; }
-  .cor-bolinha { width:18px; height:18px; border-radius:50%; flex-shrink:0; }
-  .cor-amarelo  { background:#f59e0b; }
-  .cor-verde    { background:#22c55e; }
-  .cor-vermelho { background:#ef4444; }
-  .cor-cinza    { background:#9ca3af; }
-  .cor-txt strong { color:#1a1a2e; }
-  .cor-txt span { font-size:12px; color:var(--cinza); }
-
-  /* AVISO / DICA */
-  .aviso { background:#fffbeb; border-left:4px solid #f59e0b; border-radius:8px; padding:14px 16px; font-size:14px; line-height:1.7; color:#78350f; margin-top:16px; }
-  .aviso strong { color:#92400e; }
-  .dica  { background:var(--azul-claro); border-left:4px solid var(--azul); border-radius:8px; padding:14px 16px; font-size:13px; line-height:1.7; color:#1e3a5f; margin-top:14px; }
-  .dica.roxo { background:var(--roxo-claro); border-color:var(--roxo); color:#4c1d95; }
-  .dica.verde { background:var(--verde-claro); border-color:var(--verde); color:#064e3b; }
-
-  /* SEPARADOR */
-  .sep { border:none; border-top:2px solid #f0f0f0; margin:18px 0; }
-
-  /* RODAPÉ */
-  .rodape { text-align:center; margin-top:30px; font-size:13px; color:var(--cinza); line-height:1.8; }
-  .rodape strong { color:var(--azul); }
-
-  /* PWA BADGE */
-  .pwa-box { background:linear-gradient(135deg,#1a4fa3,#0d3276); color:white; border-radius:12px; padding:18px 20px; margin-bottom:16px; }
-  .pwa-box h3 { font-family:'Nunito',sans-serif; font-size:15px; font-weight:800; margin-bottom:8px; }
-  .pwa-box p { font-size:13px; line-height:1.7; opacity:.9; }
+:root{--az:#1a4fa3;--azcl:#e8f0fb;--vd:#0f6e56;--vdcl:#d1fae5;--lar:#b45309;--larcl:#fef3c7;--rx:#7c3aed;--rxcl:#ede9fe;--cin:#374151;--am:#d97706;--amcl:#fffbeb;--br:white;--tx:#1f2937;--mt:#6b7280;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Nunito Sans',sans-serif;background:#f0f2f7;color:var(--tx);padding:0 0 60px;}
+.capa{background:linear-gradient(135deg,#1a4fa3,#0d3276 60%,#0a2558);color:white;padding:52px 32px 44px;text-align:center;position:relative;overflow:hidden;}
+.capa::before{content:'';position:absolute;top:-60px;right:-60px;width:220px;height:220px;border-radius:50%;background:rgba(255,255,255,.06);}
+.capa::after{content:'';position:absolute;bottom:-40px;left:-40px;width:160px;height:160px;border-radius:50%;background:rgba(255,255,255,.04);}
+.capa-ico{font-size:56px;margin-bottom:14px;}
+.capa h1{font-family:'Nunito',sans-serif;font-size:27px;font-weight:900;line-height:1.3;margin-bottom:8px;}
+.capa-sub{font-size:13px;opacity:.75;font-weight:700;letter-spacing:.5px;text-transform:uppercase;}
+.capa-badge{display:inline-block;margin-top:20px;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);padding:6px 20px;border-radius:20px;font-size:13px;font-weight:700;}
+.wrap{max-width:680px;margin:0 auto;padding:0 20px;}
+.intro{background:white;border-radius:14px;padding:20px 24px;margin:24px 0 20px;border-left:5px solid var(--az);box-shadow:0 2px 8px rgba(0,0,0,.06);}
+.intro p{font-size:15px;line-height:1.8;color:#2a2a3e;}
+.intro strong{color:var(--az);}
+.sec{background:white;border-radius:14px;overflow:hidden;margin-bottom:20px;box-shadow:0 2px 8px rgba(0,0,0,.06);}
+.sec-cab{padding:13px 20px;display:flex;align-items:center;gap:10px;color:white;}
+.sec-cab.az{background:var(--az);}
+.sec-cab.vd{background:var(--vd);}
+.sec-cab.lar{background:var(--lar);}
+.sec-cab.rx{background:var(--rx);}
+.sec-cab.cin{background:var(--cin);}
+.sec-cab.am{background:#92400e;}
+.sec-ico{font-size:20px;}
+.sec-tit{font-family:'Nunito',sans-serif;font-size:16px;font-weight:800;}
+.sec-body{padding:18px 20px;}
+ol.passos{list-style:none;}
+ol.passos li{display:flex;gap:13px;margin-bottom:14px;align-items:flex-start;}
+ol.passos li:last-child{margin-bottom:0;}
+.num{width:27px;height:27px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-family:'Nunito',sans-serif;font-weight:900;font-size:13px;color:white;margin-top:1px;}
+.num.az{background:var(--az);}
+.num.vd{background:var(--vd);}
+.num.lar{background:var(--lar);}
+.num.rx{background:var(--rx);}
+.num.cin{background:var(--cin);}
+.ptxt{font-size:14px;line-height:1.7;}
+.ptxt em{background:var(--azcl);color:var(--az);padding:1px 7px;border-radius:4px;font-style:normal;font-weight:700;font-size:13px;}
+.ptxt.rx em{background:var(--rxcl);color:var(--rx);}
+.ptxt.vd em{background:var(--vdcl);color:var(--vd);}
+.ptxt.lar em{background:var(--larcl);color:var(--lar);}
+.dica{background:var(--azcl);border-left:4px solid var(--az);border-radius:8px;padding:12px 15px;font-size:13px;line-height:1.7;color:#1e3a5f;margin-top:13px;}
+.dica.rx{background:var(--rxcl);border-color:var(--rx);color:#4c1d95;}
+.dica.vd{background:var(--vdcl);border-color:var(--vd);color:#064e3b;}
+.aviso{background:var(--amcl);border-left:4px solid var(--am);border-radius:8px;padding:12px 15px;font-size:13px;line-height:1.7;color:#78350f;margin-top:13px;}
+table.t{width:100%;border-collapse:collapse;font-size:13px;margin-top:8px;}
+table.t th{background:#f3f4f6;padding:8px 10px;text-align:left;font-size:11px;font-weight:700;color:var(--mt);border-bottom:2px solid #e5e7eb;text-transform:uppercase;letter-spacing:.3px;}
+table.t td{padding:8px 10px;border-bottom:1px solid #f3f4f6;line-height:1.6;vertical-align:top;}
+table.t tr:last-child td{border-bottom:none;}
+.badge-demo{display:inline-flex;align-items:center;gap:4px;border-radius:20px;padding:3px 11px;font-size:12px;font-weight:700;margin:2px;}
+.badge-vd{background:#dcfce7;color:#166534;border:1px solid #86efac;}
+.badge-verm{background:#fee2e2;color:#991b1b;border:1px solid #fca5a5;}
+.badge-am{background:#fef3c7;color:#92400e;border:1px solid #fcd34d;}
+.sep{margin:16px 0;border:none;border-top:2px solid #f0f0f0;}
+.rodape{text-align:center;margin-top:30px;font-size:12px;color:var(--mt);line-height:1.8;}
+.rodape strong{color:var(--az);}
+.pwa-box{border-radius:12px;padding:16px 18px;margin-bottom:12px;}
+.pwa-az{background:linear-gradient(135deg,#1a4fa3,#0d3276);color:white;}
+.pwa-dk{background:#1c1c1e;color:white;}
+.pwa-box h3{font-family:'Nunito',sans-serif;font-size:14px;font-weight:800;margin-bottom:7px;}
+.pwa-box p{font-size:13px;line-height:1.6;opacity:.9;}
+.btn-show{display:inline-flex;align-items:center;gap:5px;border-radius:8px;padding:5px 13px;font-size:12px;font-weight:700;}
+.btn-rx{background:var(--rx);color:white;}
+.btn-vd{background:#16a34a;color:white;}
+.btn-verm{background:#dc2626;color:white;}
 </style>
 </head>
 <body>
-
 <div class="capa">
-  <div class="capa-icone">📋</div>
+  <div class="capa-ico">📋</div>
   <h1>Guia do Irmão<br>Sistema de Designações</h1>
   <div class="capa-sub">Congregação Parque Tietê</div>
   <div class="capa-badge">📖 Manual do Irmão — Versão 2025</div>
 </div>
+<div class="wrap">
+<div class="intro">
+  <p>Este site mostra a <strong>escala de designações</strong> da congregação. Você pode ver quando vai ser designado, confirmar sua presença, pedir troca com outro irmão e instalar o site como um <strong>app no celular</strong> — tudo sem ligar para ninguém.</p>
+</div>
 
-<div class="conteudo">
-
-  <div class="intro">
-    <p>
-      Este site mostra a <strong>escala de designações</strong> da congregação. Você pode ver quando vai ser designado, confirmar sua presença, pedir troca com outro irmão e instalar o site como um <strong>app no celular</strong> — tudo sem precisar ligar para ninguém.
-    </p>
+<!-- 1 INSTALAR APP -->
+<div class="sec">
+  <div class="sec-cab az"><span class="sec-ico">📱</span><span class="sec-tit">1. Instalar o app no celular (recomendado)</span></div>
+  <div class="sec-body">
+    <p style="font-size:14px;line-height:1.8;margin-bottom:14px">O site pode ser instalado diretamente na tela inicial do celular como um aplicativo — sem loja, sem custo, sem cadastro.</p>
+    <div class="pwa-box pwa-az">
+      <h3>📲 Android (Chrome)</h3>
+      <p>Abra o link no Chrome → toque nos <strong>3 pontinhos</strong> no canto superior direito → <strong>"Adicionar à tela inicial"</strong> ou <strong>"Instalar app"</strong> → confirme.</p>
+    </div>
+    <div class="pwa-box pwa-dk">
+      <h3>🍎 iPhone (Safari)</h3>
+      <p>Abra no Safari → toque no ícone de <strong>compartilhar</strong> (quadrado com seta) → role a lista → <strong>"Adicionar à Tela de Início"</strong> → <strong>Adicionar</strong>.</p>
+    </div>
+    <div class="dica">💡 Depois de instalado, o app abre sem barra do navegador. O ícone CPT aparece na tela inicial — igual a um app normal.</div>
   </div>
+</div>
 
-  <!-- 1 — INSTALAR O APP -->
-  <div class="secao">
-    <div class="secao-cab" style="background:#c2410c">
-      <span class="secao-icone">📱</span>
-      <span class="secao-titulo">1. Instalar o app no celular (recomendado)</span>
-    </div>
-    <div class="secao-corpo">
-      <p style="font-size:14px;line-height:1.8;color:#2a2a3e;margin-bottom:16px">
-        O site pode ser instalado diretamente na tela inicial do celular como um aplicativo — sem precisar de loja de apps, sem custo, sem cadastro.
-      </p>
-      <div class="pwa-box">
-        <h3>📲 Android (Chrome)</h3>
-        <p>Abra o link no Chrome → toque nos 3 pontinhos no canto superior direito → toque em <strong>"Adicionar à tela inicial"</strong> ou <strong>"Instalar app"</strong> → confirme. Pronto!</p>
-      </div>
-      <div style="background:#1c1c1e;color:white;border-radius:12px;padding:18px 20px;margin-bottom:4px">
-        <h3 style="font-family:'Nunito',sans-serif;font-size:15px;font-weight:800;margin-bottom:8px">🍎 iPhone (Safari)</h3>
-        <p style="font-size:13px;line-height:1.7;opacity:.9">Abra o link no Safari → toque no ícone de <strong>compartilhar</strong> (quadrado com seta) → role a lista → toque em <strong>"Adicionar à Tela de Início"</strong> → toque em <strong>Adicionar</strong>.</p>
-      </div>
-      <div class="dica">
-        💡 Depois de instalado, o app abre sem barra do navegador, igual a um aplicativo normal. O ícone CPT vai aparecer na sua tela inicial.
-      </div>
-    </div>
+<!-- 2 MINHA ESCALA -->
+<div class="sec">
+  <div class="sec-cab rx"><span class="sec-ico">👤</span><span class="sec-tit">2. Minha Escala — ver suas designações</span></div>
+  <div class="sec-body">
+    <p style="font-size:14px;line-height:1.8;margin-bottom:14px">O botão <span class="btn-show btn-rx">👤 Minha Escala</span> mostra <strong>apenas as suas designações</strong> em todos os meses gerados.</p>
+    <ol class="passos">
+      <li><div class="num rx">1</div><div class="ptxt rx">Clique em <em>👤 Minha Escala</em> no topo da página.</div></li>
+      <li><div class="num rx">2</div><div class="ptxt rx">Selecione seu nome na lista. O sistema lembrará automaticamente nas próximas vezes.</div></li>
+      <li><div class="num rx">3</div><div class="ptxt rx">Suas <strong>próximas designações</strong> aparecem em destaque com setor, data e parceiros. As passadas ficam listadas abaixo.</div></li>
+    </ol>
+    <div class="dica rx">💡 Cada designação mostra o setor (Palco, Microfone, Áudio…), a data da reunião e quem mais estará com você.</div>
   </div>
+</div>
 
-  <!-- 2 — MINHA ESCALA -->
-  <div class="secao">
-    <div class="secao-cab roxo">
-      <span class="secao-icone">👤</span>
-      <span class="secao-titulo">2. Minha Escala — veja suas designações</span>
+<!-- 3 CONFIRMAR PRESENÇA -->
+<div class="sec">
+  <div class="sec-cab vd"><span class="sec-ico">✅</span><span class="sec-tit">3. Confirmar presença ou avisar ausência</span></div>
+  <div class="sec-body">
+    <p style="font-size:14px;line-height:1.8;margin-bottom:12px">Em cada designação futura em <strong>Minha Escala</strong> você verá dois botões:</p>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px">
+      <span class="btn-show btn-vd">✓ Confirmar presença</span>
+      <span class="btn-show btn-verm">✗ Avisar ausência</span>
     </div>
-    <div class="secao-corpo">
-      <p style="font-size:14px;line-height:1.8;color:#2a2a3e;margin-bottom:16px">
-        O botão <span class="btn-demo btn-roxo">👤 Minha Escala</span> mostra <strong>apenas as suas designações</strong> — todas as reuniões em que você foi designado nos meses gerados.
-      </p>
-      <ol class="passos roxo">
-        <li>
-          <div class="passo-num">1</div>
-          <div class="passo-txt">Clique em <em>👤 Minha Escala</em> no topo da página.</div>
-        </li>
-        <li>
-          <div class="passo-num">2</div>
-          <div class="passo-txt">Selecione seu nome na lista. O sistema vai lembrar do seu nome nas próximas vezes.</div>
-        </li>
-        <li>
-          <div class="passo-num">3</div>
-          <div class="passo-txt">Suas <strong>próximas designações</strong> aparecem em destaque roxo. As designações passadas ficam listadas abaixo em cinza.</div>
-        </li>
-      </ol>
-      <div class="dica roxo">
-        💡 Cada designação mostra o setor, a data e os parceiros (ex: quem vai junto no palco ou no microfone).
-      </div>
+    <ol class="passos">
+      <li><div class="num vd">1</div><div class="ptxt vd">Abra <em>Minha Escala</em> e encontre a reunião desejada.</div></li>
+      <li><div class="num vd">2</div><div class="ptxt vd">Clique em <em>✓ Confirmar presença</em> se vai comparecer, ou <em>✗ Avisar ausência</em> se não puder ir.</div></li>
+      <li><div class="num vd">3</div><div class="ptxt vd">O badge muda para mostrar sua resposta:</div></li>
+    </ol>
+    <div style="margin-top:10px;display:flex;gap:6px;flex-wrap:wrap">
+      <span class="badge-demo badge-vd">✓ Presença confirmada</span>
+      <span class="badge-demo badge-verm">✗ Avisou ausência</span>
+      <span class="badge-demo badge-am">⏳ Aguardando confirmação</span>
     </div>
+    <div class="aviso" style="margin-top:14px">⚠️ Se você <strong>avisar ausência</strong>, o responsável recebe um aviso automático e pode providenciar um substituto.</div>
   </div>
+</div>
 
-  <!-- 3 — CONFIRMAR PRESENÇA -->
-  <div class="secao">
-    <div class="secao-cab verde">
-      <span class="secao-icone">✅</span>
-      <span class="secao-titulo">3. Confirmar presença ou avisar ausência</span>
-    </div>
-    <div class="secao-corpo">
-      <p style="font-size:14px;line-height:1.8;color:#2a2a3e;margin-bottom:16px">
-        Em cada designação futura na tela <strong>Minha Escala</strong>, você verá dois botões:
-      </p>
-      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px">
-        <span class="btn-demo btn-verde">✓ Confirmar presença</span>
-        <span class="btn-demo btn-vermelho">✗ Avisar ausência</span>
-      </div>
-      <ol class="passos verde">
-        <li>
-          <div class="passo-num">1</div>
-          <div class="passo-txt">Abra <em>Minha Escala</em> e encontre a reunião desejada.</div>
-        </li>
-        <li>
-          <div class="passo-num">2</div>
-          <div class="passo-txt">Clique em <em>✓ Confirmar presença</em> se vai comparecer, ou em <em>✗ Avisar ausência</em> se não vai poder ir.</div>
-        </li>
-        <li>
-          <div class="passo-num">3</div>
-          <div class="passo-txt">O badge muda automaticamente para mostrar sua resposta:</div>
-        </li>
-      </ol>
-      <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap">
-        <span class="badge badge-verde">✓ Presença confirmada</span>
-        <span class="badge badge-vermelho">✗ Avisou ausência</span>
-        <span class="badge badge-amarelo">⏳ Aguardando confirmação</span>
-      </div>
-      <div class="aviso" style="margin-top:16px">
-        ⚠️ <strong>Se você avisar ausência</strong>, o responsável Eriton Oliveira recebe um aviso automático e pode providenciar uma substituição.
-      </div>
-    </div>
+<!-- 4 NOTIFICAÇÕES -->
+<div class="sec">
+  <div class="sec-cab vd"><span class="sec-ico">🔔</span><span class="sec-tit">4. Ativar avisos (notificações)</span></div>
+  <div class="sec-body">
+    <p style="font-size:14px;line-height:1.8;margin-bottom:12px">Ative avisos para ser notificado quando for designado.</p>
+    <ol class="passos">
+      <li><div class="num vd">1</div><div class="ptxt vd">Abra <em>Minha Escala</em> e clique em <em>🔔 Ativar avisos</em>.</div></li>
+      <li><div class="num vd">2</div><div class="ptxt vd">O navegador pergunta se você permite notificações — clique em <strong>Permitir</strong>.</div></li>
+      <li><div class="num vd">3</div><div class="ptxt vd">Uma notificação de teste confirma que está ativo.</div></li>
+    </ol>
+    <div class="dica vd">💡 Com o app instalado, notificações funcionam mesmo com o app fechado — como no WhatsApp.</div>
   </div>
+</div>
 
-  <!-- 4 — NOTIFICAÇÕES -->
-  <div class="secao">
-    <div class="secao-cab" style="background:#0f6e56">
-      <span class="secao-icone">🔔</span>
-      <span class="secao-titulo">4. Ativar avisos (notificações)</span>
-    </div>
-    <div class="secao-corpo">
-      <p style="font-size:14px;line-height:1.8;color:#2a2a3e;margin-bottom:16px">
-        Você pode ativar avisos para ser notificado quando for designado. Funciona no celular e no computador.
-      </p>
-      <ol class="passos verde">
-        <li>
-          <div class="passo-num">1</div>
-          <div class="passo-txt">Abra <em>Minha Escala</em> e clique em <em>🔔 Ativar avisos</em>.</div>
-        </li>
-        <li>
-          <div class="passo-num">2</div>
-          <div class="passo-txt">O navegador vai perguntar se você permite notificações — clique em <strong>Permitir</strong>.</div>
-        </li>
-        <li>
-          <div class="passo-num">3</div>
-          <div class="passo-txt">Uma notificação de teste aparece confirmando que está ativo.</div>
-        </li>
-      </ol>
-      <div class="dica verde">
-        💡 Se você instalou o app no celular, as notificações funcionam mesmo com o app fechado — igual WhatsApp.
-      </div>
-    </div>
+<!-- 5 PEDIR TROCA -->
+<div class="sec">
+  <div class="sec-cab lar"><span class="sec-ico">🔄</span><span class="sec-tit">5. Pedir uma troca de designação</span></div>
+  <div class="sec-body">
+    <p style="font-size:14px;line-height:1.8;margin-bottom:12px">Se não puder comparecer, você pode pedir troca diretamente pelo site.</p>
+    <ol class="passos">
+      <li><div class="num lar">1</div><div class="ptxt lar">Na escala, encontre seu nome — aparece <strong>sublinhado em laranja</strong> e clicável.</div></li>
+      <li><div class="num lar">2</div><div class="ptxt lar"><strong>Clique no seu nome.</strong> Na primeira vez, o site pede que você se identifique. Nas próximas ele já te reconhece.</div></li>
+      <li><div class="num lar">3</div><div class="ptxt lar">Escolha com qual irmão quer trocar e clique em <em>Enviar pedido</em>.</div></li>
+      <li><div class="num lar">4</div><div class="ptxt lar">O irmão tem <strong>48 horas</strong> para responder. Se não responder, o pedido expira sozinho.</div></li>
+    </ol>
+    <div class="aviso">⚠️ Você só pode clicar no <strong>seu próprio nome</strong>. Não é possível pedir troca no lugar de outro irmão.</div>
   </div>
+</div>
 
-  <!-- 5 — PEDIR TROCA -->
-  <div class="secao">
-    <div class="secao-cab laranja">
-      <span class="secao-icone">🔄</span>
-      <span class="secao-titulo">5. Pedir uma troca de designação</span>
-    </div>
-    <div class="secao-corpo">
-      <p style="font-size:14px;line-height:1.8;color:#2a2a3e;margin-bottom:16px">
-        Se você não puder comparecer, pode pedir troca diretamente pelo site — sem precisar ligar para ninguém.
-      </p>
-      <ol class="passos laranja">
-        <li>
-          <div class="passo-num">1</div>
-          <div class="passo-txt">Na escala principal, encontre seu nome — todos os nomes aparecem <strong>sublinhados em laranja</strong> e são clicáveis.</div>
-        </li>
-        <li>
-          <div class="passo-num">2</div>
-          <div class="passo-txt"><strong>Clique no seu nome.</strong> Na primeira vez, o site pede que você se identifique — selecione seu nome e clique em <em>Confirmar</em>. Nas próximas vezes ele já te reconhece.</div>
-        </li>
-        <li>
-          <div class="passo-num">3</div>
-          <div class="passo-txt">Escolha na lista <strong>com qual irmão você quer trocar</strong> e clique em <em>Enviar pedido</em>.</div>
-        </li>
-        <li>
-          <div class="passo-num">4</div>
-          <div class="passo-txt">O irmão escolhido vai ver o pedido em destaque quando abrir o site e tem <strong>48 horas</strong> para responder.</div>
-        </li>
-      </ol>
-      <div class="aviso">
-        ⚠️ <strong>Importante:</strong> você só pode clicar no seu próprio nome. Não é possível pedir troca no lugar de outro irmão.
-      </div>
-    </div>
+<!-- 6 ACEITAR TROCA -->
+<div class="sec">
+  <div class="sec-cab vd"><span class="sec-ico">✅</span><span class="sec-tit">6. Quando receber um pedido de troca</span></div>
+  <div class="sec-body">
+    <ol class="passos">
+      <li><div class="num vd">1</div><div class="ptxt vd">Abra o site — o pedido aparece em <strong>destaque amarelo</strong> bem no topo da página.</div></li>
+      <li><div class="num vd">2</div><div class="ptxt vd">Leia os detalhes: quem pediu, setor e data.</div></li>
+      <li><div class="num vd">3</div><div class="ptxt vd">Clique em <em>✔ Aceitar troca</em> para confirmar, ou <em>✘ Recusar</em> se não puder.</div></li>
+    </ol>
+    <div class="dica vd">💡 Se aceitar, a escala é atualizada na hora para todo mundo.</div>
   </div>
+</div>
 
-  <!-- 6 — ACEITAR TROCA -->
-  <div class="secao">
-    <div class="secao-cab verde">
-      <span class="secao-icone">✅</span>
-      <span class="secao-titulo">6. Quando você receber um pedido de troca</span>
-    </div>
-    <div class="secao-corpo">
-      <ol class="passos verde">
-        <li>
-          <div class="passo-num">1</div>
-          <div class="passo-txt">Abra o site — o pedido aparece em <strong>destaque amarelo</strong> no topo da página.</div>
-        </li>
-        <li>
-          <div class="passo-num">2</div>
-          <div class="passo-txt">Leia os detalhes: quem pediu, qual setor e qual data estão envolvidos.</div>
-        </li>
-        <li>
-          <div class="passo-num">3</div>
-          <div class="passo-txt">Clique em <em>✔ Aceitar troca</em> para confirmar, ou em <em>✘ Recusar</em> se não puder.</div>
-        </li>
-      </ol>
-      <div class="dica verde">
-        💡 Se você aceitar, a escala é atualizada na hora para todo mundo.
-      </div>
-    </div>
+<!-- 7 CORES -->
+<div class="sec">
+  <div class="sec-cab cin"><span class="sec-ico">🎨</span><span class="sec-tit">7. O que cada cor significa</span></div>
+  <div class="sec-body">
+    <table class="t">
+      <thead><tr><th>Cor</th><th>Significado</th><th>Detalhe</th></tr></thead>
+      <tbody>
+        <tr><td>🟡 Amarelo</td><td><strong>Pedido pendente</strong></td><td>Aguardando resposta do irmão. Prazo de 48h correndo.</td></tr>
+        <tr><td>🟢 Verde</td><td><strong>Troca aceita</strong></td><td>Confirmada e já aplicada na escala.</td></tr>
+        <tr><td>🔴 Vermelho</td><td><strong>Troca recusada</strong></td><td>O irmão não pode aceitar. Some em 24h.</td></tr>
+        <tr><td>⚫ Cinza</td><td><strong>Expirado</strong></td><td>As 48h passaram sem resposta.</td></tr>
+      </tbody>
+    </table>
   </div>
+</div>
 
-  <!-- 7 — CORES -->
-  <div class="secao">
-    <div class="secao-cab cinza">
-      <span class="secao-icone">🎨</span>
-      <span class="secao-titulo">7. O que cada cor significa</span>
-    </div>
-    <div class="secao-corpo">
-      <ul class="cores">
-        <li>
-          <div class="cor-bolinha cor-amarelo"></div>
-          <div class="cor-txt"><strong>Amarelo — Pedido de troca pendente</strong><br><span>Aguardando resposta do irmão. O prazo de 48h está correndo.</span></div>
-        </li>
-        <li>
-          <div class="cor-bolinha cor-verde"></div>
-          <div class="cor-txt"><strong>Verde — Troca aceita</strong><br><span>A troca foi confirmada e já está aplicada na escala.</span></div>
-        </li>
-        <li>
-          <div class="cor-bolinha cor-vermelho"></div>
-          <div class="cor-txt"><strong>Vermelho — Troca recusada</strong><br><span>O irmão não pôde aceitar. Fica visível por 24h e some depois.</span></div>
-        </li>
-        <li>
-          <div class="cor-bolinha cor-cinza"></div>
-          <div class="cor-txt"><strong>Cinza — Pedido expirado</strong><br><span>As 48h passaram sem resposta. Nenhuma troca foi feita.</span></div>
-        </li>
-      </ul>
-    </div>
+<!-- 8 MANUAL PDF -->
+<div class="sec">
+  <div class="sec-cab rx"><span class="sec-ico">📄</span><span class="sec-tit">8. Manual em PDF</span></div>
+  <div class="sec-body">
+    <p style="font-size:14px;line-height:1.8">O botão <span class="btn-show btn-rx">📖 Manual do Irmão</span> no topo da página abre este manual em formato de página web para leitura fácil no celular ou computador. Um PDF completo também está disponível para baixar e guardar.</p>
   </div>
+</div>
 
-  <!-- 8 — DÚVIDAS -->
-  <div class="secao">
-    <div class="secao-cab">
-      <span class="secao-icone">❓</span>
-      <span class="secao-titulo">8. Dúvidas?</span>
-    </div>
-    <div class="secao-corpo">
-      <p style="font-size:14px;line-height:1.8;color:#2a2a3e">
-        Em caso de dúvida ou problema, fale diretamente com o responsável <strong>Eriton Oliveira</strong>.
-      </p>
-    </div>
+<!-- 9 DÚVIDAS -->
+<div class="sec">
+  <div class="sec-cab az"><span class="sec-ico">❓</span><span class="sec-tit">9. Dúvidas?</span></div>
+  <div class="sec-body">
+    <p style="font-size:14px;line-height:1.8">Em caso de dúvida ou problema, fale com o responsável <strong>Eriton Oliveira</strong>.</p>
   </div>
+</div>
 
-  <div class="rodape">
-    Congregação Parque Tietê<br>
-    <strong>Sistema de Designações — Versão 2025</strong>
-  </div>
-
+<div class="rodape">Congregação Parque Tietê<br><strong>Sistema de Designações — Versão 2025</strong></div>
 </div>
 </body>
 </html>
