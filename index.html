@@ -2418,8 +2418,19 @@ function trocarNomeMinhaEscala() {
   var sel = document.getElementById('sel-minha-escala-nome');
   var nome = sel.value;
   if (!nome) return;
+  
+  // Se já tem nome salvo, não deixa trocar
+  var nomeSalvo = localStorage.getItem('designacoes_nome_bloqueado');
+  if (nomeSalvo && nomeSalvo !== nome) {
+    alert('Você já está registrado como ' + nomeSalvo + '. Não pode trocar de nome!');
+    sel.value = nomeSalvo;
+    renderMinhaEscala(nomeSalvo);
+    return;
+  }
+  
+  // Primeira vez: salva o nome
   meuNome = nome;
-  // NÃO salva mais no localStorage - evita confusão entre irmãos
+  localStorage.setItem('designacoes_nome_bloqueado', nome);
   renderMinhaEscala(nome);
 }
 
