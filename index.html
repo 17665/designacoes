@@ -560,7 +560,16 @@ h1 { font-size:22px; font-weight:700; color:#1a4fa3; margin-bottom:4px; }
   </div>
 </div>
 
-<div id="badge-avisos-ausencia" style="display:none;background:#fef2f2;border:1.5px solid #fca5a5;border-radius:8px;padding:8px 14px;margin-bottom:16px;font-size:13px;color:#991b1b;cursor:pointer" onclick="pedirSenha()"></div>
+<div id="badge-avisos-ausencia" style="display:none;background:white;border-radius:12px;padding:14px 16px;margin-bottom:16px;box-shadow:0 2px 12px rgba(0,0,0,0.06);cursor:pointer;border:1px solid #e8e8e8;transition:all .3s" onclick="pedirSenha()" onmouseover="this.style.boxShadow='0 4px 20px rgba(0,0,0,0.12)'" onmouseout="this.style.boxShadow='0 2px 12px rgba(0,0,0,0.06)'">
+  <div style="display:flex;align-items:center;gap:12px">
+    <span style="font-size:28px">📋</span>
+    <div style="flex:1">
+      <div style="font-size:14px;font-weight:bold;color:#1a1a2e;margin-bottom:3px">Status das Designações</div>
+      <div style="font-size:12px;color:#5e6370" id="badge-avisos-texto">Carregando...</div>
+    </div>
+    <span style="background:#1a4fa3;color:white;padding:6px 12px;border-radius:6px;font-size:12px;font-weight:bold">Ver ➔</span>
+  </div>
+</div>
 
 <div id="lista"></div>
 
@@ -2735,32 +2744,38 @@ function ouvirAvisosAusencia() {
     var avisos = [];
     snap.forEach(function(c) { avisos.push(c.val()); });
     var hoje = new Date(); hoje.setHours(0,0,0,0);
-    var relevantes = avisos.filter(function(a) {
+    var ausentes = avisos.filter(function(a) {
       var d = new Date(a.dataISO);
       return d >= hoje;
     });
-    var badge = document.getElementById('badge-avisos-ausencia');
-    if (relevantes.length > 0) {
-      badge.style.display = 'block';
-      badge.innerHTML = '&#128276; <strong>'+relevantes.length+' aviso(s) de ausência</strong> para próximas reuniões. Clique para ver.';
-    } else {
-      badge.style.display = 'none';
-    }
+    
+    db.ref('confirmacoes').once('value', function(snapConf) {
+      var dados = snapConf.val() || {};
+      var totalConfirmados = 0;
+      Object.keys(dados).forEach(function(nome) {
+        var confs = dados[nome] || {};
+        Object.keys(confs).forEach(function(chave) {
+          var status = typeof confs[chave] === 'string' ? confs[chave] : (confs[chave] && confs[chave].status);
+          if (status === 'confirmado') totalConfirmados++;
+        });
+      });
+      
+      var badge = document.getElementById('badge-avisos-ausencia');
+      var texto = document.getElementById('badge-avisos-texto');
+      
+      var partes = [];
+      if (ausentes.length > 0) partes.push('🔴 <strong>' + ausentes.length + '</strong> avisos de ausência');
+      if (totalConfirmados > 0) partes.push('🟢 <strong>' + totalConfirmados + '</strong> presenças confirmadas');
+      
+      if (partes.length > 0) {
+        badge.style.display = 'block';
+        texto.innerHTML = partes.join(' &nbsp;|&nbsp; ');
+      } else {
+        badge.style.display = 'none';
+      }
+    });
   });
 }
-// Patching trocarAba to populate historico filters
-var _trocarAbaOriginal = trocarAba;
-trocarAba = function(id, btn) {
-  _trocarAbaOriginal(id, btn);
-  if (id === 'aba-historico') {
-    var selIrmao = document.getElementById('hist-filtro-irmao');
-    if (selIrmao) {
-      selIrmao.innerHTML = '<option value="">Todos</option>' +
-        todosIrmaos.sort().map(function(n){ return '<option value="'+n+'">'+n+'</option>'; }).join('');
-    }
-    renderHistorico();
-  }
-};
 
 // ===================== nomeSpan ATUALIZADO =====================
 // Garante que erros no Firebase não quebrem a escala
