@@ -533,6 +533,7 @@ h1 { font-size:22px; font-weight:700; color:#1a4fa3; margin-bottom:4px; }
           <option value="">— selecione seu nome —</option>
         </select>
         <button id="btn-ativar-notif-escala" onclick="pedirPermissaoNotificacao()" style="background:#0f6e56;color:white;border:none;padding:8px 14px;border-radius:7px;font-size:12px;font-weight:bold;cursor:pointer">&#128276; Ativar avisos</button>
+<button onclick="liberarNome()" style="background:#fee2e2;color:#991b1b;border:1px solid #fca5a5;padding:6px 10px;border-radius:6px;font-size:11px;cursor:pointer;display:none" id="btn-trocar-nome">✏️ Trocar nome</button>
       </div>
     </div>
     <div class="modal-body" id="conteudo-minha-escala" style="padding:16px 20px">
@@ -2432,6 +2433,7 @@ function trocarNomeMinhaEscala() {
   meuNome = nome;
   localStorage.setItem('designacoes_nome_bloqueado', nome);
   renderMinhaEscala(nome);
+document.getElementById('btn-trocar-nome').style.display = 'inline-block';
 }
 
 function buscarDesignacoesDe(nome) {
@@ -2748,6 +2750,26 @@ function carregarPresencas() {
       }
       
       cont.innerHTML = tem ? html : '<p style="text-align:center;color:#888;padding:20px">Nenhuma confirmação ou aviso ainda.</p>';
+
+// Mostra solicitações de troca de nome
+db.ref('solicitacoes_troca_nome').once('value', function(snapSol) {
+  var sols = [];
+  snapSol.forEach(function(c) { 
+    var s = c.val(); s.id = c.key; sols.push(s); 
+  });
+  var solsPendentes = sols.filter(function(s){ return s.status === 'pendente'; });
+  if (solsPendentes.length > 0) {
+    var htmlSol = '<div style="margin-top:16px;border-top:2px solid #fcd34d;padding-top:12px">'+
+      '<strong style="color:#92400e">🔓 Solicitações para Trocar Nome</strong></div>';
+    solsPendentes.forEach(function(s) {
+      htmlSol += '<div style="background:#fffbeb;border:1px solid #fcd34d;border-radius:8px;padding:10px;margin-bottom:6px;display:flex;justify-content:space-between;align-items:center">'+
+        '<span><strong>'+s.nomeAtual+'</strong> quer trocar de nome</span>'+
+        '<button onclick="liberarNomeRemoto(\''+s.id+'\',\''+s.nomeAtual+'\')" style="background:#16a34a;color:white;border:none;padding:5px 12px;border-radius:5px;font-size:11px;cursor:pointer">Liberar</button>'+
+        '</div>';
+    });
+    cont.innerHTML += htmlSol;
+  }
+});
     });
   });
 }
