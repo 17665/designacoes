@@ -2545,9 +2545,9 @@ function _renderMinhaEscalaComConf(nome, cont) {
       var badgeCls = 'conf-badge ' + conf;
       var btns = '';
       // Só mostra botões se for a designação do próprio irmão
-      var designacaoEminha = buscarDesignacoesDe(meuNome).some(function(dd) {
-        return dd.dataISO === d.dataISO && dd.campo === d.campo;
-      });
+      var designacaoEminha = buscarDesignacoesDe(nome).some(function(dd) {
+    return dd.dataISO === d.dataISO && dd.campo === d.campo;
+    });
       if (designacaoEminha) {
     if (conf !== 'confirmado') {
       btns += '<button class="btn-confirmar-presence btn-conf-sim" onclick="clicarConfirmar(' + idx + ', &quot;confirmado&quot;)">&#10003; Confirmar presen&#231;a</button>';
