@@ -1956,10 +1956,14 @@ function irmaosDoSetor(setor) {
 
 function abrirTroca(chave, setor, dataLabel, nomeAtual) {
   pedirIdentidade(function(meuNomeConfirmado) {
-    if (meuNomeConfirmado !== nomeAtual) {
-      alert('Voce so pode solicitar troca da sua propria designacao.');
+    if (!meuNomeConfirmado) {
+      alert('Selecione seu nome primeiro!');
       return;
     }
+    if (meuNomeConfirmado !== nomeAtual) {
+      alert('Voce so pode solicitar troca da sua propria designacao. Seu nome: ' + meuNomeConfirmado + ', Designado: ' + nomeAtual);
+      return;
+    }    
     trocaAtual = { chave: chave, setor: setor, dataLabel: dataLabel, solicitante: nomeAtual };
     document.getElementById('troca-setor').textContent = setor;
     document.getElementById('troca-data').textContent = dataLabel;
@@ -2008,6 +2012,19 @@ function enviarSolicitacaoTroca() {
 }
 
 function responderTroca(id, resposta) {
+  if (!meuNome) {
+    alert('Selecione seu nome em "Minha Escala" primeiro!');
+    return;
+  }
+  
+  var troca = trocasCache[id];
+  if (!troca) return;
+  
+  if (meuNome !== troca.destinatario) {
+    alert('Apenas ' + troca.destinatario + ' pode responder esta troca.');
+    return;
+  }
+  
   if (firebaseOk && db) {
     db.ref('trocas/' + id).update({ status: resposta }).catch(function(e){
       alert('Erro: ' + e.message);
@@ -2164,12 +2181,14 @@ function renderPainelTrocas() {
     if (t.status === 'pendente') {
       icone = '&#9203;'; cls = 'troca-pendente';
       titulo = '<strong>' + t.solicitante + '</strong> quer trocar com <strong>' + t.destinatario + '</strong>';
-      if (meuNome === t.destinatario) {
-        acoes = '<div class="troca-acoes">' +
-          '<button class="btn-aceitar" onclick="responderTroca(\'' + t.id + '\',\'aceita\')">&#10004; Aceitar troca</button>' +
-          '<button class="btn-recusar" onclick="responderTroca(\'' + t.id + '\',\'recusada\')">&#10008; Recusar</button>' +
-          '</div>';
-      }
+      if (meuNome && meuNome === t.destinatario) {
+  acoes = '<div class="troca-acoes">' +
+    '<button class="btn-aceitar" onclick="responderTroca(\'' + t.id + '\',\'aceita\')">&#10004; Aceitar troca</button>' +
+    '<button class="btn-recusar" onclick="responderTroca(\'' + t.id + '\',\'recusada\')">&#10008; Recusar</button>' +
+    '</div>';
+} else if (!meuNome) {
+  acoes = '<div style="font-size:11px;color:#888">Selecione seu nome em "Minha Escala" para responder</div>';
+}
     } else if (t.status === 'aceita') {
       icone = '&#9989;'; cls = 'troca-aceita';
       titulo = 'Troca aceita: <strong>' + t.solicitante + '</strong> &#8644; <strong>' + t.destinatario + '</strong>';
