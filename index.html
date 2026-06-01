@@ -2604,6 +2604,13 @@ function confirmarPresenca(resposta) {
 }
 
 // ===================== HISTÓRICO =====================
+function apagarConfirmacao(nome) {
+  if (!firebaseOk || !db) return;
+  if (!confirm('Apagar TODAS as confirmações de ' + nome + '?')) return;
+  db.ref('confirmacoes/' + nome).remove().then(function() {
+    carregarPresencas();
+  });
+}
 function deletarTodasConfirmacoes() {
   if (!firebaseOk || !db) return;
   if (!confirm('Apagar TODAS as confirmações?')) return;
@@ -2658,7 +2665,10 @@ function carregarPresencas() {
         if (linhas) {
           tem = true;
           html += '<div style="background:white;border:1px solid #e8e8e8;border-radius:8px;padding:12px;margin-bottom:8px">'+
-            '<strong style="color:#1a4fa3">👤 '+nome+'</strong>'+linhas+'</div>';
+  '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">'+
+    '<strong style="color:#1a4fa3">👤 '+nome+'</strong>'+
+    '<button onclick="apagarConfirmacao(\''+nome+'\')" style="background:#fee2e2;color:#991b1b;border:1px solid #fca5a5;padding:3px 10px;border-radius:4px;font-size:11px;cursor:pointer">✕ Apagar</button>'+
+  '</div>'+linhas+'</div>';
         }
       });
       
