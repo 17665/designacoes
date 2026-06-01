@@ -2406,9 +2406,8 @@ function abrirMinhaEscala() {
   atualizarBotaoNotif();
 
   if (meuNome) {
-    renderMinhaEscala(meuNome);
+    // Não carrega mais automaticamente - o irmão precisa selecionar
   }
-}
 
 function fecharMinhaEscala() {
   document.getElementById('ov-minha-escala').classList.remove('aberto');
@@ -2419,7 +2418,7 @@ function trocarNomeMinhaEscala() {
   var nome = sel.value;
   if (!nome) return;
   meuNome = nome;
-  localStorage.setItem('designacoes_nome', nome);
+  // NÃO salva mais no localStorage - evita confusão entre irmãos
   renderMinhaEscala(nome);
 }
 
