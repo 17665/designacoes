@@ -2880,6 +2880,37 @@ atualizarBotaoNotif();
 if (window.matchMedia('(display-mode: standalone)').matches) {
   document.getElementById('btn-instalar-pwa').style.display = 'none';
 }
+
+// ===================== LIBERAR NOME =====================
+function liberarNome() {
+  var nomeSalvo = localStorage.getItem('designacoes_nome_bloqueado');
+  if (!nomeSalvo) return;
+  
+  if (!firebaseOk || !db) {
+    alert('Sem conexão. Não é possível trocar agora.');
+    return;
+  }
+  
+  if (confirm('Solicitar autorização para trocar de "' + nomeSalvo + '" para outro nome?\n\nO responsável será notificado.')) {
+    db.ref('solicitacoes_troca_nome').push({
+      nomeAtual: nomeSalvo,
+      data: new Date().toLocaleString('pt-BR'),
+      status: 'pendente'
+    }).then(function() {
+      alert('Solicitação enviada ao responsável!\n\nEle vai liberar seu nome em breve.');
+    });
+  }
+}
+
+function liberarNomeRemoto(id, nome) {
+  if (!confirm('Liberar ' + nome + ' para trocar de nome?')) return;
+  db.ref('solicitacoes_troca_nome/' + id).update({ status: 'liberado' });
+  alert('Nome liberado! Avise o irmão para trocar agora.');
+  setTimeout(function() {
+    db.ref('solicitacoes_troca_nome/' + id).remove();
+  }, 300000);
+}
+
 </script>
 </body>
 </html>
