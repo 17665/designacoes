@@ -96,7 +96,8 @@ table.t tr:nth-child(even) td{background:#fafafa;}
     <li><div class="inum">9</div> Aba Senha e Recuperação</li>
     <li><div class="inum">10</div> Substituição direta na escala</li>
     <li><div class="inum">11</div> Avisos de ausência</li>
-    <li><div class="inum">12</div> Badge de Status da Página Principal <span style="background:#dcfce7;color:#166534;font-size:11px;font-weight:700;border-radius:10px;padding:1px 8px;margin-left:4px">NOVO</span></li>
+    <li><div class="inum">12</div> Modo escuro / claro <span style="background:#dcfce7;color:#166534;font-size:11px;font-weight:700;border-radius:10px;padding:1px 8px;margin-left:4px">NOVO</span></li>
+    <li><div class="inum">13</div> Badge de Status da Página Principal</li>
   </ul>
 </div>
 
@@ -240,6 +241,7 @@ table.t tr:nth-child(even) td{background:#fafafa;}
       <tbody>
         <tr><td>🗑 Limpar avisos antigos</td><td>Remove avisos de reuniões já passadas. Mantém os futuros.</td></tr>
         <tr><td>🗑 Apagar tudo</td><td>Remove todas as confirmações do Firebase. Use ao iniciar um novo período.</td></tr>
+        <tr><td>🔓 Liberar nome específico</td><td>Libera o nome de um irmão que ficou "preso" numa confirmação incorreta, permitindo que ele selecione o nome novamente em Minha Escala.</td></tr>
       </tbody>
     </table>
     <div class="dica vd">💡 Quando um irmão avisa ausência, você recebe um alerta na página principal. Use a <strong>Substituição Direta</strong> para colocar outro irmão no lugar.</div>
@@ -295,9 +297,25 @@ table.t tr:nth-child(even) td{background:#fafafa;}
   </div>
 </div>
 
-<!-- 12 BADGE STATUS -->
+<!-- NOVO: MODO ESCURO -->
 <div class="sec">
-  <div class="sec-cab az"><span class="sec-ico">📋</span><span class="sec-tit">12. Badge de Status na página principal <span style="background:rgba(255,255,255,.2);font-size:12px;padding:2px 10px;border-radius:10px;margin-left:6px">NOVO</span></span></div>
+  <div class="sec-cab graf"><span class="sec-ico">🌙</span><span class="sec-tit">12. Modo escuro / claro</span></div>
+  <div class="sec-body">
+    <p style="font-size:14px;line-height:1.8;margin-bottom:12px">O site tem um <strong>modo escuro</strong> ativado pelo botão <strong>🌙 Escuro</strong> no topo da página. Útil para uso noturno ou em reuniões com luz baixa.</p>
+    <table class="t">
+      <thead><tr><th>Botão</th><th>Efeito</th></tr></thead>
+      <tbody>
+        <tr><td>🌙 Escuro</td><td>Aplica fundo escuro em toda a escala, modal e cards.</td></tr>
+        <tr><td>☀️ Claro</td><td>Volta ao visual padrão com fundo branco.</td></tr>
+      </tbody>
+    </table>
+    <div class="dica az">💡 A preferência é salva automaticamente no dispositivo — o irmão que ativou o modo escuro verá sempre escuro ao reabrir.</div>
+  </div>
+</div>
+
+<!-- 13 BADGE STATUS -->
+<div class="sec">
+  <div class="sec-cab az"><span class="sec-ico">📋</span><span class="sec-tit">13. Badge de Status na página principal <span style="background:rgba(255,255,255,.2);font-size:12px;padding:2px 10px;border-radius:10px;margin-left:6px">NOVO</span></span></div>
   <div class="sec-body">
     <p style="font-size:14px;line-height:1.8;margin-bottom:12px">Na página principal aparece um card <strong>"Status das Designações"</strong> que mostra um resumo das confirmações e avisos de ausência das próximas reuniões.</p>
     <table class="t">
