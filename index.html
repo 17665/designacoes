@@ -469,6 +469,7 @@ h1 { font-size:22px; font-weight:700; color:#1a4fa3; margin-bottom:4px; }
   <div style="display:flex;gap:6px;margin-bottom:12px">
   <button onclick="limparAvisosAntigos();carregarPresencas();" style="background:#fef3c7;color:#92400e;border:1px solid #fcd34d;padding:6px 12px;border-radius:6px;font-size:12px;cursor:pointer">🗑 Limpar avisos antigos</button>
   <button onclick="deletarTodasConfirmacoes()" style="background:#fee2e2;color:#991b1b;border:1px solid #fca5a5;padding:6px 12px;border-radius:6px;font-size:12px;cursor:pointer">🗑 Apagar tudo</button>
+<button onclick="liberarQualquerNome()" style="background:#4b0082;color:white;border:none;padding:6px 12px;border-radius:6px;font-size:12px;cursor:pointer">🔓 Liberar nome específico</button>
 </div>
 <div id="lista-presencas"><p style="text-align:center;color:#888;padding:20px">Carregando...</p></div>
 </div>
@@ -2420,20 +2421,45 @@ function trocarNomeMinhaEscala() {
   var nome = sel.value;
   if (!nome) return;
   
-  // Se já tem nome salvo, não deixa trocar
   var nomeSalvo = localStorage.getItem('designacoes_nome_bloqueado');
+  
   if (nomeSalvo && nomeSalvo !== nome) {
-    alert('Você já está registrado como ' + nomeSalvo + '. Não pode trocar de nome!');
-    sel.value = nomeSalvo;
-    renderMinhaEscala(nomeSalvo);
-    return;
+    if (firebaseOk && db) {
+      db.ref('solicitacoes_troca_nome').once('value', function(snap) {
+        var liberado = false;
+        snap.forEach(function(c) {
+          var s = c.val();
+          if (s.nomeAtual === nomeSalvo && s.status === 'liberado') {
+            liberado = true;
+            c.ref.remove();
+          }
+        });
+        
+        if (liberado) {
+          localStorage.removeItem('designacoes_nome_bloqueado');
+          meuNome = nome;
+          localStorage.setItem('designacoes_nome_bloqueado', nome);
+          renderMinhaEscala(nome);
+          document.getElementById('btn-trocar-nome').style.display = 'inline-block';
+          alert('Nome trocado! Agora você é ' + nome);
+        } else {
+          alert('Você está registrado como ' + nomeSalvo + '.\nClique em "✏️ Trocar nome" para solicitar.');
+          sel.value = nomeSalvo;
+          renderMinhaEscala(nomeSalvo);
+        }
+      });
+      return;
+    } else {
+      alert('Sem conexão.');
+      sel.value = nomeSalvo;
+      return;
+    }
   }
   
-  // Primeira vez: salva o nome
   meuNome = nome;
   localStorage.setItem('designacoes_nome_bloqueado', nome);
   renderMinhaEscala(nome);
-document.getElementById('btn-trocar-nome').style.display = 'inline-block';
+  document.getElementById('btn-trocar-nome').style.display = 'inline-block';
 }
 
 function buscarDesignacoesDe(nome) {
@@ -2933,6 +2959,53 @@ function liberarNomeRemoto(id, nome) {
   }, 300000);
 }
 
+// Verifica a cada 10 segundos se o nome foi liberado
+setInterval(function() {
+  var nomeSalvo = localStorage.getItem('designacoes_nome_bloqueado');
+  if (!nomeSalvo || !firebaseOk || !db) return;
+  
+  db.ref('solicitacoes_troca_nome').once('value', function(snap) {
+    snap.forEach(function(c) {
+      var s = c.val();
+      if (s.nomeAtual === nomeSalvo && s.status === 'liberado') {
+        alert('🎉 Seu nome foi liberado pelo responsável!\nAgora você pode trocar para o nome correto.');
+        localStorage.removeItem('designacoes_nome_bloqueado');
+        document.getElementById('sel-minha-escala-nome').value = '';
+        document.getElementById('conteudo-minha-escala').innerHTML = '<p style="text-align:center;color:#888;font-size:14px;padding:30px 0">Selecione seu nome correto agora.</p>';
+        document.getElementById('btn-trocar-nome').style.display = 'none';
+        c.ref.remove();
+      }
+    });
+  });
+}, 10000);
+
+function liberarQualquerNome() {
+  var nome = prompt('Digite o nome do irmão que deseja liberar:');
+  if (!nome) return;
+  
+  if (!confirm('Liberar "' + nome + '" para trocar de nome?\n\nO irmão poderá escolher um novo nome.')) return;
+  
+  if (firebaseOk && db) {
+    db.ref('solicitacoes_troca_nome').push({
+      nomeAtual: nome,
+      data: new Date().toLocaleString('pt-BR'),
+      status: 'liberado'
+    }).then(function() {
+      alert('✅ Nome "' + nome + '" liberado!');
+      setTimeout(function() {
+        db.ref('solicitacoes_troca_nome').once('value', function(snap) {
+          snap.forEach(function(c) {
+            if (c.val().nomeAtual === nome && c.val().status === 'liberado') {
+              c.ref.remove();
+            }
+          });
+        });
+      }, 30000);
+    });
+  } else {
+    alert('Sem conexão com Firebase.');
+  }
+}
 </script>
 </body>
 </html>
