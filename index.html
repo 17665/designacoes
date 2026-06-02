@@ -375,6 +375,12 @@ body.dark-mode .conf-badge.pendente { background: #2a2a15; color: #ca8a04; borde
           Gerencie os irmãos de cada departamento.
         </p>
         <div id="gerenciar-irmaos"></div>
+<div style="margin-top:20px;border-top:2px solid #e8e8e8;padding-top:14px">
+  <strong style="color:#92400e">👻 Irmãos Espectadores (testes)</strong>
+  <p style="font-size:11px;color:#888;margin:4px 0 8px">Aparecem na lista mas NÃO entram nas designações.</p>
+  <button onclick="adicionarEspectador()" style="background:#f59e0b;color:white;border:none;padding:6px 14px;border-radius:6px;font-size:12px;font-weight:bold;cursor:pointer">+ Adicionar espectador</button>
+  <div id="lista-espectadores" style="margin-top:8px;display:flex;flex-wrap:wrap;gap:6px"></div>
+</div>
       </div>
 
       <!-- ABA TREINAMENTO -->
@@ -1011,6 +1017,12 @@ function estaEmTreinamento(nome) {
 }
 
 function deveSerPulado(nome, setor, dataISO) {
+  // Espectadores NUNCA são designados
+  if(irmaosEspectadores.indexOf(nome) >= 0) return true;
+  
+  // Verifica data de entrada
+  if(dataEntradaIrmaos[nome] && dataISO && dataISO < dataEntradaIrmaos[nome]) return true;
+  
   // Irmão não cadastrado no treinamento: aparece normalmente
   if(!estaEmTreinamento(nome)) return false;
   var cfg=treinamento[nome]||{};
@@ -1094,12 +1106,20 @@ function removerPar(idx){ listas.palcoPares.splice(idx,1); renderGerenciarIrmaos
 function adicionarIrmaoLivre(dept){
   var inp=document.getElementById('novo-'+dept); var nome=inp.value.trim(); if(!nome) return;
   if(listas[dept].indexOf(nome)<0) listas[dept].push(nome);
-  if(todosIrmaos.indexOf(nome)<0) todosIrmaos.push(nome);
+    if(todosIrmaos.indexOf(nome)<0) todosIrmaos.push(nome);
+  if(!dataEntradaIrmaos[nome]) {
+    var hoje = new Date();
+    dataEntradaIrmaos[nome] = hoje.getFullYear()+'-'+String(hoje.getMonth()+1).padStart(2,'0')+'-'+String(hoje.getDate()).padStart(2,'0');
+  }
   inp.value=''; renderGerenciarIrmaos(); salvarConfigFirebase();
 }
 function adicionarIrmaoSelect(dept){
   var sel=document.getElementById('novo-'+dept); var nome=sel.value; if(!nome) return;
-  if(listas[dept].indexOf(nome)<0) listas[dept].push(nome);
+    if(listas[dept].indexOf(nome)<0) listas[dept].push(nome);
+  if(!dataEntradaIrmaos[nome]) {
+    var hoje = new Date();
+    dataEntradaIrmaos[nome] = hoje.getFullYear()+'-'+String(hoje.getMonth()+1).padStart(2,'0')+'-'+String(hoje.getDate()).padStart(2,'0');
+  }
   sel.value=''; renderGerenciarIrmaos(); salvarConfigFirebase();
 }
 function adicionarIrmao(dept){ adicionarIrmaoLivre(dept); }
@@ -1107,7 +1127,13 @@ function adicionarPar(){
   var a=document.getElementById('par-a').value, b=document.getElementById('par-b').value;
   if(!a||!b||a===b) return;
   var existe=listas.palcoPares.some(function(p){return(p[0]===a&&p[1]===b)||(p[0]===b&&p[1]===a);});
-  if(!existe) listas.palcoPares.push([a,b]);
+    if(!existe) {
+    listas.palcoPares.push([a,b]);
+    var hoje = new Date();
+    var dh = hoje.getFullYear()+'-'+String(hoje.getMonth()+1).padStart(2,'0')+'-'+String(hoje.getDate()).padStart(2,'0');
+    if(!dataEntradaIrmaos[a]) dataEntradaIrmaos[a] = dh;
+    if(!dataEntradaIrmaos[b]) dataEntradaIrmaos[b] = dh;
+  }
   renderGerenciarIrmaos(); salvarConfigFirebase();
 }
 
@@ -1745,11 +1771,12 @@ function salvarMesesFirebase() {
 
 function salvarConfigFirebase() {
   if (!firebaseOk || !db) return;
-  // Serializa corretamente mesmo quando objetos estão vazios
   var payload = {
     listas: JSON.parse(JSON.stringify(listas)),
     treinamento: JSON.parse(JSON.stringify(treinamento)),
-    eventos: JSON.parse(JSON.stringify(eventos))
+    eventos: JSON.parse(JSON.stringify(eventos)),
+    dataEntradaIrmaos: JSON.parse(JSON.stringify(dataEntradaIrmaos)),
+    irmaosEspectadores: JSON.parse(JSON.stringify(irmaosEspectadores))
   };
   db.ref('escala/config').set(payload)
     .catch(function(e){ console.warn('Erro ao salvar config:', e); });
@@ -1783,6 +1810,14 @@ function ouvirConfig() {
       eventos.length=0;
       if(d.eventos) d.eventos.forEach(function(ev){ eventos.push(ev); });
     }
+        if (d.dataEntradaIrmaos !== undefined) {
+      dataEntradaIrmaos = {};
+      Object.assign(dataEntradaIrmaos, d.dataEntradaIrmaos);
+    }
+    if (d.irmaosEspectadores !== undefined) {
+      irmaosEspectadores = [];
+      d.irmaosEspectadores.forEach(function(n){ irmaosEspectadores.push(n); });
+    }
     // Reconstroi todosIrmaos
     var todos=[];
     ['microfone','indicador','audio','video','zoom'].forEach(function(s){
@@ -1792,10 +1827,13 @@ function ouvirConfig() {
       [p[0],p[1]].forEach(function(n){ if(todos.indexOf(n)<0) todos.push(n); });
     });
     todosIrmaos.length=0; todos.forEach(function(n){ todosIrmaos.push(n); });
+    irmaosEspectadores.forEach(function(n){ 
+      if(todosIrmaos.indexOf(n)<0) todosIrmaos.push(n); 
+    });
 
     // Atualiza UI do modal se aberto
     if(document.getElementById('ov-principal').classList.contains('aberto')){
-      renderEventos(); renderTreino(); renderGerenciarIrmaos();
+      renderEventos(); renderTreino(); renderGerenciarIrmaos();        renderEspectadores();
     }
 
     // ── REGENERA A ESCALA para todos verem igual ──────────────
@@ -3077,6 +3115,63 @@ if (localStorage.getItem('tema') === 'escuro') {
   document.getElementById('btn-tema').innerHTML = '☀️ Claro';
 }
 
+// ===================== DATA DE ENTRADA =====================
+var dataEntradaIrmaos = {
+  "Eriton Oliveira": "2024-01-01",
+  "Daniel Fernandes": "2024-01-01",
+  "Ivo Julião": "2024-01-01",
+  "Pedro Macumbi": "2024-01-01",
+  "Endrik Araújo": "2024-01-01",
+  "Renan Carvalho": "2024-01-01",
+  "Carlos Silva": "2024-01-01",
+  "Jucelino Alves": "2024-01-01",
+  "Claudio Borges": "2024-01-01",
+  "Franklin Dantas": "2024-01-01",
+  "José Murilo": "2024-01-01",
+  "Manoel Martins": "2024-01-01",
+  "Márcio Motta": "2024-01-01",
+  "Luiz Oliveira": "2024-01-01",
+  "Francisco Valério": "2024-01-01",
+  "Caio Andrade": "2024-01-01",
+  "Felipe Santos": "2024-01-01",
+  "Rodrigo Albuquerque": "2024-01-01"
+};
+
+var irmaosEspectadores = [];
+
+// ===================== ESPECTADORES =====================
+function adicionarEspectador() {
+  var nome = prompt('Nome do irmão espectador (não será designado):');
+  if (!nome) return;
+  if (irmaosEspectadores.indexOf(nome) >= 0) {
+    alert('Este nome já é espectador!');
+    return;
+  }
+  if (todosIrmaos.indexOf(nome) < 0) todosIrmaos.push(nome);
+  irmaosEspectadores.push(nome);
+  salvarConfigFirebase();
+  renderEspectadores();
+  alert('✅ ' + nome + ' adicionado como espectador!');
+}
+
+function removerEspectador(i) {
+  var nome = irmaosEspectadores[i];
+  irmaosEspectadores.splice(i,1);
+  var idx = todosIrmaos.indexOf(nome);
+  if(idx >= 0) todosIrmaos.splice(idx,1);
+  renderEspectadores();
+  salvarConfigFirebase();
+}
+
+function renderEspectadores() {
+  var c = document.getElementById('lista-espectadores');
+  if (!c) return;
+  c.innerHTML = irmaosEspectadores.length === 0 ? '<span style="font-size:11px;color:#aaa">Nenhum espectador</span>' :
+    irmaosEspectadores.map(function(n, i){
+      return '<span class="ausente-chip" style="background:#fef3c7;color:#92400e">👻 '+n+
+        '<button onclick="removerEspectador('+i+')">✕</button></span>';
+    }).join('');
+}
 </script>
 </body>
 </html>
