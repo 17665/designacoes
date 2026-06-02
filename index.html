@@ -588,6 +588,7 @@ body.dark-mode .conf-badge.pendente { background: #2a2a15; color: #ca8a04; borde
           <option value="">— selecione seu nome —</option>
         </select>
         <button id="btn-ativar-notif-escala" onclick="pedirPermissaoNotificacao()" style="background:#0f6e56;color:white;border:none;padding:8px 14px;border-radius:7px;font-size:12px;font-weight:bold;cursor:pointer">&#128276; Ativar avisos</button>
+<button onclick="testarNotificacao()" style="background:#6366f1;color:white;border:none;padding:6px 10px;border-radius:6px;font-size:11px;cursor:pointer;margin-left:4px">🔔 Testar</button>
 <button onclick="liberarNome()" style="background:#fee2e2;color:#991b1b;border:1px solid #fca5a5;padding:6px 10px;border-radius:6px;font-size:11px;cursor:pointer;display:none" id="btn-trocar-nome">✏️ Trocar nome</button>
       </div>
     </div>
@@ -2431,24 +2432,26 @@ function pedirPermissaoNotificacao() {
     return;
   }
   if (Notification.permission === 'granted') {
-    alert('Notifica\u00e7\u00f5es j\u00e1 est\u00e3o ativas! \u2713 Voc\u00ea ser\u00e1 avisado quando for designado.');
+    alert('🔔 Notificações já estão ativas!\nVocê será avisado quando for designado.');
     atualizarBotaoNotif();
+    return;
+  }
+  if (Notification.permission === 'denied') {
+    alert('❌ Notificações bloqueadas.\n\nPara ativar:\n1. Clique no cadeado na barra de endereço\n2. Encontre "Notificações"\n3. Mude para "Permitir"');
     return;
   }
   Notification.requestPermission().then(function(perm) {
     atualizarBotaoNotif();
     if (perm === 'granted') {
-      // Mostra notificação de teste
-      new Notification('Designações \u2713', {
-        body: 'Notificações ativadas! Você será avisado quando for designado.',
-        icon: ''
+      new Notification('📋 Designações', {
+        body: '✅ Notificações ativadas!',
+        icon: 'icon-192.svg',
+        badge: 'icon-192.svg',
+        tag: 'bem-vindo'
       });
-      // Salva token de notificação no Firebase para este irmão
       if (meuNome && firebaseOk && db) {
         db.ref('notificacoes/' + meuNome.replace(/[.#$[\]]/g,'_') + '/permissao').set('granted');
       }
-    } else {
-      alert('Notificações bloqueadas. Você pode ativar nas configurações do navegador.');
     }
   });
 }
@@ -2457,27 +2460,48 @@ function atualizarBotaoNotif() {
   var btn = document.getElementById('btn-notif');
   var btnEscala = document.getElementById('btn-ativar-notif-escala');
   if (!('Notification' in window)) return;
-  btn.style.display = 'block';
+  btn.style.display = 'inline-block';
   if (Notification.permission === 'granted') {
-    btn.textContent = '\uD83D\uDD14 Avisos: ON';
+    btn.textContent = '🔔';
     btn.title = 'Notificações ativas';
     btn.style.background = '#0f6e56';
-    if (btnEscala) { btnEscala.textContent = '\uD83D\uDD14 Avisos ativos \u2713'; btnEscala.style.background = '#374151'; }
+    if (btnEscala) { 
+      btnEscala.textContent = '🔔 Notificações ON'; 
+      btnEscala.style.background = '#0f6e56'; 
+    }
+  } else if (Notification.permission === 'denied') {
+    btn.textContent = '🚫';
+    btn.title = 'Notificações bloqueadas';
+    btn.style.background = '#dc2626';
+    if (btnEscala) { 
+      btnEscala.textContent = '🚫 Bloqueadas'; 
+      btnEscala.style.background = '#dc2626'; 
+    }
   } else {
-    btn.textContent = '\uD83D\uDD15';
+    btn.textContent = '🔕';
     btn.title = 'Clique para ativar notificações';
     btn.style.background = '#9ca3af';
   }
 }
-
 // Envia notificação local quando irmão é designado
 function notificarSeDesignado(nome, designacoes) {
   if (!nome || Notification.permission !== 'granted' || !designacoes.length) return;
-  var proxima = designacoes[0];
-  new Notification('\uD83D\uDCCB Você foi designado!', {
-    body: proxima.setor + ' — ' + proxima.data,
-    icon: '',
-    tag: 'designacao-' + proxima.dataISO
+  var proximas = designacoes.slice(0, 3);
+  proximas.forEach(function(d, i) {
+    setTimeout(function() {
+      var options = {
+        body: d.setor + ' — ' + d.data,
+        icon: 'icon-192.svg',
+        badge: 'icon-192.svg',
+        tag: 'designacao-' + d.dataISO,
+        vibrate: [200, 100, 200],
+        requireInteraction: i === 0
+      };
+      if (d.parceiros && d.parceiros.length) {
+        options.body += '\n' + d.parceiros.join(' ');
+      }
+      new Notification('📋 Você foi designado!', options);
+    }, i * 500);
   });
 }
 
@@ -2898,8 +2922,7 @@ function renderHistorico() {
   var filtroSetor = document.getElementById('hist-filtro-setor').value;
   var cont = document.getElementById('hist-conteudo');
 
-  // Conta designações por irmão e setor
-  var contagem = {}; // contagem[nome][setor] = n
+  var contagem = {};
   var setorMap = {
     palco1:'palco', palco2:'palco',
     mic1:'microfone', mic2:'microfone',
@@ -2922,7 +2945,6 @@ function renderHistorico() {
     });
   });
 
-  // Filtra por irmão e setor
   var nomes = filtroIrmao ? [filtroIrmao] : Object.keys(contagem).sort();
   var setores = filtroSetor ? [filtroSetor] : ['palco','microfone','audio','video','zoom','indicador'];
   var setorLabel = {palco:'Palco',microfone:'Microfone',audio:'Áudio',video:'Vídeo',zoom:'Zoom',indicador:'Indicador'};
@@ -2932,7 +2954,6 @@ function renderHistorico() {
     return;
   }
 
-  // Máximo para escala de barras
   var maxTotal = 0;
   nomes.forEach(function(n) {
     setores.forEach(function(s) {
@@ -2941,30 +2962,83 @@ function renderHistorico() {
     });
   });
 
-  var html = '<div style="overflow-x:auto"><table class="hist-table"><thead><tr>'+
-    '<th>Irmão</th>'+
-    setores.map(function(s){ return '<th>'+setorLabel[s]+'</th>'; }).join('')+
-    '<th>Total</th>'+
-    '</tr></thead><tbody>';
+  // Busca dados de presença do Firebase
+  if (firebaseOk && db) {
+    db.ref('confirmacoes').once('value', function(snapConf) {
+      var confirmacoes = snapConf.val() || {};
+      
+      var html = '<div style="overflow-x:auto"><table class="hist-table"><thead><tr>'+
+        '<th>Irmão</th>'+
+        setores.map(function(s){ return '<th>'+setorLabel[s]+'</th>'; }).join('')+
+        '<th>Total</th><th>✅ Conf.</th><th>❌ Aus.</th><th>📊 %</th>'+
+        '</tr></thead><tbody>';
 
-  nomes.forEach(function(nome) {
-    if (!contagem[nome] && !filtroIrmao) return;
-    var total = 0;
-    var cells = setores.map(function(s) {
-      var v = (contagem[nome] && contagem[nome][s]) || 0;
-      total += v;
-      if (!v) return '<td><span class="hist-zero">—</span></td>';
-      var width = Math.round((v/maxTotal)*80);
-      return '<td><span class="hist-bar" style="width:'+width+'px"></span><span class="hist-num">'+v+'</span></td>';
-    }).join('');
-    html += '<tr><td style="font-weight:bold;white-space:nowrap">'+escHtml(nome)+'</td>'+cells+
-      '<td style="font-weight:bold;color:#1a4fa3">'+total+'</td></tr>';
-  });
+      nomes.forEach(function(nome) {
+        if (!contagem[nome] && !filtroIrmao) return;
+        var total = 0;
+        var cells = setores.map(function(s) {
+          var v = (contagem[nome] && contagem[nome][s]) || 0;
+          total += v;
+          if (!v) return '<td><span class="hist-zero">—</span></td>';
+          var width = Math.round((v/maxTotal)*80);
+          return '<td><span class="hist-bar" style="width:'+width+'px"></span><span class="hist-num">'+v+'</span></td>';
+        }).join('');
+        
+        // Conta confirmações e ausências
+        var confs = confirmacoes[nome] || {};
+        var totalConf = 0, totalAus = 0;
+        Object.keys(confs).forEach(function(chave) {
+          var status = typeof confs[chave] === 'string' ? confs[chave] : (confs[chave] && confs[chave].status);
+          if (status === 'confirmado') totalConf++;
+          else if (status === 'ausente') totalAus++;
+        });
+        
+        var percent = total > 0 ? Math.round((totalConf / total) * 100) : 0;
+        var corPercent = percent >= 80 ? '#16a34a' : percent >= 50 ? '#ca8a04' : '#dc2626';
+        
+        html += '<tr><td style="font-weight:bold;white-space:nowrap">'+escHtml(nome)+'</td>'+cells+
+          '<td style="font-weight:bold;color:#1a4fa3">'+total+'</td>'+
+          '<td style="color:#16a34a;font-weight:bold">'+totalConf+'</td>'+
+          '<td style="color:#dc2626;font-weight:bold">'+totalAus+'</td>'+
+          '<td style="color:'+corPercent+';font-weight:bold">'+percent+'%</td></tr>';
+      });
 
-  html += '</tbody></table></div>';
-  cont.innerHTML = html;
+      html += '</tbody></table></div>';
+      
+      // Legenda
+      html += '<div style="margin-top:12px;font-size:11px;color:#888">'+
+        '📊 <strong>%</strong> = presenças confirmadas / total de designações | '+
+        '✅ <strong>Conf.</strong> = vezes que confirmou presença | '+
+        '❌ <strong>Aus.</strong> = vezes que avisou ausência</div>';
+      
+      cont.innerHTML = html;
+    });
+  } else {
+    // Sem Firebase, mostra sem colunas de presença
+    var html = '<div style="overflow-x:auto"><table class="hist-table"><thead><tr>'+
+      '<th>Irmão</th>'+
+      setores.map(function(s){ return '<th>'+setorLabel[s]+'</th>'; }).join('')+
+      '<th>Total</th>'+
+      '</tr></thead><tbody>';
+
+    nomes.forEach(function(nome) {
+      if (!contagem[nome] && !filtroIrmao) return;
+      var total = 0;
+      var cells = setores.map(function(s) {
+        var v = (contagem[nome] && contagem[nome][s]) || 0;
+        total += v;
+        if (!v) return '<td><span class="hist-zero">—</span></td>';
+        var width = Math.round((v/maxTotal)*80);
+        return '<td><span class="hist-bar" style="width:'+width+'px"></span><span class="hist-num">'+v+'</span></td>';
+      }).join('');
+      html += '<tr><td style="font-weight:bold;white-space:nowrap">'+escHtml(nome)+'</td>'+cells+
+        '<td style="font-weight:bold;color:#1a4fa3">'+total+'</td></tr>';
+    });
+
+    html += '</tbody></table></div>';
+    cont.innerHTML = html;
+  }
 }
-
 // ===================== AVISOS DE AUSÊNCIA (responsável) =====================
 function ouvirAvisosAusencia() {
   if (!db) return;
@@ -3171,6 +3245,21 @@ function renderEspectadores() {
       return '<span class="ausente-chip" style="background:#fef3c7;color:#92400e">👻 '+n+
         '<button onclick="removerEspectador('+i+')">✕</button></span>';
     }).join('');
+}
+// ===================== NOTIFICAÇÕES PUSH =====================
+function testarNotificacao() {
+  if (Notification.permission !== 'granted') {
+    alert('Ative as notificações primeiro!');
+    return;
+  }
+  new Notification('🧪 Teste de Notificação', {
+    body: 'Se você está vendo isso, as notificações funcionam!\n\nDesignações: Palco — ' + new Date().toLocaleDateString('pt-BR'),
+    icon: 'icon-192.svg',
+    badge: 'icon-192.svg',
+    vibrate: [200, 100, 200],
+    tag: 'teste-notif'
+  });
+  alert('✅ Notificação enviada! Verifique sua tela.');
 }
 </script>
 </body>
