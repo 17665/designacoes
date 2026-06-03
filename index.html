@@ -440,7 +440,6 @@ body.dark-mode .conf-badge.pendente { background: #2a2a15; color: #ca8a04; borde
         <button class="btn-gerar-ok" onclick="regenerarTudoDoForm()" style="background:#8b0000;margin-top:0">&#9888; Regenerar tudo (apaga escala atual)</button>
         <button class="btn-gerar-ok" onclick="limparFirebaseERecomecar()" style="background:#4b0082;margin-top:6px">&#128465; Limpar Firebase e recomeçar do zero</button>
         <button class="btn-gerar-ok" onclick="atualizarIndicadoresDasFolhas()" style="background:#b45309;margin-top:6px">🔄 Atualizar só os indicadores</button>
-        <button class="btn-gerar-ok" onclick="regenerarRodizioIndicadores()" style="background:#059669;margin-top:6px">🎲 Novo rodízio de indicadores</button>
       </div>
 
       <!-- ABA TROCAS -->
@@ -1849,18 +1848,17 @@ function ouvirConfig() {
     }
 
     // ── REGENERA A ESCALA para todos verem igual ──────────────
-if(mudou && Object.keys(mesesGerados).length > 0 && document.getElementById('ov-principal').classList.contains('aberto')){
+    if(mudou && Object.keys(mesesGerados).length > 0){
       var chavesAtivas = Object.keys(mesesGerados).sort();
       // Busca o estado salvo para restaurar os contadores antes de regenerar
       db.ref('escala/estado').once('value', function(snapEstado) {
         var dadosEstado = snapEstado.val() || {};
-        contadorPulo={}; aparicoes={}; ultimoAuditorio={};
+        substituicoes={}; contadorPulo={}; aparicoes={}; ultimoAuditorio={};
         mesesGerados={};
         idxM.v=0; idxA.v=0; idxV.v=0; idxZ.v=0; idxI.v=0; ultimoPar=-1;
         // Restaura estado do rodízio
         if (dadosEstado.contadorPulo) Object.assign(contadorPulo, dadosEstado.contadorPulo);
         if (dadosEstado.aparicoes)    Object.assign(aparicoes, dadosEstado.aparicoes);
-        if (dadosEstado.substituicoes) Object.assign(substituicoes, dadosEstado.substituicoes);
         if (dadosEstado.idxM !== undefined) idxM.v = dadosEstado.idxM;
         if (dadosEstado.idxA !== undefined) idxA.v = dadosEstado.idxA;
         if (dadosEstado.idxV !== undefined) idxV.v = dadosEstado.idxV;
@@ -3091,29 +3089,11 @@ function ouvirAvisosAusencia() {
   });
 }
 
-// ===================== INICIALIZAÇÃO SEGURA =====================
-// Garante que variáveis globais existam antes de iniciar
-var irmaosEspectadores = window.irmaosEspectadores || [];
-var dataEntradaIrmaos = window.dataEntradaIrmaos || {};
-var contadorPulo = window.contadorPulo || {};
-var aparicoes = window.aparicoes || {};
-var substituicoes = window.substituicoes || {};
-var escalaGerada = window.escalaGerada || {};
-var mesesGerados = window.mesesGerados || {};
-var ultimoAuditorio = window.ultimoAuditorio || {};
-var idxM = window.idxM || {v:0};
-var idxA = window.idxA || {v:0};
-var idxV = window.idxV || {v:0};
-var idxZ = window.idxZ || {v:0};
-var idxI = window.idxI || {v:0};
-var ultimoPar = window.ultimoPar !== undefined ? window.ultimoPar : -1;
-var trocasCache = window.trocasCache || {};
-var trocaAtual = null;
-
-try { iniciarFirebase(); } catch(e) { console.error('Erro iniciarFirebase:', e); }
+// ===================== nomeSpan ATUALIZADO =====================
+// Garante que erros no Firebase não quebrem a escala
 try { gerarEscalaAtual(); } catch(e) { console.error('Erro gerarEscalaAtual:', e); }
+try { iniciarFirebase(); } catch(e) { console.error('Erro iniciarFirebase:', e); }
 atualizarBotaoNotif();
-
 // Verifica se já instalado como PWA
 if (window.matchMedia('(display-mode: standalone)').matches) {
   document.getElementById('btn-instalar-pwa').style.display = 'none';
@@ -3242,7 +3222,7 @@ var dataEntradaIrmaos = {
 };
 
 var irmaosEspectadores = [];
-try { gerarEscalaAtual(); } catch(e) { console.error('Erro gerarEscalaAtual:', e); }
+
 // ===================== ESPECTADORES =====================
 function adicionarEspectador() {
   var nome = prompt('Nome do irmão espectador (não será designado):');
@@ -3353,58 +3333,6 @@ function atualizarIndicadoresDasFolhas() {
     });
   } else {
     alert('✅ ' + atualizados + ' reuniões tiveram os indicadores atualizados!');
-    location.reload();
-  }
-}
-// ===================== REGENERAR RODÍZIO DE INDICADORES =====================
-function regenerarRodizioIndicadores() {
-  if (!confirm('Isso vai gerar um NOVO rodízio para todos os indicadores. Continuar?')) return;
-
-  ultimoAuditorio = {};
-  idxI.v = 0;
-  
-  var chaves = Object.keys(escalaGerada).sort();
-  var atualizados = 0;
-
-  chaves.forEach(function(dataISO) {
-    var des = escalaGerada[dataISO];
-    if (!des) return;
-
-    var usados = [];
-    if (des.palco1) usados.push(des.palco1);
-    if (des.palco2) usados.push(des.palco2);
-    if (des.mic1) usados.push(des.mic1);
-    if (des.mic2) usados.push(des.mic2);
-    if (des.audio) usados.push(des.audio);
-    if (des.video) usados.push(des.video);
-    if (des.zoom) usados.push(des.zoom);
-
-    var novosInd = escolherIndicadores(usados);
-    
-    if (des.indAud !== novosInd.aud || des.indPat !== novosInd.pat) {
-      des.indAud = novosInd.aud;
-      des.indPat = novosInd.pat;
-      atualizados++;
-    }
-  });
-
-  if (firebaseOk && db) {
-    var payload = {
-      meses: mesesGerados,
-      contadorPulo: contadorPulo,
-      aparicoes: aparicoes,
-      idxM: idxM.v, idxA: idxA.v, idxV: idxV.v, idxZ: idxZ.v, idxI: idxI.v,
-      ultimoPar: ultimoPar,
-      ultimoAuditorio: ultimoAuditorio,
-      substituicoes: substituicoes,
-      escalaGerada: escalaGerada
-    };
-    db.ref('escala/estado').set(payload).then(function() {
-      alert('✅ ' + atualizados + ' reuniões tiveram os indicadores renovados!');
-      location.reload();
-    });
-  } else {
-    alert('✅ ' + atualizados + ' reuniões tiveram os indicadores renovados!');
     location.reload();
   }
 }
