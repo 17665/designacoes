@@ -3270,17 +3270,27 @@ function testarNotificacao() {
 function atualizarIndicadoresDasFolhas() {
   if (!confirm('Isso vai atualizar SOMENTE os indicadores de todas as reuniões já geradas, usando a nova lógica (sem repetir pares). Continuar?')) return;
 
-  // Reseta o histórico de auditório para começar limpo
+  // Reseta tudo para começar limpo
   ultimoAuditorio = {};
-  
+  idxI.v = 0;
+  var fila = listas.indicador.slice(); // cópia da fila
+
   var chaves = Object.keys(escalaGerada).sort();
   var atualizados = 0;
+
+  // Embaralha a fila uma vez
+  for (var s = fila.length - 1; s > 0; s--) {
+    var j = Math.floor(Math.random() * (s + 1));
+    var temp = fila[s];
+    fila[s] = fila[j];
+    fila[j] = temp;
+  }
 
   chaves.forEach(function(dataISO) {
     var des = escalaGerada[dataISO];
     if (!des) return;
 
-    // Pega todos os nomes já usados na reunião (menos indicadores)
+    // Pega nomes já usados na reunião
     var usados = [];
     if (des.palco1) usados.push(des.palco1);
     if (des.palco2) usados.push(des.palco2);
@@ -3290,13 +3300,46 @@ function atualizarIndicadoresDasFolhas() {
     if (des.video) usados.push(des.video);
     if (des.zoom) usados.push(des.zoom);
 
-    // Gera novos indicadores com a lógica corrigida
-    var novosInd = escolherIndicadores(usados);
+    // Pega 2 indicadores da fila (sequencial, sem repetir)
+    var escolhidos = [];
+    for (var t = 0; t < fila.length && escolhidos.length < 2; t++) {
+      var idx = (idxI.v + t) % fila.length;
+      var nome = fila[idx];
+      if (usados.indexOf(nome) >= 0) continue;
+      if (escolhidos.indexOf(nome) >= 0) continue;
+      escolhidos.push(nome);
+    }
     
+    // Se não achou 2, pega qualquer um
+    for (var t = 0; t < fila.length && escolhidos.length < 2; t++) {
+      var idx = (idxI.v + t) % fila.length;
+      var nome = fila[idx];
+      if (usados.indexOf(nome) < 0 && escolhidos.indexOf(nome) < 0) {
+        escolhidos.push(nome);
+      }
+    }
+
+    idxI.v = (idxI.v + 2) % fila.length;
+
+    var a = escolhidos[0] || '', b = escolhidos[1] || '';
+    var aud, pat;
+
+    // Alterna auditório/pátio
+    if (ultimoAuditorio[a] === true) {
+      aud = b; pat = a;
+    } else if (ultimoAuditorio[b] === true) {
+      aud = a; pat = b;
+    } else {
+      aud = a; pat = b;
+    }
+
+    ultimoAuditorio[aud] = true;
+    ultimoAuditorio[pat] = false;
+
     // Atualiza
-    if (des.indAud !== novosInd.aud || des.indPat !== novosInd.pat) {
-      des.indAud = novosInd.aud;
-      des.indPat = novosInd.pat;
+    if (des.indAud !== aud || des.indPat !== pat) {
+      des.indAud = aud;
+      des.indPat = pat;
       atualizados++;
     }
   });
@@ -3304,8 +3347,7 @@ function atualizarIndicadoresDasFolhas() {
   // Salva no Firebase
   if (firebaseOk && db) {
     db.ref('escala/estado').update({
-      escalaGerada: escalaGerada,
-      ultimoAuditorio: ultimoAuditorio
+      escalaGerada: escalaGerada
     }).then(function() {
       salvarMesesFirebase();
     });
@@ -3314,14 +3356,10 @@ function atualizarIndicadoresDasFolhas() {
   // Atualiza a tela
   document.getElementById('lista').innerHTML = '';
   var chavesMes = Object.keys(mesesGerados).sort();
-  var jaFeitas = {};
   chavesMes.forEach(function(chave) {
     var p = chave.split('-');
     var a = parseInt(p[0]), m = parseInt(p[1]);
-    if (!jaFeitas[chave]) {
-      jaFeitas[chave] = true;
-      gerarMes(m, a);
-    }
+    if (a && m) gerarMes(m, a);
   });
 
   aplicarSubstituicoesNaTela();
