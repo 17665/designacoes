@@ -1375,6 +1375,39 @@ function escolherIndicadores(usados){
   ultimoAuditorio[pat]=false;
   return {aud:aud, pat:pat};
 }
+
+function nomeSpan(n, chave, setor, dataLabel) {
+  var atual = substituicoes[chave] || n;
+  var badgeTroca = '';
+  Object.values(trocasCache).forEach(function(t) {
+    if (t.dataLabel === dataLabel && t.setor === setor) {
+      if (t.status === 'pendente') badgeTroca = ' <span class="badge-troca-pendente">&#9203; pendente</span>';
+      else if (t.status === 'aceita') badgeTroca = ' <span class="badge-troca-aceita">&#9989; aceita</span>';
+      else if (t.status === 'recusada') badgeTroca = ' <span class="badge-troca-recusada">&#10060; recusada</span>';
+    }
+  });
+
+  // Modo responsável → todos sublinhados em azul
+  if (modoResponsavel) {
+    var setorChave = { 'Palco-Coord':'palco','Palco-Ajud':'palco','Palco':'palco',
+      'Mic1':'microfone','Mic2':'microfone','Microfone':'microfone',
+      'Audio':'audio','Áudio':'audio','Video':'video','Vídeo':'video',
+      'Zoom':'zoom','Ind-Aud':'indicador','Ind-Pat':'indicador','Indicador':'indicador' };
+    var setorKey = setorChave[setor] || setor.toLowerCase();
+    var emTreinoNesteSetor = estaEmTreinamento(atual) && treinamento[atual] && treinamento[atual][setorKey];
+    var styleExtra = (modoResponsavel && emTreinoNesteSetor) ? ' style="color:#b45309;font-style:italic;" title="Em treinamento"' : '';
+    var badgeTreino = (modoResponsavel && emTreinoNesteSetor) ? ' <span style="font-size:9px;background:#fef3c7;color:#92400e;border:1px solid #fcd34d;border-radius:8px;padding:1px 5px;vertical-align:middle">treino</span>' : '';
+    return '<span class="nome-clicavel" data-chave="' + chave + '"' + styleExtra + ' onclick="abrirSubst(\'' + chave + '\',\'' + setor.replace(/'/g, "\\'") + '\',\'' + dataLabel.replace(/'/g, "\\'") + '\',this.textContent,this)">' + escHtml(atual) + '</span>' + badgeTreino + badgeTroca;
+  }
+
+  // Modo normal: só o próprio nome fica sublinhado
+  if (meuNome && meuNome === atual) {
+    return '<span class="nome-troca" onclick="abrirTroca(\'' + chave + '\',\'' + setor.replace(/'/g, "\\'") + '\',\'' + dataLabel.replace(/'/g, "\\'") + '\',\'' + atual.replace(/'/g, "\\'") + '\')">' + escHtml(atual) + '</span>' + badgeTroca;
+  }
+
+  // Nome de outros irmãos → sem sublinhado
+  return '<span>' + escHtml(atual) + '</span>' + badgeTroca;
+}
 // Renderiza um mês usando a escala já salva no Firebase (sem rodar rodízio)
 function renderMesSalvo(mes, ano, escSalva, substs) {
   var reunioes = gerarReunioes(mes, ano);
