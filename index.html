@@ -1018,44 +1018,34 @@ function estaEmTreinamento(nome) {
   return treinamento.hasOwnProperty(nome);
 }
 
-function deveSerPulado(nome, setor, dataISO) {
-  // Espectadores NUNCA são designados
-  if(irmaosEspectadores.indexOf(nome) >= 0) return true;
-  
-  // Verifica data de entrada
-  if(dataEntradaIrmaos[nome] && dataISO && dataISO < dataEntradaIrmaos[nome]) return true;
-  
-  // Irmão não cadastrado no treinamento: aparece normalmente
-  if(!estaEmTreinamento(nome)) return false;
-  var cfg=treinamento[nome]||{};
-  // Respeita data de início: antes da data de início, não aparece
-  if(cfg.dataInicio && dataISO){
-    if(dataISO < cfg.dataInicio) return true;
+function deveSerPulado(nome, setor, dataISO, dryRun) {
+  if (irmaosEspectadores.indexOf(nome) >= 0) return true;
+  if (dataEntradaIrmaos[nome] && dataISO && dataISO < dataEntradaIrmaos[nome]) return true;
+  if (!estaEmTreinamento(nome)) return false;
+  var cfg = treinamento[nome] || {};
+  if (cfg.dataInicio && dataISO && dataISO < cfg.dataInicio) return true;
+  if (!emTreino(nome, setor)) return false;
+
+  var nivel = cfg.nivel || 1;
+  var skipNeeded = (nivel === 1) ? 3 : 2;
+  var k = nome + '|' + setor;
+  if (contadorPulo[k] === undefined) contadorPulo[k] = skipNeeded;
+  if (!aparicoes[k]) aparicoes[k] = 0;
+
+  // Só consome contador se NÃO for dry-run
+  if (!dryRun) {
+    if (contadorPulo[k] >= skipNeeded) {
+      contadorPulo[k] = 0;
+      aparicoes[k]++;
+      return false; // aparece
+    }
+    contadorPulo[k]++;
+    return true; // pula
   }
-  // Setor sem frequência reduzida: aparece normalmente no rodízio
-  if(!emTreino(nome,setor)) return false;
 
-  // Frequência reduzida:
-  // Nível 1 = aparece 1 vez a cada 4 reuniões (pula 3)
-  // Nível 2 = aparece 1 vez a cada 3 reuniões (pula 2)
-  var nivel=cfg.nivel||1;
-  var skipNeeded=(nivel===1)?3:2;
-
-  var k=nome+'|'+setor;
-  if(contadorPulo[k]===undefined) contadorPulo[k]=skipNeeded; // começa liberado para aparecer na 1ª
-  if(!aparicoes[k]) aparicoes[k]=0;
-
-  if(contadorPulo[k] >= skipNeeded){
-    // Hora de aparecer — zera o contador
-    contadorPulo[k]=0;
-    aparicoes[k]++;
-    return false;
-  }
-  // Ainda pula
-  contadorPulo[k]++;
-  return true;
+  // Dry-run: só consulta
+  return contadorPulo[k] < skipNeeded ? false : true;
 }
-var aparicoes = {};
 
 // ===================== GERENCIAR IRMÃOS =====================
 var deptConfig = [
@@ -1341,41 +1331,49 @@ var idxM={v:0},idxA={v:0},idxV={v:0},idxZ={v:0},idxI={v:0};
 var trocasCache = {};
 var trocaAtual = null;
 
-function escolherIndicadores(usados){
-  var fila=listas.indicador;
-  var escolhidos=[];
-  var start=idxI.v;
-  for(var t=0; t<fila.length*3 && escolhidos.length<2; t++){
-    var i=(start+t)%fila.length;
-    var nome=fila[i];
-    if(usados.indexOf(nome)>=0) continue;
-    if(deveSerPulado(nome,'indicador',null)) continue;
-    if(escolhidos.indexOf(nome)>=0) continue;
+function escolherIndicadores(usados) {
+  var fila = listas.indicador;
+  var escolhidos = [];
+  var start = idxI.v;
+  var lastIdx = start;
+
+  for (var t = 0; t < fila.length * 3 && escolhidos.length < 2; t++) {
+    var i = (start + t) % fila.length;
+    var nome = fila[i];
+    if (usados.indexOf(nome) >= 0) continue;
+    if (deveSerPulado(nome, 'indicador', null)) continue;
+    if (escolhidos.indexOf(nome) >= 0) continue;
     escolhidos.push(nome);
     usados.push(nome);
+    lastIdx = i; // guarda posição real do último escolhido
   }
-  for(var t=0; t<fila.length*2 && escolhidos.length<2; t++){
-    var i=(start+t)%fila.length;
-    var nome=fila[i];
-    if(usados.indexOf(nome)<0 && escolhidos.indexOf(nome)<0){ escolhidos.push(nome); usados.push(nome); }
+  for (var t = 0; t < fila.length * 2 && escolhidos.length < 2; t++) {
+    var i = (start + t) % fila.length;
+    var nome = fila[i];
+    if (usados.indexOf(nome) < 0 && escolhidos.indexOf(nome) < 0) {
+      escolhidos.push(nome);
+      usados.push(nome);
+      lastIdx = i;
+    }
   }
-  idxI.v = (start + escolhidos.length) % fila.length;
 
-  var a=escolhidos[0]||'', b=escolhidos[1]||'';
-  var aud,pat;
+  // Avança para depois do último escolhido
+  idxI.v = (lastIdx + 1) % fila.length;
 
-  if(ultimoAuditorio[a]===true){
-    aud=b; pat=a;
-  } else if(ultimoAuditorio[b]===true){
-    aud=a; pat=b;
+  var a = escolhidos[0] || '', b = escolhidos[1] || '';
+  var aud, pat;
+
+  if (ultimoAuditorio[a] === true) {
+    aud = b; pat = a;
+  } else if (ultimoAuditorio[b] === true) {
+    aud = a; pat = b;
   } else {
-    aud=a; pat=b;
+    aud = a; pat = b;
   }
-  ultimoAuditorio[aud]=true;
-  ultimoAuditorio[pat]=false;
-  return {aud:aud, pat:pat};
+  ultimoAuditorio[aud] = true;
+  ultimoAuditorio[pat] = false;
+  return { aud: aud, pat: pat };
 }
-
 function nomeSpan(n, chave, setor, dataLabel) {
   var atual = substituicoes[chave] || n;
   var badgeTroca = '';
@@ -1654,21 +1652,21 @@ function adicionarMesesDoForm(){
   adicionarMeses(mes,ano,qtd);
 }
 
-function limparFirebaseERecomecar(){
-  if(!confirm('Isso apaga TODOS os dados do Firebase (meses, config, trocas) e recomeça do zero. Confirma?')) return;
-  if(!firebaseOk||!db){ alert('Firebase não conectado.'); return; }
-  db.ref('escala').remove().then(function(){
-    db.ref('trocas').remove().then(function(){
-      substituicoes={}; contadorPulo={}; aparicoes={}; ultimoAuditorio={};
-      mesesGerados={}; trocasCache={};
-      idxM.v=0; idxA.v=0; idxV.v=0; idxZ.v=0; idxI.v=0; ultimoPar=-1;
-      document.getElementById('lista').innerHTML='';
-      document.getElementById('painel-trocas').style.display='none';
+function limparFirebaseERecomecar() {
+  if (!confirm('Isso apaga TODOS os dados do Firebase (meses, config, trocas) e recomeça do zero. Confirma?')) return;
+  if (!firebaseOk || !db) { alert('Firebase não conectado.'); return; }
+  db.ref('escala').remove().then(function() {
+    db.ref('trocas').remove().then(function() {
+      substituicoes = {}; contadorPulo = {}; aparicoes = {}; ultimoAuditorio = {};
+      mesesGerados = {}; escalaGerada = {}; trocasCache = {};
+      idxM.v = 0; idxA.v = 0; idxV.v = 0; idxZ.v = 0; idxI.v = 0; ultimoPar = -1;
+      document.getElementById('lista').innerHTML = '';
+      document.getElementById('painel-trocas').style.display = 'none';
       atualizarSubtitulo();
       fecharPrincipal();
       alert('Firebase limpo! Agora gere os meses novamente.');
     });
-  }).catch(function(e){ alert('Erro: '+e.message); });
+  }).catch(function(e) { alert('Erro: ' + e.message); });
 }
 
 function regenerarTudoDoForm(){
@@ -1694,25 +1692,33 @@ function apagarMes(chave){
   salvarMesesFirebase();
 }
 
-function adicionarMeses(mesInicio,ano,qtd){
-  var lista=document.getElementById('lista');
-  var novos=[];
-  for(var i=0;i<qtd;i++){
-    var m=((mesInicio-1+i)%12)+1;
-    var a=ano+Math.floor((mesInicio-1+i)/12);
-    var chave=chaveMes(m,a);
-    if(mesesGerados[chave]) continue;
-    mesesGerados[chave]=true;
-    novos.push({m:m,a:a});
+function adicionarMeses(mesInicio, ano, qtd) {
+  var lista = document.getElementById('lista');
+  var novos = [];
+  for (var i = 0; i < qtd; i++) {
+    var m = ((mesInicio - 1 + i) % 12) + 1;
+    var a = ano + Math.floor((mesInicio - 1 + i) / 12);
+    var chave = chaveMes(m, a);
+    if (mesesGerados[chave]) continue;
+    mesesGerados[chave] = true;
+    novos.push({ m: m, a: a });
   }
-  if(novos.length===0){
+  if (novos.length === 0) {
     alert('Todos os meses selecionados já foram gerados.');
     return;
   }
-  novos.forEach(function(item){ gerarMes(item.m,item.a); });
-  var blocos=Array.from(lista.querySelectorAll('.mes-bloco'));
-  blocos.sort(function(a,b){ return (a.dataset.chavemes||'').localeCompare(b.dataset.chavemes||''); });
-  blocos.forEach(function(b){ lista.appendChild(b); });
+  // Se já tem escalaGerada do Firebase, usa renderMesSalvo
+  var temDados = Object.keys(escalaGerada).length > 0;
+  novos.forEach(function(item) {
+    if (temDados) {
+      renderMesSalvo(item.m, item.a, escalaGerada, substituicoes);
+    } else {
+      gerarMes(item.m, item.a);
+    }
+  });
+  var blocos = Array.from(lista.querySelectorAll('.mes-bloco'));
+  blocos.sort(function(a, b) { return (a.dataset.chavemes || '').localeCompare(b.dataset.chavemes || ''); });
+  blocos.forEach(function(b) { lista.appendChild(b); });
   atualizarSubtitulo();
   salvarMesesFirebase();
 }
@@ -3289,14 +3295,12 @@ function atualizarIndicadoresDasFolhas() {
     if (des.video) usados.push(des.video);
     if (des.zoom) usados.push(des.zoom);
 
-    // Pega 2 nomes sequenciais da fila
     var escolhidos = [];
     for (var t = 0; t < fila.length && escolhidos.length < 2; t++) {
       var idx = (idxFila + t) % fila.length;
       var nome = fila[idx];
       if (usados.indexOf(nome) >= 0) continue;
       if (escolhidos.indexOf(nome) >= 0) continue;
-      if (ultimoAuditorio[nome] === true && escolhidos.length === 0) continue;
       escolhidos.push(nome);
     }
     idxFila = (idxFila + 2) % fila.length;
@@ -3309,6 +3313,13 @@ function atualizarIndicadoresDasFolhas() {
     ultimoAuditorio[pat] = false;
 
     if (des.indAud !== aud || des.indPat !== pat) {
+      // Salva apenas subpaths alterados (não o objeto inteiro)
+      if (firebaseOk && db) {
+        var updates = {};
+        updates['escala/estado/escalaGerada/' + dataISO + '/indAud'] = aud;
+        updates['escala/estado/escalaGerada/' + dataISO + '/indPat'] = pat;
+        db.ref().update(updates);
+      }
       des.indAud = aud;
       des.indPat = pat;
       atualizados++;
@@ -3316,9 +3327,12 @@ function atualizarIndicadoresDasFolhas() {
   });
 
   if (firebaseOk && db) {
-    db.ref('escala/estado').update({ escalaGerada: escalaGerada, ultimoAuditorio: ultimoAuditorio })
-      .then(function() { location.reload(); });
+    db.ref('escala/estado/ultimoAuditorio').set(ultimoAuditorio).then(function() {
+      alert('✅ ' + atualizados + ' reuniões tiveram os indicadores atualizados!');
+      location.reload();
+    });
   } else {
+    alert('✅ ' + atualizados + ' reuniões tiveram os indicadores atualizados!');
     location.reload();
   }
 }
