@@ -440,6 +440,7 @@ body.dark-mode .conf-badge.pendente { background: #2a2a15; color: #ca8a04; borde
         <button class="btn-gerar-ok" onclick="regenerarTudoDoForm()" style="background:#8b0000;margin-top:0">&#9888; Regenerar tudo (apaga escala atual)</button>
         <button class="btn-gerar-ok" onclick="limparFirebaseERecomecar()" style="background:#4b0082;margin-top:6px">&#128465; Limpar Firebase e recomeçar do zero</button>
         <button class="btn-gerar-ok" onclick="atualizarIndicadoresDasFolhas()" style="background:#b45309;margin-top:6px">🔄 Atualizar só os indicadores</button>
+        <button class="btn-gerar-ok" onclick="regenerarRodizioIndicadores()" style="background:#059669;margin-top:6px">🎲 Novo rodízio de indicadores</button>
       </div>
 
       <!-- ABA TROCAS -->
@@ -3351,6 +3352,58 @@ function atualizarIndicadoresDasFolhas() {
     });
   } else {
     alert('✅ ' + atualizados + ' reuniões tiveram os indicadores atualizados!');
+    location.reload();
+  }
+}
+// ===================== REGENERAR RODÍZIO DE INDICADORES =====================
+function regenerarRodizioIndicadores() {
+  if (!confirm('Isso vai gerar um NOVO rodízio para todos os indicadores. Continuar?')) return;
+
+  ultimoAuditorio = {};
+  idxI.v = 0;
+  
+  var chaves = Object.keys(escalaGerada).sort();
+  var atualizados = 0;
+
+  chaves.forEach(function(dataISO) {
+    var des = escalaGerada[dataISO];
+    if (!des) return;
+
+    var usados = [];
+    if (des.palco1) usados.push(des.palco1);
+    if (des.palco2) usados.push(des.palco2);
+    if (des.mic1) usados.push(des.mic1);
+    if (des.mic2) usados.push(des.mic2);
+    if (des.audio) usados.push(des.audio);
+    if (des.video) usados.push(des.video);
+    if (des.zoom) usados.push(des.zoom);
+
+    var novosInd = escolherIndicadores(usados);
+    
+    if (des.indAud !== novosInd.aud || des.indPat !== novosInd.pat) {
+      des.indAud = novosInd.aud;
+      des.indPat = novosInd.pat;
+      atualizados++;
+    }
+  });
+
+  if (firebaseOk && db) {
+    var payload = {
+      meses: mesesGerados,
+      contadorPulo: contadorPulo,
+      aparicoes: aparicoes,
+      idxM: idxM.v, idxA: idxA.v, idxV: idxV.v, idxZ: idxZ.v, idxI: idxI.v,
+      ultimoPar: ultimoPar,
+      ultimoAuditorio: ultimoAuditorio,
+      substituicoes: substituicoes,
+      escalaGerada: escalaGerada
+    };
+    db.ref('escala/estado').set(payload).then(function() {
+      alert('✅ ' + atualizados + ' reuniões tiveram os indicadores renovados!');
+      location.reload();
+    });
+  } else {
+    alert('✅ ' + atualizados + ' reuniões tiveram os indicadores renovados!');
     location.reload();
   }
 }
