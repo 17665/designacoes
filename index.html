@@ -1849,17 +1849,18 @@ function ouvirConfig() {
     }
 
     // ── REGENERA A ESCALA para todos verem igual ──────────────
-    if(mudou && Object.keys(mesesGerados).length > 0){
+if(mudou && Object.keys(mesesGerados).length > 0 && document.getElementById('ov-principal').classList.contains('aberto')){
       var chavesAtivas = Object.keys(mesesGerados).sort();
       // Busca o estado salvo para restaurar os contadores antes de regenerar
       db.ref('escala/estado').once('value', function(snapEstado) {
         var dadosEstado = snapEstado.val() || {};
-        substituicoes={}; contadorPulo={}; aparicoes={}; ultimoAuditorio={};
+        contadorPulo={}; aparicoes={}; ultimoAuditorio={};
         mesesGerados={};
         idxM.v=0; idxA.v=0; idxV.v=0; idxZ.v=0; idxI.v=0; ultimoPar=-1;
         // Restaura estado do rodízio
         if (dadosEstado.contadorPulo) Object.assign(contadorPulo, dadosEstado.contadorPulo);
         if (dadosEstado.aparicoes)    Object.assign(aparicoes, dadosEstado.aparicoes);
+        if (dadosEstado.substituicoes) Object.assign(substituicoes, dadosEstado.substituicoes);
         if (dadosEstado.idxM !== undefined) idxM.v = dadosEstado.idxM;
         if (dadosEstado.idxA !== undefined) idxA.v = dadosEstado.idxA;
         if (dadosEstado.idxV !== undefined) idxV.v = dadosEstado.idxV;
