@@ -3089,11 +3089,29 @@ function ouvirAvisosAusencia() {
   });
 }
 
-// ===================== nomeSpan ATUALIZADO =====================
-// Garante que erros no Firebase não quebrem a escala
-try { gerarEscalaAtual(); } catch(e) { console.error('Erro gerarEscalaAtual:', e); }
+// ===================== INICIALIZAÇÃO SEGURA =====================
+// Garante que variáveis globais existam antes de iniciar
+var irmaosEspectadores = window.irmaosEspectadores || [];
+var dataEntradaIrmaos = window.dataEntradaIrmaos || {};
+var contadorPulo = window.contadorPulo || {};
+var aparicoes = window.aparicoes || {};
+var substituicoes = window.substituicoes || {};
+var escalaGerada = window.escalaGerada || {};
+var mesesGerados = window.mesesGerados || {};
+var ultimoAuditorio = window.ultimoAuditorio || {};
+var idxM = window.idxM || {v:0};
+var idxA = window.idxA || {v:0};
+var idxV = window.idxV || {v:0};
+var idxZ = window.idxZ || {v:0};
+var idxI = window.idxI || {v:0};
+var ultimoPar = window.ultimoPar !== undefined ? window.ultimoPar : -1;
+var trocasCache = window.trocasCache || {};
+var trocaAtual = null;
+
 try { iniciarFirebase(); } catch(e) { console.error('Erro iniciarFirebase:', e); }
+try { gerarEscalaAtual(); } catch(e) { console.error('Erro gerarEscalaAtual:', e); }
 atualizarBotaoNotif();
+
 // Verifica se já instalado como PWA
 if (window.matchMedia('(display-mode: standalone)').matches) {
   document.getElementById('btn-instalar-pwa').style.display = 'none';
@@ -3222,7 +3240,7 @@ var dataEntradaIrmaos = {
 };
 
 var irmaosEspectadores = [];
-
+try { gerarEscalaAtual(); } catch(e) { console.error('Erro gerarEscalaAtual:', e); }
 // ===================== ESPECTADORES =====================
 function adicionarEspectador() {
   var nome = prompt('Nome do irmão espectador (não será designado):');
