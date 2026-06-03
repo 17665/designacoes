@@ -3268,29 +3268,18 @@ function testarNotificacao() {
 
 // ===================== ATUALIZAR SÓ INDICADORES =====================
 function atualizarIndicadoresDasFolhas() {
-  if (!confirm('Isso vai atualizar SOMENTE os indicadores de todas as reuniões já geradas, usando a nova lógica (sem repetir pares). Continuar?')) return;
+  if (!confirm('Isso vai atualizar SOMENTE os indicadores de todas as reuniões já geradas. Continuar?')) return;
 
-  // Reseta tudo para começar limpo
   ultimoAuditorio = {};
-  idxI.v = 0;
-  var fila = listas.indicador.slice(); // cópia da fila
-
+  var fila = listas.indicador.slice();
   var chaves = Object.keys(escalaGerada).sort();
   var atualizados = 0;
-
-  // Embaralha a fila uma vez
-  for (var s = fila.length - 1; s > 0; s--) {
-    var j = Math.floor(Math.random() * (s + 1));
-    var temp = fila[s];
-    fila[s] = fila[j];
-    fila[j] = temp;
-  }
+  var idxFila = 0;
 
   chaves.forEach(function(dataISO) {
     var des = escalaGerada[dataISO];
     if (!des) return;
 
-    // Pega nomes já usados na reunião
     var usados = [];
     if (des.palco1) usados.push(des.palco1);
     if (des.palco2) usados.push(des.palco2);
@@ -3300,65 +3289,35 @@ function atualizarIndicadoresDasFolhas() {
     if (des.video) usados.push(des.video);
     if (des.zoom) usados.push(des.zoom);
 
-    // Pega 2 indicadores da fila (sequencial, sem repetir)
+    // Pega 2 nomes sequenciais da fila
     var escolhidos = [];
     for (var t = 0; t < fila.length && escolhidos.length < 2; t++) {
-      var idx = (idxI.v + t) % fila.length;
+      var idx = (idxFila + t) % fila.length;
       var nome = fila[idx];
       if (usados.indexOf(nome) >= 0) continue;
       if (escolhidos.indexOf(nome) >= 0) continue;
+      if (ultimoAuditorio[nome] === true && escolhidos.length === 0) continue;
       escolhidos.push(nome);
     }
-    
-    // Se não achou 2, pega qualquer um
-    for (var t = 0; t < fila.length && escolhidos.length < 2; t++) {
-      var idx = (idxI.v + t) % fila.length;
-      var nome = fila[idx];
-      if (usados.indexOf(nome) < 0 && escolhidos.indexOf(nome) < 0) {
-        escolhidos.push(nome);
-      }
-    }
+    idxFila = (idxFila + 2) % fila.length;
 
-    idxI.v = (idxI.v + 2) % fila.length;
-
-    var a = escolhidos[0] || '', b = escolhidos[1] || '';
-    var aud, pat;
-
-    // Alterna auditório/pátio
-    if (ultimoAuditorio[a] === true) {
-      aud = b; pat = a;
-    } else if (ultimoAuditorio[b] === true) {
-      aud = a; pat = b;
-    } else {
-      aud = a; pat = b;
-    }
+    var a = escolhidos[0] || fila[0], b = escolhidos[1] || fila[1];
+    var aud = a, pat = b;
+    if (ultimoAuditorio[a] === true) { aud = b; pat = a; }
 
     ultimoAuditorio[aud] = true;
     ultimoAuditorio[pat] = false;
 
-    // Atualiza
     if (des.indAud !== aud || des.indPat !== pat) {
       des.indAud = aud;
       des.indPat = pat;
       atualizados++;
     }
   });
- 
-    // Salva no Firebase com estado completo do rodízio
+
   if (firebaseOk && db) {
-    var payload = {
-      meses: mesesGerados,
-      contadorPulo: contadorPulo,
-      aparicoes: aparicoes,
-      idxM: idxM.v, idxA: idxA.v, idxV: idxV.v, idxZ: idxZ.v, idxI: idxI.v,
-      ultimoPar: ultimoPar,
-      ultimoAuditorio: ultimoAuditorio,
-      substituicoes: substituicoes,
-      escalaGerada: escalaGerada
-    };
-    db.ref('escala/estado').set(payload).then(function() {
-      location.reload();
-    });
+    db.ref('escala/estado').update({ escalaGerada: escalaGerada, ultimoAuditorio: ultimoAuditorio })
+      .then(function() { location.reload(); });
   } else {
     location.reload();
   }
