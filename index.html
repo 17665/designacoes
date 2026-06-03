@@ -439,6 +439,7 @@ body.dark-mode .conf-badge.pendente { background: #2a2a15; color: #ca8a04; borde
         <button class="btn-gerar-ok" onclick="adicionarMesesDoForm()" style="margin-bottom:10px">&#128197; Adicionar meses à escala</button>
         <button class="btn-gerar-ok" onclick="regenerarTudoDoForm()" style="background:#8b0000;margin-top:0">&#9888; Regenerar tudo (apaga escala atual)</button>
         <button class="btn-gerar-ok" onclick="limparFirebaseERecomecar()" style="background:#4b0082;margin-top:6px">&#128465; Limpar Firebase e recomeçar do zero</button>
+        <button class="btn-gerar-ok" onclick="atualizarIndicadoresDasFolhas()" style="background:#b45309;margin-top:6px">🔄 Atualizar só os indicadores</button>
       </div>
 
       <!-- ABA TROCAS -->
@@ -1337,8 +1338,10 @@ var ultimoAuditorio = {}; // ultimoAuditorio[nome] = true se foi auditório da �
 
 var idxM={v:0},idxA={v:0},idxV={v:0},idxZ={v:0},idxI={v:0};
 
+var trocasCache = {};
+var trocaAtual = null;
+
 function escolherIndicadores(usados){
-  // pega os 2 próximos da fila que não estejam em usados e respeitando treino
   var fila=listas.indicador;
   var escolhidos=[];
   var start=idxI.v;
@@ -1347,36 +1350,31 @@ function escolherIndicadores(usados){
     var nome=fila[i];
     if(usados.indexOf(nome)>=0) continue;
     if(deveSerPulado(nome,'indicador',null)) continue;
+    if(escolhidos.indexOf(nome)>=0) continue;
     escolhidos.push(nome);
     usados.push(nome);
   }
-  // fallback
   for(var t=0; t<fila.length*2 && escolhidos.length<2; t++){
     var i=(start+t)%fila.length;
     var nome=fila[i];
-    if(usados.indexOf(nome)<0){ escolhidos.push(nome); usados.push(nome); }
+    if(usados.indexOf(nome)<0 && escolhidos.indexOf(nome)<0){ escolhidos.push(nome); usados.push(nome); }
   }
   idxI.v = (start + escolhidos.length) % fila.length;
 
-  // Alternância: quem foi auditório vai para pátio agora e vice-versa
   var a=escolhidos[0]||'', b=escolhidos[1]||'';
   var aud,pat;
-  if(ultimoAuditorio[a]===true && ultimoAuditorio[b]!==true){
-    // a foi auditório antes → agora vai para pátio
+
+  if(ultimoAuditorio[a]===true){
     aud=b; pat=a;
-  } else if(ultimoAuditorio[b]===true && ultimoAuditorio[a]!==true){
+  } else if(ultimoAuditorio[b]===true){
     aud=a; pat=b;
   } else {
-    // primeira vez ou empate — ordem normal
     aud=a; pat=b;
   }
   ultimoAuditorio[aud]=true;
   ultimoAuditorio[pat]=false;
   return {aud:aud, pat:pat};
 }
-
-var trocasCache = {};
-var trocaAtual = null;
 
 function nomeSpan(n, chave, setor, dataLabel) {
   var atual = substituicoes[chave] || n;
@@ -1391,12 +1389,14 @@ function nomeSpan(n, chave, setor, dataLabel) {
 
   // Modo responsável → todos sublinhados em azul
   if (modoResponsavel) {
-    var setorChave = { 'Palco-Coord':'palco','Palco-Ajud':'palco','Mic1':'microfone','Mic2':'microfone',
-      'Audio':'audio','Video':'video','Zoom':'zoom','Ind-Aud':'indicador','Ind-Pat':'indicador' };
+    var setorChave = { 'Palco-Coord':'palco','Palco-Ajud':'palco','Palco':'palco',
+      'Mic1':'microfone','Mic2':'microfone','Microfone':'microfone',
+      'Audio':'audio','Áudio':'audio','Video':'video','Vídeo':'video',
+      'Zoom':'zoom','Ind-Aud':'indicador','Ind-Pat':'indicador','Indicador':'indicador' };
     var setorKey = setorChave[setor] || setor.toLowerCase();
-    var emTreino = estaEmTreinamento(atual) && treinamento[atual] && treinamento[atual][setorKey];
-    var styleExtra = emTreino ? ' style="color:#b45309;font-style:italic;" title="Em treinamento"' : '';
-    var badgeTreino = emTreino ? ' <span style="font-size:9px;background:#fef3c7;color:#92400e;border:1px solid #fcd34d;border-radius:8px;padding:1px 5px;vertical-align:middle">treino</span>' : '';
+    var emTreinoNesteSetor = estaEmTreinamento(atual) && treinamento[atual] && treinamento[atual][setorKey];
+    var styleExtra = (modoResponsavel && emTreinoNesteSetor) ? ' style="color:#b45309;font-style:italic;" title="Em treinamento"' : '';
+    var badgeTreino = (modoResponsavel && emTreinoNesteSetor) ? ' <span style="font-size:9px;background:#fef3c7;color:#92400e;border:1px solid #fcd34d;border-radius:8px;padding:1px 5px;vertical-align:middle">treino</span>' : '';
     return '<span class="nome-clicavel" data-chave="' + chave + '"' + styleExtra + ' onclick="abrirSubst(\'' + chave + '\',\'' + setor.replace(/'/g, "\\'") + '\',\'' + dataLabel.replace(/'/g, "\\'") + '\',this.textContent,this)">' + escHtml(atual) + '</span>' + badgeTreino + badgeTroca;
   }
 
@@ -1408,7 +1408,6 @@ function nomeSpan(n, chave, setor, dataLabel) {
   // Nome de outros irmãos → sem sublinhado
   return '<span>' + escHtml(atual) + '</span>' + badgeTroca;
 }
-
 // Renderiza um mês usando a escala já salva no Firebase (sem rodar rodízio)
 function renderMesSalvo(mes, ano, escSalva, substs) {
   var reunioes = gerarReunioes(mes, ano);
@@ -3265,6 +3264,63 @@ function testarNotificacao() {
     tag: 'teste-notif'
   });
   alert('✅ Notificação enviada! Verifique sua tela.');
+}
+
+// ===================== ATUALIZAR SÓ INDICADORES =====================
+function atualizarIndicadoresDasFolhas() {
+  if (!confirm('Isso vai atualizar SOMENTE os indicadores de todas as reuniões já geradas. Continuar?')) return;
+
+  ultimoAuditorio = {};
+  var fila = listas.indicador.slice();
+  var chaves = Object.keys(escalaGerada).sort();
+  var atualizados = 0;
+  var idxFila = 0;
+
+  chaves.forEach(function(dataISO) {
+    var des = escalaGerada[dataISO];
+    if (!des) return;
+
+    var usados = [];
+    if (des.palco1) usados.push(des.palco1);
+    if (des.palco2) usados.push(des.palco2);
+    if (des.mic1) usados.push(des.mic1);
+    if (des.mic2) usados.push(des.mic2);
+    if (des.audio) usados.push(des.audio);
+    if (des.video) usados.push(des.video);
+    if (des.zoom) usados.push(des.zoom);
+
+    // Pega 2 nomes sequenciais da fila
+    var escolhidos = [];
+    for (var t = 0; t < fila.length && escolhidos.length < 2; t++) {
+      var idx = (idxFila + t) % fila.length;
+      var nome = fila[idx];
+      if (usados.indexOf(nome) >= 0) continue;
+      if (escolhidos.indexOf(nome) >= 0) continue;
+      if (ultimoAuditorio[nome] === true && escolhidos.length === 0) continue;
+      escolhidos.push(nome);
+    }
+    idxFila = (idxFila + 2) % fila.length;
+
+    var a = escolhidos[0] || fila[0], b = escolhidos[1] || fila[1];
+    var aud = a, pat = b;
+    if (ultimoAuditorio[a] === true) { aud = b; pat = a; }
+
+    ultimoAuditorio[aud] = true;
+    ultimoAuditorio[pat] = false;
+
+    if (des.indAud !== aud || des.indPat !== pat) {
+      des.indAud = aud;
+      des.indPat = pat;
+      atualizados++;
+    }
+  });
+
+  if (firebaseOk && db) {
+    db.ref('escala/estado').update({ escalaGerada: escalaGerada, ultimoAuditorio: ultimoAuditorio })
+      .then(function() { location.reload(); });
+  } else {
+    location.reload();
+  }
 }
 </script>
 </body>
