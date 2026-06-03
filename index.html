@@ -3343,27 +3343,25 @@ function atualizarIndicadoresDasFolhas() {
       atualizados++;
     }
   });
-
-  // Salva no Firebase
+ 
+    // Salva no Firebase com estado completo do rodízio
   if (firebaseOk && db) {
-    db.ref('escala/estado').update({
+    var payload = {
+      meses: mesesGerados,
+      contadorPulo: contadorPulo,
+      aparicoes: aparicoes,
+      idxM: idxM.v, idxA: idxA.v, idxV: idxV.v, idxZ: idxZ.v, idxI: idxI.v,
+      ultimoPar: ultimoPar,
+      ultimoAuditorio: ultimoAuditorio,
+      substituicoes: substituicoes,
       escalaGerada: escalaGerada
-    }).then(function() {
-      salvarMesesFirebase();
+    };
+    db.ref('escala/estado').set(payload).then(function() {
+      location.reload();
     });
+  } else {
+    location.reload();
   }
-
-  // Atualiza a tela
-  document.getElementById('lista').innerHTML = '';
-  var chavesMes = Object.keys(mesesGerados).sort();
-  chavesMes.forEach(function(chave) {
-    var p = chave.split('-');
-    var a = parseInt(p[0]), m = parseInt(p[1]);
-    if (a && m) gerarMes(m, a);
-  });
-
-  aplicarSubstituicoesNaTela();
-  alert('✅ ' + atualizados + ' reuniões tiveram os indicadores atualizados!');
 }
 </script>
 </body>
