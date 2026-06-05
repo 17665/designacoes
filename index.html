@@ -226,6 +226,37 @@ h1 { font-size:22px; font-weight:700; color:#1a4fa3; margin-bottom:4px; }
 /* Notif badge */
 .notif-status { font-size:11px; color:#0f6e56; font-weight:bold; display:inline-flex; align-items:center; gap:4px; }
 
+/* ═══════════════ VMC ═══════════════ */
+.vmc-secao { margin-bottom:16px; border:1px solid #e8e8e8; border-radius:8px; overflow:hidden; }
+.vmc-secao-titulo { padding:8px 14px; color:white; font-size:12px; font-weight:bold; text-transform:uppercase; letter-spacing:.5px; }
+.vmc-linha { display:flex; align-items:center; gap:8px; padding:7px 12px; border-bottom:1px solid #f0f0f0; flex-wrap:wrap; }
+.vmc-linha:last-child { border-bottom:none; }
+.vmc-label { font-size:12px; color:#5e6370; font-weight:bold; min-width:180px; flex-shrink:0; }
+.vmc-sel { flex:1; min-width:160px; padding:5px 8px; border:1px solid #d0d5dd; border-radius:6px; font-size:13px; background:white; }
+.vmc-tema { flex:1.5; min-width:180px; padding:5px 8px; border:1px solid #d0d5dd; border-radius:6px; font-size:12px; color:#5e6370; font-style:italic; }
+.vmc-config-bloco { background:#f9f9f9; border:1px solid #e8e8e8; border-radius:8px; padding:12px 14px; margin-bottom:10px; }
+.vmc-config-titulo { font-size:12px; font-weight:bold; color:#1a1a2e; margin-bottom:8px; }
+.vmc-config-lista { display:flex; flex-wrap:wrap; gap:6px; }
+.vmc-config-tag { background:#e8f0fb; color:#1a4fa3; padding:3px 10px; border-radius:12px; font-size:11px; font-weight:bold; display:flex; align-items:center; gap:4px; }
+.vmc-config-tag button { background:none; border:none; color:#dc2626; cursor:pointer; font-size:13px; padding:0; line-height:1; }
+/* Partes dinâmicas do ministério */
+.vmc-minist-parte { background:#faf5ff; border:1px solid #e9d5ff; border-radius:8px; padding:10px 12px; margin-bottom:8px; }
+.vmc-secao-linha-dyn { background:#f0fdf4; border:1px solid #bbf7d0; border-radius:8px; padding:8px 12px; margin-bottom:6px; }
+/* Visão pública do programa */
+.vmc-pub-secao { margin-bottom:18px; }
+.vmc-pub-titulo { font-size:12px; font-weight:bold; text-transform:uppercase; letter-spacing:.5px; padding:6px 12px; border-radius:6px; margin-bottom:8px; }
+.vmc-pub-titulo.tesouro { background:#e8f0fb; color:#1a4fa3; }
+.vmc-pub-titulo.escola  { background:#f3e8ff; color:#6b21a8; }
+.vmc-pub-titulo.vida    { background:#dcfce7; color:#166534; }
+.vmc-pub-linha { display:flex; gap:8px; padding:5px 4px; border-bottom:1px solid #f0f0f0; font-size:13px; align-items:baseline; }
+.vmc-pub-linha:last-child { border-bottom:none; }
+.vmc-pub-papel { color:#5e6370; font-size:11px; min-width:170px; flex-shrink:0; }
+.vmc-pub-nome  { font-weight:bold; color:#1a1a2e; }
+.vmc-pub-tema  { color:#888; font-size:11px; font-style:italic; margin-left:4px; }
+/* @media print */
+@media print {
+  #ov-programa-vmc { display:none !important; }
+}
 @media print {
   body { background:white; padding:0; }
   .topo,.overlay,#painel-trocas,.firebase-config-banner { display:none !important; }
@@ -312,6 +343,7 @@ body.dark-mode .conf-badge.pendente { background: #2a2a15; color: #ca8a04; borde
     <button class="btn-gerenciar" id="btn-area-responsavel" onclick="pedirSenha()">&#128100; Área do Responsável</button>
     <button class="btn-imprimir"  onclick="window.print()">&#128424; Imprimir escala</button>
     <a href="manual-usuario.html" target="_blank" style="background:#7c3aed;color:white;border:none;padding:9px 18px;border-radius:8px;font-size:14px;font-weight:bold;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:6px">&#128214; Manual do Irmão</a>
+    <button onclick="abrirProgramaVMC()" style="background:#0f6e56;color:white;border:none;padding:9px 18px;border-radius:8px;font-size:14px;font-weight:bold;cursor:pointer">&#128214; Programa</button>
     <button id="btn-minha-escala" onclick="abrirMinhaEscala()" style="background:#7c3aed;color:white;border:none;padding:9px 18px;border-radius:8px;font-size:14px;font-weight:bold;cursor:pointer">&#128100; Minha Escala</button>
     <button id="btn-notif" onclick="pedirPermissaoNotificacao()" style="display:none;background:#0f6e56;color:white;border:none;padding:9px 14px;border-radius:8px;font-size:14px;cursor:pointer" title="Ativar notificações">&#128276;</button>
 <button id="btn-instalar-pwa" onclick="instalarPWA()" style="display:none;background:#f59e0b;color:white;border:none;padding:9px 14px;border-radius:8px;font-size:13px;font-weight:bold;cursor:pointer">&#128187; Instalar App</button>
@@ -353,9 +385,11 @@ body.dark-mode .conf-badge.pendente { background: #2a2a15; color: #ca8a04; borde
       <button class="aba-btn"       onclick="trocarAba('aba-gerar',this)">&#128197; Gerar Meses</button>
       <button class="aba-btn"       onclick="trocarAba('aba-trocas',this)">&#128260; Trocas</button>
       <button class="aba-btn"       onclick="trocarAba('aba-historico',this)">&#128202; Histórico</button>
+      <button class="aba-btn"       onclick="trocarAba('aba-vmc',this)">&#128214; VMC</button>
       <button class="aba-btn"       onclick="trocarAba('aba-config',this)">&#128274; Senha</button>
       <button class="aba-btn" onclick="trocarAba('aba-presencas',this)">&#128221; Presenças</button>
       <button class="aba-btn"       onclick="trocarAba('aba-manual-resp',this)">&#128203; Manual</button>
+      <button class="aba-btn"       onclick="trocarAba('aba-teste',this)">&#129514; Teste</button>
     </div>
     <div class="modal-body">
 
@@ -440,6 +474,7 @@ body.dark-mode .conf-badge.pendente { background: #2a2a15; color: #ca8a04; borde
         <button class="btn-gerar-ok" onclick="regenerarTudoDoForm()" style="background:#8b0000;margin-top:0">&#9888; Regenerar tudo (apaga escala atual)</button>
         <button class="btn-gerar-ok" onclick="limparFirebaseERecomecar()" style="background:#4b0082;margin-top:6px">&#128465; Limpar Firebase e recomeçar do zero</button>
         <button class="btn-gerar-ok" onclick="atualizarIndicadoresDasFolhas()" style="background:#b45309;margin-top:6px">🔄 Atualizar só os indicadores</button>
+        <button class="btn-gerar-ok" onclick="regenerarRodizioIndicadores()" style="background:#059669;margin-top:6px">🎲 Novo rodízio de indicadores</button>
       </div>
 
       <!-- ABA TROCAS -->
@@ -452,6 +487,139 @@ body.dark-mode .conf-badge.pendente { background: #2a2a15; color: #ca8a04; borde
           <button class="btn-apagar-todas" onclick="apagarTodasTrocas()">&#128465; Apagar todas as trocas</button>
         </div>
         <div id="ger-lista-trocas"><div class="ger-trocas-vazio">&#128260; Nenhuma troca encontrada.</div></div>
+      </div>
+
+      <!-- ABA VMC -->
+      <div class="aba-conteudo" id="aba-vmc">
+        <p style="font-size:13px;color:#5e6370;margin-bottom:14px;line-height:1.6">
+          Gerencie as designações do <strong>Programa de Vida e Ministério Cristão</strong> semana a semana.
+          Importe a programação do JW.org automaticamente e designe os irmãos para cada parte.
+        </p>
+
+        <!-- Seletor de semana + ações -->
+        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:12px">
+          <label style="font-size:12px;font-weight:bold;color:#5e6370">Semana:</label>
+          <select id="vmc-sel-data" onchange="vmcCarregarSemana()" style="padding:6px 10px;border:1px solid #d0d5dd;border-radius:6px;font-size:13px;background:white;min-width:220px"></select>
+          <select id="vmc-sel-mes" style="padding:6px 10px;border:1px solid #d0d5dd;border-radius:6px;font-size:13px;background:white">
+            <option value="janeiro">Janeiro</option>
+            <option value="fevereiro">Fevereiro</option>
+            <option value="mar%C3%A7o">Março</option>
+            <option value="abril">Abril</option>
+            <option value="maio" selected>Maio</option>
+            <option value="junho">Junho</option>
+            <option value="julho">Julho</option>
+            <option value="agosto">Agosto</option>
+            <option value="setembro">Setembro</option>
+            <option value="outubro">Outubro</option>
+            <option value="novembro">Novembro</option>
+            <option value="dezembro">Dezembro</option>
+          </select>
+          <button onclick="vmcAbrirJW()" style="background:#8b5cf6;color:white;border:none;padding:7px 14px;border-radius:6px;font-size:12px;font-weight:bold;cursor:pointer">🌐 Abrir JW.org</button>
+          <button onclick="vmcColarTexto()" style="background:#0891b2;color:white;border:none;padding:7px 14px;border-radius:6px;font-size:12px;font-weight:bold;cursor:pointer">📋 Colar programação</button>
+          <button onclick="vmcRodizioAuto()" style="background:#1a4fa3;color:white;border:none;padding:7px 14px;border-radius:6px;font-size:12px;font-weight:bold;cursor:pointer">🎲 Rodízio automático</button>
+          <button onclick="vmcSalvarSemana()" style="background:#0f6e56;color:white;border:none;padding:7px 14px;border-radius:6px;font-size:12px;font-weight:bold;cursor:pointer">💾 Salvar semana</button>
+          <button onclick="vmcImprimirSemana()" style="background:#b45309;color:white;border:none;padding:7px 14px;border-radius:6px;font-size:12px;font-weight:bold;cursor:pointer">🖨️ Imprimir semana</button>
+          <button onclick="vmcImprimirMes()" style="background:#7c3aed;color:white;border:none;padding:7px 14px;border-radius:6px;font-size:12px;font-weight:bold;cursor:pointer">📅 Imprimir mês</button>
+        </div>
+
+        <!-- Status importação -->
+        <div id="vmc-import-status" style="display:none;background:#fffbeb;border:1px solid #fcd34d;border-radius:7px;padding:8px 14px;font-size:12px;color:#92400e;margin-bottom:10px"></div>
+
+        <!-- Formulário das partes -->
+        <div id="vmc-form" style="display:none">
+          <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:10px 14px;margin-bottom:14px;font-size:12px;color:#166534;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px">
+            <span>📅 <strong id="vmc-data-label"></strong></span>
+            <span id="vmc-import-badge" style="display:none;background:#8b5cf6;color:white;font-size:11px;padding:2px 10px;border-radius:20px;font-weight:bold">✓ Programação importada do JW.org</span>
+          </div>
+
+          <!-- SEÇÃO: ABERTURA -->
+          <div class="vmc-secao">
+            <div class="vmc-secao-titulo" style="background:#374151">🎵 Abertura</div>
+            <div class="vmc-linha">
+              <span class="vmc-label">Presidente</span>
+              <select id="vmc-presidente" class="vmc-sel"></select>
+            </div>
+            <div class="vmc-linha">
+              <span class="vmc-label">Cântico de abertura</span>
+              <input type="text" id="vmc-cantico-abertura" class="vmc-tema" placeholder="Nº e tema do cântico...">
+            </div>
+            <div class="vmc-linha">
+              <span class="vmc-label">Oração de abertura</span>
+              <select id="vmc-oracao-abertura" class="vmc-sel"></select>
+            </div>
+          </div>
+
+          <!-- SEÇÃO: Tesouros da Palavra de Deus -->
+          <div class="vmc-secao">
+            <div class="vmc-secao-titulo" style="background:#1a4fa3">💎 Tesouros da Palavra de Deus</div>
+            <div class="vmc-linha">
+              <span class="vmc-label">Leitura semanal</span>
+              <input type="text" id="vmc-leitura-semanal" class="vmc-tema" placeholder="Ex: Jeremias 1-3" style="flex:2">
+            </div>
+            <div class="vmc-linha">
+              <span class="vmc-label">1. Discurso de Tesouros</span>
+              <select id="vmc-tesouro" class="vmc-sel"></select>
+              <input type="text" id="vmc-tesouro-tema" class="vmc-tema" placeholder="Tema... (10 min)">
+            </div>
+            <div class="vmc-linha">
+              <span class="vmc-label">2. Joias Espirituais</span>
+              <select id="vmc-joias" class="vmc-sel"></select>
+              <input type="text" id="vmc-joias-tema" class="vmc-tema" placeholder="Tema... (10 min)">
+            </div>
+            <div class="vmc-linha">
+              <span class="vmc-label">3. Leitura da Bíblia</span>
+              <select id="vmc-leitura" class="vmc-sel"></select>
+              <input type="text" id="vmc-leitura-tema" class="vmc-tema" placeholder="Ex: Jer. 3:14-25 (th lição 12) — 4 min">
+            </div>
+          </div>
+
+          <!-- SEÇÃO: Faça Seu Melhor no Ministério -->
+          <div class="vmc-secao">
+            <div class="vmc-secao-titulo" style="background:#7c3aed">🎓 Faça Seu Melhor no Ministério</div>
+            <div id="vmc-ministerio-partes"></div>
+            <button onclick="vmcAddParteMinist()" style="background:none;border:2px dashed #a78bfa;color:#7c3aed;padding:5px 14px;border-radius:6px;font-size:12px;font-weight:bold;cursor:pointer;margin:6px 0">+ Adicionar parte</button>
+          </div>
+
+          <!-- SEÇÃO: Nossa Vida Cristã -->
+          <div class="vmc-secao">
+            <div class="vmc-secao-titulo" style="background:#0f6e56">✝️ Nossa Vida Cristã</div>
+            <div class="vmc-linha">
+              <span class="vmc-label">Cântico do meio</span>
+              <input type="text" id="vmc-cantico-meio" class="vmc-tema" placeholder="Nº e tema do cântico...">
+            </div>
+            <div id="vmc-vida-partes"></div>
+            <button onclick="vmcAddParteVida()" style="background:none;border:2px dashed #6ee7b7;color:#0f6e56;padding:5px 14px;border-radius:6px;font-size:12px;font-weight:bold;cursor:pointer;margin:6px 0">+ Adicionar parte de vida cristã</button>
+            <div class="vmc-linha" style="margin-top:8px">
+              <span class="vmc-label">Condutor — Estudo Bíblico</span>
+              <select id="vmc-estudo-condutor" class="vmc-sel"></select>
+              <input type="text" id="vmc-estudo-tema" class="vmc-tema" placeholder="Material... (30 min)">
+            </div>
+            <div class="vmc-linha">
+              <span class="vmc-label">Leitor — Estudo Bíblico</span>
+              <select id="vmc-estudo-leitor" class="vmc-sel"></select>
+            </div>
+            <div class="vmc-linha">
+              <span class="vmc-label">Cântico de encerramento</span>
+              <input type="text" id="vmc-cantico-fim" class="vmc-tema" placeholder="Nº e tema do cântico...">
+            </div>
+            <div class="vmc-linha">
+              <span class="vmc-label">Oração de encerramento</span>
+              <select id="vmc-oracao-fim" class="vmc-sel"></select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Mensagem quando não há semanas -->
+        <div id="vmc-vazio" style="text-align:center;padding:30px;color:#888;font-size:13px">
+          ⚠️ Nenhuma reunião encontrada. Gere os meses primeiro na aba "Gerar Meses".
+        </div>
+
+        <!-- Configuração das listas por parte -->
+        <div style="margin-top:20px;border-top:2px solid #e8e8e8;padding-top:16px">
+          <div style="font-size:13px;font-weight:bold;color:#1a1a2e;margin-bottom:4px">⚙️ Configurar listas de irmãos por função</div>
+          <p style="font-size:12px;color:#5e6370;margin-bottom:12px">Defina quem está aprovado para cada parte. As listas são usadas no rodízio automático.</p>
+          <div id="vmc-config-listas"></div>
+        </div>
       </div>
 
       <!-- ABA HISTÓRICO -->
@@ -473,6 +641,18 @@ body.dark-mode .conf-badge.pendente { background: #2a2a15; color: #ca8a04; borde
             <option value="video">Vídeo</option>
             <option value="zoom">Zoom</option>
             <option value="indicador">Indicador</option>
+            <optgroup label="Vida e Ministério Cristão">
+              <option value="vmc_presidente">Presidente</option>
+              <option value="vmc_tesouro">Tesouros</option>
+              <option value="vmc_joias">Joias Espirituais</option>
+              <option value="vmc_leitura">Leitura da Bíblia</option>
+              <option value="vmc_escola1">Escola — Parte 1</option>
+              <option value="vmc_escola2">Escola — Parte 2</option>
+              <option value="vmc_necessidades">Necessidades da Cong.</option>
+              <option value="vmc_vida">Vida Cristã</option>
+              <option value="vmc_estudoCondutor">Condutor — Estudo</option>
+              <option value="vmc_estudoLeitor">Leitor — Estudo</option>
+            </optgroup>
           </select>
         </div>
         <div id="hist-conteudo"></div>
@@ -540,6 +720,47 @@ body.dark-mode .conf-badge.pendente { background: #2a2a15; color: #ca8a04; borde
           style="display:inline-flex;align-items:center;gap:10px;background:#0f6e56;color:white;text-decoration:none;padding:12px 22px;border-radius:10px;font-size:15px;font-weight:bold">
           &#128203; Abrir Manual do Responsável
         </a>
+      </div>
+
+      <!-- MODAL COLAR PROGRAMAÇÃO VMC -->
+      <div id="vmc-modal-colar" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:9999;align-items:center;justify-content:center;padding:20px">
+        <div style="background:white;border-radius:14px;padding:24px;max-width:600px;width:100%;max-height:90vh;overflow-y:auto">
+          <div style="font-size:15px;font-weight:bold;color:#1a1a2e;margin-bottom:8px">📋 Colar programação do WOL</div>
+          <p style="font-size:12px;color:#5e6370;margin-bottom:14px;line-height:1.6">
+            1. Clique em <strong>🌐 Abrir JW.org</strong> (escolha o mês primeiro)<br>
+            2. Na página do WOL, clique na semana desejada ex: <em>"8-14 de junho"</em><br>
+            3. Selecione tudo <strong>(Ctrl+A)</strong> e copie <strong>(Ctrl+C)</strong><br>
+            4. Cole aqui abaixo e clique em <strong>✨ Extrair dados</strong>
+          </p>
+          <textarea id="vmc-texto-colado" style="width:100%;height:220px;padding:10px;border:1px solid #d0d5dd;border-radius:8px;font-size:12px;font-family:monospace;resize:vertical" placeholder="Cole aqui o texto copiado do JW.org..."></textarea>
+          <div style="display:flex;gap:8px;margin-top:12px;justify-content:flex-end">
+            <button onclick="vmcFecharColar()" style="background:#f3f4f6;border:1px solid #d0d5dd;padding:8px 18px;border-radius:7px;font-size:13px;cursor:pointer">Cancelar</button>
+            <button onclick="vmcExtrairTextoColado()" style="background:#8b5cf6;color:white;border:none;padding:8px 18px;border-radius:7px;font-size:13px;font-weight:bold;cursor:pointer">✨ Extrair dados</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ABA TESTE -->
+      <div class="aba-conteudo" id="aba-teste">
+        <div style="background:#fffbeb;border:2px solid #f59e0b;border-radius:12px;padding:18px;margin-bottom:16px">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+            <span style="font-size:22px">&#129514;</span>
+            <strong style="font-size:15px;color:#92400e">Modo Teste</strong>
+            <span id="teste-badge" style="display:none;background:#22c55e;color:white;font-size:11px;font-weight:bold;padding:2px 10px;border-radius:20px">ATIVO</span>
+          </div>
+          <p style="font-size:13px;color:#78350f;line-height:1.6;margin-bottom:14px">
+            Quando ativado, você pode fazer qualquer alteração normalmente — mas <strong>nenhuma gravação é enviada ao Firebase</strong>. Os outros usuários não são afetados. O modo é desativado ao fechar a aba ou recarregar a página.
+          </p>
+          <button id="btn-toggle-teste" onclick="toggleModoTeste()"
+            style="background:#f59e0b;color:white;border:none;padding:10px 22px;border-radius:8px;font-size:14px;font-weight:bold;cursor:pointer;width:100%">
+            &#129514; Ativar Modo Teste
+          </button>
+        </div>
+        <div id="teste-log-wrap" style="display:none">
+          <p style="font-size:12px;font-weight:bold;color:#5e6370;margin-bottom:6px">&#128203; Log de gravações bloqueadas:</p>
+          <div id="teste-log" style="background:#1a1a2e;color:#4ade80;font-family:monospace;font-size:11px;border-radius:8px;padding:12px;max-height:200px;overflow-y:auto;white-space:pre-wrap"></div>
+          <button onclick="document.getElementById('teste-log').textContent=''" style="margin-top:6px;background:none;border:1px solid #d0d5dd;color:#5e6370;padding:4px 12px;border-radius:6px;font-size:11px;cursor:pointer">Limpar log</button>
+        </div>
       </div>
 
     </div>
@@ -630,6 +851,24 @@ body.dark-mode .conf-badge.pendente { background: #2a2a15; color: #ca8a04; borde
 </div>
 
 <div id="lista"></div>
+
+<!-- OVERLAY PROGRAMA VMC (visão pública) -->
+<div class="overlay" id="ov-programa-vmc">
+  <div class="modal-principal" style="max-width:680px">
+    <div class="modal-cab" style="background:#0f6e56;color:white">
+      <span class="modal-cab-titulo" style="color:white">📖 Programa de Vida e Ministério Cristão</span>
+      <button class="btn-fechar" onclick="fecharProgramaVMC()" style="color:white">✕</button>
+    </div>
+    <!-- Seletor de semana pública -->
+    <div style="padding:12px 20px;background:#f0fdf4;border-bottom:1px solid #bbf7d0;display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+      <label style="font-size:12px;font-weight:bold;color:#166534">Semana:</label>
+      <select id="vmc-pub-sel" onchange="vmcRenderPublico()" style="padding:6px 10px;border:1px solid #bbf7d0;border-radius:6px;font-size:13px;background:white;min-width:200px"></select>
+    </div>
+    <div class="modal-body" id="vmc-pub-corpo" style="padding:16px 20px">
+      <p style="text-align:center;color:#888;padding:30px 0">Selecione uma semana acima.</p>
+    </div>
+  </div>
+</div>
 
 <!-- OVERLAY TROCA -->
 <div class="overlay" id="ov-troca">
@@ -1018,44 +1257,41 @@ function estaEmTreinamento(nome) {
   return treinamento.hasOwnProperty(nome);
 }
 
-function deveSerPulado(nome, setor, dataISO) {
-  // Espectadores NUNCA são designados
-  if(irmaosEspectadores.indexOf(nome) >= 0) return true;
-  
-  // Verifica data de entrada
-  if(dataEntradaIrmaos[nome] && dataISO && dataISO < dataEntradaIrmaos[nome]) return true;
-  
-  // Irmão não cadastrado no treinamento: aparece normalmente
-  if(!estaEmTreinamento(nome)) return false;
-  var cfg=treinamento[nome]||{};
-  // Respeita data de início: antes da data de início, não aparece
-  if(cfg.dataInicio && dataISO){
-    if(dataISO < cfg.dataInicio) return true;
+function deveSerPulado(nome, setor, dataISO, dryRun) {
+  if (irmaosEspectadores.indexOf(nome) >= 0) return true;
+  if (dataEntradaIrmaos[nome] && dataISO && dataISO < dataEntradaIrmaos[nome]) return true;
+  if (!estaEmTreinamento(nome)) return false;
+  var cfg = treinamento[nome] || {};
+  if (cfg.dataInicio && dataISO && dataISO < cfg.dataInicio) return true;
+  if (!emTreino(nome, setor)) return false;
+
+  var nivel = cfg.nivel || 1;
+  var skipNeeded = (nivel === 1) ? 3 : 2;
+  var k = nome + '|' + setor;
+  if (contadorPulo[k] === undefined) contadorPulo[k] = skipNeeded;
+  if (!aparicoes[k]) aparicoes[k] = 0;
+
+  // Dry-run: só consulta, sem efeito colateral
+  if (dryRun) {
+    // contador >= skipNeeded → está liberado para aparecer → não pula (false)
+    // contador <  skipNeeded → ainda deve pular           → pula (true)
+    return contadorPulo[k] < skipNeeded;
   }
-  // Setor sem frequência reduzida: aparece normalmente no rodízio
-  if(!emTreino(nome,setor)) return false;
 
-  // Frequência reduzida:
-  // Nível 1 = aparece 1 vez a cada 4 reuniões (pula 3)
-  // Nível 2 = aparece 1 vez a cada 3 reuniões (pula 2)
-  var nivel=cfg.nivel||1;
-  var skipNeeded=(nivel===1)?3:2;
-
-  var k=nome+'|'+setor;
-  if(contadorPulo[k]===undefined) contadorPulo[k]=skipNeeded; // começa liberado para aparecer na 1ª
-  if(!aparicoes[k]) aparicoes[k]=0;
-
-  if(contadorPulo[k] >= skipNeeded){
-    // Hora de aparecer — zera o contador
-    contadorPulo[k]=0;
+  // Modo normal: consome o contador
+  if (contadorPulo[k] >= skipNeeded) {
+    contadorPulo[k] = 0;
     aparicoes[k]++;
-    return false;
+    return false; // aparece
   }
-  // Ainda pula
   contadorPulo[k]++;
-  return true;
+  return true; // pula
 }
-var aparicoes = {};
+
+// Alias sem efeito colateral — usado nos loops de busca
+function deveSerPuladoCheck(nome, setor, dataISO) {
+  return deveSerPulado(nome, setor, dataISO, true);
+}
 
 // ===================== GERENCIAR IRMÃOS =====================
 var deptConfig = [
@@ -1286,14 +1522,18 @@ function gerarReunioes(mes,ano){
 
 // Rodízio simples respeitando ausentes e treinamento
 function rodizioSetor(fila, idx, usados, setor, dataISO) {
-  var tentativas=0, c;
-  var ordem = fila.slice(); // cópia
+  var c;
+  var ordem = fila.slice();
+  if (!ordem.length) return '';
   var start = idx.v % ordem.length;
+  // Loop com dryRun=true — não consome contador ao verificar
   for(var t=0; t<ordem.length*3; t++){
     var i=(start+t) % ordem.length;
     c = ordem[i];
     if(usados.indexOf(c)>=0) continue;
-    if(deveSerPulado(c, setor, dataISO)) continue;
+    if(deveSerPulado(c, setor, dataISO, true)) continue; // dryRun
+    // Escolhido — agora consome o contador (dryRun=false)
+    deveSerPulado(c, setor, dataISO, false);
     idx.v = i+1;
     usados.push(c);
     return c;
@@ -1316,10 +1556,13 @@ function proximoPar(ausentes, dataISO){
     var par=pares[idx];
     if(ausentes.indexOf(par[0])>=0||ausentes.indexOf(par[1])>=0) continue;
     if(idx===ultimoPar) continue;
-    // verifica treinamento no palco para ambos
-    var skip0=deveSerPulado(par[0],'palco',dataISO);
-    var skip1=deveSerPulado(par[1],'palco',dataISO);
+    // verifica treinamento com dryRun=true (sem efeito colateral no loop)
+    var skip0=deveSerPulado(par[0],'palco',dataISO,true);
+    var skip1=deveSerPulado(par[1],'palco',dataISO,true);
     if(skip0||skip1) continue;
+    // Escolhido — consome o contador de ambos
+    deveSerPulado(par[0],'palco',dataISO,false);
+    deveSerPulado(par[1],'palco',dataISO,false);
     ultimoPar=idx; return par;
   }
   // fallback sem filtro de treino
@@ -1341,45 +1584,55 @@ var idxM={v:0},idxA={v:0},idxV={v:0},idxZ={v:0},idxI={v:0};
 var trocasCache = {};
 var trocaAtual = null;
 
-function escolherIndicadores(usados){
-  var fila=listas.indicador;
-  var escolhidos=[];
-  var start=idxI.v;
-  for(var t=0; t<fila.length*3 && escolhidos.length<2; t++){
-    var i=(start+t)%fila.length;
-    var nome=fila[i];
-    if(usados.indexOf(nome)>=0) continue;
-    if(deveSerPulado(nome,'indicador',null)) continue;
-    if(escolhidos.indexOf(nome)>=0) continue;
+function escolherIndicadores(usados) {
+  var fila = listas.indicador;
+  var escolhidos = [];
+  var start = idxI.v;
+  var lastIdx = start;
+
+  for (var t = 0; t < fila.length * 3 && escolhidos.length < 2; t++) {
+    var i = (start + t) % fila.length;
+    var nome = fila[i];
+    if (usados.indexOf(nome) >= 0) continue;
+    if (deveSerPulado(nome, 'indicador', null, true)) continue; // dryRun
+    if (escolhidos.indexOf(nome) >= 0) continue;
+    // Escolhido — consome contador
+    deveSerPulado(nome, 'indicador', null, false);
     escolhidos.push(nome);
     usados.push(nome);
+    lastIdx = i; // guarda posição real do último escolhido
   }
-  for(var t=0; t<fila.length*2 && escolhidos.length<2; t++){
-    var i=(start+t)%fila.length;
-    var nome=fila[i];
-    if(usados.indexOf(nome)<0 && escolhidos.indexOf(nome)<0){ escolhidos.push(nome); usados.push(nome); }
+  for (var t = 0; t < fila.length * 2 && escolhidos.length < 2; t++) {
+    var i = (start + t) % fila.length;
+    var nome = fila[i];
+    if (usados.indexOf(nome) < 0 && escolhidos.indexOf(nome) < 0) {
+      escolhidos.push(nome);
+      usados.push(nome);
+      lastIdx = i;
+    }
   }
-  idxI.v = (start + escolhidos.length) % fila.length;
 
-  var a=escolhidos[0]||'', b=escolhidos[1]||'';
-  var aud,pat;
+  // Avança para depois do último escolhido
+  idxI.v = (lastIdx + 1) % fila.length;
 
-  if(ultimoAuditorio[a]===true){
-    aud=b; pat=a;
-  } else if(ultimoAuditorio[b]===true){
-    aud=a; pat=b;
+  var a = escolhidos[0] || '', b = escolhidos[1] || '';
+  var aud, pat;
+
+  if (ultimoAuditorio[a] === true) {
+    aud = b; pat = a;
+  } else if (ultimoAuditorio[b] === true) {
+    aud = a; pat = b;
   } else {
-    aud=a; pat=b;
+    aud = a; pat = b;
   }
-  ultimoAuditorio[aud]=true;
-  ultimoAuditorio[pat]=false;
-  return {aud:aud, pat:pat};
+  ultimoAuditorio[aud] = true;
+  ultimoAuditorio[pat] = false;
+  return { aud: aud, pat: pat };
 }
-
 function nomeSpan(n, chave, setor, dataLabel) {
   var atual = substituicoes[chave] || n;
   var badgeTroca = '';
-  Object.values(trocasCache).forEach(function(t) {
+  Object.keys(trocasCache).map(function(k){return trocasCache[k];}).forEach(function(t) {
     if (t.dataLabel === dataLabel && t.setor === setor) {
       if (t.status === 'pendente') badgeTroca = ' <span class="badge-troca-pendente">&#9203; pendente</span>';
       else if (t.status === 'aceita') badgeTroca = ' <span class="badge-troca-aceita">&#9989; aceita</span>';
@@ -1654,21 +1907,21 @@ function adicionarMesesDoForm(){
   adicionarMeses(mes,ano,qtd);
 }
 
-function limparFirebaseERecomecar(){
-  if(!confirm('Isso apaga TODOS os dados do Firebase (meses, config, trocas) e recomeça do zero. Confirma?')) return;
-  if(!firebaseOk||!db){ alert('Firebase não conectado.'); return; }
-  db.ref('escala').remove().then(function(){
-    db.ref('trocas').remove().then(function(){
-      substituicoes={}; contadorPulo={}; aparicoes={}; ultimoAuditorio={};
-      mesesGerados={}; trocasCache={};
-      idxM.v=0; idxA.v=0; idxV.v=0; idxZ.v=0; idxI.v=0; ultimoPar=-1;
-      document.getElementById('lista').innerHTML='';
-      document.getElementById('painel-trocas').style.display='none';
+function limparFirebaseERecomecar() {
+  if (!confirm('Isso apaga TODOS os dados do Firebase (meses, config, trocas) e recomeça do zero. Confirma?')) return;
+  if (!firebaseOk || !db) { alert('Firebase não conectado.'); return; }
+  db.ref('escala').remove().then(function() {
+    db.ref('trocas').remove().then(function() {
+      substituicoes = {}; contadorPulo = {}; aparicoes = {}; ultimoAuditorio = {};
+      mesesGerados = {}; escalaGerada = {}; trocasCache = {};
+      idxM.v = 0; idxA.v = 0; idxV.v = 0; idxZ.v = 0; idxI.v = 0; ultimoPar = -1;
+      document.getElementById('lista').innerHTML = '';
+      document.getElementById('painel-trocas').style.display = 'none';
       atualizarSubtitulo();
       fecharPrincipal();
       alert('Firebase limpo! Agora gere os meses novamente.');
     });
-  }).catch(function(e){ alert('Erro: '+e.message); });
+  }).catch(function(e) { alert('Erro: ' + e.message); });
 }
 
 function regenerarTudoDoForm(){
@@ -1694,25 +1947,33 @@ function apagarMes(chave){
   salvarMesesFirebase();
 }
 
-function adicionarMeses(mesInicio,ano,qtd){
-  var lista=document.getElementById('lista');
-  var novos=[];
-  for(var i=0;i<qtd;i++){
-    var m=((mesInicio-1+i)%12)+1;
-    var a=ano+Math.floor((mesInicio-1+i)/12);
-    var chave=chaveMes(m,a);
-    if(mesesGerados[chave]) continue;
-    mesesGerados[chave]=true;
-    novos.push({m:m,a:a});
+function adicionarMeses(mesInicio, ano, qtd) {
+  var lista = document.getElementById('lista');
+  var novos = [];
+  for (var i = 0; i < qtd; i++) {
+    var m = ((mesInicio - 1 + i) % 12) + 1;
+    var a = ano + Math.floor((mesInicio - 1 + i) / 12);
+    var chave = chaveMes(m, a);
+    if (mesesGerados[chave]) continue;
+    mesesGerados[chave] = true;
+    novos.push({ m: m, a: a });
   }
-  if(novos.length===0){
+  if (novos.length === 0) {
     alert('Todos os meses selecionados já foram gerados.');
     return;
   }
-  novos.forEach(function(item){ gerarMes(item.m,item.a); });
-  var blocos=Array.from(lista.querySelectorAll('.mes-bloco'));
-  blocos.sort(function(a,b){ return (a.dataset.chavemes||'').localeCompare(b.dataset.chavemes||''); });
-  blocos.forEach(function(b){ lista.appendChild(b); });
+  // Se já tem escalaGerada do Firebase, usa renderMesSalvo
+  var temDados = Object.keys(escalaGerada).length > 0;
+  novos.forEach(function(item) {
+    if (temDados) {
+      renderMesSalvo(item.m, item.a, escalaGerada, substituicoes);
+    } else {
+      gerarMes(item.m, item.a);
+    }
+  });
+  var blocos = [].slice.call(lista.querySelectorAll('.mes-bloco'));
+  blocos.sort(function(a, b) { return (a.dataset.chavemes || '').localeCompare(b.dataset.chavemes || ''); });
+  blocos.forEach(function(b) { lista.appendChild(b); });
   atualizarSubtitulo();
   salvarMesesFirebase();
 }
@@ -1754,6 +2015,73 @@ var FIREBASE_CONFIG = {
 
 var db = null;
 var firebaseOk = false;
+
+// ── MODO TESTE ──────────────────────────────────────────────────────────────
+var MODO_TESTE = window.location.search.indexOf('teste') !== -1;
+
+function _criarDbProxy() {
+  var logEl = document.getElementById('teste-log');
+  var fakeThen = { then: function(fn){ if(fn) fn(); return this; }, catch: function(){ return this; } };
+  return {
+    ref: function(path) {
+      return {
+        set: function(v) {
+          var msg = '[set] ' + path + '\n' + JSON.stringify(v).substring(0,120);
+          console.log('[MODO TESTE] BLOQUEADO', msg);
+          if(logEl){ logEl.textContent += msg + '\n\n'; logEl.scrollTop = logEl.scrollHeight; }
+          return fakeThen;
+        },
+        update: function(v) {
+          var msg = '[update] ' + path + '\n' + JSON.stringify(v).substring(0,120);
+          console.log('[MODO TESTE] BLOQUEADO', msg);
+          if(logEl){ logEl.textContent += msg + '\n\n'; logEl.scrollTop = logEl.scrollHeight; }
+          return fakeThen;
+        },
+        push: function(v) {
+          var msg = '[push] ' + path + '\n' + JSON.stringify(v).substring(0,120);
+          console.log('[MODO TESTE] BLOQUEADO', msg);
+          if(logEl){ logEl.textContent += msg + '\n\n'; logEl.scrollTop = logEl.scrollHeight; }
+          return { then: function(){ return fakeThen; } };
+        },
+        remove: function(fn) {
+          var msg = '[remove] ' + path;
+          console.log('[MODO TESTE] BLOQUEADO', msg);
+          if(logEl){ logEl.textContent += msg + '\n\n'; logEl.scrollTop = logEl.scrollHeight; }
+          if(fn) fn();
+          return fakeThen;
+        },
+        once: function(ev, fn) { return window._dbReal ? window._dbReal.ref(path).once(ev, fn) : fakeThen; },
+        on:   function(ev, fn) { return window._dbReal && window._dbReal.ref(path).on(ev, fn); },
+        off:  function()       { return window._dbReal && window._dbReal.ref(path).off(); }
+      };
+    }
+  };
+}
+
+function toggleModoTeste() {
+  var btn   = document.getElementById('btn-toggle-teste');
+  var badge = document.getElementById('teste-badge');
+  var logW  = document.getElementById('teste-log-wrap');
+  if (!MODO_TESTE) {
+    MODO_TESTE = true;
+    window._dbReal = db;
+    db = _criarDbProxy();
+    btn.textContent = '⏹ Desativar Modo Teste';
+    btn.style.background = '#ef4444';
+    badge.style.display = 'inline-block';
+    logW.style.display = 'block';
+    document.getElementById('teste-log').textContent = '— Modo Teste ativado. Gravações bloqueadas. —\n\n';
+  } else {
+    MODO_TESTE = false;
+    if (window._dbReal) db = window._dbReal;
+    window._dbReal = null;
+    btn.textContent = '🧪 Ativar Modo Teste';
+    btn.style.background = '#f59e0b';
+    badge.style.display = 'none';
+    logW.style.display = 'none';
+  }
+}
+// ───────────────────────────────────────────────────────────────────────────
 
 // ── PERSISTÊNCIA DE MESES NO FIREBASE ──────────────────────────────────────
 
@@ -1842,17 +2170,18 @@ function ouvirConfig() {
     }
 
     // ── REGENERA A ESCALA para todos verem igual ──────────────
-    if(mudou && Object.keys(mesesGerados).length > 0){
+if(mudou && Object.keys(mesesGerados).length > 0 && document.getElementById('ov-principal').classList.contains('aberto')){
       var chavesAtivas = Object.keys(mesesGerados).sort();
       // Busca o estado salvo para restaurar os contadores antes de regenerar
       db.ref('escala/estado').once('value', function(snapEstado) {
         var dadosEstado = snapEstado.val() || {};
-        substituicoes={}; contadorPulo={}; aparicoes={}; ultimoAuditorio={};
+        contadorPulo={}; aparicoes={}; ultimoAuditorio={};
         mesesGerados={};
         idxM.v=0; idxA.v=0; idxV.v=0; idxZ.v=0; idxI.v=0; ultimoPar=-1;
         // Restaura estado do rodízio
         if (dadosEstado.contadorPulo) Object.assign(contadorPulo, dadosEstado.contadorPulo);
         if (dadosEstado.aparicoes)    Object.assign(aparicoes, dadosEstado.aparicoes);
+        if (dadosEstado.substituicoes) Object.assign(substituicoes, dadosEstado.substituicoes);
         if (dadosEstado.idxM !== undefined) idxM.v = dadosEstado.idxM;
         if (dadosEstado.idxA !== undefined) idxA.v = dadosEstado.idxA;
         if (dadosEstado.idxV !== undefined) idxV.v = dadosEstado.idxV;
@@ -1948,11 +2277,13 @@ function processarMeses(mesesSalvos, dadosEstado) {
   });
   // Reordena
   var lista = document.getElementById('lista');
-  var blocos = Array.from(lista.querySelectorAll('.mes-bloco'));
+  var blocos = [].slice.call(lista.querySelectorAll('.mes-bloco'));
   blocos.sort(function(a,b){ return (a.dataset.chavemes||'').localeCompare(b.dataset.chavemes||''); });
   blocos.forEach(function(b){ lista.appendChild(b); });
   aplicarSubstituicoesNaTela();
   atualizarSubtitulo();
+  // Atualiza seletor de semanas do VMC agora que escalaGerada foi populado
+  if (typeof vmcPreencherSeletores === 'function') vmcPreencherSeletores();
 }
 
 function iniciarFirebase() {
@@ -1960,7 +2291,8 @@ function iniciarFirebase() {
     if (typeof firebase === 'undefined') { mostrarBannerConfigErro('SDK do Firebase nao carregou. Verifique sua conexao.'); return; }
     if (FIREBASE_CONFIG.apiKey === 'COLE_AQUI') { mostrarBannerConfig(); return; }
     if (!firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG);
-    db = firebase.database();
+    var _realDb = firebase.database();
+    if (MODO_TESTE) { window._dbReal = _realDb; db = _criarDbProxy(); } else { db = _realDb; }
     firebaseOk = true;
     ouvirTrocas();
     ouvirSubstituicoes();
@@ -2180,10 +2512,10 @@ function aplicarSubstituicoesNaTela() {
       var oc = s.getAttribute('onclick') || '';
       if (oc.indexOf("'" + chave + "'") >= 0) {
         if (!spans.length) spans = [s]; // fallback se não há clicavel
-        else spans = Array.from(spans).concat(s);
+        else spans = [].slice.call(spans).concat(s);
       }
     });
-    Array.from(spans).forEach(function(span) {
+    [].slice.call(spans).forEach(function(span) {
       if(span.textContent !== novo) {
         span.textContent = novo;
         // Atualiza badge de treino
@@ -2238,7 +2570,7 @@ function ouvirTrocas() {
 
 function renderPainelTrocas() {
   var painel = document.getElementById('painel-trocas');
-  var lista = Object.values(trocasCache).filter(function(t) {
+  var lista = Object.keys(trocasCache).map(function(k){return trocasCache[k];}).filter(function(t) {
     // Mostra: pendentes, ou aceitas ate a data da reuniao passar, ou recusadas por 24h
     if(t.status === 'pendente') return true;
     if(t.status === 'aceita'){
@@ -2488,25 +2820,131 @@ function atualizarBotaoNotif() {
   }
 }
 // Envia notificação local quando irmão é designado
+// ===================== AVISOS 24h E 1h ANTES =====================
+
+// Chaves de avisos já agendados (evita duplicar ao reabrir Minha Escala)
+var avisosAgendados = {};
+
 function notificarSeDesignado(nome, designacoes) {
-  if (!nome || Notification.permission !== 'granted' || !designacoes.length) return;
-  var proximas = designacoes.slice(0, 3);
-  proximas.forEach(function(d, i) {
-    setTimeout(function() {
-      var options = {
-        body: d.setor + ' — ' + d.data,
+  if (!nome || Notification.permission !== 'granted') return;
+
+  // 1. Notificação imediata: "Você está designado para X reuniões"
+  if (designacoes.length) {
+    var proxima = designacoes[0];
+    var bodyImediato = proxima.setor + ' — ' + proxima.data;
+    if (proxima.parceiros && proxima.parceiros.length) bodyImediato += '\n' + proxima.parceiros.join(', ');
+    if (designacoes.length > 1) bodyImediato += '\n(+' + (designacoes.length - 1) + ' mais)';
+    new Notification('📋 Suas designações', {
+      body: bodyImediato,
+      icon: 'icon-192.svg',
+      badge: 'icon-192.svg',
+      tag: 'resumo-designacoes',
+      vibrate: [200, 100, 200],
+      requireInteraction: false
+    });
+  }
+
+  // 2. Agenda avisos 24h e 1h antes de cada reunião futura
+  agendarAvisosDesignacoes(nome, designacoes);
+}
+
+// Envia agendamento para o Service Worker (persiste mesmo com aba fechada)
+function agendarViaSW(tag, title, body, tsDisparo, vibrate, requireInteraction) {
+  if (!('serviceWorker' in navigator)) return false;
+  navigator.serviceWorker.ready.then(function(reg) {
+    if (reg.active) {
+      reg.active.postMessage({
+        tipo: 'agendar',
+        tag: tag,
+        title: title,
+        body: body,
         icon: 'icon-192.svg',
         badge: 'icon-192.svg',
-        tag: 'designacao-' + d.dataISO,
-        vibrate: [200, 100, 200],
-        requireInteraction: i === 0
-      };
-      if (d.parceiros && d.parceiros.length) {
-        options.body += '\n' + d.parceiros.join(' ');
-      }
-      new Notification('📋 Você foi designado!', options);
-    }, i * 500);
+        tsDisparo: tsDisparo,
+        vibrate: vibrate || [300,100,300],
+        requireInteraction: requireInteraction !== false
+      });
+      return true;
+    }
+  }).catch(function(){});
+  return false;
+}
+
+function agendarAvisosDesignacoes(nome, designacoes) {
+  if (Notification.permission !== 'granted') return;
+  var agora = Date.now();
+
+  designacoes.forEach(function(d) {
+    // Determina o horário exato da reunião
+    // Quarta = 19:00, Sábado = 18:30
+    var data = d.dataObj || new Date(d.dataISO + 'T00:00:00');
+    var diaSemana = data.getDay(); // 3=quarta, 6=sábado
+    var hora   = (diaSemana === 6) ? 18 : 19;
+    var minuto = (diaSemana === 6) ? 30 : 0;
+    var tsReuniao = new Date(data.getFullYear(), data.getMonth(), data.getDate(), hora, minuto, 0).getTime();
+
+    var chave24 = d.dataISO + '|' + d.campo + '|24h';
+    var chave1  = d.dataISO + '|' + d.campo + '|1h';
+
+    // ── Aviso 24h antes ──
+    var ms24 = tsReuniao - 24 * 60 * 60 * 1000 - agora;
+    if (ms24 > 0 && !avisosAgendados[chave24]) {
+      avisosAgendados[chave24] = true;
+      var body24 = '⏰ Amanhã: ' + d.setor;
+      if (d.parceiros && d.parceiros.length) body24 += '\n' + d.parceiros.join(', ');
+      body24 += '\nReunião às ' + hora + 'h' + (minuto ? minuto : '') + ' — ' + d.data;
+      // Tenta via SW (persiste com aba fechada); fallback: setTimeout (só funciona com aba aberta)
+      agendarViaSW(chave24, '📋 Lembrete de designação (24h)', body24, tsReuniao - 24*3600*1000, [300,100,300], true);
+      setTimeout(function() {
+        if (Notification.permission !== 'granted') return;
+        new Notification('📋 Lembrete de designação (24h)', {
+          body: body24, icon: 'icon-192.svg', badge: 'icon-192.svg',
+          tag: chave24, vibrate: [300,100,300], requireInteraction: true
+        });
+        if (firebaseOk && db && meuNome) {
+          db.ref('notificacoes/'+meuNome.replace(/[.#$[\]]/g,'_')+'/avisos/'+chave24.replace(/[|]/g,'_')).set(Date.now());
+        }
+      }, ms24);
+    }
+
+    // ── Aviso 1h antes ──
+    var ms1 = tsReuniao - 60 * 60 * 1000 - agora;
+    if (ms1 > 0 && !avisosAgendados[chave1]) {
+      avisosAgendados[chave1] = true;
+      var body1 = '🔔 Em 1 hora: ' + d.setor;
+      if (d.parceiros && d.parceiros.length) body1 += '\n' + d.parceiros.join(', ');
+      body1 += '\nReunião às ' + hora + 'h' + (minuto ? minuto : '');
+      agendarViaSW(chave1, '📋 Lembrete de designação (1h)', body1, tsReuniao - 3600*1000, [500,100,500,100,500], true);
+      setTimeout(function() {
+        if (Notification.permission !== 'granted') return;
+        new Notification('📋 Lembrete de designação (1h)', {
+          body: body1, icon: 'icon-192.svg', badge: 'icon-192.svg',
+          tag: chave1, vibrate: [500,100,500,100,500], requireInteraction: true
+        });
+        if (firebaseOk && db && meuNome) {
+          db.ref('notificacoes/'+meuNome.replace(/[.#$[\]]/g,'_')+'/avisos/'+chave1.replace(/[|]/g,'_')).set(Date.now());
+        }
+      }, ms1);
+    }
   });
+}
+
+// Re-agenda avisos ao recarregar a página (para quem já está designado)
+// Chamado uma vez na inicialização quando meuNome já está salvo
+function reagendarAvisosAoIniciar() {
+  var nomeSalvo = localStorage.getItem('meuNome') || localStorage.getItem('designacoes_nome_bloqueado');
+  if (!nomeSalvo || Notification.permission !== 'granted') return;
+  // Espera escalaGerada carregar do Firebase (máx 5s)
+  var tentativas = 0;
+  var intervalo = setInterval(function() {
+    tentativas++;
+    if (Object.keys(escalaGerada).length > 0 || tentativas > 10) {
+      clearInterval(intervalo);
+      var des = buscarDesignacoesDe(nomeSalvo);
+      var futuras = des.filter(function(d){ return !d.passada; });
+      if (futuras.length) agendarAvisosDesignacoes(nomeSalvo, futuras);
+    }
+  }, 500);
 }
 
 // ===================== MINHA ESCALA =====================
@@ -2630,6 +3068,14 @@ function buscarDesignacoesDe(nome) {
     if (vistas[k] && (d.campo==='mic2'||d.campo==='palco2')) return false;
     vistas[k]=true; return true;
   });
+
+  // Adiciona designações de VMC
+  if (typeof vmcDesignacoesDe === 'function') {
+    vmcDesignacoesDe(nome).forEach(function(d){ resultado.push(d); });
+  }
+
+  // Ordena tudo por data
+  resultado.sort(function(a,b){ return a.dataISO.localeCompare(b.dataISO); });
   return resultado;
 }
 
@@ -2718,12 +3164,16 @@ function _renderMinhaEscalaComConf(nome, cont) {
         }
       }
       
+      // Cor do cabeçalho: VMC usa verde, designações normais usam roxo
+      var cabBg = d.isVMC ? '#0f6e56' : '#7c3aed';
+      var icone = d.isVMC ? '📖' : '📌';
       html += '<div class="minha-card">' +
-        '<div class="minha-card-cab">' +
+        '<div class="minha-card-cab" style="background:'+cabBg+'">' +
           '<span class="minha-card-data">'+escHtml(d.data)+'</span>' +
-          '<span class="minha-card-tipo">'+escHtml(d.setor)+'</span>' +
+          '<span class="minha-card-tipo">'+icone+' '+escHtml(d.setor)+'</span>' +
         '</div>' +
         '<div class="minha-card-body">' +
+          (d.isVMC ? '<div style="font-size:10px;font-weight:bold;color:#0f6e56;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">Vida e Ministério Cristão</div>' : '') +
           '<div class="minha-setor">&#128205; '+escHtml(d.setor)+'</div>' +
           (d.parceiros.length ? '<div class="minha-parceiros">'+escHtml(d.parceiros.join(' '))+'</div>' : '') +
           '<span class="'+badgeCls+'">'+badgeTxt+'</span>' +
@@ -2939,7 +3389,7 @@ function renderHistorico() {
     return;
   }
 
-  Object.values(escalaGerada).forEach(function(des) {
+  Object.keys(escalaGerada).map(function(k){return escalaGerada[k];}).forEach(function(des) {
     Object.keys(setorMap).forEach(function(campo) {
       var nomeBase = des[campo]; if (!nomeBase) return;
       var setor = setorMap[campo];
@@ -3040,6 +3490,46 @@ function renderHistorico() {
     });
 
     html += '</tbody></table></div>';
+
+    // Adiciona tabela VMC se houver dados
+    var vmcDadosKeys = Object.keys(vmcDados);
+    if (vmcDadosKeys.length && (!filtroSetor || filtroSetor.indexOf('vmc_')===0)) {
+      var vmcContagem = {};
+      var vmcCampos = ['presidente','tesouro','joias','leitura','escola1','escola1b',
+                       'escola2','escola2b','necessidades','vida','estudoCondutor','estudoLeitor'];
+      Object.keys(vmcDados).sort().forEach(function(iso) {
+        var d = vmcDados[iso];
+        vmcCampos.forEach(function(campo) {
+          var nome = d[campo]; if (!nome) return;
+          if (filtroIrmao && nome !== filtroIrmao) return;
+          var chave = filtroSetor ? nome : nome;
+          var setorKey = 'vmc_'+campo;
+          if (filtroSetor && filtroSetor !== setorKey) return;
+          if (!vmcContagem[nome]) vmcContagem[nome] = {};
+          vmcContagem[nome][campo] = (vmcContagem[nome][campo] || 0) + 1;
+        });
+      });
+      var vmcNomes = Object.keys(vmcContagem).sort();
+      if (vmcNomes.length) {
+        var vmcSetores = filtroSetor ? [filtroSetor.replace('vmc_','')] : vmcCampos;
+        html += '<div style="margin-top:20px;font-size:12px;font-weight:bold;color:#0f6e56;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">📖 Vida e Ministério Cristão</div>';
+        html += '<div style="overflow-x:auto"><table class="hist-table"><thead><tr><th>Irmão</th>'+
+          vmcSetores.map(function(s){ return '<th>'+((vmcLabels&&vmcLabels[s])||s)+'</th>'; }).join('')+
+          '<th>Total</th></tr></thead><tbody>';
+        vmcNomes.forEach(function(nome) {
+          var total = 0;
+          var cells = vmcSetores.map(function(s) {
+            var v = vmcContagem[nome][s] || 0;
+            total += v;
+            return '<td>'+(v||'—')+'</td>';
+          }).join('');
+          html += '<tr><td style="font-weight:bold;white-space:nowrap">'+escHtml(nome)+'</td>'+cells+
+            '<td style="font-weight:bold;color:#0f6e56">'+total+'</td></tr>';
+        });
+        html += '</tbody></table></div>';
+      }
+    }
+
     cont.innerHTML = html;
   }
 }
@@ -3083,11 +3573,1039 @@ function ouvirAvisosAusencia() {
   });
 }
 
-// ===================== nomeSpan ATUALIZADO =====================
-// Garante que erros no Firebase não quebrem a escala
-try { gerarEscalaAtual(); } catch(e) { console.error('Erro gerarEscalaAtual:', e); }
+// ===================== INICIALIZAÇÃO SEGURA =====================
+// Garante que variáveis globais existam antes de iniciar
+var irmaosEspectadores = window.irmaosEspectadores || [];
+var dataEntradaIrmaos = window.dataEntradaIrmaos || {};
+var contadorPulo = window.contadorPulo || {};
+var aparicoes = window.aparicoes || {};
+var substituicoes = window.substituicoes || {};
+var escalaGerada = window.escalaGerada || {};
+var mesesGerados = window.mesesGerados || {};
+var ultimoAuditorio = window.ultimoAuditorio || {};
+var idxM = window.idxM || {v:0};
+var idxA = window.idxA || {v:0};
+var idxV = window.idxV || {v:0};
+var idxZ = window.idxZ || {v:0};
+var idxI = window.idxI || {v:0};
+var ultimoPar = window.ultimoPar !== undefined ? window.ultimoPar : -1;
+var trocasCache = window.trocasCache || {};
+var trocaAtual = null;
+
+// ═══════════════════════════════════════════════════════════════
+// SISTEMA VMC — Vida e Ministério Cristão (versão completa)
+// ═══════════════════════════════════════════════════════════════
+
+var vmcDados = {};
+var vmcSemanaAtual = '';
+
+// Listas de aprovados por função
+var vmcListas = {
+  presidente:     [],
+  oracaoAbertura: [],
+  tesouro:        [],
+  joias:          [],
+  leitura:        [],
+  ministerioPubl: [],  // publicadoras (irmãs) ministério
+  ministerioAjud: [],  // ajudantes ministério
+  ministerioIrmao:[],  // irmãos para partes de discurso no ministério
+  vidaCristaParte:[],  // irmãos partes vida cristã
+  estudoCondutor: [],
+  estudoLeitor:   [],
+  oracaoFim:      [],
+};
+
+var vmcIdx = {
+  presidente:0, oracaoAbertura:0, tesouro:0, joias:0, leitura:0,
+  ministerioPubl:0, ministerioAjud:0, ministerioIrmao:0,
+  vidaCristaParte:0, estudoCondutor:0, estudoLeitor:0, oracaoFim:0
+};
+
+var vmcLabels = {
+  presidente:'Presidente', oracaoAbertura:'Oração de abertura',
+  tesouro:'Discurso de Tesouros', joias:'Joias Espirituais', leitura:'Leitura da Bíblia',
+  ministerioPubl:'Publicadoras (ministério)', ministerioAjud:'Ajudantes (ministério)',
+  ministerioIrmao:'Irmãos (discurso no ministério)',
+  vidaCristaParte:'Partes de Vida Cristã',
+  estudoCondutor:'Condutor — Estudo Bíblico', estudoLeitor:'Leitor — Estudo Bíblico',
+  oracaoFim:'Oração de encerramento'
+};
+
+// ── Abre o WOL PT com o mês escolhido ──────────────────────────
+function vmcAbrirJW() {
+  var mes = (document.getElementById('vmc-sel-mes') || {}).value || 'maio';
+  var ano = new Date().getFullYear();
+  var url = 'https://wol.jw.org/pt/wol/library/r5/lp-t/todas-as-publica%C3%A7%C3%B5es/apostilas/apostila-vida-e-minist%C3%A9rio-' + ano + '/' + mes;
+  window.open(url, '_blank');
+  // Atualiza link no modal e mostra instrução
+  document.getElementById('vmc-link-jw').href = url;
+  var st = document.getElementById('vmc-import-status');
+  st.style.display = 'block';
+  st.style.background = '#fffbeb'; st.style.color = '#92400e'; st.style.borderColor = '#fcd34d';
+  st.textContent = '⏳ Na página que abriu: clique na semana desejada → selecione tudo (Ctrl+A) → copie (Ctrl+C) → clique em "📋 Colar programação".';
+}
+
+function vmcColarTexto() {
+  if (!vmcSemanaAtual) { alert('Selecione uma semana primeiro.'); return; }
+  var mes = (document.getElementById('vmc-sel-mes') || {}).value || 'maio';
+  var ano = new Date().getFullYear();
+  var url = 'https://wol.jw.org/pt/wol/library/r5/lp-t/todas-as-publica%C3%A7%C3%B5es/apostilas/apostila-vida-e-minist%C3%A9rio-' + ano + '/' + mes;
+  document.getElementById('vmc-link-jw').href = url;
+  document.getElementById('vmc-modal-colar').style.display = 'flex';
+  document.getElementById('vmc-texto-colado').value = '';
+}
+
+function vmcFecharColar() {
+  document.getElementById('vmc-modal-colar').style.display = 'none';
+}
+
+function vmcExtrairTextoColado() {
+  var texto = document.getElementById('vmc-texto-colado').value.trim();
+  if (!texto || texto.length < 50) { alert('Cole o texto da programação antes de extrair.'); return; }
+  vmcFecharColar();
+  var st = document.getElementById('vmc-import-status');
+  st.style.display = 'block';
+  st.style.background = '#fffbeb'; st.style.color = '#92400e'; st.style.borderColor = '#fcd34d';
+  st.textContent = '⏳ Extraindo dados...';
+  // Tenta Claude API (servidor) → fallback parser local
+  fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      model: 'claude-sonnet-4-20250514', max_tokens: 1000,
+      messages: [{ role: 'user', content:
+        'Extraia os dados desta programação da Reunião Vida e Ministério Cristão e retorne APENAS JSON válido (sem markdown) com esta estrutura:\n' +
+        '{"leituraSemanal":"","canticoAbertura":"Cântico N","canticoMeio":"Cântico N","canticoFim":"Cântico N",' +
+        '"tesouroTema":"","joiasTema":"Joias Espirituais (10 min)","leituraTema":"ref (N min)",' +
+        '"ministerioPartes":[{"titulo":"","tempo":"N min","tipo":"DE CASA EM CASA","descricao":""}],' +
+        '"vidaPartes":[{"titulo":"","tempo":"N min"}],"estudoTema":""}\n\n' +
+        'TEXTO:\n' + texto.substring(0, 6000)
+      }]
+    })
+  })
+  .then(function(r){ if (!r.ok) throw new Error(); return r.json(); })
+  .then(function(data) {
+    var txt = (data.content||[]).map(function(b){return b.text||'';}).join('').replace(/```json|```/g,'').trim();
+    var m = txt.match(/\{[\s\S]*\}/);
+    if (!m) throw new Error();
+    vmcAplicarPrograma(JSON.parse(m[0]), st);
+  })
+  .catch(function() { vmcProcessarHtmlJW(texto); });
+}
+
+function vmcAplicarPrograma(prog, st) {
+  function set(id, val) { var e = document.getElementById(id); if (e && val) e.value = val; }
+  set('vmc-leitura-semanal',  prog.leituraSemanal||'');
+  set('vmc-cantico-abertura', prog.canticoAbertura||'');
+  set('vmc-cantico-meio',     prog.canticoMeio||'');
+  set('vmc-cantico-fim',      prog.canticoFim||'');
+  set('vmc-tesouro-tema',     prog.tesouroTema||'');
+  set('vmc-joias-tema',       prog.joiasTema||'');
+  set('vmc-leitura-tema',     prog.leituraTema||'');
+  set('vmc-estudo-tema',      prog.estudoTema||'');
+  var dadM = document.getElementById('vmc-ministerio-partes');
+  if (dadM && (prog.ministerioPartes||[]).length) {
+    dadM.innerHTML=''; _vmcMinstIdx=0;
+    prog.ministerioPartes.forEach(function(p,i){ vmcAddParteMinist(p,i); });
+  }
+  var dadV = document.getElementById('vmc-vida-partes');
+  if (dadV && (prog.vidaPartes||[]).length) {
+    dadV.innerHTML=''; _vmcVidaIdx=0;
+    prog.vidaPartes.forEach(function(p,i){ vmcAddParteVida(p,i); });
+  }
+  var dadosAtuais = vmcDados[vmcSemanaAtual] || {};
+  Object.assign(dadosAtuais, { jwImportado: true });
+  vmcDados[vmcSemanaAtual] = dadosAtuais;
+  var badge = document.getElementById('vmc-import-badge');
+  if (badge) badge.style.display = 'inline-block';
+  var nMin=(prog.ministerioPartes||[]).length, nVida=(prog.vidaPartes||[]).length;
+  st.style.background='#f0fdf4'; st.style.color='#166534'; st.style.borderColor='#bbf7d0';
+  st.textContent = '✅ Extraído! Cânticos: ' +
+    [prog.canticoAbertura,prog.canticoMeio,prog.canticoFim].filter(Boolean).join(', ') +
+    ' | Ministério: ' + nMin + ' partes | Vida Cristã: ' + nVida + ' partes. Designe os irmãos e salve.';
+}
+
+function vmcProcessarHtmlJW(texto) {
+  var st = document.getElementById('vmc-import-status');
+  if (!texto || texto.length < 50) { st.textContent = '❌ Conteúdo vazio.'; return; }
+
+  // Se vier HTML, extrai o texto puro
+  if (texto.indexOf('<') > -1 && texto.indexOf('>') > -1) {
+    var tmp = document.createElement('div');
+    tmp.innerHTML = texto;
+    tmp.querySelectorAll('script,style,nav,footer,header').forEach(function(e){e.remove();});
+    texto = tmp.innerText || tmp.textContent || texto;
+  }
+
+  var prog = {};
+  var ministerioPartes = [];
+  var vidaPartes = [];
+  var canticos = [];
+
+  // Normaliza quebras de linha
+  texto = texto.replace(/\r\n/g,'\n').replace(/\r/g,'\n').replace(/\n{3,}/g,'\n\n');
+  var linhas = texto.split('\n').map(function(l){return l.trim();}).filter(function(l){return l.length>0;});
+
+  // ── Cânticos — "Cântico 84 e oração" ou "Cântico 84"
+  linhas.forEach(function(l) {
+    var m = l.match(/[Cc]ântico\s+(\d+)/);
+    if (m && canticos.indexOf(m[1]) < 0) canticos.push(m[1]);
+  });
+  if (canticos[0]) prog.canticoAbertura = 'Cântico ' + canticos[0];
+  if (canticos[1]) prog.canticoMeio     = 'Cântico ' + canticos[1];
+  if (canticos[2]) prog.canticoFim      = 'Cântico ' + canticos[2];
+
+  // ── Leitura semanal — livro em maiúsculas + capítulos ex "JEREMIAS 1-3"
+  linhas.forEach(function(l) {
+    if (!prog.leituraSemanal && /^[A-ZÁÉÍÓÚÀÂÊÔÃÕÜ\s]{4,}\s+\d[\d:,\-–\s]*$/.test(l) && l.length < 35) {
+      prog.leituraSemanal = l;
+    }
+  });
+
+  // ── Divide nas 3 seções pelo texto em PT
+  var txt = linhas.join('\n');
+  var idxTes  = txt.search(/TESOUROS DA PALAVRA DE DEUS/i);
+  var idxMin  = txt.search(/FA[ÇC][AÃ] SEU MELHOR NO MINIST[ÉE]RIO/i);
+  var idxVida = txt.search(/NOSSA VIDA CRIST[ÃA]/i);
+
+  // Fallback: seções podem ter nome ligeiramente diferente no WOL
+  if (idxTes  < 0) idxTes  = txt.search(/TESOUROS/i);
+  if (idxMin  < 0) idxMin  = txt.search(/MINIST[ÉE]RIO|FA[ÇC]A SEU/i);
+  if (idxVida < 0) idxVida = txt.search(/VIDA CRIST[ÃA]/i);
+
+  var texTes  = idxTes  >= 0 ? txt.substring(idxTes,  idxMin  > 0 ? idxMin  : idxVida > 0 ? idxVida : undefined) : '';
+  var texMin  = idxMin  >= 0 ? txt.substring(idxMin,  idxVida > 0 ? idxVida : undefined) : '';
+  var texVida = idxVida >= 0 ? txt.substring(idxVida) : '';
+
+  // ── TESOUROS
+  if (texTes) {
+    // Leitura bíblica — linha após "Leitura da Bíblia"
+    var mLB = texTes.match(/[Ll]eitura da [Bb][íi]blia[^\n]*\n([^\n]{3,60})/);
+    if (mLB) {
+      var tempoLB = mLB[0].match(/\((\d+)\s*min/i);
+      prog.leituraTema = mLB[1].trim() + (tempoLB ? ' — ' + tempoLB[1] + ' min' : ' — 4 min');
+    }
+    // Joias espirituais
+    if (/[Jj]oias [Ee]spirituais/i.test(texTes)) {
+      var tempoJ = texTes.match(/[Jj]oias [Ee]spirituais[^\n]*\((\d+)\s*min/i);
+      prog.joiasTema = 'Joias Espirituais (' + (tempoJ ? tempoJ[1] : '10') + ' min)';
+    }
+    // Tema do discurso de Tesouros — primeira linha com (10 min) que não seja Joias/Leitura
+    var linhasTes = texTes.split('\n');
+    linhasTes.forEach(function(l) {
+      if (!prog.tesouroTema && /\(10\s*min/i.test(l) && !/[Jj]oias|[Ll]eitura/i.test(l) && l.trim().length > 5) {
+        prog.tesouroTema = l.replace(/\(\d+\s*min[^)]*\)/gi,'').replace(/^\d+\.\s*/,'').trim();
+      }
+    });
+    // Fallback: pega primeira linha com aspas ou travessão depois do cabeçalho
+    if (!prog.tesouroTema) {
+      var mT = texTes.match(/TESOUROS[^\n]*\n\n?([^\n]{10,100})/i);
+      if (mT) prog.tesouroTema = mT[1].replace(/^\d+\.\s*/,'').replace(/\(\d+[^)]*\)/g,'').trim();
+    }
+  }
+
+  // ── MINISTÉRIO — partes numeradas (4., 5., 6., 7. etc.)
+  if (texMin) {
+    var rxMin = /(\d+)\.\s+([^\n(]{4,80})(?:\s*\((\d+)\s*min[^)]*\))?/g, mm;
+    while ((mm = rxMin.exec(texMin)) !== null && ministerioPartes.length < 4) {
+      var tit = mm[2].trim();
+      if (/FA[ÇC]A SEU|MINIST[ÉE]RIO/i.test(tit)) continue;
+      var trecho = texMin.substring(mm.index, mm.index + 400);
+      var tipo = /TESTEMUNHO P[ÚU]BLICO/i.test(trecho) ? 'Testemunho Público' :
+                 /DE CASA EM CASA/i.test(trecho) ? 'DE CASA EM CASA' :
+                 /INFORMAL/i.test(trecho) ? 'Informal' :
+                 /[Dd]emonstração|[Dd]iscurso/i.test(trecho) ? 'Demonstração' : 'DE CASA EM CASA';
+      var descLinhas = trecho.split('\n').slice(1,4).filter(function(l){
+        return l.trim().length > 5 && !/^\d+\./.test(l.trim());
+      });
+      ministerioPartes.push({
+        titulo: tit,
+        tempo: mm[3] ? mm[3] + ' min' : '',
+        tipo: tipo,
+        descricao: descLinhas.join(' ').substring(0,120)
+      });
+    }
+  }
+
+  // ── VIDA CRISTÃ — partes numeradas
+  if (texVida) {
+    var rxVida = /(\d+)\.\s+([^\n(]{4,80})(?:\s*\((\d+)\s*min[^)]*\))?/g, mv;
+    while ((mv = rxVida.exec(texVida)) !== null && vidaPartes.length < 4) {
+      var titV = mv[2].trim();
+      if (/NOSSA VIDA|VIDA CRIST[ÃA]/i.test(titV)) continue;
+      if (/[Ee]studo [Bb][íi]blico de [Cc]ongregação/i.test(titV)) {
+        var trechoV = texVida.substring(mv.index, mv.index + 300);
+        var matM = trechoV.match(/(?:lfb|lições?|li[çc][ãa]o|livro)[^\n]{0,60}/i);
+        prog.estudoTema = titV + (matM ? ' — ' + matM[0].trim() : '') + (mv[3] ? ' (' + mv[3] + ' min)' : ' (30 min)');
+      } else if (/[Nn]ecessidades [Ll]ocais/i.test(titV)) {
+        vidaPartes.push({ titulo: 'Necessidades Locais', tempo: mv[3] ? mv[3] + ' min' : '7 min' });
+      } else {
+        vidaPartes.push({ titulo: titV, tempo: mv[3] ? mv[3] + ' min' : '' });
+      }
+    }
+  }
+
+  // ── Aplica no formulário
+  function set(id, val) { var e = document.getElementById(id); if (e && val) e.value = val; }
+  set('vmc-leitura-semanal',  prog.leituraSemanal || '');
+  set('vmc-cantico-abertura', prog.canticoAbertura || '');
+  set('vmc-cantico-meio',     prog.canticoMeio || '');
+  set('vmc-cantico-fim',      prog.canticoFim || '');
+  set('vmc-tesouro-tema',     prog.tesouroTema || '');
+  set('vmc-joias-tema',       prog.joiasTema || '');
+  set('vmc-leitura-tema',     prog.leituraTema || '');
+  set('vmc-estudo-tema',      prog.estudoTema || '');
+
+  var dadM = document.getElementById('vmc-ministerio-partes');
+  if (dadM && ministerioPartes.length) {
+    dadM.innerHTML = ''; _vmcMinstIdx = 0;
+    ministerioPartes.forEach(function(p,i){ vmcAddParteMinist(p,i); });
+  }
+  var dadV = document.getElementById('vmc-vida-partes');
+  if (dadV && vidaPartes.length) {
+    dadV.innerHTML = ''; _vmcVidaIdx = 0;
+    vidaPartes.forEach(function(p,i){ vmcAddParteVida(p,i); });
+  }
+
+  var dadosAtuais = vmcDados[vmcSemanaAtual] || {};
+  Object.assign(dadosAtuais, { jwImportado: true });
+  vmcDados[vmcSemanaAtual] = dadosAtuais;
+  var badge = document.getElementById('vmc-import-badge');
+  if (badge) badge.style.display = 'inline-block';
+
+  var temAlgo = prog.canticoAbertura || prog.leituraSemanal || prog.tesouroTema || ministerioPartes.length > 0;
+  if (temAlgo) {
+    st.style.background = '#f0fdf4'; st.style.color = '#166534'; st.style.borderColor = '#bbf7d0';
+    st.textContent = '✅ Extraído! Leitura: ' + (prog.leituraSemanal||'—') +
+      ' | Cânticos: ' + (canticos.join(', ')||'—') +
+      ' | Ministério: ' + ministerioPartes.length + ' partes' +
+      ' | Vida Cristã: ' + vidaPartes.length + ' partes. Designe os irmãos e salve.';
+  } else {
+    st.style.background = '#fffbeb'; st.style.color = '#92400e'; st.style.borderColor = '#fcd34d';
+    st.textContent = '⚠️ Não reconhecido. Dica: na página do WOL, clique primeiro na semana desejada, depois Ctrl+A e Ctrl+C.';
+  }
+}
+
+// ── Partes dinâmicas do Ministério ─────────────────────────────
+var _vmcMinstIdx = 0;
+function vmcAddParteMinist(dados, idx) {
+  var cont = document.getElementById('vmc-ministerio-partes');
+  if (!cont) return;
+  var id = 'minist-' + (typeof idx === 'number' ? idx : _vmcMinstIdx++);
+  dados = dados || {};
+  var div = document.createElement('div');
+  div.className = 'vmc-minist-parte';
+  div.id = id;
+  // Tipo de participante
+  var tipoVal = dados.tipo || '';
+  var ehDiscurso = /[Dd]iscurso|[Dd]emonstração/.test(tipoVal);
+  div.innerHTML =
+    '<div style="display:flex;align-items:flex-start;gap:6px;margin-bottom:6px">' +
+      '<div style="flex:1">' +
+        '<div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-bottom:4px">' +
+          '<span class="vmc-label" style="white-space:nowrap">Título / descrição</span>' +
+          '<input type="text" class="vmc-tema" style="flex:2" value="' + (dados.titulo||'') + '" placeholder="Ex: Iniciando conversas">' +
+          '<input type="text" class="vmc-tema" style="flex:1;max-width:80px" value="' + (dados.tempo||'') + '" placeholder="min">' +
+          '<button onclick="vmcRemoverParte(this)" style="background:#fee2e2;color:#991b1b;border:none;border-radius:5px;padding:4px 10px;cursor:pointer;font-size:13px" title="Remover">✕</button>' +
+        '</div>' +
+        '<div style="font-size:11px;color:#888;margin-bottom:6px;padding-left:2px">' + (dados.descricao||'') + '</div>' +
+        '<div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">' +
+          '<span class="vmc-label">Tipo:</span>' +
+          '<select class="vmc-tipo-sel" onchange="vmcAtualizarTipoParte(this)" style="padding:4px 8px;border:1px solid #d0d5dd;border-radius:5px;font-size:12px">' +
+            '<option value="publicadora"' + (!ehDiscurso?' selected':'') + '>Publicadora(s) — dupla</option>' +
+            '<option value="irmao"'       + (ehDiscurso?' selected':'')  + '>Irmão — discurso/demonstração</option>' +
+          '</select>' +
+        '</div>' +
+        '<div class="vmc-parte-publ" style="display:' + (!ehDiscurso?'flex':'none') + ';gap:6px;align-items:center;flex-wrap:wrap;margin-top:4px">' +
+          '<span class="vmc-label">Publicadora</span>' + vmcSelectHtml('ministerioPubl', '') +
+          '<span class="vmc-label">Ajudante</span>'    + vmcSelectHtml('ministerioAjud', '') +
+        '</div>' +
+        '<div class="vmc-parte-irmao" style="display:' + (ehDiscurso?'flex':'none') + ';gap:6px;align-items:center;flex-wrap:wrap;margin-top:4px">' +
+          '<span class="vmc-label">Irmão</span>' + vmcSelectHtml('ministerioIrmao', '') +
+        '</div>' +
+      '</div>' +
+    '</div>';
+  cont.appendChild(div);
+}
+
+function vmcAtualizarTipoParte(sel) {
+  var div = sel.closest('.vmc-minist-parte');
+  if (!div) return;
+  var isPub = sel.value === 'publicadora';
+  div.querySelector('.vmc-parte-publ').style.display  = isPub ? 'flex' : 'none';
+  div.querySelector('.vmc-parte-irmao').style.display = isPub ? 'none' : 'flex';
+}
+
+// ── Partes dinâmicas de Vida Cristã ────────────────────────────
+var _vmcVidaIdx = 0;
+function vmcAddParteVida(dados, idx) {
+  var cont = document.getElementById('vmc-vida-partes');
+  if (!cont) return;
+  var id = 'vida-' + (typeof idx === 'number' ? idx : _vmcVidaIdx++);
+  dados = dados || {};
+  var div = document.createElement('div');
+  div.className = 'vmc-secao-linha-dyn';
+  div.id = id;
+  div.innerHTML =
+    '<div class="vmc-linha" style="flex-wrap:wrap;gap:6px">' +
+      '<input type="text" class="vmc-tema" style="flex:2" value="' + (dados.titulo||'') + '" placeholder="Título da parte">' +
+      '<input type="text" class="vmc-tema" style="max-width:80px" value="' + (dados.tempo||'') + '" placeholder="min">' +
+      vmcSelectHtml('vidaCristaParte', '') +
+      '<button onclick="vmcRemoverParte(this)" style="background:#fee2e2;color:#991b1b;border:none;border-radius:5px;padding:4px 10px;cursor:pointer;font-size:13px">✕</button>' +
+    '</div>';
+  cont.appendChild(div);
+}
+
+function vmcRemoverParte(btn) {
+  var div = btn.closest('.vmc-minist-parte, .vmc-secao-linha-dyn');
+  if (div) div.remove();
+}
+
+function vmcSelectHtml(listKey, valorSelecionado) {
+  var lista = vmcListas[listKey] || [];
+  var opts = '<option value="">— não definido —</option>' +
+    lista.map(function(n){
+      return '<option value="'+n+'"'+(valorSelecionado===n?' selected':'')+'>'+n+'</option>';
+    }).join('');
+  return '<select class="vmc-sel" data-lista="'+listKey+'">'+opts+'</select>';
+}
+
+// ── Carregar semana salva no formulário ─────────────────────────
+function vmcCarregarSemana() {
+  var sel = document.getElementById('vmc-sel-data');
+  if (!sel) return;
+  vmcSemanaAtual = sel.value;
+  var dados = vmcDados[vmcSemanaAtual] || {};
+  var d = new Date(vmcSemanaAtual + 'T00:00:00');
+  var lbl = d.toLocaleDateString('pt-BR', {weekday:'long',day:'2-digit',month:'long',year:'numeric'});
+  document.getElementById('vmc-data-label').textContent = lbl.charAt(0).toUpperCase() + lbl.slice(1);
+
+  function set(id, val) { var e = document.getElementById(id); if (e) e.value = val || ''; }
+  set('vmc-leitura-semanal',   dados.leituraSemanal);
+  set('vmc-cantico-abertura',  dados.canticoAbertura);
+  set('vmc-cantico-meio',      dados.canticoMeio);
+  set('vmc-cantico-fim',       dados.canticoFim);
+  set('vmc-tesouro-tema',      dados.tesouroTema);
+  set('vmc-joias-tema',        dados.joiasTema);
+  set('vmc-leitura-tema',      dados.leituraTema);
+  set('vmc-estudo-tema',       dados.estudoTema);
+
+  function fillSel(id, listKey, val) {
+    var e = document.getElementById(id);
+    if (!e) return;
+    var lista = vmcListas[listKey] || [];
+    e.innerHTML = '<option value="">— não definido —</option>' +
+      lista.map(function(n){
+        return '<option value="'+n+'"'+(val===n?' selected':'')+'>'+n+'</option>';
+      }).join('');
+  }
+  fillSel('vmc-presidente',      'presidente',      dados.presidente);
+  fillSel('vmc-oracao-abertura', 'oracaoAbertura',  dados.oracaoAbertura);
+  fillSel('vmc-tesouro',         'tesouro',         dados.tesouro);
+  fillSel('vmc-joias',           'joias',           dados.joias);
+  fillSel('vmc-leitura',         'leitura',         dados.leitura);
+  fillSel('vmc-estudo-condutor', 'estudoCondutor',  dados.estudoCondutor);
+  fillSel('vmc-estudo-leitor',   'estudoLeitor',    dados.estudoLeitor);
+  fillSel('vmc-oracao-fim',      'oracaoFim',       dados.oracaoFim);
+
+  // Partes dinâmicas
+  var dadMinist = document.getElementById('vmc-ministerio-partes');
+  if (dadMinist) { dadMinist.innerHTML = ''; _vmcMinstIdx = 0; }
+  var dadVida = document.getElementById('vmc-vida-partes');
+  if (dadVida) { dadVida.innerHTML = ''; _vmcVidaIdx = 0; }
+
+  if (dados.ministerioPartes && dados.ministerioPartes.length) {
+    dados.ministerioPartes.forEach(function(p, i){ vmcAddParteMinist(p, i); });
+  } else {
+    vmcAddParteMinist({}, 0); vmcAddParteMinist({}, 1); vmcAddParteMinist({}, 2);
+  }
+  if (dados.vidaPartes && dados.vidaPartes.length) {
+    dados.vidaPartes.forEach(function(p, i){ vmcAddParteVida(p, i); });
+  } else {
+    vmcAddParteVida({}, 0); vmcAddParteVida({}, 1);
+  }
+
+  // Badge de importado
+  var badge = document.getElementById('vmc-import-badge');
+  if (badge) badge.style.display = dados.jwImportado ? 'inline-block' : 'none';
+  var st = document.getElementById('vmc-import-status');
+  if (st) st.style.display = 'none';
+}
+
+// ── Coletar dados do formulário ─────────────────────────────────
+function vmcColetarDados() {
+  function gv(id) { var e = document.getElementById(id); return e ? e.value : ''; }
+  var dadosSemana = {
+    leituraSemanal:  gv('vmc-leitura-semanal'),
+    canticoAbertura: gv('vmc-cantico-abertura'),
+    presidente:      gv('vmc-presidente'),
+    oracaoAbertura:  gv('vmc-oracao-abertura'),
+    tesouro:         gv('vmc-tesouro'),
+    tesouroTema:     gv('vmc-tesouro-tema'),
+    joias:           gv('vmc-joias'),
+    joiasTema:       gv('vmc-joias-tema'),
+    leitura:         gv('vmc-leitura'),
+    leituraTema:     gv('vmc-leitura-tema'),
+    canticoMeio:     gv('vmc-cantico-meio'),
+    estudoCondutor:  gv('vmc-estudo-condutor'),
+    estudoTema:      gv('vmc-estudo-tema'),
+    estudoLeitor:    gv('vmc-estudo-leitor'),
+    canticoFim:      gv('vmc-cantico-fim'),
+    oracaoFim:       gv('vmc-oracao-fim'),
+    jwImportado:     !!(vmcDados[vmcSemanaAtual] || {}).jwImportado,
+  };
+
+  // Partes ministério
+  dadosSemana.ministerioPartes = [];
+  document.querySelectorAll('.vmc-minist-parte').forEach(function(div) {
+    var inputs = div.querySelectorAll('input.vmc-tema');
+    var sels   = div.querySelectorAll('select');
+    var tipo   = (div.querySelector('.vmc-tipo-sel') || {}).value || 'publicadora';
+    var parte = {
+      titulo:    inputs[0] ? inputs[0].value : '',
+      tempo:     inputs[1] ? inputs[1].value : '',
+      tipo:      tipo,
+      publNome:  '',
+      ajudNome:  '',
+      irmaoNome: ''
+    };
+    if (tipo === 'publicadora') {
+      var pub = div.querySelector('.vmc-parte-publ select:nth-child(2)') ||
+                div.querySelector('.vmc-parte-publ select');
+      var ajud = div.querySelectorAll('.vmc-parte-publ select')[1];
+      if (pub)  parte.publNome  = pub.value;
+      if (ajud) parte.ajudNome  = ajud.value;
+    } else {
+      var irm = div.querySelector('.vmc-parte-irmao select');
+      if (irm) parte.irmaoNome = irm.value;
+    }
+    dadosSemana.ministerioPartes.push(parte);
+  });
+
+  // Partes vida cristã
+  dadosSemana.vidaPartes = [];
+  document.querySelectorAll('.vmc-secao-linha-dyn').forEach(function(div) {
+    var inputs = div.querySelectorAll('input.vmc-tema');
+    var sel    = div.querySelector('select');
+    dadosSemana.vidaPartes.push({
+      titulo:  inputs[0] ? inputs[0].value : '',
+      tempo:   inputs[1] ? inputs[1].value : '',
+      irmao:   sel ? sel.value : ''
+    });
+  });
+
+  return dadosSemana;
+}
+
+// ── Salvar semana ───────────────────────────────────────────────
+function vmcSalvarSemana() {
+  if (!vmcSemanaAtual) return;
+  var dados = vmcColetarDados();
+  vmcDados[vmcSemanaAtual] = dados;
+  if (db) {
+    db.ref('vmc/' + vmcSemanaAtual).set(dados).then(function(){
+      alert('✅ Semana salva!');
+    }).catch(function(e){ alert('Erro: ' + e.message); });
+  } else {
+    alert('(Sem Firebase) Dados salvos localmente.');
+  }
+}
+
+// ── Rodízio automático ──────────────────────────────────────────
+function vmcRodizioAuto() {
+  if (!vmcSemanaAtual) return;
+  var usados = [];
+  function pegar(campo) {
+    var lista = vmcListas[campo] || [];
+    if (!lista.length) return '';
+    var idx = vmcIdx[campo] || 0;
+    for (var t = 0; t < lista.length * 2; t++) {
+      var i = (idx + t) % lista.length;
+      if (usados.indexOf(lista[i]) < 0) {
+        vmcIdx[campo] = i + 1;
+        usados.push(lista[i]);
+        return lista[i];
+      }
+    }
+    vmcIdx[campo] = (idx + 1) % lista.length;
+    return lista[idx % lista.length] || '';
+  }
+  function aplicar(id, val) { var e = document.getElementById(id); if (e) e.value = val; }
+
+  aplicar('vmc-presidente',      pegar('presidente'));
+  aplicar('vmc-oracao-abertura', pegar('oracaoAbertura'));
+  aplicar('vmc-tesouro',         pegar('tesouro'));
+  aplicar('vmc-joias',           pegar('joias'));
+  aplicar('vmc-leitura',         pegar('leitura'));
+
+  // Partes ministério
+  document.querySelectorAll('.vmc-minist-parte').forEach(function(div) {
+    var tipo = (div.querySelector('.vmc-tipo-sel') || {}).value || 'publicadora';
+    if (tipo === 'publicadora') {
+      var pubs = div.querySelectorAll('.vmc-parte-publ select');
+      if (pubs[0]) pubs[0].value = pegar('ministerioPubl');
+      if (pubs[1]) pubs[1].value = pegar('ministerioAjud');
+    } else {
+      var irm = div.querySelector('.vmc-parte-irmao select');
+      if (irm) irm.value = pegar('ministerioIrmao');
+    }
+  });
+
+  // Partes vida cristã
+  document.querySelectorAll('.vmc-secao-linha-dyn').forEach(function(div) {
+    var s = div.querySelector('select');
+    if (s) s.value = pegar('vidaCristaParte');
+  });
+
+  aplicar('vmc-estudo-condutor', pegar('estudoCondutor'));
+  aplicar('vmc-estudo-leitor',   pegar('estudoLeitor'));
+  aplicar('vmc-oracao-fim',      pegar('oracaoFim'));
+
+  if (db) db.ref('vmc_config/idx').set(vmcIdx);
+  alert('🎲 Rodízio aplicado! Revise e clique em Salvar semana.');
+}
+
+// ── Impressão da folha VMC ──────────────────────────────────────
+function vmcImprimirSemana() {
+  if (!vmcSemanaAtual) { alert('Selecione uma semana.'); return; }
+  var dados = vmcColetarDados();
+  var d = new Date(vmcSemanaAtual + 'T00:00:00');
+  var semanaStr = d.toLocaleDateString('pt-BR', {day:'2-digit',month:'long',year:'numeric'});
+  // Calcula período da semana (seg-dom)
+  var dia1 = d.getDate();
+  var dia7 = dia1 + 6;
+  var mes  = d.toLocaleDateString('pt-BR',{month:'long'}).toUpperCase();
+  var ano  = d.getFullYear();
+  var periodoStr = dia1 + '-' + dia7 + ' DE ' + mes + ' DE ' + ano;
+
+  function ln(papel, nome, tema, tempo) {
+    if (!nome && !papel) return '';
+    return '<tr><td class="col-papel">'+(papel||'')+'</td><td class="col-nome">'+(nome||'<span class="vazio">—</span>')+'</td><td class="col-tema">'+(tema||'')+(tempo?' <em class="tempo">('+tempo+')</em>':'')+'</td></tr>';
+  }
+  function secH(txt, cor) { return '<tr class="sec-header" style="background:'+cor+'"><td colspan="3">'+txt+'</td></tr>'; }
+  function cantRow(txt)   { return txt ? '<tr class="cantico-row"><td colspan="3">🎵 '+txt+'</td></tr>' : ''; }
+
+  var linhasMin = dados.ministerioPartes.map(function(p, i){
+    var nome = p.tipo==='publicadora' ? (p.publNome||'—') : (p.irmaoNome||'—');
+    var ajud = p.tipo==='publicadora' && p.ajudNome ? '<br><small>Ajudante: '+p.ajudNome+'</small>' : '';
+    return ln((i+4)+'. '+p.titulo, nome+ajud, p.descricao||'', p.tempo);
+  }).join('');
+
+  var linhasVida = dados.vidaPartes.map(function(p, i){
+    return ln((i+7)+'. '+p.titulo, p.irmao, '', p.tempo);
+  }).join('');
+
+  var html = '<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8">'+
+    '<title>VMC — '+periodoStr+'</title><style>'+
+    'body{font-family:Arial,sans-serif;font-size:11px;margin:0;padding:16px;color:#111}'+
+    'h1{font-size:14px;font-weight:bold;color:#1a4fa3;margin:0 0 2px}'+
+    '.sub{font-size:11px;color:#555;margin-bottom:14px}'+
+    'table{width:100%;border-collapse:collapse}'+
+    'td{padding:4px 6px;vertical-align:top;border-bottom:1px solid #eee}'+
+    '.col-papel{width:32%;font-weight:bold;color:#374151;font-size:10px}'+
+    '.col-nome{width:30%;color:#1a4fa3}'+
+    '.col-tema{width:38%;color:#555;font-size:10px}'+
+    '.sec-header td{color:white;font-weight:bold;font-size:11px;padding:5px 6px}'+
+    '.cantico-row td{background:#fef9c3;color:#78350f;font-style:italic;font-size:10px;padding:4px 6px}'+
+    '.vazio{color:#bbb}'+
+    '.tempo{color:#888}'+
+    '.leitura-row td{background:#eff6ff;font-size:10px;padding:4px 6px}'+
+    '@media print{body{padding:0}button{display:none}}'+
+    '</style></head><body>'+
+    '<h1>📋 Vida e Ministério Cristão</h1>'+
+    '<div class="sub">Congregação Parque Tietê &nbsp;|&nbsp; Semana: '+periodoStr+'</div>'+
+    (dados.leituraSemanal ? '<div style="background:#eff6ff;border-left:3px solid #1a4fa3;padding:5px 10px;margin-bottom:10px;font-size:11px"><strong>Leitura semanal:</strong> '+dados.leituraSemanal+'</div>' : '')+
+    '<table>'+
+    cantRow(dados.canticoAbertura)+
+    ln('Presidente', dados.presidente, '', '')+
+    ln('Oração de abertura', dados.oracaoAbertura, '', '')+
+    secH('💎 TESOUROS DA PALAVRA DE DEUS', '#1a4fa3')+
+    ln('1. Discurso de Tesouros', dados.tesouro, dados.tesouroTema, '10 min')+
+    ln('2. Joias Espirituais', dados.joias, dados.joiasTema, '10 min')+
+    ln('3. Leitura da Bíblia', dados.leitura, dados.leituraTema, '4 min')+
+    secH('🎓 FAÇA SEU MELHOR NO MINISTÉRIO', '#7c3aed')+
+    linhasMin+
+    secH('✝️ NOSSA VIDA CRISTÃ', '#0f6e56')+
+    cantRow(dados.canticoMeio)+
+    linhasVida+
+    ln('Condutor — Estudo Bíblico', dados.estudoCondutor, dados.estudoTema, '30 min')+
+    ln('Leitor — Estudo Bíblico', dados.estudoLeitor, '', '')+
+    cantRow(dados.canticoFim)+
+    ln('Oração de encerramento', dados.oracaoFim, '', '')+
+    '</table>'+
+    '<div style="margin-top:20px;font-size:9px;color:#aaa;text-align:right">Gerado em '+new Date().toLocaleDateString('pt-BR')+'</div>'+
+    '<script>window.onload=function(){window.print();}<\/script>'+
+    '</body></html>';
+
+  var w = window.open('', '_blank');
+  if (w) { w.document.write(html); w.document.close(); }
+  else alert('Permita pop-ups para imprimir.');
+}
+
+// ── Impressão mensal VMC (folha A4 com todas as semanas do mês) ──
+function vmcImprimirMes() {
+  var datas = vmcGetDatas();
+  if (!datas.length) { alert('Nenhuma semana gerada.'); return; }
+
+  // Detecta o mês atual selecionado (usa a semana em edição ou a primeira disponível)
+  var refIso = vmcSemanaAtual || datas[0].iso;
+  var refD   = new Date(refIso + 'T00:00:00');
+  var mesRef = refD.getMonth();
+  var anoRef = refD.getFullYear();
+  var nomeMes = refD.toLocaleDateString('pt-BR',{month:'long'}).toUpperCase();
+
+  // Filtra semanas que pertencem ao mês (semana começa na segunda e tem dias no mês)
+  var semanasDoMes = datas.filter(function(d) {
+    var ini = new Date(d.iso + 'T00:00:00');
+    var fim = new Date(ini); fim.setDate(ini.getDate() + 6);
+    return ini.getMonth() === mesRef || fim.getMonth() === mesRef;
+  });
+
+  if (!semanasDoMes.length) { alert('Nenhuma semana encontrada para este mês.'); return; }
+
+  // CSS base compacto para A4
+  var css =
+    'body{font-family:Arial,sans-serif;font-size:9.5px;color:#111;margin:0;padding:10mm 10mm 8mm}' +
+    'h1{font-size:13px;font-weight:bold;color:#1a1a2e;margin:0 0 1px}' +
+    '.cabecalho{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:8px;border-bottom:2px solid #1a4fa3;padding-bottom:4px}' +
+    '.mes-titulo{font-size:15px;font-weight:bold;color:#1a4fa3;letter-spacing:.5px}' +
+    '.semana-card{border:1px solid #d0d5dd;border-radius:6px;margin-bottom:7px;overflow:hidden;page-break-inside:avoid}' +
+    '.semana-header{background:#1a1a2e;color:white;padding:4px 10px;font-size:10px;font-weight:bold;display:flex;justify-content:space-between;align-items:center}' +
+    '.semana-leitura{font-size:8.5px;color:#a5b4fc;font-style:italic}' +
+    '.semana-body{display:grid;grid-template-columns:1fr 1fr 1fr;gap:0}' +
+    '.col-sec{padding:5px 8px;border-right:1px solid #e8e8e8}' +
+    '.col-sec:last-child{border-right:none}' +
+    '.sec-titulo{font-size:8px;font-weight:bold;text-transform:uppercase;letter-spacing:.4px;padding:2px 5px;border-radius:3px;margin-bottom:4px;color:white;display:inline-block}' +
+    '.bg-tes{background:#1a4fa3}.bg-min{background:#7c3aed}.bg-vid{background:#0f6e56}' +
+    '.parte-row{display:flex;align-items:baseline;gap:3px;margin-bottom:3px;line-height:1.3}' +
+    '.parte-label{font-size:8px;color:#6b7280;min-width:90px;flex-shrink:0}' +
+    '.parte-nome{font-size:9px;color:#1a1a2e;font-weight:bold;flex:1}' +
+    '.parte-tema{font-size:7.5px;color:#6b7280;font-style:italic;margin-left:93px;margin-top:-1px;margin-bottom:2px}' +
+    '.cantico{font-size:7.5px;color:#78350f;background:#fef9c3;padding:1px 5px;border-radius:3px;margin-bottom:3px;display:inline-block}' +
+    '@media print{@page{size:A4 portrait;margin:8mm}body{padding:0}' +
+    '.semana-card{page-break-inside:avoid}button{display:none}}';
+
+  function nomeParticipante(dados, campo) {
+    return dados[campo] || '—';
+  }
+
+  function colTesouros(d) {
+    var r = '<span class="sec-titulo bg-tes">💎 Tesouros</span>';
+    if (d.canticoAbertura) r += '<div class="cantico">🎵 ' + d.canticoAbertura + '</div>';
+    r += '<div class="parte-row"><span class="parte-label">Presidente</span><span class="parte-nome">' + nomeParticipante(d,'presidente') + '</span></div>';
+    r += '<div class="parte-row"><span class="parte-label">Oração abertura</span><span class="parte-nome">' + nomeParticipante(d,'oracaoAbertura') + '</span></div>';
+    r += '<div class="parte-row"><span class="parte-label">1. Tesouros</span><span class="parte-nome">' + nomeParticipante(d,'tesouro') + '</span></div>';
+    if (d.tesouroTema) r += '<div class="parte-tema">' + d.tesouroTema.substring(0,50) + '</div>';
+    r += '<div class="parte-row"><span class="parte-label">2. Joias Esp.</span><span class="parte-nome">' + nomeParticipante(d,'joias') + '</span></div>';
+    r += '<div class="parte-row"><span class="parte-label">3. Leitura Bíblia</span><span class="parte-nome">' + nomeParticipante(d,'leitura') + '</span></div>';
+    if (d.leituraTema) r += '<div class="parte-tema">' + d.leituraTema.substring(0,50) + '</div>';
+    return r;
+  }
+
+  function colMinisterio(d) {
+    var r = '<span class="sec-titulo bg-min">🎓 Ministério</span>';
+    (d.ministerioPartes || []).forEach(function(p, i) {
+      var nome = p.tipo === 'publicadora' ? (p.publNome || '—') : (p.irmaoNome || '—');
+      var ajud = p.tipo === 'publicadora' && p.ajudNome ? ' + ' + p.ajudNome : '';
+      r += '<div class="parte-row"><span class="parte-label">' + (i+4) + '. ' + (p.titulo||'').substring(0,22) + '</span><span class="parte-nome">' + nome + ajud + '</span></div>';
+      if (p.tempo) r += '<div class="parte-tema">' + (p.tipo||'') + (p.tempo ? ' · ' + p.tempo : '') + '</div>';
+    });
+    return r;
+  }
+
+  function colVida(d) {
+    var r = '<span class="sec-titulo bg-vid">✝️ Vida Cristã</span>';
+    if (d.canticoMeio) r += '<div class="cantico">🎵 ' + d.canticoMeio + '</div>';
+    (d.vidaPartes || []).forEach(function(p, i) {
+      r += '<div class="parte-row"><span class="parte-label">' + (p.titulo||'').substring(0,22) + '</span><span class="parte-nome">' + (p.irmao||'—') + '</span></div>';
+    });
+    r += '<div class="parte-row"><span class="parte-label">Condutor Estudo</span><span class="parte-nome">' + nomeParticipante(d,'estudoCondutor') + '</span></div>';
+    if (d.estudoTema) r += '<div class="parte-tema">' + d.estudoTema.substring(0,55) + '</div>';
+    r += '<div class="parte-row"><span class="parte-label">Leitor Estudo</span><span class="parte-nome">' + nomeParticipante(d,'estudoLeitor') + '</span></div>';
+    if (d.canticoFim) r += '<div class="cantico" style="margin-top:2px">🎵 ' + d.canticoFim + '</div>';
+    r += '<div class="parte-row"><span class="parte-label">Oração fim</span><span class="parte-nome">' + nomeParticipante(d,'oracaoFim') + '</span></div>';
+    return r;
+  }
+
+  var cards = semanasDoMes.map(function(semana) {
+    var ini = new Date(semana.iso + 'T00:00:00');
+    var fim = new Date(ini); fim.setDate(ini.getDate() + 6);
+    var periodo = ini.getDate() + '-' + fim.getDate() + ' de ' +
+      ini.toLocaleDateString('pt-BR',{month:'long'}) + ' de ' + ini.getFullYear();
+    var d = vmcDados[semana.iso] || {};
+    var preenchida = d.presidente || d.tesouro || (d.ministerioPartes||[]).length > 0;
+
+    return '<div class="semana-card">' +
+      '<div class="semana-header">' +
+        '<span>📅 ' + periodo.toUpperCase() + '</span>' +
+        (d.leituraSemanal ? '<span class="semana-leitura">📖 ' + d.leituraSemanal + '</span>' : '') +
+        (!preenchida ? '<span style="color:#fca5a5;font-size:8px">⚠️ Não preenchida</span>' : '') +
+      '</div>' +
+      '<div class="semana-body">' +
+        '<div class="col-sec">' + colTesouros(d) + '</div>' +
+        '<div class="col-sec">' + colMinisterio(d) + '</div>' +
+        '<div class="col-sec">' + colVida(d) + '</div>' +
+      '</div>' +
+    '</div>';
+  }).join('');
+
+  var html = '<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8">' +
+    '<title>VMC — ' + nomeMes + ' ' + anoRef + '</title>' +
+    '<style>' + css + '</style></head><body>' +
+    '<div class="cabecalho">' +
+      '<div><div class="mes-titulo">📋 Vida e Ministério Cristão</div>' +
+      '<div style="font-size:10px;color:#555">Congregação Parque Tietê</div></div>' +
+      '<div style="font-size:12px;font-weight:bold;color:#374151">' + nomeMes + ' ' + anoRef + '</div>' +
+    '</div>' +
+    cards +
+    '<div style="margin-top:8px;font-size:8px;color:#aaa;text-align:right">Gerado em ' + new Date().toLocaleDateString('pt-BR') + '</div>' +
+    '<script>window.onload=function(){window.print();}<\/script>' +
+    '</body></html>';
+
+  var w = window.open('', '_blank');
+  if (w) { w.document.write(html); w.document.close(); }
+  else alert('Permita pop-ups para imprimir.');
+}
+function vmcPreencherSeletores() {
+  var datas = vmcGetDatas();
+  var sel = document.getElementById('vmc-sel-data');
+  if (sel) {
+    sel.innerHTML = datas.map(function(d){
+      return '<option value="'+d.iso+'">'+d.label+'</option>';
+    }).join('') || '<option value="">— Nenhuma reunião gerada —</option>';
+    if (datas.length) {
+      document.getElementById('vmc-form').style.display = 'block';
+      document.getElementById('vmc-vazio').style.display = 'none';
+      if (!vmcSemanaAtual) vmcSemanaAtual = datas[0].iso;
+      sel.value = vmcSemanaAtual;
+      vmcCarregarSemana();
+    } else {
+      document.getElementById('vmc-form').style.display = 'none';
+      document.getElementById('vmc-vazio').style.display = 'block';
+    }
+  }
+  // Overlay público
+  var pubSel = document.getElementById('vmc-pub-sel');
+  if (pubSel) {
+    pubSel.innerHTML = datas.map(function(d){
+      return '<option value="'+d.iso+'">'+d.label+'</option>';
+    }).join('') || '<option value="">— Nenhuma reunião —</option>';
+    if (datas.length) vmcRenderPublico();
+  }
+}
+
+function vmcGetDatas() {
+  var list = [];
+  // Coleta todas as segundas-feiras (getDay()===1) geradas na escala
+  Object.keys(escalaGerada).sort().forEach(function(iso) {
+    var d = new Date(iso + 'T00:00:00');
+    if (d.getDay() === 1) {
+      var dom = new Date(d); dom.setDate(d.getDate() + 6);
+      var diaIni = d.getDate();
+      var diaFim = dom.getDate();
+      var mes = d.toLocaleDateString('pt-BR', {month:'long'});
+      var mesFim = dom.toLocaleDateString('pt-BR', {month:'long'});
+      var ano = d.getFullYear();
+      var label = diaIni + (mes !== mesFim ? ' de ' + mes : '') + '-' + diaFim + ' de ' + mesFim + ' de ' + ano;
+      label = label.charAt(0).toUpperCase() + label.slice(1);
+      list.push({ iso: iso, label: label });
+    }
+  });
+  return list;
+}
+
+// ── Visão pública ───────────────────────────────────────────────
+function vmcRenderPublico() {
+  var sel = document.getElementById('vmc-pub-sel');
+  if (!sel) return;
+  var iso = sel.value;
+  var dados = vmcDados[iso] || {};
+  var corpo = document.getElementById('vmc-pub-corpo');
+  if (!iso || !Object.keys(dados).some(function(k){return dados[k];})) {
+    corpo.innerHTML = '<p style="text-align:center;color:#888;padding:30px 0;font-size:13px">⏳ Programa ainda não foi preenchido pelo responsável.</p>';
+    return;
+  }
+  function linha(papel, nome, tema) {
+    if (!nome) return '';
+    return '<div class="vmc-pub-linha">'+
+      '<span class="vmc-pub-papel">'+papel+'</span>'+
+      '<span class="vmc-pub-nome">'+nome+'</span>'+
+      (tema ? '<span class="vmc-pub-tema">— '+tema+'</span>' : '')+
+    '</div>';
+  }
+  var linhasMin = (dados.ministerioPartes||[]).map(function(p){
+    var n = p.tipo==='publicadora' ? (p.publNome||'')+(p.ajudNome?' + '+p.ajudNome:'') : (p.irmaoNome||'');
+    return linha(p.titulo, n, p.descricao ? p.descricao.substring(0,60) : '');
+  }).join('');
+  var linhasVida = (dados.vidaPartes||[]).map(function(p){
+    return linha(p.titulo, p.irmao, '');
+  }).join('');
+
+  corpo.innerHTML =
+    '<div class="vmc-pub-secao">'+
+      '<div class="vmc-pub-titulo tesouro">💎 Tesouros da Palavra de Deus</div>'+
+      (dados.leituraSemanal?'<div style="font-size:11px;color:#555;padding:4px 8px">Leitura: '+dados.leituraSemanal+'</div>':'')+
+      linha('Presidente', dados.presidente, '')+
+      linha('1. Tesouros', dados.tesouro, dados.tesouroTema)+
+      linha('2. Joias Espirituais', dados.joias, dados.joiasTema)+
+      linha('3. Leitura da Bíblia', dados.leitura, dados.leituraTema)+
+    '</div>'+
+    '<div class="vmc-pub-secao">'+
+      '<div class="vmc-pub-titulo escola">🎓 Faça Seu Melhor no Ministério</div>'+
+      linhasMin+
+    '</div>'+
+    '<div class="vmc-pub-secao">'+
+      '<div class="vmc-pub-titulo vida">✝️ Nossa Vida Cristã</div>'+
+      linhasVida+
+      linha('Condutor — Estudo Bíblico', dados.estudoCondutor, dados.estudoTema)+
+      linha('Leitor — Estudo Bíblico', dados.estudoLeitor, '')+
+    '</div>';
+}
+
+// ── Configuração das listas de irmãos ───────────────────────────
+function vmcRenderConfigListas() {
+  var cont = document.getElementById('vmc-config-listas');
+  if (!cont) return;
+  var grupos = [
+    { titulo:'Presidência e Orações',             campos:['presidente','oracaoAbertura','oracaoFim'] },
+    { titulo:'Tesouros da Palavra de Deus',        campos:['tesouro','joias','leitura'] },
+    { titulo:'Faça Seu Melhor no Ministério',      campos:['ministerioPubl','ministerioAjud','ministerioIrmao'] },
+    { titulo:'Nossa Vida Cristã',                  campos:['vidaCristaParte','estudoCondutor','estudoLeitor'] },
+  ];
+  cont.innerHTML = grupos.map(function(g){
+    var items = g.campos.map(function(campo){
+      var lista = vmcListas[campo] || [];
+      var tags  = lista.map(function(n){
+        return '<span class="vmc-config-tag">'+n+
+          '<button onclick="vmcRemoverIrmaoBtn(this)" data-campo="'+campo+'" data-nome="'+n+'" title="Remover">×</button></span>';
+      }).join('');
+      var todos = vmcGetTodosParaCampo();
+      var opts  = todos.filter(function(n){return lista.indexOf(n)<0;})
+        .map(function(n){return '<option value="'+n+'">'+n+'</option>';}).join('');
+      return '<div class="vmc-config-bloco">'+
+        '<div class="vmc-config-titulo">'+vmcLabels[campo]+'</div>'+
+        '<div class="vmc-config-lista">'+tags+'</div>'+
+        '<div style="margin-top:8px;display:flex;gap:6px">'+
+          '<select id="vmc-add-'+campo+'" style="flex:1;padding:5px 8px;border:1px solid #d0d5dd;border-radius:6px;font-size:12px">'+
+            '<option value="">+ Adicionar irmão...</option>'+opts+
+          '</select>'+
+          '<button onclick="vmcAdicionarIrmaoBtnBloco(this)" data-campo="'+campo+'" style="background:#1a4fa3;color:white;border:none;padding:5px 12px;border-radius:6px;font-size:12px;cursor:pointer">+</button>'+
+        '</div></div>';
+    }).join('');
+    return '<div style="margin-bottom:14px"><div style="font-size:11px;font-weight:bold;color:#888;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">'+g.titulo+'</div>'+items+'</div>';
+  }).join('');
+}
+
+function vmcGetTodosParaCampo() {
+  var todos = {};
+  Object.keys(listas).forEach(function(k){
+    var arr = listas[k];
+    if (!Array.isArray(arr)) return;
+    arr.forEach(function(item){
+      if (typeof item==='string') todos[item]=true;
+      else if (Array.isArray(item)) item.forEach(function(n){ if(typeof n==='string') todos[n]=true; });
+    });
+  });
+  Object.keys(vmcListas).forEach(function(k){ (vmcListas[k]||[]).forEach(function(n){ todos[n]=true; }); });
+  return Object.keys(todos).sort(function(a,b){return a.localeCompare(b,'pt-BR');});
+}
+
+function vmcRemoverIrmaoBtn(btn) { vmcRemoverIrmao(btn.getAttribute('data-campo'), btn.getAttribute('data-nome')); }
+function vmcAdicionarIrmaoBtnBloco(btn) { vmcAdicionarIrmao(btn.getAttribute('data-campo')); }
+
+function vmcAdicionarIrmao(campo) {
+  var sel = document.getElementById('vmc-add-'+campo);
+  var nome = sel ? sel.value : '';
+  if (!nome) return;
+  if (!vmcListas[campo]) vmcListas[campo] = [];
+  if (vmcListas[campo].indexOf(nome) < 0) vmcListas[campo].push(nome);
+  vmcSalvarConfig();
+  vmcRenderConfigListas();
+  vmcCarregarSemana();
+}
+function vmcRemoverIrmao(campo, nome) {
+  if (!vmcListas[campo]) return;
+  vmcListas[campo] = vmcListas[campo].filter(function(n){ return n !== nome; });
+  vmcSalvarConfig();
+  vmcRenderConfigListas();
+  vmcCarregarSemana();
+}
+function vmcSalvarConfig() {
+  if (db) db.ref('vmc_config').update({ listas: vmcListas, idx: vmcIdx });
+}
+
+// ── Iniciar VMC ─────────────────────────────────────────────────
+function vmcIniciar() {
+  if (!db) return;
+  db.ref('vmc').on('value', function(snap) {
+    vmcDados = snap.val() || {};
+    vmcPreencherSeletores();
+    vmcRenderConfigListas();
+  });
+  db.ref('vmc_config').once('value', function(snap) {
+    var cfg = snap.val() || {};
+    if (cfg.listas) Object.assign(vmcListas, cfg.listas);
+    if (cfg.idx)    Object.assign(vmcIdx,    cfg.idx);
+    vmcRenderConfigListas();
+  });
+}
+
+// Overlay público
+function abrirProgramaVMC() { vmcPreencherSeletores(); document.getElementById('ov-programa-vmc').classList.add('aberto'); }
+function fecharProgramaVMC() { document.getElementById('ov-programa-vmc').classList.remove('aberto'); }
+
+// Integração com Minha Escala
+function vmcDesignacoesDe(nome) {
+  var resultado = [];
+  var hoje = new Date(); hoje.setHours(0,0,0,0);
+  Object.keys(vmcDados).sort().forEach(function(iso) {
+    var d = vmcDados[iso];
+    var dataObj = new Date(iso + 'T00:00:00');
+    if (dataObj < hoje) return;
+    var campos = ['presidente','oracaoAbertura','tesouro','joias','leitura','estudoCondutor','estudoLeitor','oracaoFim'];
+    campos.forEach(function(campo) {
+      if (d[campo] === nome) {
+        resultado.push({
+          dataISO: iso, dataObj: dataObj,
+          data: dataObj.toLocaleDateString('pt-BR',{weekday:'long',day:'2-digit',month:'2-digit',year:'numeric'}),
+          setor: vmcLabels[campo] || campo,
+          campo: 'vmc_'+campo, setorNome:'VMC', parceiros:[], passada:false, isVMC:true
+        });
+      }
+    });
+    // Partes dinâmicas
+    (d.ministerioPartes||[]).forEach(function(p, i){
+      if (p.publNome===nome || p.ajudNome===nome || p.irmaoNome===nome) {
+        resultado.push({
+          dataISO:iso, dataObj:dataObj,
+          data:dataObj.toLocaleDateString('pt-BR',{weekday:'long',day:'2-digit',month:'2-digit',year:'numeric'}),
+          setor:'Ministério — '+p.titulo,
+          campo:'vmc_minist_'+i, setorNome:'VMC', parceiros:[], passada:false, isVMC:true
+        });
+      }
+    });
+    (d.vidaPartes||[]).forEach(function(p, i){
+      if (p.irmao===nome) {
+        resultado.push({
+          dataISO:iso, dataObj:dataObj,
+          data:dataObj.toLocaleDateString('pt-BR',{weekday:'long',day:'2-digit',month:'2-digit',year:'numeric'}),
+          setor:'Vida Cristã — '+p.titulo,
+          campo:'vmc_vida_'+i, setorNome:'VMC', parceiros:[], passada:false, isVMC:true
+        });
+      }
+    });
+  });
+  return resultado;
+}
+
 try { iniciarFirebase(); } catch(e) { console.error('Erro iniciarFirebase:', e); }
+// Reagenda avisos 24h/1h para quem já tem nome salvo
+setTimeout(reagendarAvisosAoIniciar, 1000);
+// Inicia sistema VMC
+try { vmcIniciar(); } catch(e) { console.error('Erro vmcIniciar:', e); }
+try { gerarEscalaAtual(); } catch(e) { console.error('Erro gerarEscalaAtual:', e); }
 atualizarBotaoNotif();
+
 // Verifica se já instalado como PWA
 if (window.matchMedia('(display-mode: standalone)').matches) {
   document.getElementById('btn-instalar-pwa').style.display = 'none';
@@ -3216,7 +4734,6 @@ var dataEntradaIrmaos = {
 };
 
 var irmaosEspectadores = [];
-
 // ===================== ESPECTADORES =====================
 function adicionarEspectador() {
   var nome = prompt('Nome do irmão espectador (não será designado):');
@@ -3256,14 +4773,31 @@ function testarNotificacao() {
     alert('Ative as notificações primeiro!');
     return;
   }
-  new Notification('🧪 Teste de Notificação', {
-    body: 'Se você está vendo isso, as notificações funcionam!\n\nDesignações: Palco — ' + new Date().toLocaleDateString('pt-BR'),
-    icon: 'icon-192.svg',
-    badge: 'icon-192.svg',
-    vibrate: [200, 100, 200],
-    tag: 'teste-notif'
+  // Notificação imediata de confirmação
+  new Notification('🧪 Teste — Notificação imediata', {
+    body: 'Notificações estão funcionando!\nVocê receberá avisos 24h e 1h antes de cada reunião.',
+    icon: 'icon-192.svg', badge: 'icon-192.svg',
+    vibrate: [200, 100, 200], tag: 'teste-imediato'
   });
-  alert('✅ Notificação enviada! Verifique sua tela.');
+  // Simula aviso de 24h em 5 segundos
+  setTimeout(function() {
+    if (Notification.permission !== 'granted') return;
+    new Notification('📋 Lembrete de designação (24h) — TESTE', {
+      body: '⏰ Amanhã: Palco (Coordenador)\nReunião às 19h — exemplo de aviso 24h antes',
+      icon: 'icon-192.svg', badge: 'icon-192.svg',
+      vibrate: [300,100,300], requireInteraction: true, tag: 'teste-24h'
+    });
+  }, 5000);
+  // Simula aviso de 1h em 10 segundos
+  setTimeout(function() {
+    if (Notification.permission !== 'granted') return;
+    new Notification('📋 Lembrete de designação (1h) — TESTE', {
+      body: '🔔 Em 1 hora: Palco (Coordenador)\nReunião às 19h — exemplo de aviso 1h antes',
+      icon: 'icon-192.svg', badge: 'icon-192.svg',
+      vibrate: [500,100,500,100,500], requireInteraction: true, tag: 'teste-1h'
+    });
+  }, 10000);
+  alert('✅ Teste iniciado!\n\n• Notificação imediata: agora\n• Simulação 24h antes: em 5 segundos\n• Simulação 1h antes: em 10 segundos\n\nObserve as notificações chegando.');
 }
 
 // ===================== ATUALIZAR SÓ INDICADORES =====================
@@ -3289,14 +4823,12 @@ function atualizarIndicadoresDasFolhas() {
     if (des.video) usados.push(des.video);
     if (des.zoom) usados.push(des.zoom);
 
-    // Pega 2 nomes sequenciais da fila
     var escolhidos = [];
     for (var t = 0; t < fila.length && escolhidos.length < 2; t++) {
       var idx = (idxFila + t) % fila.length;
       var nome = fila[idx];
       if (usados.indexOf(nome) >= 0) continue;
       if (escolhidos.indexOf(nome) >= 0) continue;
-      if (ultimoAuditorio[nome] === true && escolhidos.length === 0) continue;
       escolhidos.push(nome);
     }
     idxFila = (idxFila + 2) % fila.length;
@@ -3309,6 +4841,13 @@ function atualizarIndicadoresDasFolhas() {
     ultimoAuditorio[pat] = false;
 
     if (des.indAud !== aud || des.indPat !== pat) {
+      // Salva apenas subpaths alterados (não o objeto inteiro)
+      if (firebaseOk && db) {
+        var updates = {};
+        updates['escala/estado/escalaGerada/' + dataISO + '/indAud'] = aud;
+        updates['escala/estado/escalaGerada/' + dataISO + '/indPat'] = pat;
+        db.ref().update(updates);
+      }
       des.indAud = aud;
       des.indPat = pat;
       atualizados++;
@@ -3316,9 +4855,64 @@ function atualizarIndicadoresDasFolhas() {
   });
 
   if (firebaseOk && db) {
-    db.ref('escala/estado').update({ escalaGerada: escalaGerada, ultimoAuditorio: ultimoAuditorio })
-      .then(function() { location.reload(); });
+    db.ref('escala/estado/ultimoAuditorio').set(ultimoAuditorio).then(function() {
+      alert('✅ ' + atualizados + ' reuniões tiveram os indicadores atualizados!');
+      location.reload();
+    });
   } else {
+    alert('✅ ' + atualizados + ' reuniões tiveram os indicadores atualizados!');
+    location.reload();
+  }
+}
+// ===================== REGENERAR RODÍZIO DE INDICADORES =====================
+function regenerarRodizioIndicadores() {
+  if (!confirm('Isso vai gerar um NOVO rodízio para todos os indicadores. Continuar?')) return;
+
+  ultimoAuditorio = {};
+  idxI.v = 0;
+  
+  var chaves = Object.keys(escalaGerada).sort();
+  var atualizados = 0;
+
+  chaves.forEach(function(dataISO) {
+    var des = escalaGerada[dataISO];
+    if (!des) return;
+
+    var usados = [];
+    if (des.palco1) usados.push(des.palco1);
+    if (des.palco2) usados.push(des.palco2);
+    if (des.mic1) usados.push(des.mic1);
+    if (des.mic2) usados.push(des.mic2);
+    if (des.audio) usados.push(des.audio);
+    if (des.video) usados.push(des.video);
+    if (des.zoom) usados.push(des.zoom);
+
+    var novosInd = escolherIndicadores(usados);
+    
+    if (des.indAud !== novosInd.aud || des.indPat !== novosInd.pat) {
+      des.indAud = novosInd.aud;
+      des.indPat = novosInd.pat;
+      atualizados++;
+    }
+  });
+
+  if (firebaseOk && db) {
+    var payload = {
+      meses: mesesGerados,
+      contadorPulo: contadorPulo,
+      aparicoes: aparicoes,
+      idxM: idxM.v, idxA: idxA.v, idxV: idxV.v, idxZ: idxZ.v, idxI: idxI.v,
+      ultimoPar: ultimoPar,
+      ultimoAuditorio: ultimoAuditorio,
+      substituicoes: substituicoes,
+      escalaGerada: escalaGerada
+    };
+    db.ref('escala/estado').set(payload).then(function() {
+      alert('✅ ' + atualizados + ' reuniões tiveram os indicadores renovados!');
+      location.reload();
+    });
+  } else {
+    alert('✅ ' + atualizados + ' reuniões tiveram os indicadores renovados!');
     location.reload();
   }
 }
