@@ -727,12 +727,12 @@ body.dark-mode .conf-badge.pendente { background: #2a2a15; color: #ca8a04; borde
         <div style="background:white;border-radius:14px;padding:24px;max-width:600px;width:100%;max-height:90vh;overflow-y:auto">
           <div style="font-size:15px;font-weight:bold;color:#1a1a2e;margin-bottom:8px">📋 Colar programação do WOL</div>
           <p style="font-size:12px;color:#5e6370;margin-bottom:14px;line-height:1.6">
-            1. Clique em <strong>🌐 Abrir JW.org</strong> (escolha o mês primeiro)<br>
+            1. Clique em <strong>🌐 Abrir JW.org</strong> (escolha o mês primeiro) ou acesse <a id="vmc-link-jw" href="https://wol.jw.org/pt/wol/meetings/r5/lp-t" target="_blank" style="color:#8b5cf6;font-weight:bold">este link</a><br>
             2. Na página do WOL, clique na semana desejada ex: <em>"8-14 de junho"</em><br>
             3. Selecione tudo <strong>(Ctrl+A)</strong> e copie <strong>(Ctrl+C)</strong><br>
             4. Cole aqui abaixo e clique em <strong>✨ Extrair dados</strong>
           </p>
-          <textarea id="vmc-texto-colado" style="width:100%;height:220px;padding:10px;border:1px solid #d0d5dd;border-radius:8px;font-size:12px;font-family:monospace;resize:vertical" placeholder="Cole aqui o texto copiado do JW.org..."></textarea>
+          <textarea id="vmc-texto-colado" style="width:100%;height:220px;padding:10px;border:1px solid #d0d5dd;border-radius:8px;font-size:12px;font-family:monospace;resize:vertical;box-sizing:border-box" placeholder="Cole aqui o texto copiado do WOL..."></textarea>
           <div style="display:flex;gap:8px;margin-top:12px;justify-content:flex-end">
             <button onclick="vmcFecharColar()" style="background:#f3f4f6;border:1px solid #d0d5dd;padding:8px 18px;border-radius:7px;font-size:13px;cursor:pointer">Cancelar</button>
             <button onclick="vmcExtrairTextoColado()" style="background:#8b5cf6;color:white;border:none;padding:8px 18px;border-radius:7px;font-size:13px;font-weight:bold;cursor:pointer">✨ Extrair dados</button>
@@ -3637,22 +3637,23 @@ function vmcAbrirJW() {
   var ano = new Date().getFullYear();
   var url = 'https://wol.jw.org/pt/wol/library/r5/lp-t/todas-as-publica%C3%A7%C3%B5es/apostilas/apostila-vida-e-minist%C3%A9rio-' + ano + '/' + mes;
   window.open(url, '_blank');
-  // Atualiza link no modal e mostra instrução
   document.getElementById('vmc-link-jw').href = url;
+  // Abre o modal para colar imediatamente
+  document.getElementById('vmc-texto-colado').value = '';
+  document.getElementById('vmc-modal-colar').style.display = 'flex';
   var st = document.getElementById('vmc-import-status');
   st.style.display = 'block';
   st.style.background = '#fffbeb'; st.style.color = '#92400e'; st.style.borderColor = '#fcd34d';
-  st.textContent = '⏳ Na página que abriu: clique na semana desejada → selecione tudo (Ctrl+A) → copie (Ctrl+C) → clique em "📋 Colar programação".';
+  st.textContent = '⏳ Na aba que abriu: clique na semana → Ctrl+A → Ctrl+C → volte aqui e cole no campo abaixo → Extrair dados.';
 }
 
 function vmcColarTexto() {
-  if (!vmcSemanaAtual) { alert('Selecione uma semana primeiro.'); return; }
   var mes = (document.getElementById('vmc-sel-mes') || {}).value || 'maio';
   var ano = new Date().getFullYear();
   var url = 'https://wol.jw.org/pt/wol/library/r5/lp-t/todas-as-publica%C3%A7%C3%B5es/apostilas/apostila-vida-e-minist%C3%A9rio-' + ano + '/' + mes;
   document.getElementById('vmc-link-jw').href = url;
-  document.getElementById('vmc-modal-colar').style.display = 'flex';
   document.getElementById('vmc-texto-colado').value = '';
+  document.getElementById('vmc-modal-colar').style.display = 'flex';
 }
 
 function vmcFecharColar() {
