@@ -4396,20 +4396,28 @@ function vmcPreencherSeletores() {
 
 function vmcGetDatas() {
   var list = [];
-  // Coleta todas as segundas-feiras (getDay()===1) geradas na escala
+  // A escala armazena quartas-feiras — calcula a segunda da mesma semana
   Object.keys(escalaGerada).sort().forEach(function(iso) {
     var d = new Date(iso + 'T00:00:00');
-    if (d.getDay() === 1) {
-      var dom = new Date(d); dom.setDate(d.getDate() + 6);
-      var diaIni = d.getDate();
-      var diaFim = dom.getDate();
-      var mes = d.toLocaleDateString('pt-BR', {month:'long'});
-      var mesFim = dom.toLocaleDateString('pt-BR', {month:'long'});
-      var ano = d.getFullYear();
-      var label = diaIni + (mes !== mesFim ? ' de ' + mes : '') + '-' + diaFim + ' de ' + mesFim + ' de ' + ano;
-      label = label.charAt(0).toUpperCase() + label.slice(1);
-      list.push({ iso: iso, label: label });
-    }
+    if (d.getDay() !== 3) return; // só quartas
+
+    // Segunda da mesma semana (quarta - 2 dias)
+    var seg = new Date(d); seg.setDate(d.getDate() - 2);
+    var dom = new Date(d); dom.setDate(d.getDate() + 4); // domingo
+
+    var diaIni = seg.getDate();
+    var diaFim = dom.getDate();
+    var mesIni = seg.toLocaleDateString('pt-BR', {month:'long'});
+    var mesFim = dom.toLocaleDateString('pt-BR', {month:'long'});
+    var ano    = seg.getFullYear();
+
+    var periodo = diaIni +
+      (mesIni !== mesFim ? ' de ' + mesIni : '') +
+      '-' + diaFim + ' de ' + mesFim + ' de ' + ano;
+
+    // Usa o ISO da segunda como chave do VMC
+    var segISO = seg.toISOString().slice(0,10);
+    list.push({ iso: segISO, label: periodo.charAt(0).toUpperCase() + periodo.slice(1) });
   });
   return list;
 }
