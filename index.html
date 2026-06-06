@@ -4740,6 +4740,11 @@ function vmcRenderConfigListas() {
 }
 
 function vmcGetTodosParaCampo() {
+  // Usa a lista global todosIrmaos que está sempre disponível no arquivo
+  if (typeof todosIrmaos !== 'undefined' && todosIrmaos.length) {
+    return todosIrmaos.slice().sort(function(a,b){return a.localeCompare(b,'pt-BR');});
+  }
+  // Fallback: extrai de listas
   var todos = {};
   Object.keys(listas).forEach(function(k){
     var arr = listas[k];
@@ -4852,10 +4857,10 @@ try { iniciarFirebase(); } catch(e) { console.error('Erro iniciarFirebase:', e);
 // Reagenda avisos 24h/1h para quem já tem nome salvo
 setTimeout(reagendarAvisosAoIniciar, 1000);
 // Inicia sistema VMC
-// VMC inicia após um pequeno delay para garantir que listas do sistema já carregaram
+// VMC inicia após carregar — todosIrmaos já está disponível no arquivo
 setTimeout(function() {
   try { vmcIniciar(); } catch(e) { console.error('Erro vmcIniciar:', e); }
-}, 800);
+}, 100);
 try { gerarEscalaAtual(); } catch(e) { console.error('Erro gerarEscalaAtual:', e); }
 atualizarBotaoNotif();
 
