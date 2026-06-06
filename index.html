@@ -475,6 +475,13 @@ body.dark-mode .conf-badge.pendente { background: #2a2a15; color: #ca8a04; borde
         <button class="btn-gerar-ok" onclick="limparFirebaseERecomecar()" style="background:#4b0082;margin-top:6px">&#128465; Limpar Firebase e recomeçar do zero</button>
         <button class="btn-gerar-ok" onclick="atualizarIndicadoresDasFolhas()" style="background:#b45309;margin-top:6px">🔄 Atualizar só os indicadores</button>
         <button class="btn-gerar-ok" onclick="regenerarRodizioIndicadores()" style="background:#059669;margin-top:6px">🎲 Novo rodízio de indicadores</button>
+
+        <!-- Gerenciar meses salvos -->
+        <div style="margin-top:20px;border-top:2px solid #e8e8e8;padding-top:14px">
+          <div style="font-size:13px;font-weight:bold;color:#1a1a2e;margin-bottom:4px">📅 Meses gerados</div>
+          <p style="font-size:12px;color:#5e6370;margin-bottom:10px">Clique em <strong>Apagar</strong> para remover um mês específico da escala.</p>
+          <div id="painel-meses-salvos" style="display:flex;flex-wrap:wrap;gap:8px"></div>
+        </div>
       </div>
 
       <!-- ABA TROCAS -->
@@ -575,14 +582,14 @@ body.dark-mode .conf-badge.pendente { background: #2a2a15; color: #ca8a04; borde
 
           <!-- SEÇÃO: Faça Seu Melhor no Ministério -->
           <div class="vmc-secao">
-            <div class="vmc-secao-titulo" style="background:#7c3aed">🎓 Faça Seu Melhor no Ministério</div>
+            <div class="vmc-secao-titulo" style="background:#7c3aed">🗺️ Faça Seu Melhor no Ministério</div>
             <div id="vmc-ministerio-partes"></div>
             <button onclick="vmcAddParteMinist()" style="background:none;border:2px dashed #a78bfa;color:#7c3aed;padding:5px 14px;border-radius:6px;font-size:12px;font-weight:bold;cursor:pointer;margin:6px 0">+ Adicionar parte</button>
           </div>
 
           <!-- SEÇÃO: Nossa Vida Cristã -->
           <div class="vmc-secao">
-            <div class="vmc-secao-titulo" style="background:#0f6e56">✝️ Nossa Vida Cristã</div>
+            <div class="vmc-secao-titulo" style="background:#0f6e56">📖 Nossa Vida Cristã</div>
             <div class="vmc-linha">
               <span class="vmc-label">Cântico do meio</span>
               <input type="text" id="vmc-cantico-meio" class="vmc-tema" placeholder="Nº e tema do cântico...">
@@ -1940,11 +1947,35 @@ function regenerarTudoDoForm(){
 }
 
 function apagarMes(chave){
+  if (!confirm('Apagar o mês ' + chave + ' da escala?')) return;
   var bloco=document.querySelector('[data-chavemes="'+chave+'"]');
   if(bloco){ bloco.remove(); }
   delete mesesGerados[chave];
   atualizarSubtitulo();
   salvarMesesFirebase();
+  renderPainelMeses();
+}
+
+function renderPainelMeses() {
+  var cont = document.getElementById('painel-meses-salvos');
+  if (!cont) return;
+  var chaves = Object.keys(mesesGerados).sort();
+  if (!chaves.length) {
+    cont.innerHTML = '<span style="font-size:12px;color:#aaa">Nenhum mês gerado.</span>';
+    return;
+  }
+  var mesesNomes = ['','Janeiro','Fevereiro','Março','Abril','Maio','Junho',
+                    'Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+  cont.innerHTML = chaves.map(function(chave) {
+    // chave formato "M-YYYY"
+    var partes = chave.split('-');
+    var nomeMes = mesesNomes[parseInt(partes[0])] || chave;
+    var ano = partes[1] || '';
+    return '<div style="background:#f0f4ff;border:1px solid #c7d2fe;border-radius:8px;padding:8px 12px;display:flex;align-items:center;gap:10px">' +
+      '<span style="font-size:13px;font-weight:bold;color:#1a4fa3">📅 ' + nomeMes + ' ' + ano + '</span>' +
+      '<button onclick="apagarMes(\'' + chave + '\')" style="background:#fee2e2;color:#dc2626;border:1px solid #fca5a5;border-radius:6px;padding:3px 10px;font-size:11px;cursor:pointer;font-weight:bold">🗑️ Apagar</button>' +
+    '</div>';
+  }).join('');
 }
 
 function adicionarMeses(mesInicio, ano, qtd) {
@@ -2284,6 +2315,8 @@ function processarMeses(mesesSalvos, dadosEstado) {
   atualizarSubtitulo();
   // Atualiza seletor de semanas do VMC agora que escalaGerada foi populado
   if (typeof vmcPreencherSeletores === 'function') vmcPreencherSeletores();
+  // Atualiza painel de meses salvos
+  if (typeof renderPainelMeses === 'function') renderPainelMeses();
 }
 
 function iniciarFirebase() {
@@ -3615,6 +3648,22 @@ var vmcListas = {
   oracaoFim:      [],
 };
 
+// Preenche todas as listas VMC com todos os irmãos cadastrados
+// (o responsável apaga quem não se aplica a cada função)
+function vmcInicializarListasComTodos() {
+  var todos = vmcGetTodosParaCampo();
+  if (!todos.length) return;
+  var campos = Object.keys(vmcListas);
+  var algumVazio = campos.some(function(c){ return !(vmcListas[c]||[]).length; });
+  if (!algumVazio) return; // já configurado, não sobrescreve
+  campos.forEach(function(campo) {
+    if (!(vmcListas[campo]||[]).length) {
+      vmcListas[campo] = todos.slice();
+    }
+  });
+  vmcSalvarConfig();
+}
+
 var vmcIdx = {
   presidente:0, oracaoAbertura:0, tesouro:0, joias:0, leitura:0,
   ministerioPubl:0, ministerioAjud:0, ministerioIrmao:0,
@@ -4224,9 +4273,9 @@ function vmcImprimirSemana() {
     ln('1. Discurso de Tesouros', dados.tesouro, dados.tesouroTema, '10 min')+
     ln('2. Joias Espirituais', dados.joias, dados.joiasTema, '10 min')+
     ln('3. Leitura da Bíblia', dados.leitura, dados.leituraTema, '4 min')+
-    secH('🎓 FAÇA SEU MELHOR NO MINISTÉRIO', '#7c3aed')+
+    secH('🗺️ FAÇA SEU MELHOR NO MINISTÉRIO', '#7c3aed')+
     linhasMin+
-    secH('✝️ NOSSA VIDA CRISTÃ', '#0f6e56')+
+    secH('📖 NOSSA VIDA CRISTÃ', '#0f6e56')+
     cantRow(dados.canticoMeio)+
     linhasVida+
     ln('Condutor — Estudo Bíblico', dados.estudoCondutor, dados.estudoTema, '30 min')+
@@ -4304,7 +4353,7 @@ function vmcImprimirMes() {
   }
 
   function colMinisterio(d) {
-    var r = '<span class="sec-titulo bg-min">🎓 Ministério</span>';
+    var r = '<span class="sec-titulo bg-min">🗺️ Ministério</span>';
     (d.ministerioPartes || []).forEach(function(p, i) {
       var nome = p.tipo === 'publicadora' ? (p.publNome || '—') : (p.irmaoNome || '—');
       var ajud = p.tipo === 'publicadora' && p.ajudNome ? ' + ' + p.ajudNome : '';
@@ -4315,7 +4364,7 @@ function vmcImprimirMes() {
   }
 
   function colVida(d) {
-    var r = '<span class="sec-titulo bg-vid">✝️ Vida Cristã</span>';
+    var r = '<span class="sec-titulo bg-vid">📖 Vida Cristã</span>';
     if (d.canticoMeio) r += '<div class="cantico">🎵 ' + d.canticoMeio + '</div>';
     (d.vidaPartes || []).forEach(function(p, i) {
       r += '<div class="parte-row"><span class="parte-label">' + (p.titulo||'').substring(0,22) + '</span><span class="parte-nome">' + (p.irmao||'—') + '</span></div>';
@@ -4460,11 +4509,11 @@ function vmcRenderPublico() {
       linha('3. Leitura da Bíblia', dados.leitura, dados.leituraTema)+
     '</div>'+
     '<div class="vmc-pub-secao">'+
-      '<div class="vmc-pub-titulo escola">🎓 Faça Seu Melhor no Ministério</div>'+
+      '<div class="vmc-pub-titulo escola">🗺️ Faça Seu Melhor no Ministério</div>'+
       linhasMin+
     '</div>'+
     '<div class="vmc-pub-secao">'+
-      '<div class="vmc-pub-titulo vida">✝️ Nossa Vida Cristã</div>'+
+      '<div class="vmc-pub-titulo vida">📖 Nossa Vida Cristã</div>'+
       linhasVida+
       linha('Condutor — Estudo Bíblico', dados.estudoCondutor, dados.estudoTema)+
       linha('Leitor — Estudo Bíblico', dados.estudoLeitor, '')+
@@ -4555,6 +4604,8 @@ function vmcIniciar() {
     var cfg = snap.val() || {};
     if (cfg.listas) Object.assign(vmcListas, cfg.listas);
     if (cfg.idx)    Object.assign(vmcIdx,    cfg.idx);
+    // Preenche listas vazias com todos os irmãos cadastrados
+    vmcInicializarListasComTodos();
     vmcRenderConfigListas();
   });
 }
