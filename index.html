@@ -1088,6 +1088,7 @@ function ativarModoResponsavel() {
       // NÃO zera substituicoes — são permanentes
       contadorPulo = {}; aparicoes = {}; ultimoAuditorio = {};
       mesesGerados = {};
+      escalaGeradaOriginal = {}; // reseta nomes originais para nova geração
       idxM.v=0; idxA.v=0; idxV.v=0; idxZ.v=0; idxI.v=0; ultimoPar=-1;
       if (dadosEstado && dadosEstado.contadorPulo) Object.assign(contadorPulo, dadosEstado.contadorPulo);
       if (dadosEstado && dadosEstado.aparicoes)    Object.assign(aparicoes, dadosEstado.aparicoes);
@@ -1219,6 +1220,7 @@ var eventos = [
 
 var substituicoes = {};
 var escalaGerada = {}; // designações geradas: {dataISO: {palco1,palco2,mic1,...}}
+var escalaGeradaOriginal = {}; // nomes originais do rodízio, antes de qualquer substituição
 var periodoAtual  = { mesInicio:6, ano:2026, qtd:4 };
 
 // ===================== TREINAMENTO =====================
@@ -1767,6 +1769,16 @@ function renderMesSalvo(mes, ano, escSalva, substs) {
       escalaGerada[dataISO] = saved;
     }
 
+    // Guarda nomes originais do rodízio (antes de qualquer substituição) para chaves estáveis
+    if (!escalaGeradaOriginal[dataISO]) {
+      escalaGeradaOriginal[dataISO] = {
+        palco1: saved.palco1, palco2: saved.palco2,
+        mic1: saved.mic1, mic2: saved.mic2,
+        audio: saved.audio, video: saved.video, zoom: saved.zoom,
+        indAud: saved.indAud, indPat: saved.indPat
+      };
+    }
+
     // Aplica substituições sobre os nomes salvos
     function nomeFinal(n, setorKey) {
       if (!n) return '';
@@ -1786,8 +1798,12 @@ function renderMesSalvo(mes, ano, escSalva, substs) {
 
     var campoMap = {'Palco-Coord':'palco1','Palco-Ajud':'palco2','Mic1':'mic1','Mic2':'mic2',
       'Audio':'audio','Video':'video','Zoom':'zoom','Ind-Aud':'indAud','Ind-Pat':'indPat'};
+
+    // nomeOrig SEMPRE vem de escalaGeradaOriginal (antes de qualquer substituição)
+    // para garantir que a chave dataISO|setor|nomeOrig nunca mude
+    var savedOrig = (escalaGeradaOriginal && escalaGeradaOriginal[dataISO]) || saved;
     function ns(n, setor) {
-      var nomeOrig = saved[campoMap[setor]] || n;
+      var nomeOrig = savedOrig[campoMap[setor]] || saved[campoMap[setor]] || n;
       return nomeSpan(n, dataISO+'|'+setor+'|'+nomeOrig, setor, dataLabel);
     }
 
