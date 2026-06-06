@@ -1,5 +1,5 @@
 // Service Worker — Designações Cong. Parque Tietê
-const CACHE = 'designacoes-v1';
+const CACHE = 'designacoes-v2';
 const STATIC = [
   './',
   './index.html',
