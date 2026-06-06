@@ -623,9 +623,46 @@ body.dark-mode .conf-badge.pendente { background: #2a2a15; color: #ca8a04; borde
 
         <!-- Configuração das listas por parte -->
         <div style="margin-top:20px;border-top:2px solid #e8e8e8;padding-top:16px">
-          <div style="font-size:13px;font-weight:bold;color:#1a1a2e;margin-bottom:4px">⚙️ Configurar listas de irmãos por função</div>
-          <p style="font-size:12px;color:#5e6370;margin-bottom:12px">Defina quem está aprovado para cada parte. As listas são usadas no rodízio automático.</p>
-          <div id="vmc-config-listas"></div>
+          <div style="font-size:13px;font-weight:bold;color:#1a1a2e;margin-bottom:4px">⚙️ Cadastro de participantes VMC</div>
+          <p style="font-size:12px;color:#5e6370;margin-bottom:12px">Cadastre irmãos e irmãs e marque em quais funções cada um pode participar.</p>
+
+          <!-- Tabs cadastro -->
+          <div style="display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap">
+            <button onclick="vmcMostrarCadastro('irmaos')" id="vmc-tab-irmaos" style="background:#1a4fa3;color:white;border:none;padding:6px 14px;border-radius:6px;font-size:12px;font-weight:bold;cursor:pointer">👨 Irmãos</button>
+            <button onclick="vmcMostrarCadastro('publicadoras')" id="vmc-tab-publicadoras" style="background:#e8e8e8;color:#374151;border:none;padding:6px 14px;border-radius:6px;font-size:12px;font-weight:bold;cursor:pointer">👩 Publicadoras</button>
+            <button onclick="vmcMostrarCadastro('ajudantes')" id="vmc-tab-ajudantes" style="background:#e8e8e8;color:#374151;border:none;padding:6px 14px;border-radius:6px;font-size:12px;font-weight:bold;cursor:pointer">👩 Ajudantes</button>
+          </div>
+
+          <!-- Painel irmãos -->
+          <div id="vmc-painel-irmaos">
+            <div style="display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap">
+              <input type="text" id="vmc-novo-irmao" placeholder="Nome do irmão..." style="flex:1;min-width:160px;padding:7px 10px;border:1px solid #d0d5dd;border-radius:6px;font-size:13px">
+              <button onclick="vmcAddIrmao()" style="background:#1a4fa3;color:white;border:none;padding:7px 16px;border-radius:6px;font-size:13px;font-weight:bold;cursor:pointer">+ Adicionar</button>
+            </div>
+            <div id="vmc-lista-irmaos"></div>
+          </div>
+
+          <!-- Painel publicadoras -->
+          <div id="vmc-painel-publicadoras" style="display:none">
+            <div style="display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap">
+              <input type="text" id="vmc-nova-publicadora" placeholder="Nome da irmã..." style="flex:1;min-width:160px;padding:7px 10px;border:1px solid #d0d5dd;border-radius:6px;font-size:13px">
+              <button onclick="vmcAddPublicadora()" style="background:#7c3aed;color:white;border:none;padding:7px 16px;border-radius:6px;font-size:13px;font-weight:bold;cursor:pointer">+ Adicionar</button>
+            </div>
+            <p style="font-size:11px;color:#5e6370;margin-bottom:8px">Publicadoras fazem as partes principais do Ministério (DE CASA EM CASA, demonstrações etc.)</p>
+            <div id="vmc-lista-publicadoras"></div>
+          </div>
+
+          <!-- Painel ajudantes -->
+          <div id="vmc-painel-ajudantes" style="display:none">
+            <div style="display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap">
+              <input type="text" id="vmc-nova-ajudante" placeholder="Nome da irmã..." style="flex:1;min-width:160px;padding:7px 10px;border:1px solid #d0d5dd;border-radius:6px;font-size:13px">
+              <button onclick="vmcAddAjudante()" style="background:#0891b2;color:white;border:none;padding:7px 16px;border-radius:6px;font-size:13px;font-weight:bold;cursor:pointer">+ Adicionar</button>
+            </div>
+            <p style="font-size:11px;color:#5e6370;margin-bottom:8px">Ajudantes auxiliam as publicadoras nas partes do Ministério. Podem evoluir para publicadoras.</p>
+            <div id="vmc-lista-ajudantes"></div>
+          </div>
+
+          <div id="vmc-config-listas" style="display:none"></div>
         </div>
       </div>
 
@@ -4164,31 +4201,38 @@ function vmcSalvarSemana() {
 // ── Rodízio automático ──────────────────────────────────────────
 function vmcRodizioAuto() {
   if (!vmcSemanaAtual) return;
+  // usados = lista global da reunião — ninguém repete em funções diferentes
   var usados = [];
+
   function pegar(campo) {
     var lista = vmcListas[campo] || [];
     if (!lista.length) return '';
     var idx = vmcIdx[campo] || 0;
-    for (var t = 0; t < lista.length * 2; t++) {
+    // Tenta pegar alguém que ainda não foi usado nesta reunião
+    for (var t = 0; t < lista.length; t++) {
       var i = (idx + t) % lista.length;
       if (usados.indexOf(lista[i]) < 0) {
-        vmcIdx[campo] = i + 1;
+        vmcIdx[campo] = (i + 1) % lista.length;
         usados.push(lista[i]);
         return lista[i];
       }
     }
+    // Se todos já foram usados, avança mesmo assim (reunião pequena)
+    var fallback = lista[idx % lista.length] || '';
     vmcIdx[campo] = (idx + 1) % lista.length;
-    return lista[idx % lista.length] || '';
+    return fallback;
   }
+
   function aplicar(id, val) { var e = document.getElementById(id); if (e) e.value = val; }
 
+  // Ordem: presidente → orações → tesouros → ministério → vida cristã
   aplicar('vmc-presidente',      pegar('presidente'));
   aplicar('vmc-oracao-abertura', pegar('oracaoAbertura'));
   aplicar('vmc-tesouro',         pegar('tesouro'));
   aplicar('vmc-joias',           pegar('joias'));
   aplicar('vmc-leitura',         pegar('leitura'));
 
-  // Partes ministério
+  // Partes ministério — publicadoras/ajudantes compartilham o array usados
   document.querySelectorAll('.vmc-minist-parte').forEach(function(div) {
     var tipo = (div.querySelector('.vmc-tipo-sel') || {}).value || 'publicadora';
     if (tipo === 'publicadora') {
@@ -4212,7 +4256,7 @@ function vmcRodizioAuto() {
   aplicar('vmc-oracao-fim',      pegar('oracaoFim'));
 
   if (db) db.ref('vmc_config/idx').set(vmcIdx);
-  alert('🎲 Rodízio aplicado! Revise e clique em Salvar semana.');
+  alert('🎲 Rodízio aplicado! Ninguém foi repetido na mesma reunião.\nRevise e clique em Salvar semana.');
 }
 
 // ── Impressão da folha VMC ──────────────────────────────────────
@@ -4520,38 +4564,179 @@ function vmcRenderPublico() {
     '</div>';
 }
 
-// ── Configuração das listas de irmãos ───────────────────────────
-function vmcRenderConfigListas() {
-  var cont = document.getElementById('vmc-config-listas');
+// ── CADASTRO VMC — estrutura unificada ─────────────────────────
+// vmcCadastro = {
+//   irmaos: { "Nome": { presidente:true, oracaoAbertura:true, tesouro:true, ... } },
+//   publicadoras: ["Nome1","Nome2"],
+//   ajudantes: ["Nome1","Nome2"]
+// }
+var vmcCadastro = { irmaos: {}, publicadoras: [], ajudantes: [] };
+
+var vmcFuncoes = [
+  { key:'presidente',      label:'Presidente' },
+  { key:'oracaoAbertura',  label:'Oração abertura' },
+  { key:'oracaoFim',       label:'Oração encerramento' },
+  { key:'tesouro',         label:'Tesouros (discurso)' },
+  { key:'joias',           label:'Joias Espirituais' },
+  { key:'leitura',         label:'Leitura da Bíblia' },
+  { key:'vidaCristaParte', label:'Vida Cristã (parte)' },
+  { key:'estudoCondutor',  label:'Condutor Estudo' },
+  { key:'estudoLeitor',    label:'Leitor Estudo' },
+  { key:'ministerioIrmao', label:'Ministério (discurso)' },
+];
+
+// Mostra painel correto
+function vmcMostrarCadastro(painel) {
+  ['irmaos','publicadoras','ajudantes'].forEach(function(p) {
+    document.getElementById('vmc-painel-' + p).style.display = p === painel ? 'block' : 'none';
+    var btn = document.getElementById('vmc-tab-' + p);
+    if (btn) { btn.style.background = p === painel ? '#1a4fa3' : '#e8e8e8'; btn.style.color = p === painel ? 'white' : '#374151'; }
+  });
+}
+
+// ── Irmãos ──────────────────────────────────────────────────────
+function vmcAddIrmao() {
+  var inp = document.getElementById('vmc-novo-irmao');
+  var nome = inp ? inp.value.trim() : '';
+  if (!nome) return;
+  if (!vmcCadastro.irmaos[nome]) vmcCadastro.irmaos[nome] = {};
+  inp.value = '';
+  vmcSalvarCadastro();
+  vmcRenderIrmaos();
+  vmcAtualizarListasDeIrmaos();
+}
+
+function vmcRenderIrmaos() {
+  var cont = document.getElementById('vmc-lista-irmaos');
   if (!cont) return;
-  var grupos = [
-    { titulo:'Presidência e Orações',             campos:['presidente','oracaoAbertura','oracaoFim'] },
-    { titulo:'Tesouros da Palavra de Deus',        campos:['tesouro','joias','leitura'] },
-    { titulo:'Faça Seu Melhor no Ministério',      campos:['ministerioPubl','ministerioAjud','ministerioIrmao'] },
-    { titulo:'Nossa Vida Cristã',                  campos:['vidaCristaParte','estudoCondutor','estudoLeitor'] },
-  ];
-  cont.innerHTML = grupos.map(function(g){
-    var items = g.campos.map(function(campo){
-      var lista = vmcListas[campo] || [];
-      var tags  = lista.map(function(n){
-        return '<span class="vmc-config-tag">'+n+
-          '<button onclick="vmcRemoverIrmaoBtn(this)" data-campo="'+campo+'" data-nome="'+n+'" title="Remover">×</button></span>';
-      }).join('');
-      var todos = vmcGetTodosParaCampo();
-      var opts  = todos.filter(function(n){return lista.indexOf(n)<0;})
-        .map(function(n){return '<option value="'+n+'">'+n+'</option>';}).join('');
-      return '<div class="vmc-config-bloco">'+
-        '<div class="vmc-config-titulo">'+vmcLabels[campo]+'</div>'+
-        '<div class="vmc-config-lista">'+tags+'</div>'+
-        '<div style="margin-top:8px;display:flex;gap:6px">'+
-          '<select id="vmc-add-'+campo+'" style="flex:1;padding:5px 8px;border:1px solid #d0d5dd;border-radius:6px;font-size:12px">'+
-            '<option value="">+ Adicionar irmão...</option>'+opts+
-          '</select>'+
-          '<button onclick="vmcAdicionarIrmaoBtnBloco(this)" data-campo="'+campo+'" style="background:#1a4fa3;color:white;border:none;padding:5px 12px;border-radius:6px;font-size:12px;cursor:pointer">+</button>'+
-        '</div></div>';
+  var nomes = Object.keys(vmcCadastro.irmaos).sort(function(a,b){return a.localeCompare(b,'pt-BR');});
+  if (!nomes.length) { cont.innerHTML = '<p style="font-size:12px;color:#aaa">Nenhum irmão cadastrado.</p>'; return; }
+
+  cont.innerHTML = nomes.map(function(nome) {
+    var funcoes = vmcCadastro.irmaos[nome] || {};
+    var checks = vmcFuncoes.map(function(f) {
+      var chk = funcoes[f.key] ? 'checked' : '';
+      return '<label style="display:inline-flex;align-items:center;gap:4px;font-size:11px;background:' +
+        (funcoes[f.key] ? '#e8f0fb' : '#f3f4f6') +
+        ';padding:3px 8px;border-radius:12px;cursor:pointer;margin:2px">' +
+        '<input type="checkbox" ' + chk + ' onchange="vmcToggleFuncao(\'' + nome + '\',\'' + f.key + '\',this.checked)" style="margin:0">' +
+        f.label + '</label>';
     }).join('');
-    return '<div style="margin-bottom:14px"><div style="font-size:11px;font-weight:bold;color:#888;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">'+g.titulo+'</div>'+items+'</div>';
+    return '<div style="background:#f9f9f9;border:1px solid #e8e8e8;border-radius:8px;padding:10px 12px;margin-bottom:8px">' +
+      '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">' +
+        '<span style="font-size:13px;font-weight:bold;color:#1a1a2e">👨 ' + nome + '</span>' +
+        '<button onclick="vmcRemoverIrmaoVMC(\'' + nome + '\')" style="background:#fee2e2;color:#dc2626;border:none;border-radius:5px;padding:3px 10px;font-size:11px;cursor:pointer">✕ Remover</button>' +
+      '</div>' +
+      '<div style="display:flex;flex-wrap:wrap;gap:2px">' + checks + '</div>' +
+    '</div>';
   }).join('');
+}
+
+function vmcToggleFuncao(nome, funcao, ativo) {
+  if (!vmcCadastro.irmaos[nome]) vmcCadastro.irmaos[nome] = {};
+  if (ativo) vmcCadastro.irmaos[nome][funcao] = true;
+  else delete vmcCadastro.irmaos[nome][funcao];
+  vmcSalvarCadastro();
+  vmcAtualizarListasDeIrmaos();
+  vmcRenderIrmaos();
+}
+
+function vmcRemoverIrmaoVMC(nome) {
+  if (!confirm('Remover ' + nome + ' do VMC?')) return;
+  delete vmcCadastro.irmaos[nome];
+  vmcSalvarCadastro();
+  vmcRenderIrmaos();
+  vmcAtualizarListasDeIrmaos();
+}
+
+// ── Publicadoras ────────────────────────────────────────────────
+function vmcAddPublicadora() {
+  var inp = document.getElementById('vmc-nova-publicadora');
+  var nome = inp ? inp.value.trim() : '';
+  if (!nome) return;
+  if (vmcCadastro.publicadoras.indexOf(nome) < 0) vmcCadastro.publicadoras.push(nome);
+  inp.value = '';
+  vmcSalvarCadastro();
+  vmcRenderPublicadoras();
+  vmcAtualizarListasDeIrmaos();
+}
+
+function vmcRenderPublicadoras() {
+  var cont = document.getElementById('vmc-lista-publicadoras');
+  if (!cont) return;
+  var lista = vmcCadastro.publicadoras || [];
+  if (!lista.length) { cont.innerHTML = '<p style="font-size:12px;color:#aaa">Nenhuma publicadora cadastrada.</p>'; return; }
+  cont.innerHTML = lista.sort(function(a,b){return a.localeCompare(b,'pt-BR');}).map(function(nome) {
+    return '<div style="display:inline-flex;align-items:center;gap:6px;background:#f5f3ff;border:1px solid #ddd6fe;border-radius:8px;padding:6px 12px;margin:3px">' +
+      '<span style="font-size:13px">👩 ' + nome + '</span>' +
+      '<button onclick="vmcRemoverPublicadora(\'' + nome + '\')" style="background:none;border:none;color:#dc2626;cursor:pointer;font-size:14px;line-height:1">×</button>' +
+    '</div>';
+  }).join('');
+}
+
+function vmcRemoverPublicadora(nome) {
+  vmcCadastro.publicadoras = vmcCadastro.publicadoras.filter(function(n){return n!==nome;});
+  vmcSalvarCadastro(); vmcRenderPublicadoras(); vmcAtualizarListasDeIrmaos();
+}
+
+// ── Ajudantes ───────────────────────────────────────────────────
+function vmcAddAjudante() {
+  var inp = document.getElementById('vmc-nova-ajudante');
+  var nome = inp ? inp.value.trim() : '';
+  if (!nome) return;
+  if (vmcCadastro.ajudantes.indexOf(nome) < 0) vmcCadastro.ajudantes.push(nome);
+  inp.value = '';
+  vmcSalvarCadastro();
+  vmcRenderAjudantes();
+  vmcAtualizarListasDeIrmaos();
+}
+
+function vmcRenderAjudantes() {
+  var cont = document.getElementById('vmc-lista-ajudantes');
+  if (!cont) return;
+  var lista = vmcCadastro.ajudantes || [];
+  if (!lista.length) { cont.innerHTML = '<p style="font-size:12px;color:#aaa">Nenhuma ajudante cadastrada.</p>'; return; }
+  cont.innerHTML = lista.sort(function(a,b){return a.localeCompare(b,'pt-BR');}).map(function(nome) {
+    return '<div style="display:inline-flex;align-items:center;gap:6px;background:#ecfeff;border:1px solid #a5f3fc;border-radius:8px;padding:6px 12px;margin:3px">' +
+      '<span style="font-size:13px">👩 ' + nome + '</span>' +
+      '<button onclick="vmcRemoverAjudante(\'' + nome + '\')" style="background:none;border:none;color:#dc2626;cursor:pointer;font-size:14px;line-height:1">×</button>' +
+    '</div>';
+  }).join('');
+}
+
+function vmcRemoverAjudante(nome) {
+  vmcCadastro.ajudantes = vmcCadastro.ajudantes.filter(function(n){return n!==nome;});
+  vmcSalvarCadastro(); vmcRenderAjudantes(); vmcAtualizarListasDeIrmaos();
+}
+
+// ── Sincroniza vmcListas a partir do cadastro ───────────────────
+// Garante que vmcListas reflita as funções marcadas no cadastro
+function vmcAtualizarListasDeIrmaos() {
+  // Zera listas de irmãos
+  vmcFuncoes.forEach(function(f) { vmcListas[f.key] = []; });
+  // Preenche por função marcada
+  Object.keys(vmcCadastro.irmaos).forEach(function(nome) {
+    var funcoes = vmcCadastro.irmaos[nome] || {};
+    vmcFuncoes.forEach(function(f) {
+      if (funcoes[f.key]) vmcListas[f.key].push(nome);
+    });
+  });
+  // Publicadoras e ajudantes
+  vmcListas.ministerioPubl = (vmcCadastro.publicadoras || []).slice();
+  vmcListas.ministerioAjud = (vmcCadastro.ajudantes || []).slice();
+  vmcCarregarSemana();
+}
+
+// ── Salvar/carregar cadastro no Firebase ────────────────────────
+function vmcSalvarCadastro() {
+  if (db) db.ref('vmc_config').update({ cadastro: vmcCadastro, listas: vmcListas, idx: vmcIdx });
+}
+
+function vmcRenderConfigListas() {
+  // Renderiza os três painéis
+  vmcRenderIrmaos();
+  vmcRenderPublicadoras();
+  vmcRenderAjudantes();
 }
 
 function vmcGetTodosParaCampo() {
@@ -4564,37 +4749,34 @@ function vmcGetTodosParaCampo() {
       else if (Array.isArray(item)) item.forEach(function(n){ if(typeof n==='string') todos[n]=true; });
     });
   });
-  Object.keys(vmcListas).forEach(function(k){ (vmcListas[k]||[]).forEach(function(n){ todos[n]=true; }); });
   return Object.keys(todos).sort(function(a,b){return a.localeCompare(b,'pt-BR');});
 }
 
-function vmcRemoverIrmaoBtn(btn) { vmcRemoverIrmao(btn.getAttribute('data-campo'), btn.getAttribute('data-nome')); }
-function vmcAdicionarIrmaoBtnBloco(btn) { vmcAdicionarIrmao(btn.getAttribute('data-campo')); }
-
-function vmcAdicionarIrmao(campo) {
-  var sel = document.getElementById('vmc-add-'+campo);
-  var nome = sel ? sel.value : '';
-  if (!nome) return;
-  if (!vmcListas[campo]) vmcListas[campo] = [];
-  if (vmcListas[campo].indexOf(nome) < 0) vmcListas[campo].push(nome);
-  vmcSalvarConfig();
-  vmcRenderConfigListas();
-  vmcCarregarSemana();
-}
-function vmcRemoverIrmao(campo, nome) {
-  if (!vmcListas[campo]) return;
-  vmcListas[campo] = vmcListas[campo].filter(function(n){ return n !== nome; });
-  vmcSalvarConfig();
-  vmcRenderConfigListas();
-  vmcCarregarSemana();
-}
 function vmcSalvarConfig() {
-  if (db) db.ref('vmc_config').update({ listas: vmcListas, idx: vmcIdx });
+  vmcSalvarCadastro();
 }
 
 // ── Iniciar VMC ─────────────────────────────────────────────────
 function vmcIniciar() {
-  if (!db) return;
+  // Carrega irmãos do sistema local como ponto de partida (funciona sem Firebase)
+  function carregarCadastroLocal() {
+    if (!Object.keys(vmcCadastro.irmaos).length) {
+      var todosJs = vmcGetTodosParaCampo();
+      todosJs.forEach(function(nome) {
+        if (!vmcCadastro.irmaos[nome]) vmcCadastro.irmaos[nome] = {};
+      });
+    }
+    vmcAtualizarListasDeIrmaos();
+    vmcRenderConfigListas();
+    vmcPreencherSeletores();
+  }
+
+  if (!db) {
+    // Sem Firebase: usa dados locais
+    carregarCadastroLocal();
+    return;
+  }
+
   db.ref('vmc').on('value', function(snap) {
     vmcDados = snap.val() || {};
     vmcPreencherSeletores();
@@ -4602,10 +4784,18 @@ function vmcIniciar() {
   });
   db.ref('vmc_config').once('value', function(snap) {
     var cfg = snap.val() || {};
+    if (cfg.cadastro) {
+      vmcCadastro = cfg.cadastro;
+    } else {
+      // Primeira vez no servidor: importa irmãos já cadastrados
+      var todosJs = vmcGetTodosParaCampo();
+      todosJs.forEach(function(nome) {
+        if (!vmcCadastro.irmaos[nome]) vmcCadastro.irmaos[nome] = {};
+      });
+    }
     if (cfg.listas) Object.assign(vmcListas, cfg.listas);
     if (cfg.idx)    Object.assign(vmcIdx,    cfg.idx);
-    // Preenche listas vazias com todos os irmãos cadastrados
-    vmcInicializarListasComTodos();
+    vmcAtualizarListasDeIrmaos();
     vmcRenderConfigListas();
   });
 }
@@ -4662,7 +4852,10 @@ try { iniciarFirebase(); } catch(e) { console.error('Erro iniciarFirebase:', e);
 // Reagenda avisos 24h/1h para quem já tem nome salvo
 setTimeout(reagendarAvisosAoIniciar, 1000);
 // Inicia sistema VMC
-try { vmcIniciar(); } catch(e) { console.error('Erro vmcIniciar:', e); }
+// VMC inicia após um pequeno delay para garantir que listas do sistema já carregaram
+setTimeout(function() {
+  try { vmcIniciar(); } catch(e) { console.error('Erro vmcIniciar:', e); }
+}, 800);
 try { gerarEscalaAtual(); } catch(e) { console.error('Erro gerarEscalaAtual:', e); }
 atualizarBotaoNotif();
 
