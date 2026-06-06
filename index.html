@@ -1100,6 +1100,10 @@ function ativarModoResponsavel() {
       if (dadosEstado && dadosEstado.ultimoPar !== undefined) ultimoPar = dadosEstado.ultimoPar;
       // Carrega substituições do Firebase antes de renderizar
       if (dadosEstado && dadosEstado.substituicoes) Object.assign(substituicoes, dadosEstado.substituicoes);
+      // Limpa escalaGerada corrompido do Firebase (não deve ser salvo junto com substituições)
+      if (dadosEstado && dadosEstado.escalaGerada && firebaseOk && db) {
+        db.ref('escala/estado/escalaGerada').remove().catch(function(){});
+      }
       document.getElementById('lista').innerHTML = '';
       backup.forEach(function(chave){
         var p = chave.split('-');
@@ -1529,16 +1533,12 @@ function confirmarSubst(){
     if (campo) escalaGerada[partesChave[0]][campo] = novo;
   }
 
-  // Persiste no Firebase — salva substituicoes E escalaGerada atualizados
+  // Persiste no Firebase — salva APENAS substituicoes (nunca sobrescreve escalaGerada)
   if(firebaseOk && db) {
-    db.ref('escala/estado').update({
-      substituicoes: substituicoes,
-      escalaGerada: escalaGerada
-    }).then(function() {
-      salvarMesesFirebase();
-    }).catch(function(e){
-      console.warn('Erro ao salvar substituição:', e);
-    });
+    db.ref('escala/estado/substituicoes').set(substituicoes)
+      .catch(function(e){
+        console.warn('Erro ao salvar substituição:', e);
+      });
   }
 
   fecharSubst();
