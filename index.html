@@ -119,8 +119,9 @@ h1 { font-size:22px; font-weight:700; color:#1a4fa3; margin-bottom:4px; }
 .mes-cab { background:#1a4fa3; color:white; padding:10px 18px; display:flex; align-items:center; justify-content:space-between; }
 .mes-nome { font-size:15px; font-weight:bold; text-transform:capitalize; }
 .mes-resp { font-size:11px; opacity:.8; }
-.btn-apagar-mes { background:rgba(255,255,255,0.15); color:white; border:1px solid rgba(255,255,255,0.4); border-radius:6px; padding:3px 10px; font-size:11px; cursor:pointer; white-space:nowrap; }
+.btn-apagar-mes { background:rgba(255,255,255,0.15); color:white; border:1px solid rgba(255,255,255,0.4); border-radius:6px; padding:3px 10px; font-size:11px; cursor:pointer; white-space:nowrap; display:none; }
 .btn-apagar-mes:hover { background:rgba(255,80,80,0.6); border-color:rgba(255,80,80,0.8); }
+.modo-responsavel-ativo .btn-apagar-mes { display:inline-block; }
 .reunioes-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(310px,1fr)); gap:1px; background:#d0d5dd; }
 .card { background:white; padding:12px 14px; }
 .card-topo { display:flex; align-items:center; gap:8px; margin-bottom:10px; padding-bottom:8px; border-bottom:1px solid #f4f4f2; flex-wrap:wrap; }
@@ -339,8 +340,9 @@ body.dark-mode .conf-badge.pendente { background: #2a2a15; color: #ca8a04; borde
     <p class="subtitulo" id="subtitulo-periodo">Congregação Parque Tietê</p>
   </div>
   <div class="topo-acoes">
-    <div id="badge-responsavel" style="display:none;align-items:center;gap:8px;background:#dcfce7;border:1.5px solid #22c55e;border-radius:20px;padding:5px 14px">
+    <div id="badge-responsavel" style="display:none;align-items:center;gap:8px;background:#dcfce7;border:1.5px solid #22c55e;border-radius:20px;padding:5px 14px;flex-wrap:wrap">
       <span style="font-size:13px;font-weight:bold;color:#166534">&#128274; Modo Responsável</span>
+      <button onclick="abrirSubstituicaoManual()" style="background:#1a4fa3;color:white;border:none;border-radius:10px;padding:2px 10px;font-size:12px;font-weight:bold;cursor:pointer" title="Clique em qualquer nome na escala para substituí-lo permanentemente">&#128260; Substituição</button>
       <button onclick="sairModoResponsavel()" style="background:#ef4444;color:white;border:none;border-radius:10px;padding:2px 10px;font-size:12px;font-weight:bold;cursor:pointer">Sair</button>
     </div>
     <button class="btn-gerenciar" id="btn-area-responsavel" onclick="pedirSenha()">&#128100; Área do Responsável</button>
@@ -1060,13 +1062,19 @@ function alterarSenha() {
   }
 }
 
+var pedirSenhaCallback = null;
+
 function pedirSenha() {
+  pedirSenhaCallback = null;
   document.getElementById('campo-senha').value='';
   document.getElementById('senha-erro').style.display='none';
   document.getElementById('ov-senha').classList.add('aberto');
   setTimeout(function(){ document.getElementById('campo-senha').focus(); },100);
 }
-function fecharSenha() { document.getElementById('ov-senha').classList.remove('aberto'); }
+function fecharSenha() {
+  pedirSenhaCallback = null;
+  document.getElementById('ov-senha').classList.remove('aberto');
+}
 function pedirRecuperacaoSenha() {
   if (!firebaseOk || !db) {
     alert('Sem conexão com Firebase. Não é possível recuperar a senha agora.');
@@ -1096,7 +1104,16 @@ function pedirRecuperacaoSenha() {
 }
 function confirmarSenha() {
   if (document.getElementById('campo-senha').value===SENHA) {
-    fecharSenha(); ativarModoResponsavel(); abrirPrincipal('aba-eventos');
+    fecharSenha();
+    ativarModoResponsavel();
+    if (pedirSenhaCallback) {
+      // Veio de uma ação protegida (ex: apagar mês) — executa e não abre painel
+      var cb = pedirSenhaCallback;
+      pedirSenhaCallback = null;
+      cb();
+    } else {
+      abrirPrincipal('aba-eventos');
+    }
   } else {
     document.getElementById('senha-erro').style.display='block';
     document.getElementById('campo-senha').value='';
@@ -1111,6 +1128,10 @@ function ativarModoResponsavel() {
   modoResponsavel = true;
   document.getElementById('badge-responsavel').style.display = 'flex';
   document.getElementById('btn-area-responsavel').style.display = 'none';
+  document.body.classList.add('modo-responsavel-ativo');
+  // Responsável sempre vê a lista, mesmo com modo reparo ativo
+  var lista = document.getElementById('lista');
+  if (lista) lista.style.display = '';
   // Re-renderiza para mostrar badges de treino
   var chaves = Object.keys(mesesGerados).sort();
   if (chaves.length > 0) {
@@ -1150,10 +1171,32 @@ function ativarModoResponsavel() {
   }
 }
 
+function abrirSubstituicaoManual() {
+  // Fecha o modal do responsável se estiver aberto
+  var ovPrinc = document.getElementById('ov-principal');
+  if (ovPrinc) ovPrinc.classList.remove('aberto');
+  // Mostra instrução temporária na tela
+  var aviso = document.getElementById('aviso-subst-manual');
+  if (!aviso) {
+    aviso = document.createElement('div');
+    aviso.id = 'aviso-subst-manual';
+    aviso.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#1a4fa3;color:white;padding:12px 22px;border-radius:12px;font-size:14px;font-weight:bold;z-index:9999;box-shadow:0 4px 20px rgba(0,0,0,0.3);text-align:center;max-width:90vw;cursor:pointer';
+    aviso.innerHTML = '&#128260; Clique em qualquer nome na escala para substituí-lo permanentemente<br><span style="font-size:11px;opacity:0.85">Clique aqui para cancelar</span>';
+    aviso.onclick = function() { document.body.removeChild(aviso); };
+    document.body.appendChild(aviso);
+    // Remove automaticamente após 15 segundos
+    setTimeout(function() { if (document.getElementById('aviso-subst-manual')) document.body.removeChild(aviso); }, 15000);
+  }
+  // Rolagem suave para o início da escala
+  var lista = document.getElementById('lista');
+  if (lista) lista.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
 function sairModoResponsavel() {
   modoResponsavel = false;
   document.getElementById('badge-responsavel').style.display = 'none';
   document.getElementById('btn-area-responsavel').style.display = '';
+  document.body.classList.remove('modo-responsavel-ativo');
   // Re-renderiza escala sem badges de treino
   var chaves = Object.keys(mesesGerados).sort();
   var backup = chaves.slice();
@@ -1168,6 +1211,14 @@ function sairModoResponsavel() {
   });
   // Reaplica substituições após renderizar
   aplicarSubstituicoesNaTela();
+  // Re-verifica modo reparo: se ativo, esconde lista para usuário comum
+  if (firebaseOk && db) {
+    db.ref('escala/modoReparo').once('value', function(snap) {
+      var dados = snap.val();
+      var lista = document.getElementById('lista');
+      if (dados && dados.ativo && lista) lista.style.display = 'none';
+    });
+  }
 }
 function abrirPrincipal(abaId) {
   trocarAba(abaId,null); renderEventos(); popularSelTreino();
@@ -2031,6 +2082,12 @@ function regenerarTudoDoForm(){
 }
 
 function apagarMes(chave){
+  // Proteção: só o responsável pode apagar meses
+  if (!modoResponsavel) {
+    pedirSenhaCallback = function() { apagarMes(chave); };
+    pedirSenha();
+    return;
+  }
   if (!confirm('Apagar o mês ' + chave + ' da escala?')) return;
   var bloco=document.querySelector('[data-chavemes="'+chave+'"]');
   if(bloco){ bloco.remove(); }
@@ -2218,23 +2275,31 @@ function verificarModoReparo() {
     var badge  = document.getElementById('reparo-badge');
     var btn    = document.getElementById('btn-toggle-reparo');
     var prev   = document.getElementById('reparo-preview');
+    var lista  = document.getElementById('lista');
     var dados  = snap.val();
     if (dados && dados.ativo) {
       var msg = dados.msg || MSG_REPARO_PADRAO;
+      // Banner sempre aparece para todos (incluindo responsável)
       banner.textContent = msg;
       banner.style.display = 'block';
       document.body.style.paddingTop = '44px';
-      if (badge)  { badge.style.display = 'inline-block'; }
-      if (btn)    { btn.textContent = '⏹ Desativar Modo Reparo'; btn.style.background = '#374151'; }
-      if (prev)   { prev.style.display = 'block'; document.getElementById('reparo-preview-texto').textContent = msg; }
+      if (badge) { badge.style.display = 'inline-block'; }
+      if (btn)   { btn.textContent = '⏹ Desativar Modo Reparo'; btn.style.background = '#374151'; }
+      if (prev)  { prev.style.display = 'block'; document.getElementById('reparo-preview-texto').textContent = msg; }
       var msgEl = document.getElementById('reparo-msg-custom');
       if (msgEl && !msgEl.value) msgEl.value = msg !== MSG_REPARO_PADRAO ? msg : '';
+      // Esconde escala APENAS para usuários comuns — responsável continua vendo tudo
+      if (!modoResponsavel && lista) {
+        lista.style.display = 'none';
+      }
     } else {
       banner.style.display = 'none';
       document.body.style.paddingTop = '';
       if (badge) badge.style.display = 'none';
       if (btn)   { btn.textContent = '🔧 Ativar Modo Reparo'; btn.style.background = '#dc2626'; }
       if (prev)  prev.style.display = 'none';
+      // Restaura escala para todos
+      if (lista) lista.style.display = '';
     }
   });
 }
