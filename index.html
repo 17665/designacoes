@@ -330,6 +330,9 @@ body.dark-mode .conf-badge.pendente { background: #2a2a15; color: #ca8a04; borde
 </head>
 <body>
 
+<!-- BANNER REPARO — visível para todos quando modo reparo está ativo -->
+<div id="banner-reparo" style="display:none;position:fixed;top:0;left:0;right:0;z-index:99998;background:#dc2626;color:white;text-align:center;padding:10px 16px;font-size:13px;font-family:Arial,sans-serif;box-shadow:0 2px 8px rgba(0,0,0,0.3);line-height:1.5"></div>
+
 <div class="topo">
   <div>
     <h1>&#128203; Escala de Designações</h1>
@@ -389,6 +392,7 @@ body.dark-mode .conf-badge.pendente { background: #2a2a15; color: #ca8a04; borde
       <button class="aba-btn"       onclick="trocarAba('aba-config',this)">&#128274; Senha</button>
       <button class="aba-btn" onclick="trocarAba('aba-presencas',this)">&#128221; Presenças</button>
       <button class="aba-btn"       onclick="trocarAba('aba-manual-resp',this)">&#128203; Manual</button>
+      <button class="aba-btn"       onclick="trocarAba('aba-reparo',this)" style="color:#dc2626">&#128295; Reparo</button>
       <button class="aba-btn"       onclick="trocarAba('aba-teste',this)">&#129514; Teste</button>
     </div>
     <div class="modal-body">
@@ -781,6 +785,33 @@ body.dark-mode .conf-badge.pendente { background: #2a2a15; color: #ca8a04; borde
             <button onclick="vmcFecharColar()" style="background:#f3f4f6;border:1px solid #d0d5dd;padding:8px 18px;border-radius:7px;font-size:13px;cursor:pointer">Cancelar</button>
             <button onclick="vmcExtrairTextoColado()" style="background:#8b5cf6;color:white;border:none;padding:8px 18px;border-radius:7px;font-size:13px;font-weight:bold;cursor:pointer">✨ Extrair dados</button>
           </div>
+        </div>
+      </div>
+
+      <!-- ABA REPARO -->
+      <div class="aba-conteudo" id="aba-reparo">
+        <div style="background:#fee2e2;border:2px solid #fca5a5;border-radius:12px;padding:18px;margin-bottom:16px">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+            <span style="font-size:24px">🔧</span>
+            <strong style="font-size:15px;color:#991b1b">Modo Reparo</strong>
+            <span id="reparo-badge" style="display:none;background:#dc2626;color:white;font-size:11px;font-weight:bold;padding:2px 10px;border-radius:20px">ATIVO</span>
+          </div>
+          <p style="font-size:13px;color:#7f1d1d;line-height:1.6;margin-bottom:14px">
+            Quando ativado, um <strong>banner vermelho</strong> aparece no topo da página para todos os usuários,
+            informando que o sistema está em manutenção e que devem consultar as designações no quadro de anúncios e no grupo Departamentos.
+          </p>
+          <div style="margin-bottom:12px">
+            <label style="font-size:12px;font-weight:bold;color:#7f1d1d;display:block;margin-bottom:6px">✏️ Mensagem personalizada (opcional):</label>
+            <textarea id="reparo-msg-custom" rows="4" style="width:100%;padding:10px;border:1px solid #fca5a5;border-radius:8px;font-size:13px;resize:vertical;box-sizing:border-box;color:#374151" placeholder="Deixe em branco para usar a mensagem padrão:&#10;&#10;🛠️ Estamos melhorando o sistema para servi-los melhor! Enquanto isso, as designações estão disponíveis no quadro de anúncios e no grupo Departamentos. Obrigado pela paciência e cooperação! 🙏❤️"></textarea>
+          </div>
+          <button id="btn-toggle-reparo" onclick="toggleModoReparo()"
+            style="background:#dc2626;color:white;border:none;padding:10px 22px;border-radius:8px;font-size:14px;font-weight:bold;cursor:pointer;width:100%">
+            🔧 Ativar Modo Reparo
+          </button>
+        </div>
+        <div id="reparo-preview" style="display:none;background:#fff7ed;border:1px solid #fed7aa;border-radius:8px;padding:12px;font-size:12px;color:#92400e">
+          <strong>Prévia do banner que os usuários verão:</strong>
+          <div id="reparo-preview-texto" style="margin-top:8px;background:#dc2626;color:white;padding:10px 14px;border-radius:6px;font-size:13px;line-height:1.5"></div>
         </div>
       </div>
 
@@ -2141,6 +2172,73 @@ function _criarDbProxy() {
     }
   };
 }
+
+// ── MODO REPARO ─────────────────────────────────────────────────
+var MSG_REPARO_PADRAO = '🛠️ Estamos melhorando o sistema para servi-los melhor! ' +
+  'Enquanto isso, as designações estão disponíveis no quadro de anúncios e no grupo Departamentos. ' +
+  'Obrigado pela paciência e cooperação! 🙏❤️';
+
+function toggleModoReparo() {
+  var btn    = document.getElementById('btn-toggle-reparo');
+  var badge  = document.getElementById('reparo-badge');
+  var prev   = document.getElementById('reparo-preview');
+  var banner = document.getElementById('banner-reparo');
+  var msgEl  = document.getElementById('reparo-msg-custom');
+  var ativo  = banner.style.display !== 'none';
+
+  if (!ativo) {
+    // ATIVAR
+    var msg = (msgEl && msgEl.value.trim()) ? msgEl.value.trim() : MSG_REPARO_PADRAO;
+    banner.textContent = msg;
+    banner.style.display = 'block';
+    document.body.style.paddingTop = (parseInt(document.body.style.paddingTop || '0') + 44) + 'px';
+    badge.style.display = 'inline-block';
+    btn.textContent = '⏹ Desativar Modo Reparo';
+    btn.style.background = '#374151';
+    prev.style.display = 'block';
+    document.getElementById('reparo-preview-texto').textContent = msg;
+    // Salva no Firebase para todos verem
+    if (firebaseOk && db) db.ref('escala/modoReparo').set({ ativo: true, msg: msg });
+  } else {
+    // DESATIVAR
+    banner.style.display = 'none';
+    document.body.style.paddingTop = '';
+    badge.style.display = 'none';
+    btn.textContent = '🔧 Ativar Modo Reparo';
+    btn.style.background = '#dc2626';
+    prev.style.display = 'none';
+    if (firebaseOk && db) db.ref('escala/modoReparo').remove();
+  }
+}
+
+function verificarModoReparo() {
+  if (!firebaseOk || !db) return;
+  db.ref('escala/modoReparo').on('value', function(snap) {
+    var banner = document.getElementById('banner-reparo');
+    var badge  = document.getElementById('reparo-badge');
+    var btn    = document.getElementById('btn-toggle-reparo');
+    var prev   = document.getElementById('reparo-preview');
+    var dados  = snap.val();
+    if (dados && dados.ativo) {
+      var msg = dados.msg || MSG_REPARO_PADRAO;
+      banner.textContent = msg;
+      banner.style.display = 'block';
+      document.body.style.paddingTop = '44px';
+      if (badge)  { badge.style.display = 'inline-block'; }
+      if (btn)    { btn.textContent = '⏹ Desativar Modo Reparo'; btn.style.background = '#374151'; }
+      if (prev)   { prev.style.display = 'block'; document.getElementById('reparo-preview-texto').textContent = msg; }
+      var msgEl = document.getElementById('reparo-msg-custom');
+      if (msgEl && !msgEl.value) msgEl.value = msg !== MSG_REPARO_PADRAO ? msg : '';
+    } else {
+      banner.style.display = 'none';
+      document.body.style.paddingTop = '';
+      if (badge) badge.style.display = 'none';
+      if (btn)   { btn.textContent = '🔧 Ativar Modo Reparo'; btn.style.background = '#dc2626'; }
+      if (prev)  prev.style.display = 'none';
+    }
+  });
+}
+// ────────────────────────────────────────────────────────────────
 
 function toggleModoTeste() {
   var btn   = document.getElementById('btn-toggle-teste');
@@ -4879,6 +4977,8 @@ setTimeout(function() {
 }, 100);
 try { gerarEscalaAtual(); } catch(e) { console.error('Erro gerarEscalaAtual:', e); }
 atualizarBotaoNotif();
+// Verifica modo reparo ao iniciar (para todos os usuários)
+try { verificarModoReparo(); } catch(e) { console.error('Erro verificarModoReparo:', e); }
 
 // Verifica se já instalado como PWA
 if (window.matchMedia('(display-mode: standalone)').matches) {
