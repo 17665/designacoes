@@ -845,20 +845,47 @@ function sairModoResponsavel() {
   document.getElementById('badge-responsavel').style.display = 'none';
   document.getElementById('btn-area-responsavel').style.display = '';
   document.body.classList.remove('modo-responsavel-ativo');
-  // Re-renderiza escala sem badges de treino
+  // Re-renderiza escala sem badges de treino — carrega do Firebase para preservar substituições
   var chaves = Object.keys(mesesGerados).sort();
   var backup = chaves.slice();
-  // NÃO zera substituicoes — elas são permanentes e devem persistir
   contadorPulo = {}; aparicoes = {}; ultimoAuditorio = {};
   mesesGerados = {};
   idxM.v=0; idxA.v=0; idxV.v=0; idxZ.v=0; idxI.v=0; ultimoPar=-1;
   document.getElementById('lista').innerHTML = '';
-  backup.forEach(function(chave){
-    var p = chave.split('-');
-    adicionarMeses(parseInt(p[1]), parseInt(p[0]), 1);
-  });
-  // Reaplica substituições após renderizar
-  aplicarSubstituicoesNaTela();
+  if (firebaseOk && db) {
+    db.ref('escala/estado').once('value', function(snap) {
+      var dados = snap.val() || {};
+      if (dados.escalaGerada && Object.keys(dados.escalaGerada).length > 0) {
+        escalaGerada = {};
+        Object.assign(escalaGerada, dados.escalaGerada);
+      }
+      if (dados.substituicoes) {
+        substituicoes = {};
+        Object.assign(substituicoes, dados.substituicoes);
+      }
+      backup.forEach(function(chave) {
+        var p = chave.split('-');
+        var a = parseInt(p[0]), m = parseInt(p[1]);
+        mesesGerados[chave] = true;
+        if (dados.escalaGerada && Object.keys(dados.escalaGerada).length > 0) {
+          renderMesSalvo(m, a, dados.escalaGerada, dados.substituicoes || substituicoes);
+        } else {
+          adicionarMeses(m, a, 1);
+        }
+      });
+      var lista = document.getElementById('lista');
+      var blocos = Array.from(lista.querySelectorAll('.mes-bloco'));
+      blocos.sort(function(a,b){ return (a.dataset.chavemes||'').localeCompare(b.dataset.chavemes||''); });
+      blocos.forEach(function(b){ lista.appendChild(b); });
+      aplicarSubstituicoesNaTela();
+    });
+  } else {
+    backup.forEach(function(chave){
+      var p = chave.split('-');
+      adicionarMeses(parseInt(p[1]), parseInt(p[0]), 1);
+    });
+    aplicarSubstituicoesNaTela();
+  }
 }
 function abrirPrincipal(abaId) {
   trocarAba(abaId,null); renderEventos(); popularSelTreino();
@@ -2040,17 +2067,20 @@ function irmaosDoSetor(setor) {
 
 function abrirTroca(chave, setor, dataLabel, nomeAtual) {
   pedirIdentidade(function(meuNomeConfirmado) {
-    if (meuNomeConfirmado !== nomeAtual) {
+    // nomeAtual é o nome EXIBIDO na tela (pode ser um substituto)
+    // A chave tem formato dataISO|setor|nomeOriginal — precisamos verificar quem está designado de fato
+    var nomeExibido = substituicoes[chave] || nomeAtual;
+    if (meuNomeConfirmado !== nomeExibido) {
       alert('Voce so pode solicitar troca da sua propria designacao.');
       return;
     }
-    trocaAtual = { chave: chave, setor: setor, dataLabel: dataLabel, solicitante: nomeAtual };
+    trocaAtual = { chave: chave, setor: setor, dataLabel: dataLabel, solicitante: nomeExibido };
     document.getElementById('troca-setor').textContent = setor;
     document.getElementById('troca-data').textContent = dataLabel;
-    document.getElementById('troca-solicitante').textContent = nomeAtual;
+    document.getElementById('troca-solicitante').textContent = nomeExibido;
     // Lista só irmãos do mesmo setor, excluindo ele mesmo
     var sel = document.getElementById('troca-select');
-    var irmaosSetor = irmaosDoSetor(setor).filter(function(n){ return n !== nomeAtual; });
+    var irmaosSetor = irmaosDoSetor(setor).filter(function(n){ return n !== nomeExibido; });
     if(irmaosSetor.length === 0){
       alert('Não há outros irmãos no mesmo setor para trocar.');
       return;
