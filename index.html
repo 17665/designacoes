@@ -1413,6 +1413,22 @@ function toggleModoReparo() {
   }
 }
 
+function pedirSenhaReparo() {
+  // Abre modal de senha com z-index acima do overlay de manutenção
+  var ovSenha = document.getElementById('ov-senha');
+  ovSenha.style.zIndex = '99999';
+  pedirSenhaCallback = function() {
+    // Após senha correta: marca sessão e remove overlay
+    sessionStorage.setItem('reparo_acesso', 'ok');
+    removerBloqueioManutencao();
+    ovSenha.style.zIndex = '';
+  };
+  document.getElementById('campo-senha').value = '';
+  document.getElementById('senha-erro').style.display = 'none';
+  ovSenha.classList.add('aberto');
+  setTimeout(function(){ document.getElementById('campo-senha').focus(); }, 100);
+}
+
 function aplicarBloqueioManutencao() {
   // NUNCA bloqueia o responsável — ele precisa ver e editar a escala durante o reparo
   if (modoResponsavel) return;
@@ -1429,6 +1445,11 @@ function aplicarBloqueioManutencao() {
     '<h2>🔧 Manutenção</h2>' +
     '<p>' + (window.modoReparoMsg || MSG_REPARO_PADRAO).replace(/\n/g,'<br>') + '</p>' +
     '<small>O responsável está realizando ajustes no sistema.</small>' +
+    '<div style="margin-top:20px">' +
+    '<button onclick="pedirSenhaReparo()" style="background:transparent;border:1px solid rgba(255,255,255,0.2);color:rgba(255,255,255,0.4);padding:6px 14px;border-radius:8px;font-size:11px;cursor:pointer;transition:all .3s" ' +
+    'onmouseover="this.style.color='white';this.style.borderColor='rgba(255,255,255,0.7)'" ' +
+    'onmouseout="this.style.color='rgba(255,255,255,0.4)';this.style.borderColor='rgba(255,255,255,0.2)'">🔐 Responsável</button>' +
+    '</div>' +
     '</div>';
   document.body.appendChild(div);
 }
@@ -1486,6 +1507,8 @@ function carregarSenhaFirebase() {
   });
 }
 
+var pedirSenhaCallback = null;
+
 function pedirSenha() {
   document.getElementById('campo-senha').value='';
   document.getElementById('senha-erro').style.display='none';
@@ -1498,7 +1521,14 @@ function confirmarSenha() {
   if (document.getElementById('campo-senha').value === SENHA) {
     fecharSenha();
     ativarModoResponsavel();
-    abrirPrincipal('aba-eventos');
+    if (pedirSenhaCallback) {
+      // Callback especial (ex: acesso durante reparo, apagar mês)
+      var cb = pedirSenhaCallback;
+      pedirSenhaCallback = null;
+      cb();
+    } else {
+      abrirPrincipal('aba-eventos');
+    }
   } else {
     document.getElementById('senha-erro').style.display='block';
   }
