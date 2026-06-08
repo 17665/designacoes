@@ -11,8 +11,8 @@
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icon-192.svg">
 <link rel="icon" type="image/svg+xml" href="icon-192.svg">
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 <title>Designações — Cong. Parq. Tietê</title>
 <style>
 * { box-sizing:border-box; margin:0; padding:0; }
@@ -26,8 +26,6 @@ h1 { font-size:22px; font-weight:700; color:#1a4fa3; margin-bottom:4px; }
 .btn-imprimir:hover  { background:#163e82; }
 .btn-gerenciar { background:#0f6e56; color:white; border:none; padding:9px 18px; border-radius:8px; font-size:14px; font-weight:bold; cursor:pointer; }
 .btn-gerenciar:hover { background:#0a5240; }
-.btn-editar-permanente { background:#b45309; color:white; border:none; padding:9px 18px; border-radius:8px; font-size:14px; font-weight:bold; cursor:pointer; }
-.btn-editar-permanente:hover { background:#92400e; }
 
 .overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.55); z-index:999; align-items:center; justify-content:center; padding:20px; }
 .overlay.aberto { display:flex; }
@@ -121,8 +119,9 @@ h1 { font-size:22px; font-weight:700; color:#1a4fa3; margin-bottom:4px; }
 .mes-cab { background:#1a4fa3; color:white; padding:10px 18px; display:flex; align-items:center; justify-content:space-between; }
 .mes-nome { font-size:15px; font-weight:bold; text-transform:capitalize; }
 .mes-resp { font-size:11px; opacity:.8; }
-.btn-apagar-mes { background:rgba(255,255,255,0.15); color:white; border:1px solid rgba(255,255,255,0.4); border-radius:6px; padding:3px 10px; font-size:11px; cursor:pointer; white-space:nowrap; }
+.btn-apagar-mes { background:rgba(255,255,255,0.15); color:white; border:1px solid rgba(255,255,255,0.4); border-radius:6px; padding:3px 10px; font-size:11px; cursor:pointer; white-space:nowrap; display:none; }
 .btn-apagar-mes:hover { background:rgba(255,80,80,0.6); border-color:rgba(255,80,80,0.8); }
+.modo-responsavel-ativo .btn-apagar-mes { display:inline-block; }
 .reunioes-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(310px,1fr)); gap:1px; background:#d0d5dd; }
 .card { background:white; padding:12px 14px; }
 .card-topo { display:flex; align-items:center; gap:8px; margin-bottom:10px; padding-bottom:8px; border-bottom:1px solid #f4f4f2; flex-wrap:wrap; }
@@ -137,9 +136,8 @@ h1 { font-size:22px; font-weight:700; color:#1a4fa3; margin-bottom:4px; }
 .linha-icone { font-size:13px; line-height:1.4; width:16px; flex-shrink:0; }
 .linha-label { font-weight:bold; color:#5e6370; min-width:110px; font-size:11px; line-height:1.6; flex-shrink:0; }
 .linha-nomes { color:#1a1a2e; line-height:1.5; font-size:12px; flex:1; }
-.nome-clicavel, .nome-edicao { cursor:pointer; border-bottom:1px dashed #1a4fa3; color:#1a4fa3; }
-.nome-clicavel:hover, .nome-edicao:hover { background:#e8f0fb; border-radius:3px; }
-.nome-normal { color:#1a1a2e; }
+.nome-clicavel { cursor:pointer; border-bottom:1px dashed #1a4fa3; color:#1a4fa3; }
+.nome-clicavel:hover { background:#e8f0fb; border-radius:3px; }
 .banner-evento { font-size:11px; padding:5px 8px; border-radius:4px; margin-bottom:7px; line-height:1.5; }
 .banner-visita-terca { background:#f3e8ff; color:#6b21a8; border-left:3px solid #a855f7; }
 .banner-visita-sab   { background:#dcfce7; color:#166534; border-left:3px solid #22c55e; }
@@ -229,37 +227,6 @@ h1 { font-size:22px; font-weight:700; color:#1a4fa3; margin-bottom:4px; }
 /* Notif badge */
 .notif-status { font-size:11px; color:#0f6e56; font-weight:bold; display:inline-flex; align-items:center; gap:4px; }
 
-/* ═══════════════ VMC ═══════════════ */
-.vmc-secao { margin-bottom:16px; border:1px solid #e8e8e8; border-radius:8px; overflow:hidden; }
-.vmc-secao-titulo { padding:8px 14px; color:white; font-size:12px; font-weight:bold; text-transform:uppercase; letter-spacing:.5px; }
-.vmc-linha { display:flex; align-items:center; gap:8px; padding:7px 12px; border-bottom:1px solid #f0f0f0; flex-wrap:wrap; }
-.vmc-linha:last-child { border-bottom:none; }
-.vmc-label { font-size:12px; color:#5e6370; font-weight:bold; min-width:180px; flex-shrink:0; }
-.vmc-sel { flex:1; min-width:160px; padding:5px 8px; border:1px solid #d0d5dd; border-radius:6px; font-size:13px; background:white; }
-.vmc-tema { flex:1.5; min-width:180px; padding:5px 8px; border:1px solid #d0d5dd; border-radius:6px; font-size:12px; color:#5e6370; font-style:italic; }
-.vmc-config-bloco { background:#f9f9f9; border:1px solid #e8e8e8; border-radius:8px; padding:12px 14px; margin-bottom:10px; }
-.vmc-config-titulo { font-size:12px; font-weight:bold; color:#1a1a2e; margin-bottom:8px; }
-.vmc-config-lista { display:flex; flex-wrap:wrap; gap:6px; }
-.vmc-config-tag { background:#e8f0fb; color:#1a4fa3; padding:3px 10px; border-radius:12px; font-size:11px; font-weight:bold; display:flex; align-items:center; gap:4px; }
-.vmc-config-tag button { background:none; border:none; color:#dc2626; cursor:pointer; font-size:13px; padding:0; line-height:1; }
-/* Partes dinâmicas do ministério */
-.vmc-minist-parte { background:#faf5ff; border:1px solid #e9d5ff; border-radius:8px; padding:10px 12px; margin-bottom:8px; }
-.vmc-secao-linha-dyn { background:#f0fdf4; border:1px solid #bbf7d0; border-radius:8px; padding:8px 12px; margin-bottom:6px; }
-/* Visão pública do programa */
-.vmc-pub-secao { margin-bottom:18px; }
-.vmc-pub-titulo { font-size:12px; font-weight:bold; text-transform:uppercase; letter-spacing:.5px; padding:6px 12px; border-radius:6px; margin-bottom:8px; }
-.vmc-pub-titulo.tesouro { background:#e8f0fb; color:#1a4fa3; }
-.vmc-pub-titulo.escola  { background:#f3e8ff; color:#6b21a8; }
-.vmc-pub-titulo.vida    { background:#dcfce7; color:#166534; }
-.vmc-pub-linha { display:flex; gap:8px; padding:5px 4px; border-bottom:1px solid #f0f0f0; font-size:13px; align-items:baseline; }
-.vmc-pub-linha:last-child { border-bottom:none; }
-.vmc-pub-papel { color:#5e6370; font-size:11px; min-width:170px; flex-shrink:0; }
-.vmc-pub-nome  { font-weight:bold; color:#1a1a2e; }
-.vmc-pub-tema  { color:#888; font-size:11px; font-style:italic; margin-left:4px; }
-/* @media print */
-@media print {
-  #ov-programa-vmc { display:none !important; }
-}
 @media print {
   body { background:white; padding:0; }
   .topo,.overlay,#painel-trocas,.firebase-config-banner { display:none !important; }
@@ -275,103 +242,25 @@ h1 { font-size:22px; font-weight:700; color:#1a4fa3; margin-bottom:4px; }
   .badge-quarta { background:#e8f0fb !important; color:#1a4fa3 !important; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
   .badge-terca  { background:#f3e8ff !important; color:#6b21a8 !important; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
   .badge-sabado { background:#e1f5ee !important; color:#0f6e56 !important; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
-  .nome-clicavel, .nome-edicao { border-bottom:none !important; color:#1a1a2e !important; cursor:default; }
-  .nome-troca    { border-bottom:none !important; color:#1a1a2e !important; cursor:default; }
+  .nome-clicavel { border-bottom:none !important; color:#1a1a2e !important; cursor:default; }
   .linha { padding:2px 0; }
   .linha-label { min-width:100px; font-size:10px; }
   .linha-nomes { font-size:10px; }
   .card-data { font-size:12px; }
   @page { size:A4 portrait; margin:10mm 8mm; }
 }
-/* NOME BASE — span neutro que guarda data-chave para edição futura */
-.nome-base { color: inherit; }
-
-/* NOME EDIÇÃO — clicável no modo edição */
-.nome-edicao {
-  cursor: pointer;
-  color: #b45309;
-  border-bottom: 1px dashed #f59e0b;
-  background: rgba(245,158,11,0.08);
-  border-radius: 3px;
-  padding: 0 2px;
-  transition: background .15s;
-}
-.nome-edicao:hover { background: rgba(245,158,11,0.2); }
-
-/* BANNER MODO EDIÇÃO */
-#badge-edicao { animation: pulse-orange 2s infinite; }
-@keyframes pulse-orange {
-  0%,100% { box-shadow: 0 0 0 0 rgba(245,158,11,0.4); }
-  50%      { box-shadow: 0 0 0 6px rgba(245,158,11,0); }
-}
-
-/* TEMA ESCURO - PRETO SUAVE */
-body.dark-mode { background: #1a1a1a; color: #d4d4d4; }
-body.dark-mode .mes-bloco, body.dark-mode .card, body.dark-mode .modal-senha, body.dark-mode .modal-principal, body.dark-mode .modal-subst, body.dark-mode .card-evento { background: #252525; border-color: #3a3a3a; color: #d4d4d4; }
-body.dark-mode .mes-cab { background: #111111; }
-body.dark-mode .linha { border-bottom-color: #333; }
-body.dark-mode .linha-label { color: #999; }
-body.dark-mode .linha-nomes { color: #ccc; }
-body.dark-mode h1 { color: #8ab4f8; }
-body.dark-mode .ev-card { background: #252525; border-color: #3a3a3a; }
-body.dark-mode .badge-quarta { background: #1a3a5c; color: #8ab4f8; }
-body.dark-mode .badge-sabado { background: #1a3a2c; color: #81c784; }
-body.dark-mode .troca-pendente { background: #2a2a15; }
-body.dark-mode .troca-aceita { background: #152a15; }
-body.dark-mode .minha-card { background: #1e1e2e; border-color: #333; }
-body.dark-mode .gerar-form, body.dark-mode .aviso { background: #252525; }
-body.dark-mode .btn-cancelar { background: transparent; border-color: #555; color: #999; }
-body.dark-mode input, body.dark-mode select, body.dark-mode textarea { background: #333; color: #d4d4d4; border-color: #555; }
-body.dark-mode .subtitulo { color: #999; }
-body.dark-mode .modal-cab { background: #252525; border-color: #3a3a3a; }
-body.dark-mode .abas { border-bottom-color: #3a3a3a; }
-body.dark-mode .aba-btn { color: #999; }
-body.dark-mode .aba-btn.ativa { color: #8ab4f8; border-bottom-color: #8ab4f8; }
-body.dark-mode .firebase-config-banner { background: #0d1b2a; }
-body.dark-mode .card-evento { background: #252525 !important; border-color: #3a3a3a !important; }
-body.dark-mode .ev-titulo { color: #e8e8e8 !important; }
-body.dark-mode .ev-detalhe { color: #aaa !important; }
-body.dark-mode .ev-tema { background: rgba(255,255,255,0.05) !important; }
-body.dark-mode .banner-evento { color: #d4d4d4; }
-body.dark-mode .banner-visita-terca { background: #2a1a3a !important; color: #c4b5fd !important; }
-body.dark-mode .banner-visita-sab { background: #1a2a1a !important; color: #a7f3d0 !important; }
-body.dark-mode .ev-card-topo, body.dark-mode .ev-card-meio { color: #d4d4d4; }
-body.dark-mode .ev-card-extra { background: #1e1e1e; border-color: #3a3a3a; }
-body.dark-mode .ev-card input, body.dark-mode .ev-card select, body.dark-mode .ev-card textarea { background: #333; color: #d4d4d4; }
-body.dark-mode .reunioes-grid { background: #1a1a1a; }
-body.dark-mode .card-topo { border-bottom-color: #333; }
-body.dark-mode .badge-terca { background: #3a1a3a; color: #c4b5fd; }
-body.dark-mode .semana-vazia { color: #666; }
-body.dark-mode .hist-table th { background: #252525; color: #999; border-bottom-color: #444; }
-body.dark-mode .hist-table td { border-bottom-color: #333; }
-body.dark-mode .hist-table tr:hover td { background: #2a2a2a; }
-body.dark-mode .hist-zero { color: #555; }
-body.dark-mode .ger-trocas-vazio { color: #666; }
-body.dark-mode .ger-troca-row { background: #252525; border-color: #333; }
-body.dark-mode .ger-troca-row:hover { background: #2a2a2a; }
-body.dark-mode .ger-troca-detalhe { color: #999; }
-body.dark-mode .conf-badge.pendente { background: #2a2a15; color: #ca8a04; border-color: #854d0e; }
-
-/* MODO MANUTENÇÃO - bloqueio para usuários comuns */
-.bloqueio-manutencao {
-  position: relative;
-}
 .bloqueio-manutencao::before {
   content: "";
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(30, 30, 30, 0.95);
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(30,30,30,0.96);
   z-index: 99997;
   backdrop-filter: blur(8px);
 }
 .mensagem-manutencao {
   position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+  top: 50%; left: 50%;
+  transform: translate(-50%,-50%);
   background: #1e1e1e;
   color: white;
   padding: 32px 40px;
@@ -379,61 +268,44 @@ body.dark-mode .conf-badge.pendente { background: #2a2a15; color: #ca8a04; borde
   text-align: center;
   z-index: 99998;
   max-width: 500px;
+  width: 90vw;
   box-shadow: 0 20px 40px rgba(0,0,0,0.4);
   border: 1px solid #dc2626;
 }
-.mensagem-manutencao h2 {
-  color: #f87171;
-  margin-bottom: 16px;
-  font-size: 24px;
-}
-.mensagem-manutencao p {
-  font-size: 16px;
-  line-height: 1.6;
-  margin-bottom: 10px;
-  color: #e5e5e5;
-}
-.mensagem-manutencao small {
-  color: #aaa;
-  font-size: 12px;
-}
+.mensagem-manutencao h2 { color:#f87171; margin-bottom:16px; font-size:24px; }
+.mensagem-manutencao p { font-size:16px; line-height:1.6; margin-bottom:10px; color:#e5e5e5; }
+.mensagem-manutencao small { color:#aaa; font-size:12px; }
 </style>
 </head>
 <body>
 
-<!-- BANNER REPARO — visível para todos quando modo reparo está ativo -->
-<div id="banner-reparo" style="display:none;position:fixed;top:0;left:0;right:0;z-index:99996;background:#dc2626;color:white;text-align:center;padding:10px 16px;font-size:13px;font-family:Arial,sans-serif;box-shadow:0 2px 8px rgba(0,0,0,0.3);line-height:1.5"></div>
+<!-- BANNER REPARO -->
+<div id="banner-reparo" style="display:none;position:fixed;top:0;left:0;right:0;z-index:99996;background:#dc2626;color:white;text-align:center;padding:10px 16px;font-size:13px;font-weight:bold;box-shadow:0 2px 8px rgba(0,0,0,0.3)"></div>
 
 <div class="topo">
   <div>
-    <h1>📄 Escala de Designações</h1>
+    <h1>&#128203; Escala de Designações</h1>
     <p class="subtitulo" id="subtitulo-periodo">Congregação Parque Tietê</p>
   </div>
   <div class="topo-acoes">
-    <div id="badge-responsavel" style="display:none;align-items:center;gap:8px;background:#dcfce7;border:1.5px solid #22c55e;border-radius:20px;padding:5px 14px">
-      <span style="font-size:13px;font-weight:bold;color:#166534">🔐 Modo Responsável</span>
+    <div id="badge-responsavel" style="display:none;align-items:center;gap:8px;background:#dcfce7;border:1.5px solid #22c55e;border-radius:20px;padding:5px 14px;flex-wrap:wrap">
+      <span style="font-size:13px;font-weight:bold;color:#166534">&#128274; Modo Responsável</span>
+      <button onclick="abrirSubstituicaoManual()" style="background:#1a4fa3;color:white;border:none;border-radius:10px;padding:2px 10px;font-size:12px;font-weight:bold;cursor:pointer">&#128260; Substituição</button>
       <button onclick="sairModoResponsavel()" style="background:#ef4444;color:white;border:none;border-radius:10px;padding:2px 10px;font-size:12px;font-weight:bold;cursor:pointer">Sair</button>
     </div>
-    <div id="badge-edicao" style="display:none;align-items:center;gap:8px;background:#fffbeb;border:1.5px solid #f59e0b;border-radius:20px;padding:5px 14px">
-      <span style="font-size:13px;font-weight:bold;color:#92400e">✏️ Modo Edição</span>
-      <button onclick="sairModoEdicao()" style="background:#f59e0b;color:white;border:none;border-radius:10px;padding:2px 10px;font-size:12px;font-weight:bold;cursor:pointer">Sair Edição</button>
-    </div>
-    <button class="btn-gerenciar" id="btn-area-responsavel" onclick="pedirSenha()">👨‍💼 Área do Responsável</button>
-    <button class="btn-editar-permanente" id="btn-editar-permanente" onclick="ativarModoEdicao()" style="display:none">✏️ Editar Designações</button>
-    <button class="btn-imprimir" onclick="window.print()">🖨️ Imprimir escala</button>
-    <a href="manual-usuario.html" target="_blank" style="background:#7c3aed;color:white;border:none;padding:9px 18px;border-radius:8px;font-size:14px;font-weight:bold;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:6px">📘 Manual do Irmão</a>
-    <button onclick="abrirProgramaVMC()" style="background:#0f6e56;color:white;border:none;padding:9px 18px;border-radius:8px;font-size:14px;font-weight:bold;cursor:pointer">📖 Programa</button>
-    <button id="btn-minha-escala" onclick="abrirMinhaEscala()" style="background:#7c3aed;color:white;border:none;padding:9px 18px;border-radius:8px;font-size:14px;font-weight:bold;cursor:pointer">👤 Minha Escala</button>
-    <button id="btn-notif" onclick="pedirPermissaoNotificacao()" style="display:none;background:#0f6e56;color:white;border:none;padding:9px 14px;border-radius:8px;font-size:14px;cursor:pointer" title="Ativar notificações">🔔</button>
-<button id="btn-instalar-pwa" onclick="instalarPWA()" style="display:none;background:#f59e0b;color:white;border:none;padding:9px 14px;border-radius:8px;font-size:13px;font-weight:bold;cursor:pointer">📱 Instalar App</button>
-<button onclick="alternarTema()" style="background:#374151;color:white;border:none;padding:9px 14px;border-radius:8px;font-size:13px;font-weight:bold;cursor:pointer" id="btn-tema" title="Alternar tema claro/escuro">🌙 Escuro</button>
+    <button class="btn-gerenciar" id="btn-area-responsavel" onclick="pedirSenha()">&#128100; Área do Responsável</button>
+    <button class="btn-imprimir"  onclick="window.print()">&#128424; Imprimir escala</button>
+    <a href="manual-usuario.html" target="_blank" style="background:#7c3aed;color:white;border:none;padding:9px 18px;border-radius:8px;font-size:14px;font-weight:bold;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:6px">&#128214; Manual do Irmão</a>
+    <button id="btn-minha-escala" onclick="abrirMinhaEscala()" style="background:#7c3aed;color:white;border:none;padding:9px 18px;border-radius:8px;font-size:14px;font-weight:bold;cursor:pointer">&#128100; Minha Escala</button>
+    <button id="btn-notif" onclick="pedirPermissaoNotificacao()" style="display:none;background:#0f6e56;color:white;border:none;padding:9px 14px;border-radius:8px;font-size:14px;cursor:pointer" title="Ativar notificações">&#128276;</button>
+    <button id="btn-instalar-pwa" onclick="instalarPWA()" style="display:none;background:#f59e0b;color:white;border:none;padding:9px 14px;border-radius:8px;font-size:13px;font-weight:bold;cursor:pointer">&#128187; Instalar App</button>
   </div>
 </div>
 
 <!-- OVERLAY SENHA -->
 <div class="overlay" id="ov-senha">
   <div class="modal-senha">
-    <div class="modal-senha-cab">🔒 Acesso Restrito</div>
+    <div class="modal-senha-cab">&#128274; Acesso Restrito</div>
     <div class="modal-senha-body">
       <p>Digite a senha do responsável para continuar.</p>
       <input type="password" id="campo-senha" placeholder="••••••••"
@@ -441,10 +313,10 @@ body.dark-mode .conf-badge.pendente { background: #2a2a15; color: #ca8a04; borde
       <div class="senha-erro" id="senha-erro">Senha incorreta. Tente novamente.</div>
       <div class="senha-btns">
         <button class="btn-cancelar" onclick="fecharSenha()">Cancelar</button>
-        <button class="btn-entrar"   onclick="confirmarSenha()">Entrar →</button>
+        <button class="btn-entrar"   onclick="confirmarSenha()">Entrar &#8594;</button>
       </div>
       <div style="text-align:center;margin-top:12px">
-        <button onclick="pedirRecuperacaoSenha()" style="background:none;border:none;color:#1a4fa3;font-size:12px;cursor:pointer;text-decoration:underline">🔑 Esqueci a senha</button>
+        <button onclick="pedirRecuperacaoSenha()" style="background:none;border:none;color:#1a4fa3;font-size:12px;cursor:pointer;text-decoration:underline">&#128273; Esqueci a senha</button>
       </div>
     </div>
   </div>
@@ -454,22 +326,19 @@ body.dark-mode .conf-badge.pendente { background: #2a2a15; color: #ca8a04; borde
 <div class="overlay" id="ov-principal">
   <div class="modal-principal">
     <div class="modal-cab">
-      <span class="modal-cab-titulo">👨‍💼 Área do Responsável</span>
-      <button class="btn-fechar" onclick="fecharPrincipal()">✕</button>
+      <span class="modal-cab-titulo">&#128100; Área do Responsável</span>
+      <button class="btn-fechar" onclick="fecharPrincipal()">&#10005;</button>
     </div>
     <div class="abas">
-      <button class="aba-btn ativa" onclick="trocarAba('aba-eventos',this)">⚙️ Eventos</button>
-      <button class="aba-btn"       onclick="trocarAba('aba-irmaos',this)">👥 Irmãos</button>
-      <button class="aba-btn"       onclick="trocarAba('aba-treino',this)">📚 Treinamento</button>
-      <button class="aba-btn"       onclick="trocarAba('aba-gerar',this)">📅 Gerar Meses</button>
-      <button class="aba-btn"       onclick="trocarAba('aba-trocas',this)">🔄 Trocas</button>
-      <button class="aba-btn"       onclick="trocarAba('aba-historico',this)">📊 Histórico</button>
-      <button class="aba-btn"       onclick="trocarAba('aba-vmc',this)">📖 VMC</button>
-      <button class="aba-btn"       onclick="trocarAba('aba-config',this)">🔑 Senha</button>
-      <button class="aba-btn" onclick="trocarAba('aba-presencas',this)">📋 Presenças</button>
-      <button class="aba-btn"       onclick="trocarAba('aba-manual-resp',this)">📘 Manual</button>
-      <button class="aba-btn"       onclick="trocarAba('aba-reparo',this)" style="color:#dc2626">🔧 Reparo</button>
-      <button class="aba-btn"       onclick="trocarAba('aba-teste',this)">🧪 Teste</button>
+      <button class="aba-btn ativa" onclick="trocarAba('aba-eventos',this)">&#9881; Eventos</button>
+      <button class="aba-btn"       onclick="trocarAba('aba-irmaos',this)">&#128101; Irmãos</button>
+      <button class="aba-btn"       onclick="trocarAba('aba-treino',this)">&#127891; Treinamento</button>
+      <button class="aba-btn"       onclick="trocarAba('aba-gerar',this)">&#128197; Gerar Meses</button>
+      <button class="aba-btn"       onclick="trocarAba('aba-trocas',this)">&#128260; Trocas</button>
+      <button class="aba-btn"       onclick="trocarAba('aba-historico',this)">&#128202; Histórico</button>
+      <button class="aba-btn"       onclick="trocarAba('aba-config',this)">&#128274; Senha</button>
+      <button class="aba-btn"       onclick="trocarAba('aba-confirmacoes',this)" id="btn-aba-conf">&#9989; Presenças</button>
+      <button class="aba-btn"       onclick="trocarAba('aba-manual-resp',this)">&#128203; Manual</button>
     </div>
     <div class="modal-body">
 
@@ -489,12 +358,6 @@ body.dark-mode .conf-badge.pendente { background: #2a2a15; color: #ca8a04; borde
           Gerencie os irmãos de cada departamento.
         </p>
         <div id="gerenciar-irmaos"></div>
-<div style="margin-top:20px;border-top:2px solid #e8e8e8;padding-top:14px">
-  <strong style="color:#92400e">👻 Irmãos Espectadores (testes)</strong>
-  <p style="font-size:11px;color:#888;margin:4px 0 8px">Aparecem na lista mas NÃO entram nas designações.</p>
-  <button onclick="adicionarEspectador()" style="background:#f59e0b;color:white;border:none;padding:6px 14px;border-radius:6px;font-size:12px;font-weight:bold;cursor:pointer">+ Adicionar espectador</button>
-  <div id="lista-espectadores" style="margin-top:8px;display:flex;flex-wrap:wrap;gap:6px"></div>
-</div>
       </div>
 
       <!-- ABA TREINAMENTO -->
@@ -505,7 +368,7 @@ body.dark-mode .conf-badge.pendente { background: #2a2a15; color: #ca8a04; borde
           Quando remover o irmão do treinamento, ele volta ao rodízio completo.
         </p>
         <div style="background:#fffbeb;border-left:3px solid #f59e0b;padding:8px 12px;border-radius:6px;font-size:12px;color:#92400e;margin-bottom:14px;">
-          📚 Exemplo: Pedro Macumbi em treinamento no <strong>Palco</strong> — aparecerá menos vezes no palco, mas normal no microfone e indicadores.
+          &#127891; Exemplo: Pedro Macumbi em treinamento no <strong>Palco</strong> — aparecerá menos vezes no palco, mas normal no microfone e indicadores.
         </div>
         <div id="lista-treino"></div>
         <div style="margin-top:10px">
@@ -524,7 +387,7 @@ body.dark-mode .conf-badge.pendente { background: #2a2a15; color: #ca8a04; borde
         <p style="font-size:13px;color:#5e6370;margin-bottom:14px;line-height:1.6">
           Escolha o mês/ano de início e quantos meses gerar.
         </p>
-        <div class="aviso" id="aviso-gerar">📅 Os meses selecionados serão <strong>adicionados</strong> à escala existente. Meses já gerados não serão duplicados.</div>
+        <div class="aviso" id="aviso-gerar">&#128197; Os meses selecionados serão <strong>adicionados</strong> à escala existente. Meses já gerados não serão duplicados.</div>
         <div class="gerar-form">
           <div>
             <label>Mês início</label>
@@ -550,18 +413,9 @@ body.dark-mode .conf-badge.pendente { background: #2a2a15; color: #ca8a04; borde
             </select>
           </div>
         </div>
-        <button class="btn-gerar-ok" onclick="adicionarMesesDoForm()" style="margin-bottom:10px">📅 Adicionar meses à escala</button>
-        <button class="btn-gerar-ok" onclick="regenerarTudoDoForm()" style="background:#8b0000;margin-top:0">⚠️ Regenerar tudo (apaga escala atual)</button>
-        <button class="btn-gerar-ok" onclick="limparFirebaseERecomecar()" style="background:#4b0082;margin-top:6px">🗑️ Limpar Firebase e recomeçar do zero</button>
-        <button class="btn-gerar-ok" onclick="atualizarIndicadoresDasFolhas()" style="background:#b45309;margin-top:6px">🔄 Atualizar só os indicadores</button>
-        <button class="btn-gerar-ok" onclick="regenerarRodizioIndicadores()" style="background:#059669;margin-top:6px">🎲 Novo rodízio de indicadores</button>
-
-        <!-- Gerenciar meses salvos -->
-        <div style="margin-top:20px;border-top:2px solid #e8e8e8;padding-top:14px">
-          <div style="font-size:13px;font-weight:bold;color:#1a1a2e;margin-bottom:4px">📅 Meses gerados</div>
-          <p style="font-size:12px;color:#5e6370;margin-bottom:10px">Clique em <strong>Apagar</strong> para remover um mês específico da escala.</p>
-          <div id="painel-meses-salvos" style="display:flex;flex-wrap:wrap;gap:8px"></div>
-        </div>
+        <button class="btn-gerar-ok" onclick="adicionarMesesDoForm()" style="margin-bottom:10px">&#128197; Adicionar meses à escala</button>
+        <button class="btn-gerar-ok" onclick="regenerarTudoDoForm()" style="background:#8b0000;margin-top:0">&#9888; Regenerar tudo (apaga escala atual)</button>
+        <button class="btn-gerar-ok" onclick="limparFirebaseERecomecar()" style="background:#4b0082;margin-top:6px">&#128465; Limpar Firebase e recomeçar do zero</button>
       </div>
 
       <!-- ABA TROCAS -->
@@ -571,179 +425,9 @@ body.dark-mode .conf-badge.pendente { background: #2a2a15; color: #ca8a04; borde
         </p>
         <div class="ger-trocas-toolbar">
           <span id="ger-trocas-contador">—</span>
-          <button class="btn-apagar-todas" onclick="apagarTodasTrocas()">🗑️ Apagar todas as trocas</button>
+          <button class="btn-apagar-todas" onclick="apagarTodasTrocas()">&#128465; Apagar todas as trocas</button>
         </div>
-        <div id="ger-lista-trocas"><div class="ger-trocas-vazio">🔄 Nenhuma troca encontrada.</div></div>
-      </div>
-
-      <!-- ABA VMC -->
-      <div class="aba-conteudo" id="aba-vmc">
-        <p style="font-size:13px;color:#5e6370;margin-bottom:14px;line-height:1.6">
-          Gerencie as designações do <strong>Programa de Vida e Ministério Cristão</strong> semana a semana.
-          Importe a programação do JW.org automaticamente e designe os irmãos para cada parte.
-        </p>
-
-        <!-- Seletor de semana + ações -->
-        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:12px">
-          <label style="font-size:12px;font-weight:bold;color:#5e6370">Semana:</label>
-          <select id="vmc-sel-data" onchange="vmcCarregarSemana()" style="padding:6px 10px;border:1px solid #d0d5dd;border-radius:6px;font-size:13px;background:white;min-width:220px"></select>
-          <select id="vmc-sel-mes" style="padding:6px 10px;border:1px solid #d0d5dd;border-radius:6px;font-size:13px;background:white">
-            <option value="janeiro">Janeiro</option>
-            <option value="fevereiro">Fevereiro</option>
-            <option value="mar%C3%A7o">Março</option>
-            <option value="abril">Abril</option>
-            <option value="maio" selected>Maio</option>
-            <option value="junho">Junho</option>
-            <option value="julho">Julho</option>
-            <option value="agosto">Agosto</option>
-            <option value="setembro">Setembro</option>
-            <option value="outubro">Outubro</option>
-            <option value="novembro">Novembro</option>
-            <option value="dezembro">Dezembro</option>
-          </select>
-          <button onclick="vmcAbrirJW()" style="background:#8b5cf6;color:white;border:none;padding:7px 14px;border-radius:6px;font-size:12px;font-weight:bold;cursor:pointer">🌐 Abrir JW.org</button>
-          <button onclick="vmcColarTexto()" style="background:#0891b2;color:white;border:none;padding:7px 14px;border-radius:6px;font-size:12px;font-weight:bold;cursor:pointer">📋 Colar programação</button>
-          <button onclick="vmcRodizioAuto()" style="background:#1a4fa3;color:white;border:none;padding:7px 14px;border-radius:6px;font-size:12px;font-weight:bold;cursor:pointer">🎲 Rodízio automático</button>
-          <button onclick="vmcSalvarSemana()" style="background:#0f6e56;color:white;border:none;padding:7px 14px;border-radius:6px;font-size:12px;font-weight:bold;cursor:pointer">💾 Salvar semana</button>
-          <button onclick="vmcImprimirSemana()" style="background:#b45309;color:white;border:none;padding:7px 14px;border-radius:6px;font-size:12px;font-weight:bold;cursor:pointer">🖨️ Imprimir semana</button>
-          <button onclick="vmcImprimirMes()" style="background:#7c3aed;color:white;border:none;padding:7px 14px;border-radius:6px;font-size:12px;font-weight:bold;cursor:pointer">📅 Imprimir mês</button>
-        </div>
-
-        <!-- Status importação -->
-        <div id="vmc-import-status" style="display:none;background:#fffbeb;border:1px solid #fcd34d;border-radius:7px;padding:8px 14px;font-size:12px;color:#92400e;margin-bottom:10px"></div>
-
-        <!-- Formulário das partes -->
-        <div id="vmc-form" style="display:none">
-          <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:10px 14px;margin-bottom:14px;font-size:12px;color:#166534;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px">
-            <span>📅 <strong id="vmc-data-label"></strong></span>
-            <span id="vmc-import-badge" style="display:none;background:#8b5cf6;color:white;font-size:11px;padding:2px 10px;border-radius:20px;font-weight:bold">✓ Programação importada do JW.org</span>
-          </div>
-
-          <!-- SEÇÃO: ABERTURA -->
-          <div class="vmc-secao">
-            <div class="vmc-secao-titulo" style="background:#374151">🎵 Abertura</div>
-            <div class="vmc-linha">
-              <span class="vmc-label">Presidente</span>
-              <select id="vmc-presidente" class="vmc-sel"></select>
-            </div>
-            <div class="vmc-linha">
-              <span class="vmc-label">Cântico de abertura</span>
-              <input type="text" id="vmc-cantico-abertura" class="vmc-tema" placeholder="Nº e tema do cântico...">
-            </div>
-            <div class="vmc-linha">
-              <span class="vmc-label">Oração de abertura</span>
-              <select id="vmc-oracao-abertura" class="vmc-sel"></select>
-            </div>
-          </div>
-
-          <!-- SEÇÃO: Tesouros da Palavra de Deus -->
-          <div class="vmc-secao">
-            <div class="vmc-secao-titulo" style="background:#1a4fa3">💎 Tesouros da Palavra de Deus</div>
-            <div class="vmc-linha">
-              <span class="vmc-label">Leitura semanal</span>
-              <input type="text" id="vmc-leitura-semanal" class="vmc-tema" placeholder="Ex: Jeremias 1-3" style="flex:2">
-            </div>
-            <div class="vmc-linha">
-              <span class="vmc-label">1. Discurso de Tesouros</span>
-              <select id="vmc-tesouro" class="vmc-sel"></select>
-              <input type="text" id="vmc-tesouro-tema" class="vmc-tema" placeholder="Tema... (10 min)">
-            </div>
-            <div class="vmc-linha">
-              <span class="vmc-label">2. Joias Espirituais</span>
-              <select id="vmc-joias" class="vmc-sel"></select>
-              <input type="text" id="vmc-joias-tema" class="vmc-tema" placeholder="Tema... (10 min)">
-            </div>
-            <div class="vmc-linha">
-              <span class="vmc-label">3. Leitura da Bíblia</span>
-              <select id="vmc-leitura" class="vmc-sel"></select>
-              <input type="text" id="vmc-leitura-tema" class="vmc-tema" placeholder="Ex: Jer. 3:14-25 (th lição 12) — 4 min">
-            </div>
-          </div>
-
-          <!-- SEÇÃO: Faça Seu Melhor no Ministério -->
-          <div class="vmc-secao">
-            <div class="vmc-secao-titulo" style="background:#7c3aed">🗺️ Faça Seu Melhor no Ministério</div>
-            <div id="vmc-ministerio-partes"></div>
-            <button onclick="vmcAddParteMinist()" style="background:none;border:2px dashed #a78bfa;color:#7c3aed;padding:5px 14px;border-radius:6px;font-size:12px;font-weight:bold;cursor:pointer;margin:6px 0">+ Adicionar parte</button>
-          </div>
-
-          <!-- SEÇÃO: Nossa Vida Cristã -->
-          <div class="vmc-secao">
-            <div class="vmc-secao-titulo" style="background:#0f6e56">📖 Nossa Vida Cristã</div>
-            <div class="vmc-linha">
-              <span class="vmc-label">Cântico do meio</span>
-              <input type="text" id="vmc-cantico-meio" class="vmc-tema" placeholder="Nº e tema do cântico...">
-            </div>
-            <div id="vmc-vida-partes"></div>
-            <button onclick="vmcAddParteVida()" style="background:none;border:2px dashed #6ee7b7;color:#0f6e56;padding:5px 14px;border-radius:6px;font-size:12px;font-weight:bold;cursor:pointer;margin:6px 0">+ Adicionar parte de vida cristã</button>
-            <div class="vmc-linha" style="margin-top:8px">
-              <span class="vmc-label">Condutor — Estudo Bíblico</span>
-              <select id="vmc-estudo-condutor" class="vmc-sel"></select>
-              <input type="text" id="vmc-estudo-tema" class="vmc-tema" placeholder="Material... (30 min)">
-            </div>
-            <div class="vmc-linha">
-              <span class="vmc-label">Leitor — Estudo Bíblico</span>
-              <select id="vmc-estudo-leitor" class="vmc-sel"></select>
-            </div>
-            <div class="vmc-linha">
-              <span class="vmc-label">Cântico de encerramento</span>
-              <input type="text" id="vmc-cantico-fim" class="vmc-tema" placeholder="Nº e tema do cântico...">
-            </div>
-            <div class="vmc-linha">
-              <span class="vmc-label">Oração de encerramento</span>
-              <select id="vmc-oracao-fim" class="vmc-sel"></select>
-            </div>
-          </div>
-        </div>
-
-        <!-- Mensagem quando não há semanas -->
-        <div id="vmc-vazio" style="text-align:center;padding:30px;color:#888;font-size:13px">
-          ⚠️ Nenhuma reunião encontrada. Gere os meses primeiro na aba "Gerar Meses".
-        </div>
-
-        <!-- Configuração das listas por parte -->
-        <div style="margin-top:20px;border-top:2px solid #e8e8e8;padding-top:16px">
-          <div style="font-size:13px;font-weight:bold;color:#1a1a2e;margin-bottom:4px">⚙️ Cadastro de participantes VMC</div>
-          <p style="font-size:12px;color:#5e6370;margin-bottom:12px">Cadastre irmãos e irmãs e marque em quais funções cada um pode participar.</p>
-
-          <!-- Tabs cadastro -->
-          <div style="display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap">
-            <button onclick="vmcMostrarCadastro('irmaos')" id="vmc-tab-irmaos" style="background:#1a4fa3;color:white;border:none;padding:6px 14px;border-radius:6px;font-size:12px;font-weight:bold;cursor:pointer">👨 Irmãos</button>
-            <button onclick="vmcMostrarCadastro('publicadoras')" id="vmc-tab-publicadoras" style="background:#e8e8e8;color:#374151;border:none;padding:6px 14px;border-radius:6px;font-size:12px;font-weight:bold;cursor:pointer">👩 Publicadoras</button>
-            <button onclick="vmcMostrarCadastro('ajudantes')" id="vmc-tab-ajudantes" style="background:#e8e8e8;color:#374151;border:none;padding:6px 14px;border-radius:6px;font-size:12px;font-weight:bold;cursor:pointer">👩 Ajudantes</button>
-          </div>
-
-          <!-- Painel irmãos -->
-          <div id="vmc-painel-irmaos">
-            <div style="display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap">
-              <input type="text" id="vmc-novo-irmao" placeholder="Nome do irmão..." style="flex:1;min-width:160px;padding:7px 10px;border:1px solid #d0d5dd;border-radius:6px;font-size:13px">
-              <button onclick="vmcAddIrmao()" style="background:#1a4fa3;color:white;border:none;padding:7px 16px;border-radius:6px;font-size:13px;font-weight:bold;cursor:pointer">+ Adicionar</button>
-            </div>
-            <div id="vmc-lista-irmaos"></div>
-          </div>
-
-          <!-- Painel publicadoras -->
-          <div id="vmc-painel-publicadoras" style="display:none">
-            <div style="display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap">
-              <input type="text" id="vmc-nova-publicadora" placeholder="Nome da irmã..." style="flex:1;min-width:160px;padding:7px 10px;border:1px solid #d0d5dd;border-radius:6px;font-size:13px">
-              <button onclick="vmcAddPublicadora()" style="background:#7c3aed;color:white;border:none;padding:7px 16px;border-radius:6px;font-size:13px;font-weight:bold;cursor:pointer">+ Adicionar</button>
-            </div>
-            <p style="font-size:11px;color:#5e6370;margin-bottom:8px">Publicadoras fazem as partes principais do Ministério (DE CASA EM CASA, demonstrações etc.)</p>
-            <div id="vmc-lista-publicadoras"></div>
-          </div>
-
-          <!-- Painel ajudantes -->
-          <div id="vmc-painel-ajudantes" style="display:none">
-            <div style="display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap">
-              <input type="text" id="vmc-nova-ajudante" placeholder="Nome da irmã..." style="flex:1;min-width:160px;padding:7px 10px;border:1px solid #d0d5dd;border-radius:6px;font-size:13px">
-              <button onclick="vmcAddAjudante()" style="background:#0891b2;color:white;border:none;padding:7px 16px;border-radius:6px;font-size:13px;font-weight:bold;cursor:pointer">+ Adicionar</button>
-            </div>
-            <p style="font-size:11px;color:#5e6370;margin-bottom:8px">Ajudantes auxiliam as publicadoras nas partes do Ministério. Podem evoluir para publicadoras.</p>
-            <div id="vmc-lista-ajudantes"></div>
-          </div>
-
-          <div id="vmc-config-listas" style="display:none"></div>
-        </div>
+        <div id="ger-lista-trocas"><div class="ger-trocas-vazio">&#128260; Nenhuma troca encontrada.</div></div>
       </div>
 
       <!-- ABA HISTÓRICO -->
@@ -765,18 +449,6 @@ body.dark-mode .conf-badge.pendente { background: #2a2a15; color: #ca8a04; borde
             <option value="video">Vídeo</option>
             <option value="zoom">Zoom</option>
             <option value="indicador">Indicador</option>
-            <optgroup label="Vida e Ministério Cristão">
-              <option value="vmc_presidente">Presidente</option>
-              <option value="vmc_tesouro">Tesouros</option>
-              <option value="vmc_joias">Joias Espirituais</option>
-              <option value="vmc_leitura">Leitura da Bíblia</option>
-              <option value="vmc_escola1">Escola — Parte 1</option>
-              <option value="vmc_escola2">Escola — Parte 2</option>
-              <option value="vmc_necessidades">Necessidades da Cong.</option>
-              <option value="vmc_vida">Vida Cristã</option>
-              <option value="vmc_estudoCondutor">Condutor — Estudo</option>
-              <option value="vmc_estudoLeitor">Leitor — Estudo</option>
-            </optgroup>
           </select>
         </div>
         <div id="hist-conteudo"></div>
@@ -800,12 +472,12 @@ body.dark-mode .conf-badge.pendente { background: #2a2a15; color: #ca8a04; borde
           <div id="cfg-senha-msg" style="font-size:12px;margin-bottom:10px;display:none"></div>
           <button onclick="alterarSenha()"
             style="background:#1a4fa3;color:white;border:none;padding:9px 20px;border-radius:8px;font-size:14px;font-weight:bold;cursor:pointer;width:100%">
-            🔒 Salvar nova senha
+            &#128274; Salvar nova senha
           </button>
         </div>
 
         <div style="background:#f4f4f2;border-radius:10px;padding:16px;max-width:340px;margin-top:16px">
-          <label class="ev-label" style="margin-bottom:4px">🔐 Pergunta secreta para recuperação</label>
+          <label class="ev-label" style="margin-bottom:4px">&#128273; Pergunta secreta para recuperação</label>
           <p style="font-size:12px;color:#5e6370;margin-bottom:10px;line-height:1.5">
             Usada para recuperar a senha sem precisar revelar a senha diretamente a qualquer pessoa.
           </p>
@@ -818,20 +490,24 @@ body.dark-mode .conf-badge.pendente { background: #2a2a15; color: #ca8a04; borde
           <div id="cfg-pergunta-msg" style="font-size:12px;margin-bottom:10px;display:none"></div>
           <button onclick="salvarPerguntaSecreta()"
             style="background:#0f6e56;color:white;border:none;padding:9px 20px;border-radius:8px;font-size:14px;font-weight:bold;cursor:pointer;width:100%">
-            ✓ Salvar pergunta secreta
+            &#10003; Salvar pergunta secreta
           </button>
         </div>
       </div>
-      <!-- ABA PRESENÇAS -->
-<div class="aba-conteudo" id="aba-presencas">
-  <p style="font-size:13px;color:#5e6370;margin-bottom:14px">Confirmações de presença e avisos de ausência.</p>
-  <div style="display:flex;gap:6px;margin-bottom:12px">
-  <button onclick="limparAvisosAntigos();carregarPresencas();" style="background:#fef3c7;color:#92400e;border:1px solid #fcd34d;padding:6px 12px;border-radius:6px;font-size:12px;cursor:pointer">🗑 Limpar avisos antigos</button>
-  <button onclick="deletarTodasConfirmacoes()" style="background:#fee2e2;color:#991b1b;border:1px solid #fca5a5;padding:6px 12px;border-radius:6px;font-size:12px;cursor:pointer">🗑 Apagar tudo</button>
-<button onclick="liberarQualquerNome()" style="background:#4b0082;color:white;border:none;padding:6px 12px;border-radius:6px;font-size:12px;cursor:pointer">🔓 Liberar nome específico</button>
-</div>
-<div id="lista-presencas"><p style="text-align:center;color:#888;padding:20px">Carregando...</p></div>
-</div>
+
+      <!-- ABA CONFIRMAÇÕES DE PRESENÇA -->
+      <div class="aba-conteudo" id="aba-confirmacoes">
+        <p style="font-size:13px;color:#5e6370;margin-bottom:14px;line-height:1.6">
+          Confirmações de presença e avisos de ausência enviados pelos irmãos.
+        </p>
+        <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;align-items:center">
+          <label style="font-size:12px;font-weight:bold;color:#5e6370">Reunião:</label>
+          <select id="conf-filtro-data" onchange="renderConfirmacoes()" style="padding:6px 10px;border:1px solid #d0d5dd;border-radius:6px;font-size:13px;background:white;flex:1">
+            <option value="">Todas as próximas</option>
+          </select>
+        </div>
+        <div id="conf-lista-responsavel"><p style="font-size:13px;color:#888">Carregando...</p></div>
+      </div>
 
       <!-- ABA MANUAL DO RESPONSÁVEL -->
       <div class="aba-conteudo" id="aba-manual-resp">
@@ -840,83 +516,14 @@ body.dark-mode .conf-badge.pendente { background: #2a2a15; color: #ca8a04; borde
         </p>
         <a href="manual-responsavel.html" target="_blank"
           style="display:inline-flex;align-items:center;gap:10px;background:#0f6e56;color:white;text-decoration:none;padding:12px 22px;border-radius:10px;font-size:15px;font-weight:bold">
-          📘 Abrir Manual do Responsável
+          &#128203; Abrir Manual do Responsável
         </a>
-      </div>
-
-      <!-- MODAL COLAR PROGRAMAÇÃO VMC -->
-      <div id="vmc-modal-colar" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:9999;align-items:center;justify-content:center;padding:20px">
-        <div style="background:white;border-radius:14px;padding:24px;max-width:600px;width:100%;max-height:90vh;overflow-y:auto">
-          <div style="font-size:15px;font-weight:bold;color:#1a1a2e;margin-bottom:8px">📋 Colar programação do WOL</div>
-          <p style="font-size:12px;color:#5e6370;margin-bottom:14px;line-height:1.6">
-            1. Clique em <strong>🌐 Abrir JW.org</strong> (escolha o mês primeiro) ou acesse <a id="vmc-link-jw" href="https://wol.jw.org/pt/wol/meetings/r5/lp-t" target="_blank" style="color:#8b5cf6;font-weight:bold">este link</a><br>
-            2. Na página do WOL, clique na semana desejada ex: <em>"8-14 de junho"</em><br>
-            3. Selecione tudo <strong>(Ctrl+A)</strong> e copie <strong>(Ctrl+C)</strong><br>
-            4. Cole aqui abaixo e clique em <strong>✨ Extrair dados</strong>
-          </p>
-          <textarea id="vmc-texto-colado" style="width:100%;height:220px;padding:10px;border:1px solid #d0d5dd;border-radius:8px;font-size:12px;font-family:monospace;resize:vertical;box-sizing:border-box" placeholder="Cole aqui o texto copiado do WOL..."></textarea>
-          <div style="display:flex;gap:8px;margin-top:12px;justify-content:flex-end">
-            <button onclick="vmcFecharColar()" style="background:#f3f4f6;border:1px solid #d0d5dd;padding:8px 18px;border-radius:7px;font-size:13px;cursor:pointer">Cancelar</button>
-            <button onclick="vmcExtrairTextoColado()" style="background:#8b5cf6;color:white;border:none;padding:8px 18px;border-radius:7px;font-size:13px;font-weight:bold;cursor:pointer">✨ Extrair dados</button>
-          </div>
-        </div>
-      </div>
-
-      <!-- ABA REPARO -->
-      <div class="aba-conteudo" id="aba-reparo">
-        <div style="background:#fee2e2;border:2px solid #fca5a5;border-radius:12px;padding:18px;margin-bottom:16px">
-          <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
-            <span style="font-size:24px">🔧</span>
-            <strong style="font-size:15px;color:#991b1b">Modo Reparo</strong>
-            <span id="reparo-badge" style="display:none;background:#dc2626;color:white;font-size:11px;font-weight:bold;padding:2px 10px;border-radius:20px">ATIVO</span>
-          </div>
-          <p style="font-size:13px;color:#7f1d1d;line-height:1.6;margin-bottom:14px">
-            Quando ativado, <strong>os irmãos comuns (usuários não logados) verão apenas um bloqueio</strong> informando que o sistema está em manutenção.<br>
-            <strong>Você (responsável logado) continuará vendo a escala normalmente</strong> para poder fazer os reparos.
-          </p>
-          <div style="margin-bottom:12px">
-            <label style="font-size:12px;font-weight:bold;color:#7f1d1d;display:block;margin-bottom:6px">✏️ Mensagem personalizada (opcional):</label>
-            <textarea id="reparo-msg-custom" rows="3" style="width:100%;padding:10px;border:1px solid #fca5a5;border-radius:8px;font-size:13px;resize:vertical;box-sizing:border-box;color:#374151" placeholder="Deixe em branco para usar a mensagem padrão:&#10;&#10;🔧 Sistema em manutenção. Volte em breve! Consulte o quadro de anúncios para as designações."></textarea>
-          </div>
-          <button id="btn-toggle-reparo" onclick="toggleModoReparo()"
-            style="background:#dc2626;color:white;border:none;padding:10px 22px;border-radius:8px;font-size:14px;font-weight:bold;cursor:pointer;width:100%">
-            🔧 Ativar Modo Reparo
-          </button>
-        </div>
-        <div id="reparo-preview" style="display:none;background:#fff7ed;border:1px solid #fed7aa;border-radius:8px;padding:12px;font-size:12px;color:#92400e">
-          <strong>Prévia do bloqueio que os usuários verão:</strong>
-          <div id="reparo-preview-texto" style="margin-top:8px;background:#1e1e1e;color:#f87171;padding:16px;border-radius:8px;font-size:14px;line-height:1.5;border-left:4px solid #dc2626"></div>
-        </div>
-      </div>
-
-      <!-- ABA TESTE -->
-      <div class="aba-conteudo" id="aba-teste">
-        <div style="background:#fffbeb;border:2px solid #f59e0b;border-radius:12px;padding:18px;margin-bottom:16px">
-          <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
-            <span style="font-size:22px">🧪</span>
-            <strong style="font-size:15px;color:#92400e">Modo Teste</strong>
-            <span id="teste-badge" style="display:none;background:#22c55e;color:white;font-size:11px;font-weight:bold;padding:2px 10px;border-radius:20px">ATIVO</span>
-          </div>
-          <p style="font-size:13px;color:#78350f;line-height:1.6;margin-bottom:14px">
-            Quando ativado, você pode fazer qualquer alteração normalmente — mas <strong>nenhuma gravação é enviada ao Firebase</strong>. Os outros usuários não são afetados. O modo é desativado ao fechar a aba ou recarregar a página.
-          </p>
-          <button id="btn-toggle-teste" onclick="toggleModoTeste()"
-            style="background:#f59e0b;color:white;border:none;padding:10px 22px;border-radius:8px;font-size:14px;font-weight:bold;cursor:pointer;width:100%">
-            🧪 Ativar Modo Teste
-          </button>
-        </div>
-        <div id="teste-log-wrap" style="display:none">
-          <p style="font-size:12px;font-weight:bold;color:#5e6370;margin-bottom:6px">📋 Log de gravações bloqueadas:</p>
-          <div id="teste-log" style="background:#1a1a2e;color:#4ade80;font-family:monospace;font-size:11px;border-radius:8px;padding:12px;max-height:200px;overflow-y:auto;white-space:pre-wrap"></div>
-          <button onclick="document.getElementById('teste-log').textContent=''" style="margin-top:6px;background:none;border:1px solid #d0d5dd;color:#5e6370;padding:4px 12px;border-radius:6px;font-size:11px;cursor:pointer">Limpar log</button>
-        </div>
       </div>
 
     </div>
     <div class="modal-rodape">
       <button class="btn-cancelar" onclick="fecharPrincipal()">Fechar</button>
-      <button onclick="irParaEdicao()" style="background:#b45309;color:white;border:none;padding:10px 18px;border-radius:8px;font-size:14px;font-weight:bold;cursor:pointer">✏️ Editar Designações</button>
-      <button class="btn-aplicar"  onclick="aplicarTudo()">✓ Aplicar e atualizar escala</button>
+      <button class="btn-aplicar"  onclick="aplicarTudo()">&#10004; Aplicar e atualizar escala</button>
     </div>
   </div>
 </div>
@@ -925,8 +532,8 @@ body.dark-mode .conf-badge.pendente { background: #2a2a15; color: #ca8a04; borde
 <div class="overlay" id="ov-subst">
   <div class="modal-subst">
     <div class="modal-subst-cab">
-      <span>🔄 Substituição Permanente</span>
-      <button class="btn-fechar" onclick="fecharSubst()" style="color:white">✕</button>
+      <span>&#128260; Substituição Permanente</span>
+      <button class="btn-fechar" onclick="fecharSubst()" style="color:white">&#10005;</button>
     </div>
     <div class="modal-subst-body">
       <p>Data: <strong id="subst-data"></strong></p>
@@ -934,10 +541,10 @@ body.dark-mode .conf-badge.pendente { background: #2a2a15; color: #ca8a04; borde
       <p style="margin-top:6px">Substituir: <strong id="subst-atual"></strong></p>
       <p style="margin-top:4px;font-size:12px;color:#888">Novo designado:</p>
       <select id="subst-select"></select>
-      <p style="margin-top:8px;font-size:11px;color:#e67e22;font-style:italic">⚠️ A substituição é permanente e salva para todos os dispositivos.</p>
+      <p style="margin-top:8px;font-size:11px;color:#e67e22;font-style:italic">&#9888; A substituição é permanente e salva para todos os dispositivos.</p>
       <div class="subst-btns">
         <button class="btn-cancelar" onclick="fecharSubst()">Cancelar</button>
-        <button class="btn-confirmar" onclick="confirmarSubst()">✓ Confirmar</button>
+        <button class="btn-confirmar" onclick="confirmarSubst()">&#10004; Confirmar</button>
       </div>
     </div>
   </div>
@@ -950,8 +557,8 @@ body.dark-mode .conf-badge.pendente { background: #2a2a15; color: #ca8a04; borde
 <div class="overlay" id="ov-minha-escala">
   <div class="modal-principal" style="max-width:600px">
     <div class="modal-cab" style="background:#7c3aed;color:white">
-      <span class="modal-cab-titulo" style="color:white">👤 Minha Escala</span>
-      <button class="btn-fechar" onclick="fecharMinhaEscala()" style="color:white">✕</button>
+      <span class="modal-cab-titulo" style="color:white">&#128100; Minha Escala</span>
+      <button class="btn-fechar" onclick="fecharMinhaEscala()" style="color:white">&#10005;</button>
     </div>
     <div style="padding:14px 20px;background:#f5f3ff;border-bottom:1px solid #ddd8fe">
       <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
@@ -959,9 +566,7 @@ body.dark-mode .conf-badge.pendente { background: #2a2a15; color: #ca8a04; borde
         <select id="sel-minha-escala-nome" onchange="trocarNomeMinhaEscala()" style="flex:1;padding:8px 12px;border:1.5px solid #a78bfa;border-radius:8px;font-size:14px;font-family:Arial,sans-serif;background:white;color:#1a1a2e">
           <option value="">— selecione seu nome —</option>
         </select>
-        <button id="btn-ativar-notif-escala" onclick="pedirPermissaoNotificacao()" style="background:#0f6e56;color:white;border:none;padding:8px 14px;border-radius:7px;font-size:12px;font-weight:bold;cursor:pointer">🔔 Ativar avisos</button>
-<button onclick="testarNotificacao()" style="background:#6366f1;color:white;border:none;padding:6px 10px;border-radius:6px;font-size:11px;cursor:pointer;margin-left:4px">🔔 Testar</button>
-<button onclick="liberarNome()" style="background:#fee2e2;color:#991b1b;border:1px solid #fca5a5;padding:6px 10px;border-radius:6px;font-size:11px;cursor:pointer;display:none" id="btn-trocar-nome">✏️ Trocar nome</button>
+        <button id="btn-ativar-notif-escala" onclick="pedirPermissaoNotificacao()" style="background:#0f6e56;color:white;border:none;padding:8px 14px;border-radius:7px;font-size:12px;font-weight:bold;cursor:pointer">&#128276; Ativar avisos</button>
       </div>
     </div>
     <div class="modal-body" id="conteudo-minha-escala" style="padding:16px 20px">
@@ -973,15 +578,15 @@ body.dark-mode .conf-badge.pendente { background: #2a2a15; color: #ca8a04; borde
 <!-- OVERLAY CONFIRMAÇÃO DE PRESENÇA -->
 <div class="overlay" id="ov-confirmar">
   <div class="modal-senha" style="max-width:400px">
-    <div class="modal-senha-cab" style="background:#0f6e56">✅ Confirmar Presença</div>
+    <div class="modal-senha-cab" style="background:#0f6e56">&#9989; Confirmar Presença</div>
     <div class="modal-senha-body">
       <p id="conf-descricao" style="margin-bottom:16px;color:#1a1a2e;font-size:14px;line-height:1.6"></p>
       <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
         <button onclick="confirmarPresenca('confirmado')" style="background:#16a34a;color:white;border:none;padding:12px 24px;border-radius:8px;font-size:14px;font-weight:bold;cursor:pointer;flex:1">
-          ✓ Vou estar presente
+          &#10004; Vou estar presente
         </button>
         <button onclick="confirmarPresenca('ausente')" style="background:#dc2626;color:white;border:none;padding:12px 24px;border-radius:8px;font-size:14px;font-weight:bold;cursor:pointer;flex:1">
-          ✗ Não poderei ir
+          &#10008; Não poderei ir
         </button>
       </div>
       <button onclick="fecharConfirmar()" style="background:none;border:none;color:#888;font-size:13px;cursor:pointer;margin-top:12px;width:100%">Cancelar</button>
@@ -989,43 +594,14 @@ body.dark-mode .conf-badge.pendente { background: #2a2a15; color: #ca8a04; borde
   </div>
 </div>
 
-<div id="badge-avisos-ausencia" style="display:none;background:white;border-radius:12px;padding:14px 16px;margin-bottom:16px;box-shadow:0 2px 12px rgba(0,0,0,0.06);cursor:pointer;border:1px solid #e8e8e8;transition:all .3s" onclick="pedirSenha()" onmouseover="this.style.boxShadow='0 4px 20px rgba(0,0,0,0.12)'" onmouseout="this.style.boxShadow='0 2px 12px rgba(0,0,0,0.06)'">
-  <div style="display:flex;align-items:center;gap:12px">
-    <span style="font-size:28px">📋</span>
-    <div style="flex:1">
-      <div style="font-size:14px;font-weight:bold;color:#1a1a2e;margin-bottom:3px">Status das Designações</div>
-      <div style="font-size:12px;color:#5e6370" id="badge-avisos-texto">Carregando...</div>
-    </div>
-    <span style="background:#1a4fa3;color:white;padding:6px 12px;border-radius:6px;font-size:12px;font-weight:bold">Ver ➔</span>
-  </div>
-</div>
-
 <div id="lista"></div>
-
-<!-- OVERLAY PROGRAMA VMC (visão pública) -->
-<div class="overlay" id="ov-programa-vmc">
-  <div class="modal-principal" style="max-width:680px">
-    <div class="modal-cab" style="background:#0f6e56;color:white">
-      <span class="modal-cab-titulo" style="color:white">📖 Programa de Vida e Ministério Cristão</span>
-      <button class="btn-fechar" onclick="fecharProgramaVMC()" style="color:white">✕</button>
-    </div>
-    <!-- Seletor de semana pública -->
-    <div style="padding:12px 20px;background:#f0fdf4;border-bottom:1px solid #bbf7d0;display:flex;gap:8px;align-items:center;flex-wrap:wrap">
-      <label style="font-size:12px;font-weight:bold;color:#166534">Semana:</label>
-      <select id="vmc-pub-sel" onchange="vmcRenderPublico()" style="padding:6px 10px;border:1px solid #bbf7d0;border-radius:6px;font-size:13px;background:white;min-width:200px"></select>
-    </div>
-    <div class="modal-body" id="vmc-pub-corpo" style="padding:16px 20px">
-      <p style="text-align:center;color:#888;padding:30px 0">Selecione uma semana acima.</p>
-    </div>
-  </div>
-</div>
 
 <!-- OVERLAY TROCA -->
 <div class="overlay" id="ov-troca">
   <div class="modal-subst" style="max-width:460px">
     <div class="modal-subst-cab" style="background:#b45309">
-      <span>🔄 Solicitar Troca de Designacao</span>
-      <button class="btn-fechar" onclick="fecharTroca()" style="color:white">✕</button>
+      <span>&#128260; Solicitar Troca de Designacao</span>
+      <button class="btn-fechar" onclick="fecharTroca()" style="color:white">&#10005;</button>
     </div>
     <div class="modal-subst-body">
       <p>Voce esta em: <strong id="troca-setor"></strong></p>
@@ -1034,11 +610,11 @@ body.dark-mode .conf-badge.pendente { background: #2a2a15; color: #ca8a04; borde
       <p style="margin-top:14px;font-size:13px;color:#5e6370">Selecione com quem quer trocar:</p>
       <select id="troca-select" style="width:100%;margin-top:8px;padding:9px 10px;border:1.5px solid #d0d5dd;border-radius:8px;font-size:14px;font-family:Arial,sans-serif"></select>
       <p style="margin-top:12px;font-size:12px;color:#92400e;background:#fef3c7;padding:8px 10px;border-radius:6px;border-left:3px solid #f59e0b">
-        ⚠️ O irmao selecionado vera o pedido ao abrir o site. A troca so ocorre apos o aceite. Prazo: 48h.
+        &#9888; O irmao selecionado vera o pedido ao abrir o site. A troca so ocorre apos o aceite. Prazo: 48h.
       </p>
       <div class="subst-btns">
         <button class="btn-cancelar" onclick="fecharTroca()">Cancelar</button>
-        <button class="btn-confirmar" style="background:#b45309" onclick="enviarSolicitacaoTroca()">📨 Enviar pedido</button>
+        <button class="btn-confirmar" style="background:#b45309" onclick="enviarSolicitacaoTroca()">&#128228; Enviar pedido</button>
       </div>
     </div>
   </div>
@@ -1047,7 +623,7 @@ body.dark-mode .conf-badge.pendente { background: #2a2a15; color: #ca8a04; borde
 <!-- OVERLAY IDENTIFICACAO -->
 <div class="overlay" id="ov-identidade">
   <div class="modal-senha">
-    <div class="modal-senha-cab" style="background:#b45309">👤 Quem e voce?</div>
+    <div class="modal-senha-cab" style="background:#b45309">&#128100; Quem e voce?</div>
     <div class="modal-senha-body">
       <p>Selecione seu nome para continuar com a solicitacao de troca.</p>
       <select id="sel-identidade" style="width:100%;padding:10px 12px;border:1.5px solid #d0d5dd;border-radius:8px;font-size:14px;margin-bottom:14px;font-family:Arial,sans-serif">
@@ -1055,32 +631,272 @@ body.dark-mode .conf-badge.pendente { background: #2a2a15; color: #ca8a04; borde
       </select>
       <div class="senha-btns">
         <button class="btn-cancelar" onclick="fecharIdentidade()">Cancelar</button>
-        <button class="btn-entrar" style="background:#b45309" onclick="confirmarIdentidade()">Confirmar →</button>
+        <button class="btn-entrar" style="background:#b45309" onclick="confirmarIdentidade()">Confirmar &#8594;</button>
       </div>
     </div>
   </div>
 </div>
 
 <script>
-// ===================== CONFIGURAÇÃO FIREBASE =====================
-var FIREBASE_CONFIG = {
-  apiKey: "AIzaSyA2gzHNa_r3ZFEd8MT8q7mU76FDbqkIFvo",
-  authDomain: "scale-designation.firebaseapp.com",
-  databaseURL: "https://scale-designation-default-rtdb.firebaseio.com",
-  projectId: "scale-designation",
-  storageBucket: "scale-designation.firebasestorage.app",
-  messagingSenderId: "14896538802",
-  appId: "1:14896538802:web:96ddd7faf79dad0b6c55ab",
-  measurementId: "G-DGZCM8ZE8M"
-};
-
-// ===================== VARIÁVEIS GLOBAIS =====================
+// ===================== SENHA =====================
 var SENHA = "1234";
-var db = null;
-var firebaseOk = false;
-var MODO_TESTE = false;
 
-// Dados do sistema
+// Carrega senha do Firebase ao iniciar (se disponível)
+function salvarPerguntaSecreta() {
+  var pergunta = document.getElementById('cfg-pergunta').value.trim();
+  var resposta  = document.getElementById('cfg-resposta').value.trim();
+  var msg = document.getElementById('cfg-pergunta-msg');
+  msg.style.display = 'block';
+  if (!pergunta || !resposta) {
+    msg.style.color = '#991b1b'; msg.textContent = '\u2717 Preencha a pergunta e a resposta.'; return;
+  }
+  if (!firebaseOk || !db) {
+    msg.style.color = '#92400e'; msg.textContent = '\u26A0 Firebase não conectado. Não foi possível salvar.'; return;
+  }
+  db.ref('escala/perguntaSecreta').set(pergunta);
+  db.ref('escala/respostaSecreta').set(resposta.toLowerCase()).then(function() {
+    msg.style.color = '#166534'; msg.textContent = '\u2713 Pergunta secreta salva com sucesso!';
+    document.getElementById('cfg-pergunta').value = '';
+    document.getElementById('cfg-resposta').value = '';
+  }).catch(function(e) {
+    msg.style.color = '#991b1b'; msg.textContent = '\u2717 Erro: ' + e.message;
+  });
+}
+
+function carregarPerguntaAtual() {
+  if (!firebaseOk || !db) return;
+  db.ref('escala/perguntaSecreta').once('value', function(snap) {
+    var p = snap.val();
+    if (p && document.getElementById('cfg-pergunta')) {
+      document.getElementById('cfg-pergunta').placeholder = 'Atual: ' + p;
+    }
+  });
+}
+
+function carregarSenhaFirebase() {
+  if (!firebaseOk || !db) return;
+  db.ref('escala/senhaMestra').once('value', function(snap) {
+    var s = snap.val();
+    if (s) SENHA = s;
+  });
+}
+
+function alterarSenha() {
+  var atual = document.getElementById('cfg-senha-atual').value;
+  var nova  = document.getElementById('cfg-senha-nova').value;
+  var conf  = document.getElementById('cfg-senha-conf').value;
+  var msg   = document.getElementById('cfg-senha-msg');
+  msg.style.display = 'block';
+  if (atual !== SENHA) {
+    msg.style.color = '#991b1b'; msg.textContent = '\u2717 Senha atual incorreta.'; return;
+  }
+  if (!nova || nova.length < 4) {
+    msg.style.color = '#991b1b'; msg.textContent = '\u2717 A nova senha deve ter pelo menos 4 caracteres.'; return;
+  }
+  if (nova !== conf) {
+    msg.style.color = '#991b1b'; msg.textContent = '\u2717 As senhas não coincidem.'; return;
+  }
+  SENHA = nova;
+  if (firebaseOk && db) {
+    db.ref('escala/senhaMestra').set(nova).then(function() {
+      msg.style.color = '#166534'; msg.textContent = '\u2713 Senha alterada e salva no Firebase com sucesso!';
+      document.getElementById('cfg-senha-atual').value = '';
+      document.getElementById('cfg-senha-nova').value = '';
+      document.getElementById('cfg-senha-conf').value = '';
+    }).catch(function(e) {
+      msg.style.color = '#991b1b'; msg.textContent = '\u2717 Erro ao salvar: ' + e.message;
+    });
+  } else {
+    msg.style.color = '#92400e'; msg.textContent = '\u26A0 Senha alterada só localmente (Firebase não conectado).';
+  }
+}
+
+var pedirSenhaCallback = null;
+
+function pedirSenhaReparo() {
+  var ovSenha = document.getElementById('ov-senha');
+  ovSenha.style.zIndex = '99999';
+  pedirSenhaCallback = function() {
+    sessionStorage.setItem('reparo_acesso', 'ok');
+    removerBloqueioManutencao();
+    ovSenha.style.zIndex = '';
+  };
+  document.getElementById('campo-senha').value = '';
+  document.getElementById('senha-erro').style.display = 'none';
+  ovSenha.classList.add('aberto');
+  setTimeout(function(){ document.getElementById('campo-senha').focus(); }, 100);
+}
+
+function abrirSubstituicaoManual() {
+  var ovPrinc = document.getElementById('ov-principal');
+  if (ovPrinc) ovPrinc.classList.remove('aberto');
+  var aviso = document.getElementById('aviso-subst-manual');
+  if (!aviso) {
+    aviso = document.createElement('div');
+    aviso.id = 'aviso-subst-manual';
+    aviso.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#1a4fa3;color:white;padding:12px 22px;border-radius:12px;font-size:14px;font-weight:bold;z-index:9999;box-shadow:0 4px 20px rgba(0,0,0,0.3);text-align:center;max-width:90vw;cursor:pointer';
+    aviso.innerHTML = '&#128260; Clique em qualquer nome na escala para substituí-lo permanentemente<br><span style="font-size:11px;opacity:0.85">Clique aqui para cancelar</span>';
+    aviso.onclick = function() { document.body.removeChild(aviso); };
+    document.body.appendChild(aviso);
+    setTimeout(function() { if (document.getElementById('aviso-subst-manual')) document.body.removeChild(aviso); }, 15000);
+  }
+  var lista = document.getElementById('lista');
+  if (lista) lista.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function pedirSenha() {
+  document.getElementById('campo-senha').value='';
+  document.getElementById('senha-erro').style.display='none';
+  document.getElementById('ov-senha').classList.add('aberto');
+  setTimeout(function(){ document.getElementById('campo-senha').focus(); },100);
+}
+function fecharSenha() { document.getElementById('ov-senha').classList.remove('aberto'); }
+function pedirRecuperacaoSenha() {
+  if (!firebaseOk || !db) {
+    alert('Sem conexão com Firebase. Não é possível recuperar a senha agora.');
+    return;
+  }
+  // Busca a pergunta secreta do Firebase (sem revelar a senha)
+  db.ref('escala/perguntaSecreta').once('value', function(snap) {
+    var pergunta = snap.val();
+    if (!pergunta) {
+      alert('Nenhuma pergunta secreta configurada.\n\nO responsável deve definir uma em:\nÁrea do Responsável → aba Senha → Pergunta secreta.');
+      return;
+    }
+    var resposta = prompt('🔐 Recuperação de senha\n\nPergunta: ' + pergunta + '\n\nSua resposta:');
+    if (resposta === null) return; // cancelou
+    db.ref('escala/respostaSecreta').once('value', function(snap2) {
+      var respostaCorreta = (snap2.val() || '').trim().toLowerCase();
+      if (resposta.trim().toLowerCase() === respostaCorreta) {
+        db.ref('escala/senhaMestra').once('value', function(snap3) {
+          var senha = snap3.val() || SENHA;
+          alert('\u2713 Resposta correta!\n\nSua senha é: ' + senha);
+        });
+      } else {
+        alert('\u2717 Resposta incorreta. Tente novamente.');
+      }
+    });
+  });
+}
+function confirmarSenha() {
+  if (document.getElementById('campo-senha').value===SENHA) {
+    fecharSenha();
+    ativarModoResponsavel();
+    if (pedirSenhaCallback) {
+      var cb = pedirSenhaCallback;
+      pedirSenhaCallback = null;
+      cb();
+    } else {
+      abrirPrincipal('aba-eventos');
+    }
+  } else {
+    document.getElementById('senha-erro').style.display='block';
+    document.getElementById('campo-senha').value='';
+    document.getElementById('campo-senha').focus();
+  }
+}
+
+// ===================== MODAL =====================
+var modoResponsavel = false;
+
+function ativarModoResponsavel() {
+  modoResponsavel = true;
+  document.getElementById('badge-responsavel').style.display = 'flex';
+  document.getElementById('btn-area-responsavel').style.display = 'none';
+  document.body.classList.add('modo-responsavel-ativo');
+  var lista = document.getElementById('lista');
+  if (lista) lista.style.display = '';
+  // Re-renderiza para mostrar badges de treino
+  var chaves = Object.keys(mesesGerados).sort();
+  if (chaves.length > 0) {
+    var backup = chaves.slice();
+    var restaurarEGerar = function(dadosEstado) {
+      // NÃO zera substituicoes — são permanentes
+      contadorPulo = {}; aparicoes = {}; ultimoAuditorio = {};
+      mesesGerados = {};
+      idxM.v=0; idxA.v=0; idxV.v=0; idxZ.v=0; idxI.v=0; ultimoPar=-1;
+      if (dadosEstado && dadosEstado.contadorPulo) Object.assign(contadorPulo, dadosEstado.contadorPulo);
+      if (dadosEstado && dadosEstado.aparicoes)    Object.assign(aparicoes, dadosEstado.aparicoes);
+      if (dadosEstado && dadosEstado.idxM !== undefined) idxM.v = dadosEstado.idxM;
+      if (dadosEstado && dadosEstado.idxA !== undefined) idxA.v = dadosEstado.idxA;
+      if (dadosEstado && dadosEstado.idxV !== undefined) idxV.v = dadosEstado.idxV;
+      if (dadosEstado && dadosEstado.idxZ !== undefined) idxZ.v = dadosEstado.idxZ;
+      if (dadosEstado && dadosEstado.idxI !== undefined) idxI.v = dadosEstado.idxI;
+      if (dadosEstado && dadosEstado.ultimoPar !== undefined) ultimoPar = dadosEstado.ultimoPar;
+      // Carrega substituições do Firebase antes de renderizar
+      if (dadosEstado && dadosEstado.substituicoes) Object.assign(substituicoes, dadosEstado.substituicoes);
+      document.getElementById('lista').innerHTML = '';
+      backup.forEach(function(chave){
+        var p = chave.split('-');
+        adicionarMeses(parseInt(p[1]), parseInt(p[0]), 1);
+      });
+      aplicarSubstituicoesNaTela();
+    };
+    if (firebaseOk && db) {
+      db.ref('escala/estado').once('value', function(snap){ restaurarEGerar(snap.val()); });
+    } else {
+      restaurarEGerar(null);
+    }
+  }
+}
+
+function sairModoResponsavel() {
+  modoResponsavel = false;
+  document.getElementById('badge-responsavel').style.display = 'none';
+  document.getElementById('btn-area-responsavel').style.display = '';
+  document.body.classList.remove('modo-responsavel-ativo');
+  // Re-renderiza escala sem badges de treino
+  var chaves = Object.keys(mesesGerados).sort();
+  var backup = chaves.slice();
+  // NÃO zera substituicoes — elas são permanentes e devem persistir
+  contadorPulo = {}; aparicoes = {}; ultimoAuditorio = {};
+  mesesGerados = {};
+  idxM.v=0; idxA.v=0; idxV.v=0; idxZ.v=0; idxI.v=0; ultimoPar=-1;
+  document.getElementById('lista').innerHTML = '';
+  backup.forEach(function(chave){
+    var p = chave.split('-');
+    adicionarMeses(parseInt(p[1]), parseInt(p[0]), 1);
+  });
+  // Reaplica substituições após renderizar
+  aplicarSubstituicoesNaTela();
+}
+function abrirPrincipal(abaId) {
+  trocarAba(abaId,null); renderEventos(); popularSelTreino();
+  document.getElementById('ov-principal').classList.add('aberto');
+}
+function fecharPrincipal() { document.getElementById('ov-principal').classList.remove('aberto'); }
+function trocarAba(id,btn) {
+  document.querySelectorAll('.aba-conteudo').forEach(function(el){ el.classList.remove('ativa'); });
+  document.querySelectorAll('.aba-btn').forEach(function(el){ el.classList.remove('ativa'); });
+  document.getElementById(id).classList.add('ativa');
+  if(btn) btn.classList.add('ativa');
+  else document.querySelectorAll('.aba-btn').forEach(function(el){
+    if((el.getAttribute('onclick')||'').indexOf(id)>=0) el.classList.add('ativa');
+  });
+  if(id==='aba-irmaos') renderGerenciarIrmaos();
+  if(id==='aba-treino') renderTreino();
+  if(id==='aba-trocas') renderGerenciarTrocas();
+  if(id==='aba-config') carregarPerguntaAtual();
+}
+function aplicarTudo() {
+  // Aplica mudancas de irmaos/eventos sem apagar meses ja gerados
+  fecharPrincipal();
+  // Re-renderiza os meses existentes preservando a lista
+  var chaves = Object.keys(mesesGerados).sort();
+  if(chaves.length === 0){ gerarEscalaAtual(); return; }
+  substituicoes={}; contadorPulo={}; aparicoes={}; ultimoAuditorio={};
+  idxM.v=0;idxA.v=0;idxV.v=0;idxZ.v=0;idxI.v=0;ultimoPar=-1;
+  var backup = Object.keys(mesesGerados);
+  mesesGerados = {};
+  document.getElementById('lista').innerHTML='';
+  backup.forEach(function(chave){
+    var parts = chave.split('-');
+    var a = parseInt(parts[0]), m = parseInt(parts[1]);
+    adicionarMeses(m, a, 1);
+  });
+}
+
+// ===================== DADOS =====================
 var listas = {
   palcoPares: [
     ["Eriton Oliveira","Daniel Fernandes"],
@@ -1109,9 +925,15 @@ var todosIrmaos = [
   "Caio Andrade","Felipe Santos","Rodrigo Albuquerque"
 ];
 
+// treinamento[nome] = { palco:true, microfone:false, ... }
+// setores disponíveis para treinamento
+var setoresTreino = ['palco','microfone','indicador','audio','video','zoom'];
+var setorLabels   = { palco:'Palco', microfone:'Microfone', indicador:'Indicador', audio:'Áudio', video:'Vídeo', zoom:'Zoom' };
 var treinamento = {
   "Pedro Macumbi": { palco:true, microfone:false, indicador:false, audio:false, video:false, zoom:false, nivel:1, dataInicio:"" }
 };
+// Contador de vezes que cada irmão foi pulado no setor de treino
+var contadorPulo = {}; // contadorPulo[nome+setor] = n° de reuniões desde última aparição
 
 var eventos = [
   { inicio:"2026-07-03", fim:"2026-07-04", tipo:"congresso",
@@ -1122,303 +944,1969 @@ var eventos = [
 ];
 
 var substituicoes = {};
-var escalaGerada = {};
-var escalaGeradaOriginal = {};
-var mesesGerados = {};
+var escalaGerada = {}; // designações geradas: {dataISO: {palco1,palco2,mic1,...}}
+var periodoAtual  = { mesInicio:6, ano:2026, qtd:4 };
 
-// Estados do rodízio
-var contadorPulo = {};
-var aparicoes = {};
-var ultimoAuditorio = {};
-var idxM = {v:0}, idxA = {v:0}, idxV = {v:0}, idxZ = {v:0}, idxI = {v:0};
-var ultimoPar = -1;
+// ===================== TREINAMENTO =====================
+function popularSelTreino() {
+  var sel=document.getElementById('sel-treino'); sel.innerHTML='<option value="">— selecionar irmão —</option>';
+  todosIrmaos.forEach(function(n){
+    if(!treinamento[n]) sel.innerHTML+='<option value="'+n+'">'+n+'</option>';
+  });
+}
+function adicionarTreino() {
+  var sel=document.getElementById('sel-treino'); var nome=sel.value; if(!nome) return;
+  var hoje=new Date();
+  var dh=hoje.getFullYear()+'-'+String(hoje.getMonth()+1).padStart(2,'0')+'-'+String(hoje.getDate()).padStart(2,'0');
+  treinamento[nome]={ palco:false,microfone:false,indicador:false,audio:false,video:false,zoom:false,nivel:1,dataInicio:dh };
+  popularSelTreino(); renderTreino(); salvarConfigFirebase();
+}
+function removerTreino(nome) { delete treinamento[nome]; popularSelTreino(); renderTreino(); salvarConfigFirebase(); }
+function toggleSetor(nome,setor) {
+  treinamento[nome][setor] = !treinamento[nome][setor];
+  renderTreino(); salvarConfigFirebase();
+}
+function setNivelTreino(nome,nivel){ treinamento[nome].nivel=parseInt(nivel); salvarConfigFirebase(); }
+function setDataInicioTreino(nome,data){ treinamento[nome].dataInicio=data; salvarConfigFirebase(); }
 
-var irmaosEspectadores = [];
-var dataEntradaIrmaos = {};
-
-// Modos
-var modoResponsavel = false;
-var modoEdicao = false;  // MODO EDIÇÃO - permite substituições permanentes sem sair do modo responsável
-var trocasCache = {};
-var meuNome = localStorage.getItem('designacoes_nome') || '';
-
-// VMC
-var vmcDados = {};
-var vmcSemanaAtual = '';
-var vmcListas = {
-  presidente: [], oracaoAbertura: [], tesouro: [], joias: [], leitura: [],
-  ministerioPubl: [], ministerioAjud: [], ministerioIrmao: [],
-  vidaCristaParte: [], estudoCondutor: [], estudoLeitor: [], oracaoFim: []
-};
-var vmcIdx = {
-  presidente:0, oracaoAbertura:0, tesouro:0, joias:0, leitura:0,
-  ministerioPubl:0, ministerioAjud:0, ministerioIrmao:0,
-  vidaCristaParte:0, estudoCondutor:0, estudoLeitor:0, oracaoFim:0
-};
-var vmcCadastro = { irmaos: {}, publicadoras: [], ajudantes: [] };
-
-// ===================== FUNÇÕES AUXILIARES =====================
-function escHtml(s){ return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
-function fmtData(d){ return d.toLocaleDateString('pt-BR',{weekday:'long',day:'2-digit',month:'2-digit',year:'numeric'}); }
-function fmtHora(d){ return d.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}); }
-function toISO(d){ return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
-function chaveMes(m,a){ return a+'-'+(m<10?'0':'')+m; }
-
-// ===================== SUBSTITUIÇÃO (MODO EDIÇÃO) =====================
-var substAtual = null;
-
-function abrirSubst(chave, setor, dataLabel, nomeAtual, el) {
-  if (!modoEdicao && !modoResponsavel) {
-    alert('Para fazer substituições, ative o Modo Edição clicando em "✏️ Editar Designações".');
+function renderTreino() {
+  var c=document.getElementById('lista-treino'); c.innerHTML='';
+  var nomes=Object.keys(treinamento);
+  if(!nomes.length){
+    c.innerHTML='<p style="font-size:13px;color:#888;padding:8px 0">Nenhum irmão em treinamento.</p>';
     return;
   }
-  substAtual = {chave:chave, setor:setor, dataLabel:dataLabel, nomeAtual:nomeAtual, el:el};
-  document.getElementById('subst-data').textContent = dataLabel;
-  document.getElementById('subst-setor').textContent = setor;
-  document.getElementById('subst-atual').textContent = nomeAtual;
-  var sel = document.getElementById('subst-select');
-  sel.innerHTML = todosIrmaos.filter(function(n){ return n !== nomeAtual; })
-    .map(function(n){ return '<option value="'+n+'">'+n+'</option>'; }).join('');
-  document.getElementById('ov-subst').classList.add('aberto');
+  nomes.forEach(function(nome){
+    var cfg=treinamento[nome];
+    var nivel=cfg.nivel||1;
+    var dataInicio=cfg.dataInicio||'';
+    var setTags=setoresTreino.map(function(s){
+      return '<span class="setor-tag '+(cfg[s]?'ativo':'inativo')+'" onclick="toggleSetor(\''+nome+'\',\''+s+'\')">'+
+        (cfg[s]?'&#127891;':'+')+' '+setorLabels[s]+'</span>';
+    }).join('');
+    var ativos=setoresTreino.filter(function(s){return cfg[s];});
+    var descFreq=ativos.length ? 'Frequência reduzida em: <strong>'+ativos.map(function(s){return setorLabels[s];}).join(', ')+'</strong>' : 'Nenhum setor marcado — rodízio normal em tudo.';
+    var div=document.createElement('div'); div.className='treino-card';
+    div.innerHTML=
+      '<div class="treino-card-cab">'+
+        '<span class="treino-nome">&#127891; '+nome+'</span>'+
+        '<button class="btn-remover" onclick="removerTreino(\''+nome+'\')" title="Remover do treinamento">&#10005;</button>'+
+      '</div>'+
+      '<div class="treino-body">'+
+        '<label class="ev-label" style="margin-bottom:6px">Setores com frequência reduzida (clique para marcar/desmarcar):</label>'+
+        '<div class="treino-setores">'+setTags+'</div>'+
+        '<div class="treino-freq">'+descFreq+'</div>'+
+        '<div style="display:flex;gap:16px;margin-top:12px;flex-wrap:wrap;align-items:flex-start">'+
+          '<div>'+
+            '<label class="ev-label" style="margin-bottom:4px">Nível de treinamento</label>'+
+            '<div style="display:flex;flex-direction:column;gap:6px">'+
+              '<label style="font-size:13px;display:flex;align-items:center;gap:6px;cursor:pointer">'+
+                '<input type="radio" name="nivel-'+nome+'" value="1" '+(nivel===1?'checked':'')+' onchange="setNivelTreino(\''+nome+'\',1)">'+
+                'Nível 1 — a cada 4 reuniões</label>'+
+              '<label style="font-size:13px;display:flex;align-items:center;gap:6px;cursor:pointer">'+
+                '<input type="radio" name="nivel-'+nome+'" value="2" '+(nivel===2?'checked':'')+' onchange="setNivelTreino(\''+nome+'\',2)">'+
+                'Nível 2 — a cada 3 reuniões</label>'+
+            '</div>'+
+          '</div>'+
+          '<div>'+
+            '<label class="ev-label" style="margin-bottom:4px">Data de início na escala</label>'+
+            '<input type="date" value="'+dataInicio+'" style="padding:6px 10px;border:1.5px solid #d0d5dd;border-radius:7px;font-size:13px" onchange="setDataInicioTreino(\''+nome+'\',this.value)">'+
+          '</div>'+
+        '</div>'+
+      '</div>';
+    c.appendChild(div);
+  });
 }
 
-function fecharSubst() { document.getElementById('ov-subst').classList.remove('aberto'); substAtual = null; }
+// Verifica se irmão em treino deve ser pulado neste setor
+// Lógica: alterna skip de 2 e 3 reuniões → contador de pulos
+function emTreino(nome, setor) {
+  return treinamento[nome] && treinamento[nome][setor];
+}
+function estaEmTreinamento(nome) {
+  return treinamento.hasOwnProperty(nome);
+}
 
-function confirmarSubst() {
+function deveSerPulado(nome, setor, dataISO) {
+  // Irmão não cadastrado no treinamento: aparece normalmente
+  if(!estaEmTreinamento(nome)) return false;
+  var cfg=treinamento[nome]||{};
+  // Respeita data de início: antes da data de início, não aparece
+  if(cfg.dataInicio && dataISO){
+    if(dataISO < cfg.dataInicio) return true;
+  }
+  // Setor sem frequência reduzida: aparece normalmente no rodízio
+  if(!emTreino(nome,setor)) return false;
+
+  // Frequência reduzida:
+  // Nível 1 = aparece 1 vez a cada 4 reuniões (pula 3)
+  // Nível 2 = aparece 1 vez a cada 3 reuniões (pula 2)
+  var nivel=cfg.nivel||1;
+  var skipNeeded=(nivel===1)?3:2;
+
+  var k=nome+'|'+setor;
+  if(contadorPulo[k]===undefined) contadorPulo[k]=skipNeeded; // começa liberado para aparecer na 1ª
+  if(!aparicoes[k]) aparicoes[k]=0;
+
+  if(contadorPulo[k] >= skipNeeded){
+    // Hora de aparecer — zera o contador
+    contadorPulo[k]=0;
+    aparicoes[k]++;
+    return false;
+  }
+  // Ainda pula
+  contadorPulo[k]++;
+  return true;
+}
+var aparicoes = {};
+
+// ===================== GERENCIAR IRMÃOS =====================
+var deptConfig = [
+  { key:'palcoPares', label:'&#127963; Palco (Pares)',      tipo:'pares' },
+  { key:'microfone',  label:'&#127908; Microfone Volante',  tipo:'lista' },
+  { key:'indicador',  label:'&#128101; Indicadores',        tipo:'lista' },
+  { key:'audio',      label:'&#127911; Áudio',              tipo:'lista' },
+  { key:'video',      label:'&#127909; Vídeo',              tipo:'lista' },
+  { key:'zoom',       label:'&#127760; Zoom',               tipo:'lista' }
+];
+function renderGerenciarIrmaos() {
+  var c=document.getElementById('gerenciar-irmaos'); c.innerHTML='';
+  deptConfig.forEach(function(dept){
+    var sec=document.createElement('div'); sec.className='irmaos-secao';
+    if(dept.tipo==='pares'){
+      var chips=listas[dept.key].map(function(par,i){
+        return '<span class="irmao-chip">'+par[0]+' &amp; '+par[1]+
+          '<button onclick="removerPar('+i+')" title="Remover">&#10005;</button></span>';
+      }).join('');
+      var optsA=todosIrmaos.map(function(n){return'<option value="'+n+'">'+n+'</option>';}).join('');
+      sec.innerHTML='<h3>'+dept.label+'</h3><div class="chips-wrap">'+chips+'</div>'+
+        '<div class="add-row" style="flex-wrap:wrap;gap:6px">'+
+          '<select id="par-a" style="flex:1;min-width:120px"><option value="">Irmão 1...</option>'+optsA+'</select>'+
+          '<select id="par-b" style="flex:1;min-width:120px"><option value="">Irmão 2...</option>'+optsA+'</select>'+
+          '<button onclick="adicionarPar()">+ Adicionar par</button></div>';
+    } else {
+      var chips=listas[dept.key].map(function(n,i){
+        return '<span class="irmao-chip">'+n+'<button onclick="removerIrmao(\''+dept.key+'\','+i+')">&#10005;</button></span>';
+      }).join('');
+      var livreMic=(dept.key==='microfone'||dept.key==='indicador');
+      var addRow;
+      if(livreMic){
+        addRow='<div class="add-row">'+
+          '<input type="text" id="novo-'+dept.key+'" placeholder="Nome do irmão...">'+
+          '<button onclick="adicionarIrmaoLivre(\''+dept.key+'\')">+ Adicionar</button></div>';
+      } else {
+        var disp=todosIrmaos.filter(function(n){return listas[dept.key].indexOf(n)<0;});
+        var opts='<option value="">— selecionar irmão —</option>'+disp.map(function(n){return'<option value="'+n+'">'+n+'</option>';}).join('');
+        addRow='<div class="add-row">'+
+          '<select id="novo-'+dept.key+'">'+opts+'</select>'+
+          '<button onclick="adicionarIrmaoSelect(\''+dept.key+'\')">+ Adicionar</button></div>';
+      }
+      sec.innerHTML='<h3>'+dept.label+'</h3><div class="chips-wrap">'+chips+'</div>'+addRow;
+    }
+    c.appendChild(sec);
+  });
+}
+function removerIrmao(dept,idx){ listas[dept].splice(idx,1); renderGerenciarIrmaos(); salvarConfigFirebase(); }
+function removerPar(idx){ listas.palcoPares.splice(idx,1); renderGerenciarIrmaos(); salvarConfigFirebase(); }
+function adicionarIrmaoLivre(dept){
+  var inp=document.getElementById('novo-'+dept); var nome=inp.value.trim(); if(!nome) return;
+  if(listas[dept].indexOf(nome)<0) listas[dept].push(nome);
+  if(todosIrmaos.indexOf(nome)<0) todosIrmaos.push(nome);
+  inp.value=''; renderGerenciarIrmaos(); salvarConfigFirebase();
+}
+function adicionarIrmaoSelect(dept){
+  var sel=document.getElementById('novo-'+dept); var nome=sel.value; if(!nome) return;
+  if(listas[dept].indexOf(nome)<0) listas[dept].push(nome);
+  sel.value=''; renderGerenciarIrmaos(); salvarConfigFirebase();
+}
+function adicionarIrmao(dept){ adicionarIrmaoLivre(dept); }
+function adicionarPar(){
+  var a=document.getElementById('par-a').value, b=document.getElementById('par-b').value;
+  if(!a||!b||a===b) return;
+  var existe=listas.palcoPares.some(function(p){return(p[0]===a&&p[1]===b)||(p[0]===b&&p[1]===a);});
+  if(!existe) listas.palcoPares.push([a,b]);
+  renderGerenciarIrmaos(); salvarConfigFirebase();
+}
+
+// ===================== EVENTOS =====================
+function adicionarEvento(){ eventos.push({inicio:'',fim:'',tipo:'congresso',descricao:'',tema:'',ausentes:[]}); renderEventos(); salvarConfigFirebase(); }
+function removerEvento(i){ eventos.splice(i,1); renderEventos(); salvarConfigFirebase(); }
+function adicionarAusente(i,nome){ if(!nome) return; if(eventos[i].ausentes.indexOf(nome)<0) eventos[i].ausentes.push(nome); renderEventos(); salvarConfigFirebase(); }
+function removerAusente(i,a){ eventos[i].ausentes.splice(a,1); renderEventos(); salvarConfigFirebase(); }
+function renderEventos(){
+  var c=document.getElementById('lista-eventos'); c.innerHTML='';
+  if(!eventos.length){ c.innerHTML='<p style="text-align:center;color:#888;font-size:13px;padding:12px 0">Nenhum evento.</p>'; return; }
+  eventos.forEach(function(ev,i){
+    var chips=(ev.ausentes||[]).map(function(n,a){
+      return '<span class="ausente-chip">'+n+'<button onclick="removerAusente('+i+','+a+')">&#10005;</button></span>';
+    }).join('');
+    var optsN=todosIrmaos.filter(function(n){return(ev.ausentes||[]).indexOf(n)<0;})
+      .map(function(n){return'<option value="'+n+'">'+n+'</option>';}).join('');
+    var extraAus=ev.tipo==='muda-dia'
+      ? '<div class="ev-card-extra"><label class="ev-label">&#128683; Ausentes nessa semana</label>'+
+          '<div class="chips-wrap">'+(chips||'<span style="font-size:12px;color:#aaa">Nenhum</span>')+'</div>'+
+          '<div class="add-row"><select id="sel-'+i+'"><option value="">— selecionar —</option>'+optsN+'</select>'+
+          '<button onclick="adicionarAusente('+i+',document.getElementById(\'sel-'+i+'\').value)">+ Adicionar</button></div></div>'
+      : '';
+    var card=document.createElement('div'); card.className='ev-card';
+    card.innerHTML=
+      '<div class="ev-card-topo">'+
+        '<div><label class="ev-label">Início</label><input type="date" value="'+ev.inicio+'" onchange="eventos['+i+'].inicio=this.value;salvarConfigFirebase()"></div>'+
+        '<div><label class="ev-label">Fim</label><input type="date" value="'+ev.fim+'" onchange="eventos['+i+'].fim=this.value;salvarConfigFirebase()"></div>'+
+        '<div><label class="ev-label">Tipo</label>'+
+          '<select onchange="eventos['+i+'].tipo=this.value;renderEventos();salvarConfigFirebase()">'+
+            '<option value="congresso"'+(ev.tipo==='congresso'?' selected':'')+'>&#128683; Congresso</option>'+
+            '<option value="assembleia"'+(ev.tipo==='assembleia'?' selected':'')+'>&#128683; Assembleia de Circuito</option>'+
+            '<option value="manutencao"'+(ev.tipo==='manutencao'?' selected':'')+'>&#128296; Manutenção</option>'+
+            '<option value="celebracao"'+(ev.tipo==='celebracao'?' selected':'')+'>&#127881; Celebração</option>'+
+            '<option value="limpeza"'+(ev.tipo==='limpeza'?' selected':'')+'>&#129529; Limpeza Geral</option>'+
+            '<option value="muda-dia"'+(ev.tipo==='muda-dia'?' selected':'')+'>&#128197; Visita do Superintendente</option>'+
+          '</select></div>'+
+        '<button class="btn-remover" onclick="removerEvento('+i+')">&#10005;</button>'+
+      '</div>'+
+      '<div class="ev-card-meio">'+
+        '<div><label class="ev-label">Descrição</label><input type="text" value="'+escHtml(ev.descricao)+'" placeholder="Ex: Congresso Regional" onchange="eventos['+i+'].descricao=this.value;salvarConfigFirebase()"></div>'+
+        '<div><label class="ev-label">Tema (opcional)</label><textarea onchange="eventos['+i+'].tema=this.value;salvarConfigFirebase()">'+escHtml(ev.tema)+'</textarea></div>'+
+        (ev.tipo==='limpeza'?'<div style="margin-top:8px;display:flex;align-items:center;gap:8px">'+
+          '<input type="checkbox" '+(ev.cancelar?'checked':'')+' onchange="eventos['+i+'].cancelar=this.checked;salvarConfigFirebase()">'+
+          '<label style="font-size:13px;cursor:pointer">Cancelar reunião desta semana</label></div>':'')+
+      '</div>'+extraAus;
+    c.appendChild(card);
+  });
+}
+
+// ===================== SUBSTITUIÇÃO =====================
+var substAtual=null;
+function abrirSubst(chave,setor,dataLabel,nomeAtual,el){
+  substAtual={chave:chave,setor:setor,dataLabel:dataLabel,nomeAtual:nomeAtual,el:el};
+  document.getElementById('subst-data').textContent=dataLabel;
+  document.getElementById('subst-setor').textContent=setor;
+  document.getElementById('subst-atual').textContent=nomeAtual;
+  var sel=document.getElementById('subst-select');
+  sel.innerHTML=todosIrmaos.filter(function(n){return n!==nomeAtual;})
+    .map(function(n){return'<option value="'+n+'">'+n+'</option>';}).join('');
+  document.getElementById('ov-subst').classList.add('aberto');
+}
+function fecharSubst(){ document.getElementById('ov-subst').classList.remove('aberto'); substAtual=null; }
+function confirmarSubst(){
   if(!substAtual) return;
   var novo = document.getElementById('subst-select').value;
   var chave = substAtual.chave;
   var setor = substAtual.setor;
 
+  // Salva substituição localmente
   substituicoes[chave] = novo;
 
+  // Atualiza o nome na tela
   if(substAtual.el) {
     substAtual.el.textContent = novo;
+
+    // Atualiza badge de treino no span
+    var setorChave = { 'Palco-Coord':'palco','Palco-Ajud':'palco','Palco':'palco',
+      'Mic1':'microfone','Mic2':'microfone','Microfone':'microfone',
+      'Audio':'audio','Áudio':'audio','Video':'video','Vídeo':'video',
+      'Zoom':'zoom','Ind-Aud':'indicador','Ind-Pat':'indicador','Indicador':'indicador' };
+    var setorKey = setorChave[setor] || setor.toLowerCase();
+    var emTreinoNovo = estaEmTreinamento(novo) && treinamento[novo] && treinamento[novo][setorKey];
     // Remove badge antigo se existir
-    if(substAtual.el && substAtual.el.nextSibling && substAtual.el.nextSibling.classList && substAtual.el.nextSibling.classList.contains('badge-treino-inline')) {
-      substAtual.el.parentNode.removeChild(substAtual.el.nextSibling);
+    var span = substAtual.el;
+    if(span && span.nextSibling && span.nextSibling.classList && span.nextSibling.classList.contains('badge-treino-inline')) {
+      span.parentNode.removeChild(span.nextSibling);
+    }
+    // Adiciona badge novo se necessário
+    if(modoResponsavel && emTreinoNovo) {
+      var badge = document.createElement('span');
+      badge.className = 'badge-treino-inline';
+      badge.style.cssText = 'font-size:9px;background:#fef3c7;color:#92400e;border:1px solid #fcd34d;border-radius:8px;padding:1px 5px;vertical-align:middle;margin-left:3px';
+      badge.textContent = 'treino';
+      span.parentNode.insertBefore(badge, span.nextSibling);
     }
   }
 
-  // Atualiza escalaGerada
-  var partesChave = substAtual.chave.split('|');
+  // Atualiza escalaGerada com o nome substituto para que recarregar mostre o nome certo
+  var partesChave = substAtual.chave.split('|'); // dataISO|setor|nomeOriginal
   if (partesChave.length === 3 && escalaGerada[partesChave[0]]) {
     var setorMap = {
-      'Palco-Coord':'palco1', 'Palco-Ajud':'palco2',
-      'Mic1':'mic1', 'Mic2':'mic2',
-      'Audio':'audio', 'Video':'video', 'Zoom':'zoom',
-      'Ind-Aud':'indAud', 'Ind-Pat':'indPat'
+      'Palco-Coord':'palco1','Palco-Ajud':'palco2',
+      'Mic1':'mic1','Mic2':'mic2',
+      'Audio':'audio','Video':'video','Zoom':'zoom',
+      'Ind-Aud':'indAud','Ind-Pat':'indPat'
     };
     var campo = setorMap[partesChave[1]];
     if (campo) escalaGerada[partesChave[0]][campo] = novo;
   }
 
+  // Persiste no Firebase — salva substituicoes E escalaGerada atualizados
   if(firebaseOk && db) {
-    // Salva substituições E escalaGerada para garantir consistência
-    var updates = {};
-    updates['escala/estado/substituicoes'] = substituicoes;
-    if(escalaGerada && Object.keys(escalaGerada).length > 0) {
-      updates['escala/estado/escalaGerada'] = escalaGerada;
-    }
-    db.ref().update(updates).catch(function(e){ console.warn('Erro ao salvar substituição:', e); });
+    db.ref('escala/estado').update({
+      substituicoes: substituicoes,
+      escalaGerada: escalaGerada
+    }).catch(function(e){
+      console.warn('Erro ao salvar substituição:', e);
+    });
   }
 
   fecharSubst();
 }
 
-function ativarModoEdicao() {
-  modoEdicao = true;
-  document.getElementById('badge-edicao').style.display = 'flex';
-  document.getElementById('btn-editar-permanente').style.display = 'none';
-  // Torna todos os nomes clicáveis para substituição
-  _tornarNomesClicaveis();
+// ===================== LÓGICA ESCALA =====================
+function toISO(d){ return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
+function eventoNaSemana(data){
+  var seg=new Date(data); seg.setDate(data.getDate()-((data.getDay()+6)%7));
+  var dom=new Date(seg); dom.setDate(seg.getDate()+6);
+  var s=toISO(seg),e=toISO(dom);
+  for(var j=0;j<eventos.length;j++){
+    var ev=eventos[j];
+    if(ev.inicio&&ev.fim&&ev.fim>=s&&ev.inicio<=e) return ev;
+  }
+  return null;
+}
+function gerarReunioes(mes,ano){
+  var list=[],d=new Date(ano,mes-1,1);
+  while(d.getMonth()===mes-1){
+    if(d.getDay()===3) list.push({data:new Date(ano,mes-1,d.getDate(),19,0),tipo:"Quarta"});
+    else if(d.getDay()===6) list.push({data:new Date(ano,mes-1,d.getDate(),18,30),tipo:"Sábado"});
+    d.setDate(d.getDate()+1);
+  }
+  return list;
 }
 
-function _tornarNomesClicaveis() {
-  document.querySelectorAll('.nome-base, .nome-troca').forEach(function(span) {
-    var chave = span.getAttribute('data-chave');
-    if (!chave) return;
-    var setor = span.getAttribute('data-setor') || '';
-    var dataLabel = span.getAttribute('data-data') || '';
-    var existeIdx = span.getAttribute('data-idx');
-    if (!existeIdx) {
-      existeIdx = _nomeSpanCache.length;
-      _nomeSpanCache.push({chave:chave, setor:setor, dataLabel:dataLabel});
-      span.setAttribute('data-idx', existeIdx);
+// Rodízio simples respeitando ausentes e treinamento
+function rodizioSetor(fila, idx, usados, setor, dataISO) {
+  var tentativas=0, c;
+  var ordem = fila.slice(); // cópia
+  var start = idx.v % ordem.length;
+  for(var t=0; t<ordem.length*3; t++){
+    var i=(start+t) % ordem.length;
+    c = ordem[i];
+    if(usados.indexOf(c)>=0) continue;
+    if(deveSerPulado(c, setor, dataISO)) continue;
+    idx.v = i+1;
+    usados.push(c);
+    return c;
+  }
+  // fallback sem filtro de treino
+  for(var t=0; t<ordem.length*2; t++){
+    var i=(start+t) % ordem.length;
+    c=ordem[i];
+    if(usados.indexOf(c)<0){ idx.v=i+1; usados.push(c); return c; }
+  }
+  idx.v++; usados.push(ordem[start]); return ordem[start];
+}
+
+// Rodízio de pares do palco — sem repetir consecutivo, respeitando treino
+var ultimoPar=-1;
+function proximoPar(ausentes, dataISO){
+  var pares=listas.palcoPares, n=pares.length;
+  for(var t=0; t<n*3; t++){
+    var idx=(ultimoPar+1+t) % n;
+    var par=pares[idx];
+    if(ausentes.indexOf(par[0])>=0||ausentes.indexOf(par[1])>=0) continue;
+    if(idx===ultimoPar) continue;
+    // verifica treinamento no palco para ambos
+    var skip0=deveSerPulado(par[0],'palco',dataISO);
+    var skip1=deveSerPulado(par[1],'palco',dataISO);
+    if(skip0||skip1) continue;
+    ultimoPar=idx; return par;
+  }
+  // fallback sem filtro de treino
+  for(var t=0; t<n*2; t++){
+    var idx=(ultimoPar+1+t)%n; var par=pares[idx];
+    if(ausentes.indexOf(par[0])<0&&ausentes.indexOf(par[1])<0&&idx!==ultimoPar){
+      ultimoPar=idx; return par;
     }
-    span.className = 'nome-edicao';
-    span.title = 'Clique para substituir';
-    span.setAttribute('onclick', '_abrirSubstIdx(this)');
+  }
+  ultimoPar=(ultimoPar+1)%n; return pares[ultimoPar];
+}
+
+// Indicadores com alternância auditório/pátio
+// Mantém registro de quem foi auditório na última vez
+var ultimoAuditorio = {}; // ultimoAuditorio[nome] = true se foi auditório da última vez
+
+var idxM={v:0},idxA={v:0},idxV={v:0},idxZ={v:0},idxI={v:0};
+
+function escolherIndicadores(usados){
+  // pega os 2 próximos da fila que não estejam em usados e respeitando treino
+  var fila=listas.indicador;
+  var escolhidos=[];
+  var start=idxI.v;
+  for(var t=0; t<fila.length*3 && escolhidos.length<2; t++){
+    var i=(start+t)%fila.length;
+    var nome=fila[i];
+    if(usados.indexOf(nome)>=0) continue;
+    if(deveSerPulado(nome,'indicador',null)) continue;
+    escolhidos.push(nome);
+    usados.push(nome);
+  }
+  // fallback
+  for(var t=0; t<fila.length*2 && escolhidos.length<2; t++){
+    var i=(start+t)%fila.length;
+    var nome=fila[i];
+    if(usados.indexOf(nome)<0){ escolhidos.push(nome); usados.push(nome); }
+  }
+  idxI.v = (start + escolhidos.length) % fila.length;
+
+  // Alternância: quem foi auditório vai para pátio agora e vice-versa
+  var a=escolhidos[0]||'', b=escolhidos[1]||'';
+  var aud,pat;
+  if(ultimoAuditorio[a]===true && ultimoAuditorio[b]!==true){
+    // a foi auditório antes → agora vai para pátio
+    aud=b; pat=a;
+  } else if(ultimoAuditorio[b]===true && ultimoAuditorio[a]!==true){
+    aud=a; pat=b;
+  } else {
+    // primeira vez ou empate — ordem normal
+    aud=a; pat=b;
+  }
+  ultimoAuditorio[aud]=true;
+  ultimoAuditorio[pat]=false;
+  return {aud:aud, pat:pat};
+}
+
+var trocasCache = {};
+var trocaAtual = null;
+
+function nomeSpan(n,chave,setor,dataLabel){
+  var atual=substituicoes[chave]||n;
+  // badge de troca
+  var badgeTroca='';
+  Object.values(trocasCache).forEach(function(t){
+    if(t.dataLabel===dataLabel && t.setor===setor){
+      if(t.status==='pendente') badgeTroca=' <span class="badge-troca-pendente">&#9203; pendente</span>';
+      else if(t.status==='aceita') badgeTroca=' <span class="badge-troca-aceita">&#9989; aceita</span>';
+      else if(t.status==='recusada') badgeTroca=' <span class="badge-troca-recusada">&#10060; recusada</span>';
+    }
   });
-  document.querySelectorAll('.linha-nomes').forEach(function(linha) {
-    linha.style.outline = '1px dashed #f59e0b';
-    linha.title = 'Modo Edicao ativo';
-  });
+  // Cor e badge de treinamento — visível APENAS para o responsável
+  // Badge só aparece se o irmão tem frequência reduzida neste setor específico
+  var setorChave = { 'Palco-Coord':'palco','Palco-Ajud':'palco','Palco':'palco',
+    'Mic1':'microfone','Mic2':'microfone','Microfone':'microfone',
+    'Audio':'audio','Áudio':'audio',
+    'Video':'video','Vídeo':'video',
+    'Zoom':'zoom',
+    'Ind-Aud':'indicador','Ind-Pat':'indicador','Indicador':'indicador' };
+  var setorKey = setorChave[setor] || setor.toLowerCase();
+  var emTreinoNesteSetor = estaEmTreinamento(atual) && treinamento[atual] && treinamento[atual][setorKey];
+  var styleExtra = (modoResponsavel && emTreinoNesteSetor) ? ' style="color:#b45309;font-style:italic;" title="Em treinamento"' : '';
+  var badgeTreino = (modoResponsavel && emTreinoNesteSetor) ? ' <span style="font-size:9px;background:#fef3c7;color:#92400e;border:1px solid #fcd34d;border-radius:8px;padding:1px 5px;vertical-align:middle">treino</span>' : '';
+  if(modoResponsavel){
+    return '<span class="nome-clicavel" data-chave="'+chave+'"'+styleExtra+' onclick="abrirSubst(\'' + chave + '\',\'' + escHtml(setor) + '\',\'' + escHtml(dataLabel) + '\',this.textContent,this)">' + escHtml(atual) + '</span>' + badgeTreino + badgeTroca;
+  }
+  return '<span class="nome-troca" onclick="abrirTroca(\'' + chave + '\',\'' + escHtml(setor) + '\',\'' + escHtml(dataLabel) + '\',\'' + escHtml(atual) + '\')">' + escHtml(atual) + '</span>' + badgeTroca;
 }
 
 
-function sairModoEdicao() {
-  modoEdicao = false;
-  document.getElementById('badge-edicao').style.display = 'none';
-  if (modoResponsavel) {
-    document.getElementById('btn-editar-permanente').style.display = 'inline-block';
-  }
-  removerModoEdicaoDaTela();
-  // Salva substituições no Firebase ao sair do modo edição
-  if (firebaseOk && db && Object.keys(substituicoes).length > 0) {
-    db.ref('escala/estado/substituicoes').set(substituicoes)
-      .then(function(){ console.log('Substituições salvas.'); })
-      .catch(function(e){ console.warn('Erro ao salvar substituições:', e); });
-  }
-}
+// Renderiza um mês usando a escala já salva no Firebase (sem rodar rodízio)
+function renderMesSalvo(mes, ano, escSalva, substs) {
+  var reunioes = gerarReunioes(mes, ano);
+  var nomeMes = new Date(ano,mes-1,1).toLocaleString('pt-BR',{month:'long'});
+  var chave = chaveMes(mes, ano);
+  var bloco = document.createElement('div');
+  bloco.className = 'mes-bloco';
+  bloco.dataset.chavemes = chave;
+  bloco.innerHTML = '<div class="mes-cab"><span class="mes-nome">'+nomeMes+' '+ano+'</span>'+
+    '<div style="display:flex;align-items:center;gap:12px">'+
+    '<span class="mes-resp">Responsável: Eriton Oliveira</span>'+
+    '<button class="btn-apagar-mes" onclick="apagarMes(\'' + chave + '\')" title="Remover este mês">&#128465; Remover</button>'+
+    '</div></div>';
+  var grid = document.createElement('div');
+  grid.className = 'reunioes-grid';
 
-function aplicarModoEdicaoNaTela() {
-  // Transforma todos os spans de nomes em clicáveis
-  document.querySelectorAll('.linha-nomes span').forEach(function(span) {
-    if (span.classList.contains('nome-edicao')) return;
-    if (span.classList.contains('nome-clicavel')) return;
-    
-    var texto = span.textContent;
-    var parent = span.parentNode;
-    var linhaNome = parent.querySelector('.linha-nomes');
-    if (!linhaNome) return;
-    
-    // Tenta encontrar a chave de substituição
-    var chave = span.getAttribute('data-chave');
-    if (!chave) {
-      // Tenta extrair do onclick do elemento filho
-      var nomeSpan = span.querySelector('[onclick]');
-      if (nomeSpan) {
-        var onclick = nomeSpan.getAttribute('onclick');
-        var match = onclick && onclick.match(/abrirSubst\('([^']+)'/);
-        if (match) chave = match[1];
+  reunioes.forEach(function(r) {
+    var ev = eventoNaSemana(r.data);
+    var dataISO = toISO(r.data);
+    var dataLabel = fmtData(r.data);
+
+    if(ev&&ev.tipo==='celebracao'&&r.tipo!=='Quarta') ev=null;
+    var evCancela = ev&&(ev.tipo==='congresso'||ev.tipo==='assembleia'||ev.tipo==='manutencao'||
+      (ev.tipo==='celebracao')||(ev.tipo==='limpeza'&&ev.cancelar));
+    if(evCancela){
+      var ini=ev.inicio.split('-').reverse().join('/');
+      var fim=ev.fim.split('-').reverse().join('/');
+      var temaHtml=ev.tema?'<div class="ev-tema">'+escHtml(ev.tema)+'</div>':'';
+      var corMap={congresso:['#fff7ed','#c2410c','#9a3412'],assembleia:['#fdf2f8','#9d174d','#831843'],
+        manutencao:['#f0fdf4','#15803d','#166534'],celebracao:['#fdf4ff','#7e22ce','#6b21a8'],limpeza:['#eff6ff','#1d4ed8','#1e3a8a']};
+      var cols=corMap[ev.tipo]||corMap.congresso;
+      var iconeMap={congresso:'&#128683;',assembleia:'&#128683;',manutencao:'&#128296;',celebracao:'&#127881;',limpeza:'&#129529;'};
+      var card=document.createElement('div'); card.className='card-evento'; card.style.background=cols[0];
+      card.innerHTML='<span class="ev-icone">'+iconeMap[ev.tipo]+'</span><div style="flex:1">'+
+        '<div class="ev-titulo" style="color:'+cols[1]+'">Sem reunião — '+escHtml(ev.descricao)+'</div>'+
+        '<div class="ev-detalhe" style="color:'+cols[2]+'">'+dataLabel+' · '+fmtHora(r.data)+'<br>Período: '+ini+' a '+fim+'</div>'+
+        temaHtml+'</div>';
+      grid.appendChild(card); return;
+    }
+
+    var saved = escSalva[dataISO];
+    // Se não há dados salvos para esta data, gera localmente
+    if (!saved) {
+      var ausEnv = (ev && ev.ausentes) ? ev.ausentes.slice() : [];
+      var usadosEnv = ausEnv.slice();
+      var comboEnv = proximoPar(ausEnv, dataISO);
+      usadosEnv.push(comboEnv[0], comboEnv[1]);
+      var mic1Env = rodizioSetor(listas.microfone, idxM, usadosEnv, 'microfone', dataISO);
+      var mic2Env = rodizioSetor(listas.microfone, idxM, usadosEnv, 'microfone', dataISO);
+      var audEnv  = rodizioSetor(listas.audio, idxA, usadosEnv, 'audio', dataISO);
+      var vidEnv  = rodizioSetor(listas.video, idxV, usadosEnv, 'video', dataISO);
+      var zmEnv   = rodizioSetor(listas.zoom,  idxZ, usadosEnv, 'zoom',  dataISO);
+      var indEnv  = escolherIndicadores(usadosEnv);
+      saved = {
+        palco1: comboEnv[0], palco2: comboEnv[1],
+        mic1: mic1Env, mic2: mic2Env,
+        audio: audEnv, video: vidEnv, zoom: zmEnv,
+        indAud: indEnv.aud, indPat: indEnv.pat
+      };
+      escalaGerada[dataISO] = saved;
+    }
+
+    // Aplica substituições sobre os nomes salvos
+    function nomeFinal(n, setorKey) {
+      if (!n) return '';
+      var chaveSubst = dataISO + '|' + setorKey + '|' + n;
+      return (substs && substs[chaveSubst]) ? substs[chaveSubst] : n;
+    }
+
+    var p1  = nomeFinal(saved.palco1, 'Palco-Coord');
+    var p2  = nomeFinal(saved.palco2, 'Palco-Ajud');
+    var m1  = nomeFinal(saved.mic1,   'Mic1');
+    var m2  = nomeFinal(saved.mic2,   'Mic2');
+    var aud = nomeFinal(saved.audio,  'Audio');
+    var vid = nomeFinal(saved.video,  'Video');
+    var zm  = nomeFinal(saved.zoom,   'Zoom');
+    var iA  = nomeFinal(saved.indAud, 'Ind-Aud');
+    var iP  = nomeFinal(saved.indPat, 'Ind-Pat');
+
+    var campoMap = {'Palco-Coord':'palco1','Palco-Ajud':'palco2','Mic1':'mic1','Mic2':'mic2',
+      'Audio':'audio','Video':'video','Zoom':'zoom','Ind-Aud':'indAud','Ind-Pat':'indPat'};
+    function ns(n, setor) {
+      var nomeOrig = saved[campoMap[setor]] || n;
+      return nomeSpan(n, dataISO+'|'+setor+'|'+nomeOrig, setor, dataLabel);
+    }
+
+    var dataReal = r.data, tipoLabel = r.tipo;
+    var badgeClass = r.tipo==='Quarta'?'badge-quarta':'badge-sabado';
+    var bannerHtml = '';
+    if(ev&&ev.tipo==='muda-dia'){
+      var temaV=ev.tema?'<br><em>'+escHtml(ev.tema)+'</em>':'';
+      if(r.tipo==='Quarta'){
+        dataReal=new Date(r.data); dataReal.setDate(r.data.getDate()-1);
+        tipoLabel='Terça'; badgeClass='badge-terca';
+        bannerHtml='<div class="banner-evento banner-visita-terca">&#128197; Reunião antecipada para terça — '+escHtml(ev.descricao)+temaV+'</div>';
+      } else {
+        bannerHtml='<div class="banner-evento banner-visita-sab">&#11088; Reunião com visita — '+escHtml(ev.descricao)+temaV+'</div>';
       }
     }
-    
-    if (chave) {
-      var novoSpan = document.createElement('span');
-      novoSpan.className = 'nome-edicao';
-      novoSpan.setAttribute('data-chave', chave);
-      novoSpan.textContent = texto;
-      var onclickAttr = "abrirSubst('" + chave + "','" + (span.getAttribute('data-setor') || '') + "','" + (span.getAttribute('data-data') || '') + "',this.textContent,this)";
-      novoSpan.setAttribute('onclick', onclickAttr);
-      span.parentNode.replaceChild(novoSpan, span);
+
+    var c = document.createElement('div'); c.className = 'card';
+    c.innerHTML =
+      bannerHtml+
+      '<div class="card-topo">'+
+        '<span class="badge '+badgeClass+'">'+tipoLabel+'</span>'+
+        '<span class="card-data">'+fmtData(dataReal)+'</span>'+
+        '<span class="card-hora">'+fmtHora(dataReal)+'</span>'+
+      '</div>'+
+      linhaH('&#127963;','Palco',        ns(p1,'Palco-Coord')+' &amp; '+ns(p2,'Palco-Ajud'))+
+      linhaH('&#127908;','Mic. Volante', ns(m1,'Mic1')+' &amp; '+ns(m2,'Mic2'))+
+      linhaH('&#127911;','Áudio',        ns(aud,'Audio'))+
+      linhaH('&#127909;','Vídeo',        ns(vid,'Video'))+
+      linhaH('&#127760;','Zoom',         ns(zm,'Zoom'))+
+      linhaH('&#128101;','Indicadores',  'Auditório → '+ns(iA,'Ind-Aud')+' &nbsp;|&nbsp; Pátio → '+ns(iP,'Ind-Pat'));
+    grid.appendChild(c);
+  });
+
+  bloco.appendChild(grid);
+  document.getElementById('lista').appendChild(bloco);
+}
+
+function gerarMes(mes,ano){
+  var reunioes=gerarReunioes(mes,ano);
+  var nomeMes=new Date(ano,mes-1,1).toLocaleString('pt-BR',{month:'long'});
+  var bloco=document.createElement('div'); bloco.className='mes-bloco';
+  bloco.dataset.chavemes=chaveMes(mes,ano);
+  var chave=chaveMes(mes,ano);
+  bloco.innerHTML='<div class="mes-cab"><span class="mes-nome">'+nomeMes+' '+ano+'</span>'+
+    '<div style="display:flex;align-items:center;gap:12px">'+
+    '<span class="mes-resp">Responsável: Eriton Oliveira</span>'+
+    '<button class="btn-apagar-mes" onclick="apagarMes(\''+chave+'\')" title="Remover este mês">&#128465; Remover</button>'+
+    '</div></div>';
+  var grid=document.createElement('div'); grid.className='reunioes-grid';
+
+  reunioes.forEach(function(r){
+    var ev=eventoNaSemana(r.data);
+    var dataISO=toISO(r.data);
+    var dataLabel=fmtData(r.data);
+
+    // SEM REUNIÃO
+    // Celebração cancela só quarta
+    if(ev&&ev.tipo==='celebracao'&&r.tipo!=='Quarta') ev=null;
+    // Limpeza só cancela se checkbox marcado
+    var evCancela=ev&&(ev.tipo==='congresso'||ev.tipo==='assembleia'||ev.tipo==='manutencao'||
+      (ev.tipo==='celebracao')||(ev.tipo==='limpeza'&&ev.cancelar));
+    if(evCancela){
+      var ini=ev.inicio.split('-').reverse().join('/');
+      var fim=ev.fim.split('-').reverse().join('/');
+      var temaHtml=ev.tema?'<div class="ev-tema">'+escHtml(ev.tema)+'</div>':'';
+      var corMap={
+        congresso:  ['#fff7ed','#c2410c','#9a3412'],
+        assembleia: ['#fdf2f8','#9d174d','#831843'],
+        manutencao: ['#f0fdf4','#15803d','#166534'],
+        celebracao: ['#fdf4ff','#7e22ce','#6b21a8'],
+        limpeza:    ['#eff6ff','#1d4ed8','#1e3a8a']
+      };
+      var cols=corMap[ev.tipo]||corMap.congresso;
+      var iconeMap={congresso:'&#128683;',assembleia:'&#128683;',manutencao:'&#128296;',celebracao:'&#127881;',limpeza:'&#129529;'};
+      var icone=iconeMap[ev.tipo]||'&#128683;';
+      var card=document.createElement('div'); card.className='card-evento'; card.style.background=cols[0];
+      card.innerHTML='<span class="ev-icone">'+icone+'</span><div style="flex:1">'+
+        '<div class="ev-titulo" style="color:'+cols[1]+'">Sem reunião — '+escHtml(ev.descricao)+'</div>'+
+        '<div class="ev-detalhe" style="color:'+cols[2]+'">'+dataLabel+' · '+fmtHora(r.data)+'<br>Período: '+ini+' a '+fim+'</div>'+
+        temaHtml+'</div>';
+      grid.appendChild(card); return;
+    }
+
+    // MUDA DE DIA / NORMAL
+    var dataReal=r.data, tipoLabel=r.tipo;
+    var badgeClass=r.tipo==='Quarta'?'badge-quarta':'badge-sabado';
+    var bannerHtml='';
+    if(ev&&ev.tipo==='muda-dia'){
+      var temaV=ev.tema?'<br><em>'+escHtml(ev.tema)+'</em>':'';
+      if(r.tipo==='Quarta'){
+        dataReal=new Date(r.data); dataReal.setDate(r.data.getDate()-1);
+        tipoLabel='Terça'; badgeClass='badge-terca';
+        bannerHtml='<div class="banner-evento banner-visita-terca">&#128197; Reunião antecipada para terça — '+escHtml(ev.descricao)+temaV+'</div>';
+      } else {
+        bannerHtml='<div class="banner-evento banner-visita-sab">&#11088; Reunião com visita — '+escHtml(ev.descricao)+temaV+'</div>';
+      }
+    }
+
+    var ausentes=(ev&&ev.ausentes)?ev.ausentes.slice():[];
+    var usados=ausentes.slice();
+    var combo=proximoPar(ausentes,dataISO);
+    usados.push(combo[0],combo[1]);
+
+    var mic1=rodizioSetor(listas.microfone,idxM,usados,'microfone',dataISO);
+    var mic2=rodizioSetor(listas.microfone,idxM,usados,'microfone',dataISO);
+    var audio=rodizioSetor(listas.audio,idxA,usados,'audio',dataISO);
+    var video=rodizioSetor(listas.video,idxV,usados,'video',dataISO);
+    var zoom=rodizioSetor(listas.zoom,idxZ,usados,'zoom',dataISO);
+    var ind=escolherIndicadores(usados);
+
+    function ns(n,s){ return nomeSpan(n,dataISO+'|'+s+'|'+n,s,dataLabel); }
+
+    // Salva designações desta reunião para persistência
+    escalaGerada[dataISO] = {
+      palco1: combo[0], palco2: combo[1],
+      mic1: mic1, mic2: mic2,
+      audio: audio, video: video, zoom: zoom,
+      indAud: ind.aud, indPat: ind.pat
+    };
+
+    var c=document.createElement('div'); c.className='card';
+    c.innerHTML=
+      bannerHtml+
+      '<div class="card-topo">'+
+        '<span class="badge '+badgeClass+'">'+tipoLabel+'</span>'+
+        '<span class="card-data">'+fmtData(dataReal)+'</span>'+
+        '<span class="card-hora">'+fmtHora(dataReal)+'</span>'+
+      '</div>'+
+      linhaH('&#127963;','Palco',        ns(combo[0],'Palco-Coord')+' &amp; '+ns(combo[1],'Palco-Ajud'))+
+      linhaH('&#127908;','Mic. Volante', ns(mic1,'Mic1')+' &amp; '+ns(mic2,'Mic2'))+
+      linhaH('&#127911;','Áudio',        ns(audio,'Audio'))+
+      linhaH('&#127909;','Vídeo',        ns(video,'Video'))+
+      linhaH('&#127760;','Zoom',         ns(zoom,'Zoom'))+
+      linhaH('&#128101;','Indicadores',  'Auditório → '+ns(ind.aud,'Ind-Aud')+' &nbsp;|&nbsp; Pátio → '+ns(ind.pat,'Ind-Pat'));
+    grid.appendChild(c);
+  });
+
+  bloco.appendChild(grid);
+  document.getElementById('lista').appendChild(bloco);
+}
+
+function linhaH(ic,lb,val){
+  return '<div class="linha"><span class="linha-icone">'+ic+'</span>'+
+    '<span class="linha-label">'+lb+'</span><span class="linha-nomes">'+val+'</span></div>';
+}
+function fmtData(d){ return d.toLocaleDateString('pt-BR',{weekday:'long',day:'2-digit',month:'2-digit',year:'numeric'}); }
+function fmtHora(d){ return d.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}); }
+function escHtml(s){ return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+// Conjunto de chaves "ano-mes" dos blocos já gerados na tela
+var mesesGerados = {};
+
+function chaveMes(m,a){ return a+'-'+(m<10?'0':'')+m; }
+
+function adicionarMesesDoForm(){
+  var mes=parseInt(document.getElementById('gerar-mes').value);
+  var ano=parseInt(document.getElementById('gerar-ano').value);
+  var qtd=parseInt(document.getElementById('gerar-qtd').value);
+  fecharPrincipal();
+  adicionarMeses(mes,ano,qtd);
+}
+
+function limparFirebaseERecomecar(){
+  if(!confirm('Isso apaga TODOS os dados do Firebase (meses, config, trocas) e recomeça do zero. Confirma?')) return;
+  if(!firebaseOk||!db){ alert('Firebase não conectado.'); return; }
+  db.ref('escala').remove().then(function(){
+    db.ref('trocas').remove().then(function(){
+      substituicoes={}; contadorPulo={}; aparicoes={}; ultimoAuditorio={};
+      mesesGerados={}; trocasCache={};
+      idxM.v=0; idxA.v=0; idxV.v=0; idxZ.v=0; idxI.v=0; ultimoPar=-1;
+      document.getElementById('lista').innerHTML='';
+      document.getElementById('painel-trocas').style.display='none';
+      atualizarSubtitulo();
+      fecharPrincipal();
+      alert('Firebase limpo! Agora gere os meses novamente.');
+    });
+  }).catch(function(e){ alert('Erro: '+e.message); });
+}
+
+function regenerarTudoDoForm(){
+  if(!confirm('Isso apagará toda a escala atual e as substituições manuais. Continuar?')) return;
+  var mes=parseInt(document.getElementById('gerar-mes').value);
+  var ano=parseInt(document.getElementById('gerar-ano').value);
+  var qtd=parseInt(document.getElementById('gerar-qtd').value);
+  fecharPrincipal();
+  // Reset completo
+  substituicoes={}; contadorPulo={}; aparicoes={}; ultimoAuditorio={};
+  mesesGerados={};
+  document.getElementById('lista').innerHTML='';
+  idxM.v=0;idxA.v=0;idxV.v=0;idxZ.v=0;idxI.v=0;ultimoPar=-1;
+  adicionarMeses(mes,ano,qtd);
+  salvarMesesFirebase();
+}
+
+function apagarMes(chave){
+  if (!modoResponsavel) {
+    pedirSenhaCallback = function() { apagarMes(chave); };
+    pedirSenha();
+    return;
+  }
+  if (!confirm('Apagar o mês ' + chave + ' da escala?')) return;
+  var bloco=document.querySelector('[data-chavemes="'+chave+'"]');
+  if(bloco){ bloco.remove(); }
+  delete mesesGerados[chave];
+  atualizarSubtitulo();
+  salvarMesesFirebase();
+}
+
+function adicionarMeses(mesInicio,ano,qtd){
+  var lista=document.getElementById('lista');
+  var novos=[];
+  for(var i=0;i<qtd;i++){
+    var m=((mesInicio-1+i)%12)+1;
+    var a=ano+Math.floor((mesInicio-1+i)/12);
+    var chave=chaveMes(m,a);
+    if(mesesGerados[chave]) continue;
+    mesesGerados[chave]=true;
+    novos.push({m:m,a:a});
+  }
+  if(novos.length===0){
+    alert('Todos os meses selecionados já foram gerados.');
+    return;
+  }
+  novos.forEach(function(item){ gerarMes(item.m,item.a); });
+  var blocos=Array.from(lista.querySelectorAll('.mes-bloco'));
+  blocos.sort(function(a,b){ return (a.dataset.chavemes||'').localeCompare(b.dataset.chavemes||''); });
+  blocos.forEach(function(b){ lista.appendChild(b); });
+  atualizarSubtitulo();
+  salvarMesesFirebase();
+}
+
+function atualizarSubtitulo(){
+  var chaves=Object.keys(mesesGerados).sort();
+  if(chaves.length===0){ document.getElementById('subtitulo-periodo').textContent='Congregação Parque Tietê'; return; }
+  function nomeChave(c){
+    var p=c.split('-'); var a=parseInt(p[0]); var m=parseInt(p[1]);
+    return new Date(a,m-1,1).toLocaleString('pt-BR',{month:'long'})+' '+a;
+  }
+  document.getElementById('subtitulo-periodo').textContent=
+    'Congregação Parque Tietê · '+nomeChave(chaves[0])+' a '+nomeChave(chaves[chaves.length-1]);
+}
+
+function gerarEscalaAtual(){
+  substituicoes={}; contadorPulo={}; aparicoes={}; ultimoAuditorio={};
+  mesesGerados={};
+  document.getElementById('lista').innerHTML='';
+  idxM.v=0;idxA.v=0;idxV.v=0;idxZ.v=0;idxI.v=0;ultimoPar=-1;
+  var mes=periodoAtual.mesInicio, ano=periodoAtual.ano;
+  adicionarMeses(mes,ano,periodoAtual.qtd);
+}
+
+
+// ===================== FIREBASE CONFIG =====================
+// INSTRUCOES: substitua os valores abaixo pelos do seu projeto Firebase
+// Console: https://console.firebase.google.com -> Configuracoes do projeto -> Seus apps -> SDK
+var FIREBASE_CONFIG = {
+  apiKey: "AIzaSyA2gzHNa_r3ZFEd8MT8q7mU76FDbqkIFvo",
+  authDomain: "scale-designation.firebaseapp.com",
+  databaseURL: "https://scale-designation-default-rtdb.firebaseio.com",
+  projectId: "scale-designation",
+  storageBucket: "scale-designation.firebasestorage.app",
+  messagingSenderId: "14896538802",
+  appId: "1:14896538802:web:96ddd7faf79dad0b6c55ab",
+  measurementId: "G-DGZCM8ZE8M"
+};
+
+var db = null;
+var firebaseOk = false;
+
+// ── PERSISTÊNCIA DE MESES NO FIREBASE ──────────────────────────────────────
+
+function salvarMesesFirebase() {
+  if (!firebaseOk || !db) return;
+  // Salva objeto {chave: true} com todos os meses ativos + estado do rodízio
+  var payload = {
+    meses: mesesGerados,
+    contadorPulo: contadorPulo,
+    aparicoes: aparicoes,
+    idxM: idxM.v, idxA: idxA.v, idxV: idxV.v, idxZ: idxZ.v, idxI: idxI.v,
+    ultimoPar: ultimoPar,
+    substituicoes: substituicoes,
+    escalaGerada: escalaGerada
+  };
+  db.ref('escala/estado').set(payload).catch(function(e){
+    console.warn('Erro ao salvar estado:', e);
+  });
+}
+
+function salvarConfigFirebase() {
+  if (!firebaseOk || !db) return;
+  // Serializa corretamente mesmo quando objetos estão vazios
+  var payload = {
+    listas: JSON.parse(JSON.stringify(listas)),
+    treinamento: JSON.parse(JSON.stringify(treinamento)),
+    eventos: JSON.parse(JSON.stringify(eventos))
+  };
+  db.ref('escala/config').set(payload)
+    .catch(function(e){ console.warn('Erro ao salvar config:', e); });
+}
+
+var _configHash = '';
+
+function ouvirConfig() {
+  if (!db) return;
+  db.ref('escala/config').on('value', function(snap) {
+    var d = snap.val(); if (!d) return;
+
+    // Detecta se houve mudança real
+    var novoHash = JSON.stringify(d);
+    var mudou = (novoHash !== _configHash);
+    _configHash = novoHash;
+
+    // Atualiza listas
+    if (d.listas) {
+      Object.keys(d.listas).forEach(function(k){ listas[k]=d.listas[k]; });
+    }
+    // Atualiza treinamento
+    if (d.treinamento !== undefined) {
+      Object.keys(treinamento).forEach(function(k){ delete treinamento[k]; });
+      if(d.treinamento) {
+        Object.keys(d.treinamento).forEach(function(k){ treinamento[k]=d.treinamento[k]; });
+      }
+    }
+    // Atualiza eventos
+    if (d.eventos !== undefined) {
+      eventos.length=0;
+      if(d.eventos) d.eventos.forEach(function(ev){ eventos.push(ev); });
+    }
+    // Reconstroi todosIrmaos
+    var todos=[];
+    ['microfone','indicador','audio','video','zoom'].forEach(function(s){
+      (listas[s]||[]).forEach(function(n){ if(todos.indexOf(n)<0) todos.push(n); });
+    });
+    (listas.palcoPares||[]).forEach(function(p){
+      [p[0],p[1]].forEach(function(n){ if(todos.indexOf(n)<0) todos.push(n); });
+    });
+    todosIrmaos.length=0; todos.forEach(function(n){ todosIrmaos.push(n); });
+
+    // Atualiza UI do modal se aberto
+    if(document.getElementById('ov-principal').classList.contains('aberto')){
+      renderEventos(); renderTreino(); renderGerenciarIrmaos();
+    }
+
+    // ── REGENERA A ESCALA para todos verem igual ──────────────
+    if(mudou && Object.keys(mesesGerados).length > 0){
+      var chavesAtivas = Object.keys(mesesGerados).sort();
+      // Busca o estado salvo para restaurar os contadores antes de regenerar
+      db.ref('escala/estado').once('value', function(snapEstado) {
+        var dadosEstado = snapEstado.val() || {};
+        substituicoes={}; contadorPulo={}; aparicoes={}; ultimoAuditorio={};
+        mesesGerados={};
+        idxM.v=0; idxA.v=0; idxV.v=0; idxZ.v=0; idxI.v=0; ultimoPar=-1;
+        // Restaura estado do rodízio
+        if (dadosEstado.contadorPulo) Object.assign(contadorPulo, dadosEstado.contadorPulo);
+        if (dadosEstado.aparicoes)    Object.assign(aparicoes, dadosEstado.aparicoes);
+        if (dadosEstado.idxM !== undefined) idxM.v = dadosEstado.idxM;
+        if (dadosEstado.idxA !== undefined) idxA.v = dadosEstado.idxA;
+        if (dadosEstado.idxV !== undefined) idxV.v = dadosEstado.idxV;
+        if (dadosEstado.idxZ !== undefined) idxZ.v = dadosEstado.idxZ;
+        if (dadosEstado.idxI !== undefined) idxI.v = dadosEstado.idxI;
+        if (dadosEstado.ultimoPar !== undefined) ultimoPar = dadosEstado.ultimoPar;
+        document.getElementById('lista').innerHTML='';
+        chavesAtivas.forEach(function(chave){
+          var p=chave.split('-');
+          adicionarMeses(parseInt(p[1]), parseInt(p[0]), 1);
+        });
+      });
     }
   });
 }
 
-function removerModoEdicaoDaTela() {
-  document.querySelectorAll('.nome-edicao').forEach(function(el) {
-    var chave = el.getAttribute('data-chave') || '';
-    var setor = el.getAttribute('data-setor') || '';
-    var dataLabel = el.getAttribute('data-data') || '';
-    var span = document.createElement('span');
-    span.className = 'nome-base';
-    span.setAttribute('data-chave', chave);
-    span.setAttribute('data-setor', setor);
-    span.setAttribute('data-data', dataLabel);
-    span.textContent = el.textContent;
-    el.parentNode.replaceChild(span, el);
-  });
-  document.querySelectorAll('.linha-nomes').forEach(function(linha) {
-    linha.style.outline = '';
-    linha.title = '';
-  });
-}
+function ouvirMeses() {
+  if (!db) return;
+  db.ref('escala/estado').on('value', function(snap) {
+    var dados = snap.val();
+    // Compatibilidade: tenta também o caminho antigo
+    if (!dados) {
+      db.ref('escala/meses').once('value', function(snapAntigo) {
+        var dadosAntigos = snapAntigo.val();
+        if (!dadosAntigos) return;
+        // Migra: gera sem estado salvo
+        processarMeses(dadosAntigos, {});
+      });
+      return;
+    }
+    var mesesSalvos = dados.meses || dados; // compatibilidade com formato antigo
+    if (typeof mesesSalvos !== 'object') return;
 
+    var chavesSalvas = Object.keys(mesesSalvos).sort();
+    var chavesLocais = Object.keys(mesesGerados).sort();
+    var mesmoEstado = JSON.stringify(chavesSalvas) === JSON.stringify(chavesLocais);
 
-function ativarModoResponsavel() {
-  modoResponsavel = true;
-  modoEdicao = false;
-  // Marca sessão como responsável (persiste durante reparo)
-  sessionStorage.setItem('reparo_acesso', 'ok');
-  // Remove bloqueio de manutenção se estava aplicado
-  removerBloqueioManutencao();
-  document.getElementById('badge-responsavel').style.display = 'flex';
-  document.getElementById('btn-area-responsavel').style.display = 'none';
-  document.getElementById('btn-editar-permanente').style.display = 'inline-block';
-  
-  // Re-renderiza escala
-  var chaves = Object.keys(mesesGerados).sort();
-  if (chaves.length > 0) {
-    var backup = chaves.slice();
-    contadorPulo = {}; aparicoes = {}; ultimoAuditorio = {};
-    mesesGerados = {};
-    escalaGeradaOriginal = {};
-    idxM.v=0; idxA.v=0; idxV.v=0; idxZ.v=0; idxI.v=0; ultimoPar=-1;
-    document.getElementById('lista').innerHTML = '';
-    backup.forEach(function(chave){
-      var p = chave.split('-');
-      adicionarMeses(parseInt(p[1]), parseInt(p[0]), 1);
+    // SEMPRE carrega escalaGerada e substituicoes do Firebase
+    // (garante que "Minha Escala" funcione em qualquer dispositivo)
+    if (dados.escalaGerada && Object.keys(dados.escalaGerada).length > 0) {
+      escalaGerada = {};
+      Object.assign(escalaGerada, dados.escalaGerada);
+    }
+    if (dados.substituicoes) {
+      substituicoes = {};
+      Object.assign(substituicoes, dados.substituicoes);
+    }
+
+    if (mesmoEstado) return; // meses iguais — não re-renderiza a tela, mas já carregou escalaGerada acima
+
+    // Restaura o estado do rodízio e treinamento
+    if (dados.contadorPulo) Object.assign(contadorPulo, dados.contadorPulo);
+    if (dados.aparicoes)    Object.assign(aparicoes, dados.aparicoes);
+    if (dados.idxM !== undefined) idxM.v = dados.idxM;
+    if (dados.idxA !== undefined) idxA.v = dados.idxA;
+    if (dados.idxV !== undefined) idxV.v = dados.idxV;
+    if (dados.idxZ !== undefined) idxZ.v = dados.idxZ;
+    if (dados.idxI !== undefined) idxI.v = dados.idxI;
+    if (dados.ultimoPar !== undefined) ultimoPar = dados.ultimoPar;
+    // Busca substituições do subpath (escrita por update) antes de renderizar
+    db.ref('escala/estado/substituicoes').once('value', function(snapSubst) {
+      var subst = snapSubst.val() || {};
+      substituicoes = {};
+      Object.assign(substituicoes, subst);
+      // Também tenta do payload direto (compatibilidade)
+      if (dados.substituicoes) Object.assign(substituicoes, dados.substituicoes);
+      processarMeses(mesesSalvos, dados);
     });
-    aplicarSubstituicoesNaTela();
-  }
-}
-
-function sairModoResponsavel() {
-  modoResponsavel = false;
-  modoEdicao = false;
-  // Remove acesso de sessão ao sair
-  sessionStorage.removeItem('reparo_acesso');
-  document.getElementById('badge-responsavel').style.display = 'none';
-  document.getElementById('badge-edicao').style.display = 'none';
-  document.getElementById('btn-area-responsavel').style.display = '';
-  document.getElementById('btn-editar-permanente').style.display = 'none';
-  // Se reparo ainda ativo, re-aplica bloqueio para esta sessão
-  if (window.modoReparoAtivo) {
-    setTimeout(aplicarBloqueioManutencao, 100);
-  }
-  
-  var chaves = Object.keys(mesesGerados).sort();
-  var backup = chaves.slice();
-  contadorPulo = {}; aparicoes = {}; ultimoAuditorio = {};
-  mesesGerados = {};
-  idxM.v=0; idxA.v=0; idxV.v=0; idxZ.v=0; idxI.v=0; ultimoPar=-1;
-  document.getElementById('lista').innerHTML = '';
-  backup.forEach(function(chave){
-    var p = chave.split('-');
-    adicionarMeses(parseInt(p[1]), parseInt(p[0]), 1);
   });
-  aplicarSubstituicoesNaTela();
 }
 
-// ===================== MODO REPARO (CORRIGIDO) =====================
-var MSG_REPARO_PADRAO = '🔧 Sistema em manutenção. O responsável está realizando ajustes importantes.\n\n📌 As designações estão disponíveis no quadro de anúncios e no grupo Departamentos.\n\nAgradecemos pela compreensão! 🙏';
+function processarMeses(mesesSalvos, dadosEstado) {
+  mesesGerados = {};
+  escalaGerada = {};
+  document.getElementById('lista').innerHTML = '';
+  var chavesSalvas = Object.keys(mesesSalvos).sort();
 
-function toggleModoReparo() {
-  var btn = document.getElementById('btn-toggle-reparo');
-  var badge = document.getElementById('reparo-badge');
-  var prev = document.getElementById('reparo-preview');
-  var msgEl = document.getElementById('reparo-msg-custom');
-  var modoAtivo = window.modoReparoAtivo === true;
-  
-  if (!modoAtivo) {
-    var msg = (msgEl && msgEl.value.trim()) ? msgEl.value.trim() : MSG_REPARO_PADRAO;
-    window.modoReparoAtivo = true;
-    badge.style.display = 'inline-block';
-    btn.textContent = '⏹ Desativar Modo Reparo';
-    btn.style.background = '#374151';
-    prev.style.display = 'block';
-    document.getElementById('reparo-preview-texto').innerHTML = msg.replace(/\n/g,'<br>');
-    if (firebaseOk && db) db.ref('escala/modoReparo').set({ ativo: true, msg: msg });
-    aplicarBloqueioManutencao();
-  } else {
-    window.modoReparoAtivo = false;
-    badge.style.display = 'none';
-    btn.textContent = '🔧 Ativar Modo Reparo';
-    btn.style.background = '#dc2626';
-    prev.style.display = 'none';
-    if (firebaseOk && db) db.ref('escala/modoReparo').remove();
-    removerBloqueioManutencao();
+  // Se não há estado salvo, precisa gerar do zero (reseta contadores)
+  if (!dadosEstado || !dadosEstado.contadorPulo) {
+    contadorPulo = {}; aparicoes = {}; ultimoAuditorio = {};
+    idxM.v=0; idxA.v=0; idxV.v=0; idxZ.v=0; idxI.v=0; ultimoPar=-1;
+  }
+  // Restaura substituições permanentes do Firebase
+  if (dadosEstado && dadosEstado.substituicoes) {
+    Object.assign(substituicoes, dadosEstado.substituicoes);
+  }
+
+  var temEscalaGerada = dadosEstado && dadosEstado.escalaGerada && Object.keys(dadosEstado.escalaGerada).length > 0;
+
+  chavesSalvas.forEach(function(chave){
+    var p = chave.split('-');
+    var a = parseInt(p[0]), m = parseInt(p[1]);
+    if(isNaN(a)||isNaN(m)||m<1||m>12||a<2020||a>2040) return; // ignora inválido
+    mesesGerados[chave] = true;
+    if (temEscalaGerada) {
+      renderMesSalvo(m, a, dadosEstado.escalaGerada, dadosEstado.substituicoes || substituicoes);
+    } else {
+      gerarMes(m, a);
+    }
+  });
+  // Reordena
+  var lista = document.getElementById('lista');
+  var blocos = Array.from(lista.querySelectorAll('.mes-bloco'));
+  blocos.sort(function(a,b){ return (a.dataset.chavemes||'').localeCompare(b.dataset.chavemes||''); });
+  blocos.forEach(function(b){ lista.appendChild(b); });
+  aplicarSubstituicoesNaTela();
+  atualizarSubtitulo();
+}
+
+function iniciarFirebase() {
+  try {
+    if (typeof firebase === 'undefined') { mostrarBannerConfigErro('SDK do Firebase nao carregou. Verifique sua conexao.'); return; }
+    if (FIREBASE_CONFIG.apiKey === 'COLE_AQUI') { mostrarBannerConfig(); return; }
+    if (!firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG);
+    db = firebase.database();
+    firebaseOk = true;
+    ouvirTrocas();
+    ouvirSubstituicoes();
+    ouvirMeses();
+    ouvirConfig();
+    carregarSenhaFirebase();
+    ouvirAvisosAusencia();
+    verificarModoReparo();
+    ouvirConfirmacoes();
+  } catch(e) {
+    console.warn('Firebase erro:', e);
+    mostrarBannerConfigErro(e.message);
   }
 }
+
+function mostrarBannerConfig() { mostrarBannerConfigErro(null); }
+function mostrarBannerConfigErro(msg) {
+  if(document.getElementById('firebase-banner')) return;
+  var b = document.createElement('div');
+  b.id = 'firebase-banner';
+  b.className = 'firebase-config-banner';
+  if(msg) {
+    b.innerHTML = '<strong>&#9888; Problema na conexao Firebase</strong><br>' +
+      '<span style="color:#fca5a5">' + msg + '</span><br><br>' +
+      'Para corrigir, verifique no <strong>console.firebase.google.com</strong>:<br>' +
+      '1. <strong>Realtime Database</strong> foi criado e esta ativo?<br>' +
+      '2. Regras do banco estao em <strong>modo teste</strong> (leitura e escrita abertas)?<br>' +
+      '3. Em <strong>Authentication → Settings → Authorized domains</strong> o dominio <strong>17665.github.io</strong> esta na lista?<br>' +
+      '<em style="color:#64b5f6">Enquanto isso, alteracoes ficam so localmente nesta aba.</em>';
+  } else {
+    b.innerHTML = '<strong>&#128274; Firebase nao configurado</strong><br>' +
+      '1. Acesse <strong>console.firebase.google.com</strong> e crie um projeto<br>' +
+      '2. Va em <strong>Realtime Database</strong> → Criar banco → modo teste<br>' +
+      '3. Va em <strong>Configuracoes do projeto</strong> → Seus apps → Adicionar app Web<br>' +
+      '4. Copie os valores e substitua em <code>FIREBASE_CONFIG</code> neste arquivo<br>' +
+      '<em style="color:#64b5f6">Enquanto isso, as trocas funcionam so localmente nesta aba.</em>';
+  }
+  document.querySelector('.topo').after(b);
+}
+
+// ===================== IDENTIDADE LOCAL =====================
+var meuNome = localStorage.getItem('designacoes_nome') || '';
+
+function pedirIdentidade(callback) {
+  if (meuNome) { callback(meuNome); return; }
+  var sel = document.getElementById('sel-identidade');
+  sel.innerHTML = '<option value="">-- selecione seu nome --</option>' +
+    todosIrmaos.map(function(n){ return '<option value="'+n+'">'+n+'</option>'; }).join('');
+  identidadeCallback = callback;
+  document.getElementById('ov-identidade').classList.add('aberto');
+}
+var identidadeCallback = null;
+function fecharIdentidade() { document.getElementById('ov-identidade').classList.remove('aberto'); }
+function confirmarIdentidade() {
+  var v = document.getElementById('sel-identidade').value;
+  if (!v) { alert('Selecione seu nome.'); return; }
+  meuNome = v;
+  localStorage.setItem('designacoes_nome', v);
+  fecharIdentidade();
+  if (identidadeCallback) { identidadeCallback(v); identidadeCallback = null; }
+}
+
+// ===================== TROCAS =====================
+
+// Abre modal de troca quando irmao clica no proprio nome
+function irmaosDoSetor(setor) {
+  // Normaliza setor para chave de lista
+  var mapa = {
+    'Palco-Coord': 'palcoPares', 'Palco': 'palcoPares',
+    'Mic. Volante': 'microfone', 'Microfone': 'microfone',
+    'Indicadores': 'indicador', 'Indicador': 'indicador',
+    'Áudio': 'audio', 'Audio': 'audio',
+    'Vídeo': 'video', 'Video': 'video',
+    'Zoom': 'zoom'
+  };
+  var chaveSetor = mapa[setor] || setor.toLowerCase();
+  if(chaveSetor === 'palcoPares'){
+    // Todos os irmãos que participam de pares do palco
+    var nomes = [];
+    (listas.palcoPares||[]).forEach(function(p){
+      if(nomes.indexOf(p[0])<0) nomes.push(p[0]);
+      if(nomes.indexOf(p[1])<0) nomes.push(p[1]);
+    });
+    return nomes;
+  }
+  return listas[chaveSetor] || [];
+}
+
+function abrirTroca(chave, setor, dataLabel, nomeAtual) {
+  pedirIdentidade(function(meuNomeConfirmado) {
+    if (meuNomeConfirmado !== nomeAtual) {
+      alert('Voce so pode solicitar troca da sua propria designacao.');
+      return;
+    }
+    trocaAtual = { chave: chave, setor: setor, dataLabel: dataLabel, solicitante: nomeAtual };
+    document.getElementById('troca-setor').textContent = setor;
+    document.getElementById('troca-data').textContent = dataLabel;
+    document.getElementById('troca-solicitante').textContent = nomeAtual;
+    // Lista só irmãos do mesmo setor, excluindo ele mesmo
+    var sel = document.getElementById('troca-select');
+    var irmaosSetor = irmaosDoSetor(setor).filter(function(n){ return n !== nomeAtual; });
+    if(irmaosSetor.length === 0){
+      alert('Não há outros irmãos no mesmo setor para trocar.');
+      return;
+    }
+    sel.innerHTML = irmaosSetor.map(function(n){ return '<option value="'+n+'">'+n+'</option>'; }).join('');
+    document.getElementById('ov-troca').classList.add('aberto');
+  });
+}
+function fecharTroca() { document.getElementById('ov-troca').classList.remove('aberto'); trocaAtual = null; }
+
+function enviarSolicitacaoTroca() {
+  if (!trocaAtual) return;
+  var destinatario = document.getElementById('troca-select').value;
+  var troca = {
+    chave:       trocaAtual.chave,
+    setor:       trocaAtual.setor,
+    dataLabel:   trocaAtual.dataLabel,
+    solicitante: trocaAtual.solicitante,
+    destinatario: destinatario,
+    status:      'pendente',
+    criadoEm:    Date.now(),
+    expiraEm:    Date.now() + 48 * 60 * 60 * 1000
+  };
+  if (firebaseOk && db) {
+    db.ref('trocas').push(troca).then(function() {
+      fecharTroca();
+      alert('Pedido enviado! ' + destinatario + ' vera ao abrir o site.');
+    }).catch(function(e) {
+      alert('Erro ao enviar: ' + e.message);
+    });
+  } else {
+    // fallback local
+    var id = 'local_' + Date.now();
+    trocasCache[id] = Object.assign({ id: id }, troca);
+    renderPainelTrocas();
+    fecharTroca();
+    alert('(Sem Firebase) Pedido registrado so nesta aba.');
+  }
+}
+
+function responderTroca(id, resposta) {
+  if (firebaseOk && db) {
+    db.ref('trocas/' + id).update({ status: resposta }).catch(function(e){
+      alert('Erro: ' + e.message);
+    });
+  } else {
+    if (trocasCache[id]) {
+      trocasCache[id].status = resposta;
+      if (resposta === 'aceita') aplicarTrocaNaEscala(trocasCache[id]);
+      renderPainelTrocas();
+    }
+  }
+}
+
+function aplicarTrocaNaEscala(troca) {
+  // Troca os dois nomes na chave correspondente
+  var chaveA = troca.chave;
+  var nomeA  = troca.solicitante;
+  var nomeB  = troca.destinatario;
+  // Encontra a chave do destinatario na mesma data/setor
+  var partes = chaveA.split('|'); // formato: dataISO|setor|nome
+  var chaveB = partes[0] + '|' + partes[1] + '|' + nomeB;
+  substituicoes[chaveA] = nomeB;
+  substituicoes[chaveB] = nomeA;
+  // Atualiza o DOM sem regeracao completa
+  document.querySelectorAll('.nome-clicavel,.nome-troca').forEach(function(el) {
+    var onclick = el.getAttribute('onclick') || '';
+    if (onclick.indexOf("'" + chaveA + "'") >= 0) el.textContent = nomeB;
+    if (onclick.indexOf("'" + chaveB + "'") >= 0) el.textContent = nomeA;
+  });
+}
+
+// Escuta trocas em tempo real no Firebase
+function ouvirSubstituicoes() {
+  if(!db) return;
+  db.ref('escala/estado/substituicoes').on('value', function(snap) {
+    var dados = snap.val() || {};
+    substituicoes = {};
+    Object.keys(dados).forEach(function(chave) {
+      substituicoes[chave] = dados[chave];
+    });
+    // Aplica imediatamente se a escala já estiver renderizada
+    if(document.querySelectorAll('.mes-bloco').length > 0) {
+      aplicarSubstituicoesNaTela();
+    } else {
+      // Aguarda a escala renderizar e aplica depois
+      setTimeout(aplicarSubstituicoesNaTela, 800);
+    }
+  });
+}
+
+function aplicarSubstituicoesNaTela() {
+  Object.keys(substituicoes).forEach(function(chave) {
+    var novo = substituicoes[chave];
+    // Aplica em spans do modo responsável (.nome-clicavel) E modo normal (.nome-troca)
+    // Usa data-chave para responsável, e onclick para modo normal
+    var spans = document.querySelectorAll('.nome-clicavel[data-chave="' + chave + '"]');
+    // Para modo normal, busca pelo onclick que contém a chave
+    var spansTroca = document.querySelectorAll('.nome-troca');
+    spansTroca.forEach(function(s) {
+      var oc = s.getAttribute('onclick') || '';
+      if (oc.indexOf("'" + chave + "'") >= 0) {
+        if (!spans.length) spans = [s]; // fallback se não há clicavel
+        else spans = Array.from(spans).concat(s);
+      }
+    });
+    Array.from(spans).forEach(function(span) {
+      if(span.textContent !== novo) {
+        span.textContent = novo;
+        // Atualiza badge de treino
+        var setorChave = { 'Palco-Coord':'palco','Palco-Ajud':'palco','Palco':'palco',
+          'Mic1':'microfone','Mic2':'microfone','Microfone':'microfone',
+          'Audio':'audio','Áudio':'audio','Video':'video','Vídeo':'video',
+          'Zoom':'zoom','Ind-Aud':'indicador','Ind-Pat':'indicador','Indicador':'indicador' };
+        // Extrai setor do onclick
+        var onclick = span.getAttribute('onclick') || '';
+        var m = onclick.match(/abrirSubst\('[^']+','([^']+)'/);
+        var setorKey = m ? (setorChave[m[1]] || m[1].toLowerCase()) : '';
+        var emTreino = setorKey && estaEmTreinamento(novo) && treinamento[novo] && treinamento[novo][setorKey];
+        // Remove badge antigo
+        var next = span.nextSibling;
+        while(next && next.nodeType===1 && (next.classList.contains('badge-treino-inline') || next.className==='')) {
+          var tmp = next.nextSibling; span.parentNode.removeChild(next); next = tmp;
+        }
+        // Adiciona badge novo
+        if(modoResponsavel && emTreino) {
+          var badge = document.createElement('span');
+          badge.className = 'badge-treino-inline';
+          badge.style.cssText = 'font-size:9px;background:#fef3c7;color:#92400e;border:1px solid #fcd34d;border-radius:8px;padding:1px 5px;vertical-align:middle;margin-left:3px';
+          badge.textContent = 'treino';
+          span.parentNode.insertBefore(badge, span.nextSibling);
+        }
+      }
+    });
+  });
+}
+
+function ouvirTrocas() {
+  if (!db) return;
+  db.ref('trocas').on('value', function(snap) {
+    trocasCache = {};
+    snap.forEach(function(child) {
+      var t = child.val();
+      t.id = child.key;
+      trocasCache[child.key] = t;
+      // Aplica trocas aceitas na escala
+      if (t.status === 'aceita') aplicarTrocaNaEscala(t);
+    });
+    renderPainelTrocas();
+    // Limpa expiradas automaticamente
+    Object.keys(trocasCache).forEach(function(id) {
+      var t = trocasCache[id];
+      if (t.status === 'pendente' && Date.now() > t.expiraEm) {
+        db.ref('trocas/' + id).update({ status: 'expirada' });
+      }
+    });
+  });
+}
+
+function renderPainelTrocas() {
+  var painel = document.getElementById('painel-trocas');
+  var lista = Object.values(trocasCache).filter(function(t) {
+    // Mostra: pendentes, ou aceitas ate a data da reuniao passar, ou recusadas por 24h
+    if(t.status === 'pendente') return true;
+    if(t.status === 'aceita'){
+      // Extrai a data da reuniao do dataLabel (formato: weekday, DD/MM/YYYY)
+      var match = (t.dataLabel||'').match(/(\d{2})\/( \d{2})\/(\d{4})/);
+      if(!match) match = (t.dataLabel||'').match(/(\d{2})\/(\d{2})\/(\d{4})/);
+      if(match){
+        var dataReuniao = new Date(parseInt(match[3]), parseInt(match[2])-1, parseInt(match[1]));
+        dataReuniao.setHours(23,59,59,999);
+        return Date.now() <= dataReuniao.getTime();
+      }
+      return true;
+    }
+    // recusadas/expiradas: mostrar por 24h
+    var recente = Date.now() - t.criadoEm < 24 * 60 * 60 * 1000;
+    return recente && (t.solicitante === meuNome || t.destinatario === meuNome);
+  }).sort(function(a,b){ return b.criadoEm - a.criadoEm; });
+
+  if (lista.length === 0) { painel.style.display = 'none'; return; }
+  painel.style.display = 'block';
+
+  var html = '<div class="painel-titulo">&#128260; Pedidos de Troca</div>';
+  lista.forEach(function(t) {
+    var msRestante = t.expiraEm - Date.now();
+    var horas = Math.max(0, Math.floor(msRestante / 3600000));
+    var mins  = Math.max(0, Math.floor((msRestante % 3600000) / 60000));
+    var prazoTxt = t.status === 'pendente'
+      ? (msRestante > 0 ? 'Expira em ' + horas + 'h ' + mins + 'min' : 'Expirado')
+      : '';
+    var prazoClass = horas < 6 ? 'urgente' : 'ok';
+
+    var icone, cls, titulo, acoes = '';
+    if (t.status === 'pendente') {
+      icone = '&#9203;'; cls = 'troca-pendente';
+      titulo = '<strong>' + t.solicitante + '</strong> quer trocar com <strong>' + t.destinatario + '</strong>';
+      if (meuNome === t.destinatario) {
+        acoes = '<div class="troca-acoes">' +
+          '<button class="btn-aceitar" onclick="responderTroca(\'' + t.id + '\',\'aceita\')">&#10004; Aceitar troca</button>' +
+          '<button class="btn-recusar" onclick="responderTroca(\'' + t.id + '\',\'recusada\')">&#10008; Recusar</button>' +
+          '</div>';
+      }
+    } else if (t.status === 'aceita') {
+      icone = '&#9989;'; cls = 'troca-aceita';
+      titulo = 'Troca aceita: <strong>' + t.solicitante + '</strong> &#8644; <strong>' + t.destinatario + '</strong>';
+    } else if (t.status === 'recusada') {
+      icone = '&#10060;'; cls = 'troca-recusada';
+      titulo = 'Troca recusada por <strong>' + t.destinatario + '</strong>';
+    } else {
+      icone = '&#128683;'; cls = 'troca-expirada';
+      titulo = 'Troca expirada: <strong>' + t.solicitante + '</strong> &#8644; <strong>' + t.destinatario + '</strong>';
+    }
+
+    html += '<div class="troca-card ' + cls + '">' +
+      '<span class="troca-icone">' + icone + '</span>' +
+      '<div class="troca-info">' +
+        '<div class="troca-titulo">' + titulo + '</div>' +
+        '<div class="troca-detalhe">Setor: ' + t.setor + ' &nbsp;|&nbsp; Data: ' + t.dataLabel + '</div>' +
+        (prazoTxt ? '<div class="troca-prazo ' + prazoClass + '">' + prazoTxt + '</div>' : '') +
+        acoes +
+      '</div></div>';
+  });
+  painel.innerHTML = html;
+}
+
+// ===================== GERENCIAR TROCAS (RESPONSÁVEL) =====================
+function renderGerenciarTrocas() {
+  var cont = document.getElementById('ger-lista-trocas');
+  var contador = document.getElementById('ger-trocas-contador');
+  if (!db) {
+    cont.innerHTML = '<div class="ger-trocas-vazio">Firebase não conectado.</div>';
+    contador.textContent = '—';
+    return;
+  }
+  cont.innerHTML = '<div class="ger-trocas-vazio">&#8987; Carregando...</div>';
+  db.ref('trocas').once('value', function(snap) {
+    var trocas = [];
+    snap.forEach(function(child) {
+      var t = child.val(); t.id = child.key; trocas.push(t);
+    });
+    trocas.sort(function(a,b){ return (b.criadoEm||0)-(a.criadoEm||0); });
+    contador.textContent = trocas.length + ' troca(s) no banco de dados';
+    if (!trocas.length) {
+      cont.innerHTML = '<div class="ger-trocas-vazio">&#128260; Nenhuma troca encontrada.</div>';
+      return;
+    }
+    var statusLabels = { pendente:'Pendente', aceita:'Aceita', recusada:'Recusada', expirada:'Expirada' };
+    var html = '';
+    trocas.forEach(function(t) {
+      var data = t.dataLabel || '—';
+      var criado = t.criadoEm ? new Date(t.criadoEm).toLocaleString('pt-BR') : '—';
+      var statusClass = 'ger-status-' + (t.status||'expirada');
+      var statusLabel = statusLabels[t.status] || t.status || '?';
+      html += '<div class="ger-troca-row">' +
+        '<div class="ger-troca-info">' +
+          '<div class="ger-troca-nomes">' +
+            escHtml(t.solicitante||'?') + ' &#8644; ' + escHtml(t.destinatario||'?') +
+            '<span class="ger-troca-status ' + statusClass + '">' + statusLabel + '</span>' +
+          '</div>' +
+          '<div class="ger-troca-detalhe">Setor: ' + escHtml(t.setor||'—') + ' &nbsp;|&nbsp; Data: ' + escHtml(data) + '</div>' +
+          '<div class="ger-troca-detalhe">Criado em: ' + criado + ' &nbsp;|&nbsp; ID: <code style="font-size:10px;color:#888">' + t.id + '</code></div>' +
+        '</div>' +
+        '<button class="btn-apagar-troca" title="Apagar esta troca" onclick="apagarTroca(\'' + t.id + '\')">&#128465;</button>' +
+      '</div>';
+    });
+    cont.innerHTML = html;
+  });
+}
+
+function apagarTroca(id) {
+  if (!db) return;
+  if (!confirm('Apagar esta troca permanentemente?')) return;
+  db.ref('trocas/' + id).remove(function(err) {
+    if (err) { alert('Erro ao apagar: ' + err.message); return; }
+    // Remove do cache local também
+    delete trocasCache[id];
+    renderPainelTrocas();
+    renderGerenciarTrocas();
+  });
+}
+
+function apagarTodasTrocas() {
+  if (!db) return;
+  var total = Object.keys(trocasCache).length;
+  if (!confirm('Apagar TODAS as ' + total + ' trocas do banco de dados?\n\nEssa ação não pode ser desfeita.')) return;
+  db.ref('trocas').remove(function(err) {
+    if (err) { alert('Erro ao apagar: ' + err.message); return; }
+    trocasCache = {};
+    renderPainelTrocas();
+    renderGerenciarTrocas();
+  });
+}
+
+// Atualiza contagem regressiva a cada minuto
+setInterval(renderPainelTrocas, 60000);
+
+// ===================== PWA — SERVICE WORKER =====================
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function() {
+    navigator.serviceWorker.register('sw.js').then(function(reg) {
+      console.log('SW registrado:', reg.scope);
+    }).catch(function(e) { console.warn('SW falhou:', e); });
+  });
+}
+
+// PWA install prompt
+var pwaPrompt = null;
+window.addEventListener('beforeinstallprompt', function(e) {
+  e.preventDefault();
+  pwaPrompt = e;
+  document.getElementById('btn-instalar-pwa').style.display = 'block';
+  mostrarBannerPWA();
+});
+
+function instalarPWA() {
+  if (!pwaPrompt) return;
+  pwaPrompt.prompt();
+  pwaPrompt.userChoice.then(function(r) {
+    pwaPrompt = null;
+    document.getElementById('btn-instalar-pwa').style.display = 'none';
+    esconderBannerPWA();
+  });
+}
+
+function mostrarBannerPWA() {
+  if (document.getElementById('pwa-banner')) return;
+  if (localStorage.getItem('pwa-banner-dismissed')) return;
+  var b = document.createElement('div');
+  b.id = 'pwa-banner';
+  b.innerHTML = '<span>&#128203; Instale o app Designações na tela inicial do celular para acesso rápido!</span>' +
+    '<button onclick="instalarPWA()">&#128187; Instalar</button>' +
+    '<button class="btn-dismiss" onclick="esconderBannerPWA()">&#10005;</button>';
+  document.body.appendChild(b);
+}
+
+function esconderBannerPWA() {
+  var b = document.getElementById('pwa-banner');
+  if (b) b.remove();
+  localStorage.setItem('pwa-banner-dismissed', '1');
+}
+
+window.addEventListener('appinstalled', function() {
+  esconderBannerPWA();
+  document.getElementById('btn-instalar-pwa').style.display = 'none';
+});
+
+// ===================== PUSH NOTIFICATIONS =====================
+var swReg = null;
+var VAPID_PUBLIC_KEY = ''; // Deixe vazio — funciona sem push server
+
+function pedirPermissaoNotificacao() {
+  if (!('Notification' in window)) {
+    alert('Seu navegador não suporta notificações.');
+    return;
+  }
+  if (Notification.permission === 'granted') {
+    alert('Notifica\u00e7\u00f5es j\u00e1 est\u00e3o ativas! \u2713 Voc\u00ea ser\u00e1 avisado quando for designado.');
+    atualizarBotaoNotif();
+    return;
+  }
+  Notification.requestPermission().then(function(perm) {
+    atualizarBotaoNotif();
+    if (perm === 'granted') {
+      // Mostra notificação de teste
+      new Notification('Designações \u2713', {
+        body: 'Notificações ativadas! Você será avisado quando for designado.',
+        icon: ''
+      });
+      // Salva token de notificação no Firebase para este irmão
+      if (meuNome && firebaseOk && db) {
+        db.ref('notificacoes/' + meuNome.replace(/[.#$[\]]/g,'_') + '/permissao').set('granted');
+      }
+    } else {
+      alert('Notificações bloqueadas. Você pode ativar nas configurações do navegador.');
+    }
+  });
+}
+
+function atualizarBotaoNotif() {
+  var btn = document.getElementById('btn-notif');
+  var btnEscala = document.getElementById('btn-ativar-notif-escala');
+  if (!('Notification' in window)) return;
+  btn.style.display = 'block';
+  if (Notification.permission === 'granted') {
+    btn.textContent = '\uD83D\uDD14 Avisos: ON';
+    btn.title = 'Notificações ativas';
+    btn.style.background = '#0f6e56';
+    if (btnEscala) { btnEscala.textContent = '\uD83D\uDD14 Avisos ativos \u2713'; btnEscala.style.background = '#374151'; }
+  } else {
+    btn.textContent = '\uD83D\uDD15';
+    btn.title = 'Clique para ativar notificações';
+    btn.style.background = '#9ca3af';
+  }
+}
+
+// Envia notificação local quando irmão é designado
+function notificarSeDesignado(nome, designacoes) {
+  if (!nome || Notification.permission !== 'granted' || !designacoes.length) return;
+  var proxima = designacoes[0];
+  new Notification('\uD83D\uDCCB Você foi designado!', {
+    body: proxima.setor + ' — ' + proxima.data,
+    icon: '',
+    tag: 'designacao-' + proxima.dataISO
+  });
+}
+
+// ===================== MINHA ESCALA =====================
+var minhaEscalaConfirmacoes = {}; // chave: dataISO|setor → 'confirmado'|'ausente'
+var confAtual = null;
+
+function abrirMinhaEscala() {
+  // Popula select de nomes
+  var sel = document.getElementById('sel-minha-escala-nome');
+  sel.innerHTML = '<option value="">— selecione seu nome —</option>' +
+    todosIrmaos.map(function(n){ return '<option value="'+n+'"'+(n===meuNome?' selected':'')+'>'+n+'</option>'; }).join('');
+  document.getElementById('ov-minha-escala').classList.add('aberto');
+  atualizarBotaoNotif();
+
+  if (meuNome) {
+    renderMinhaEscala(meuNome);
+  }
+}
+
+function fecharMinhaEscala() {
+  document.getElementById('ov-minha-escala').classList.remove('aberto');
+}
+
+function trocarNomeMinhaEscala() {
+  var sel = document.getElementById('sel-minha-escala-nome');
+  var nome = sel.value;
+  if (!nome) return;
+  meuNome = nome;
+  localStorage.setItem('designacoes_nome', nome);
+  renderMinhaEscala(nome);
+}
+
+function buscarDesignacoesDe(nome) {
+  var resultado = [];
+  if (!escalaGerada || !nome) return resultado;
+  var setorLabelsLocal = {
+    palco1:'Palco (Coordenador)', palco2:'Palco (Ajudante)',
+    mic1:'Microfone Volante', mic2:'Microfone Volante',
+    audio:'Áudio', video:'Vídeo', zoom:'Zoom',
+    indAud:'Indicador — Auditório', indPat:'Indicador — Pátio'
+  };
+  var hoje = new Date(); hoje.setHours(0,0,0,0);
+  Object.keys(escalaGerada).sort().forEach(function(dataISO) {
+    var des = escalaGerada[dataISO];
+    // Verifica substituições
+    Object.keys(setorLabelsLocal).forEach(function(campo) {
+      var nomeBase = des[campo];
+      if (!nomeBase) return;
+      var setorNome = {
+        palco1:'Palco-Coord', palco2:'Palco-Ajud',
+        mic1:'Mic1', mic2:'Mic2',
+        audio:'Audio', video:'Video', zoom:'Zoom',
+        indAud:'Ind-Aud', indPat:'Ind-Pat'
+      }[campo];
+      var chaveSubst = dataISO+'|'+setorNome+'|'+nomeBase;
+      var nomeReal = substituicoes[chaveSubst] || nomeBase;
+      if (nomeReal !== nome) return;
+      // Busca parceiros na mesma reunião
+      var parceiros = [];
+      if (campo==='palco1' && des.palco2) parceiros.push('com ' + (substituicoes[dataISO+'|Palco-Ajud|'+des.palco2] || des.palco2));
+      if (campo==='palco2' && des.palco1) parceiros.push('com ' + (substituicoes[dataISO+'|Palco-Coord|'+des.palco1] || des.palco1));
+      if (campo==='mic1' && des.mic2) parceiros.push('com ' + (substituicoes[dataISO+'|Mic2|'+des.mic2] || des.mic2));
+      if (campo==='mic2' && des.mic1) parceiros.push('com ' + (substituicoes[dataISO+'|Mic1|'+des.mic1] || des.mic1));
+      // Data legível
+      var partes = dataISO.split('-');
+      var dataObj = new Date(parseInt(partes[0]), parseInt(partes[1])-1, parseInt(partes[2]));
+      var passada = dataObj < hoje;
+      resultado.push({
+        dataISO: dataISO,
+        dataObj: dataObj,
+        data: dataObj.toLocaleDateString('pt-BR',{weekday:'long',day:'2-digit',month:'2-digit',year:'numeric'}),
+        setor: setorLabelsLocal[campo],
+        campo: campo,
+        setorNome: setorNome,
+        parceiros: parceiros,
+        passada: passada
+      });
+    });
+  });
+  // Deduplicar mic1/mic2 (mesmo setor, mesma data)
+  var vistas = {};
+  resultado = resultado.filter(function(d){
+    var k = d.dataISO + '|' + (d.campo==='mic2'?'mic1':d.campo==='palco2'?'palco1':d.campo);
+    if (vistas[k] && (d.campo==='mic2'||d.campo==='palco2')) return false;
+    vistas[k]=true; return true;
+  });
+  return resultado;
+}
+
+function renderMinhaEscala(nome) {
+  var cont = document.getElementById('conteudo-minha-escala');
+  if (!nome) { cont.innerHTML='<p style="text-align:center;color:#888;font-size:14px;padding:30px 0">Selecione seu nome.</p>'; return; }
+
+  // Carrega confirmações e renderiza
+  if (firebaseOk && db) {
+    db.ref('confirmacoes/' + nome.replace(/[.#$[\]]/g,'_')).once('value', function(snap) {
+      minhaEscalaConfirmacoes = snap.val() || {};
+      _renderMinhaEscalaComConf(nome, cont);
+    });
+  } else {
+    _renderMinhaEscalaComConf(nome, cont);
+  }
+}
+
+function _renderMinhaEscalaComConf(nome, cont) {
+  var des = buscarDesignacoesDe(nome);
+  var hoje = new Date(); hoje.setHours(0,0,0,0);
+  var futuras = des.filter(function(d){ return !d.passada; });
+  var passadas = des.filter(function(d){ return d.passada; }).slice(-6).reverse();
+
+  if (!des.length) {
+    cont.innerHTML = '<div class="semana-vazia">&#128203; Nenhuma designa&#231;&#227;o encontrada para <strong>'+escHtml(nome)+'</strong> nos meses gerados.</div>';
+    notificarSeDesignado(nome, []);
+    return;
+  }
+  if (futuras.length) notificarSeDesignado(nome, futuras);
+
+  // Guarda dados para os botões usarem via índice (evita problemas com aspas em onclick)
+  window._minhaEscalaFuturas = futuras;
+
+  var html = '';
+  if (futuras.length) {
+    html += '<div style="font-size:12px;font-weight:bold;color:#6b21a8;text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px">Pr&#243;ximas designa&#231;&#245;es ('+futuras.length+')</div>';
+    futuras.forEach(function(d, idx) {
+      var chaveConf = d.dataISO + '|' + d.campo;
+      var conf = minhaEscalaConfirmacoes[chaveConf] || 'pendente';
+      var badgeTxt = conf==='confirmado'
+        ? '&#10003; Presen&#231;a confirmada'
+        : conf==='ausente'
+        ? '&#10007; Avisou aus&#234;ncia'
+        : '&#9203; Aguardando confirma&#231;&#227;o';
+      var badgeCls = 'conf-badge ' + conf;
+      var btns = '';
+      if (conf !== 'confirmado') {
+        btns += '<button class="btn-confirmar-presence btn-conf-sim" onclick="clicarConfirmar(' + idx + ', &quot;confirmado&quot;)">&#10003; Confirmar presen&#231;a</button>';
+      }
+      if (conf !== 'ausente') {
+        btns += '<button class="btn-confirmar-presence btn-conf-nao" onclick="clicarConfirmar(' + idx + ', &quot;ausente&quot;)">&#10007; Avisar aus&#234;ncia</button>';
+      }
+      html += '<div class="minha-card">' +
+        '<div class="minha-card-cab">' +
+          '<span class="minha-card-data">'+escHtml(d.data)+'</span>' +
+          '<span class="minha-card-tipo">'+escHtml(d.setor)+'</span>' +
+        '</div>' +
+        '<div class="minha-card-body">' +
+          '<div class="minha-setor">&#128205; '+escHtml(d.setor)+'</div>' +
+          (d.parceiros.length ? '<div class="minha-parceiros">'+escHtml(d.parceiros.join(' '))+'</div>' : '') +
+          '<span class="'+badgeCls+'">'+badgeTxt+'</span>' +
+          '<div style="margin-top:8px">'+btns+'</div>' +
+        '</div></div>';
+    });
+  }
+
+  if (passadas.length) {
+    html += '<div style="font-size:12px;font-weight:bold;color:#9ca3af;text-transform:uppercase;letter-spacing:.5px;margin:16px 0 8px">&#218;ltimas designa&#231;&#245;es</div>';
+    passadas.forEach(function(d) {
+      html += '<div style="background:#f9f9f9;border:1px solid #e8e8e8;border-radius:8px;padding:8px 12px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center">' +
+        '<span style="font-size:13px;color:#5e6370">'+escHtml(d.data)+'</span>' +
+        '<span style="font-size:12px;font-weight:bold;color:#6b21a8;background:#f5f3ff;padding:2px 10px;border-radius:10px">'+escHtml(d.setor)+'</span>' +
+        '</div>';
+    });
+  }
+
+  cont.innerHTML = html;
+}
+
+// Chamado pelos botões da Minha Escala via índice numérico (sem problema de aspas)
+function clicarConfirmar(idx, resposta) {
+  var d = window._minhaEscalaFuturas && window._minhaEscalaFuturas[idx];
+  if (!d) return;
+  abrirConfirmar(d.dataISO, d.campo, d.setor, d.data, resposta);
+}
+
+function abrirConfirmar(dataISO, campo, setor, data, sugestao) {
+  confAtual = { dataISO:dataISO, campo:campo, setor:setor, data:data };
+  document.getElementById('conf-descricao').innerHTML =
+    'Você está designado(a) para <strong>'+setor+'</strong><br>na reunião de <strong>'+data+'</strong>.<br><br>Confirme sua participação:';
+  document.getElementById('ov-confirmar').classList.add('aberto');
+}
+
+function fecharConfirmar() {
+  document.getElementById('ov-confirmar').classList.remove('aberto');
+  confAtual = null;
+}
+
+function confirmarPresenca(resposta) {
+  if (!confAtual || !meuNome) return;
+  var chave = confAtual.dataISO + '|' + confAtual.campo;
+  minhaEscalaConfirmacoes[chave] = resposta;
+  if (firebaseOk && db) {
+    var path = 'confirmacoes/' + meuNome.replace(/[.#$[\]]/g,'_') + '/' + chave.replace(/\|/g,'__');
+    db.ref(path).set(resposta);
+    // Notifica responsável se ausente
+    if (resposta === 'ausente') {
+      db.ref('avisos_ausencia').push({
+        nome: meuNome,
+        setor: confAtual.setor,
+        data: confAtual.data,
+        dataISO: confAtual.dataISO,
+        criadoEm: Date.now()
+      });
+    }
+  }
+  fecharConfirmar();
+  // Re-renderiza com nova confirmação
+  renderMinhaEscala(meuNome);
+  if (resposta === 'ausente') {
+    alert('Aviso de ausência enviado ao responsável!');
+  }
+}
+
+// ===================== HISTÓRICO =====================
+function trocarAbaHistorico() {
+  // Popula filtros
+  var selIrmao = document.getElementById('hist-filtro-irmao');
+  selIrmao.innerHTML = '<option value="">Todos</option>' +
+    todosIrmaos.sort().map(function(n){ return '<option value="'+n+'">'+n+'</option>'; }).join('');
+  renderHistorico();
+}
+
+function renderHistorico() {
+  var filtroIrmao = document.getElementById('hist-filtro-irmao').value;
+  var filtroSetor = document.getElementById('hist-filtro-setor').value;
+  var cont = document.getElementById('hist-conteudo');
+
+  // Conta designações por irmão e setor
+  var contagem = {}; // contagem[nome][setor] = n
+  var setorMap = {
+    palco1:'palco', palco2:'palco',
+    mic1:'microfone', mic2:'microfone',
+    audio:'audio', video:'video', zoom:'zoom',
+    indAud:'indicador', indPat:'indicador'
+  };
+
+  if (!escalaGerada || !Object.keys(escalaGerada).length) {
+    cont.innerHTML = '<p style="text-align:center;color:#888;padding:20px">Nenhuma escala gerada ainda.</p>';
+    return;
+  }
+
+  Object.values(escalaGerada).forEach(function(des) {
+    Object.keys(setorMap).forEach(function(campo) {
+      var nomeBase = des[campo]; if (!nomeBase) return;
+      var setor = setorMap[campo];
+      if (!contagem[nomeBase]) contagem[nomeBase] = {};
+      if (!contagem[nomeBase][setor]) contagem[nomeBase][setor] = 0;
+      contagem[nomeBase][setor]++;
+    });
+  });
+
+  // Filtra por irmão e setor
+  var nomes = filtroIrmao ? [filtroIrmao] : Object.keys(contagem).sort();
+  var setores = filtroSetor ? [filtroSetor] : ['palco','microfone','audio','video','zoom','indicador'];
+  var setorLabel = {palco:'Palco',microfone:'Microfone',audio:'Áudio',video:'Vídeo',zoom:'Zoom',indicador:'Indicador'};
+
+  if (!nomes.length) {
+    cont.innerHTML = '<p style="text-align:center;color:#888;padding:20px">Nenhum dado encontrado.</p>';
+    return;
+  }
+
+  // Máximo para escala de barras
+  var maxTotal = 0;
+  nomes.forEach(function(n) {
+    setores.forEach(function(s) {
+      var v = (contagem[n] && contagem[n][s]) || 0;
+      if (v > maxTotal) maxTotal = v;
+    });
+  });
+
+  var html = '<div style="overflow-x:auto"><table class="hist-table"><thead><tr>'+
+    '<th>Irmão</th>'+
+    setores.map(function(s){ return '<th>'+setorLabel[s]+'</th>'; }).join('')+
+    '<th>Total</th>'+
+    '</tr></thead><tbody>';
+
+  nomes.forEach(function(nome) {
+    if (!contagem[nome] && !filtroIrmao) return;
+    var total = 0;
+    var cells = setores.map(function(s) {
+      var v = (contagem[nome] && contagem[nome][s]) || 0;
+      total += v;
+      if (!v) return '<td><span class="hist-zero">—</span></td>';
+      var width = Math.round((v/maxTotal)*80);
+      return '<td><span class="hist-bar" style="width:'+width+'px"></span><span class="hist-num">'+v+'</span></td>';
+    }).join('');
+    html += '<tr><td style="font-weight:bold;white-space:nowrap">'+escHtml(nome)+'</td>'+cells+
+      '<td style="font-weight:bold;color:#1a4fa3">'+total+'</td></tr>';
+  });
+
+  html += '</tbody></table></div>';
+  cont.innerHTML = html;
+}
+
+// ===================== AVISOS DE AUSÊNCIA (responsável) =====================
+function ouvirAvisosAusencia() {
+  if (!db) return;
+  db.ref('avisos_ausencia').on('value', function(snap) {
+    var avisos = [];
+    snap.forEach(function(c) { avisos.push(c.val()); });
+    // Filtra avisos das próximas reuniões
+    var hoje = new Date(); hoje.setHours(0,0,0,0);
+    var relevantes = avisos.filter(function(a) {
+      var d = new Date(a.dataISO);
+      return d >= hoje;
+    });
+    if (relevantes.length > 0 && modoResponsavel) {
+      var badge = document.getElementById('badge-avisos-ausencia');
+      if (!badge) {
+        badge = document.createElement('div');
+        badge.id = 'badge-avisos-ausencia';
+        badge.style.cssText = 'background:#fef2f2;border:1.5px solid #fca5a5;border-radius:8px;padding:8px 14px;margin-bottom:16px;font-size:13px;color:#991b1b;cursor:pointer';
+        badge.onclick = function(){ trocarAba('aba-conf-ausencias'); };
+        document.querySelector('.topo').after(badge);
+      }
+      badge.innerHTML = '\u26A0 <strong>'+relevantes.length+' aviso(s) de ausência</strong> para próximas reuniões. Clique para ver.';
+    }
+  });
+}
+
+// Patching trocarAba to populate historico filters
+var _trocarAbaOriginal = trocarAba;
+trocarAba = function(id, btn) {
+  _trocarAbaOriginal(id, btn);
+  if (id === 'aba-confirmacoes') { renderConfirmacoes(); }
+  if (id === 'aba-historico') {
+    var selIrmao = document.getElementById('hist-filtro-irmao');
+    if (selIrmao) {
+      selIrmao.innerHTML = '<option value="">Todos</option>' +
+        todosIrmaos.sort().map(function(n){ return '<option value="'+n+'">'+n+'</option>'; }).join('');
+    }
+    renderHistorico();
+  }
+};
+
+// ===================== CONFIRMAÇÕES DE PRESENÇA (responsável) =====================
+var _todasConfirmacoes = {}; // _todasConfirmacoes[nomeKey][dataISO|campo] = 'confirmado'|'ausente'
+
+function ouvirConfirmacoes() {
+  if (!db) return;
+  db.ref('confirmacoes').on('value', function(snap) {
+    _todasConfirmacoes = {};
+    snap.forEach(function(c) { _todasConfirmacoes[c.key] = c.val(); });
+    if (document.getElementById('ov-principal') &&
+        document.getElementById('ov-principal').classList.contains('aberto') &&
+        document.getElementById('aba-confirmacoes').classList.contains('ativa')) {
+      renderConfirmacoes();
+    }
+    // Atualiza badge na aba
+    _atualizarBadgeConf();
+  });
+}
+
+function _atualizarBadgeConf() {
+  var hoje = new Date(); hoje.setHours(0,0,0,0);
+  var ausentes = 0;
+  Object.values(_todasConfirmacoes).forEach(function(conf) {
+    Object.keys(conf || {}).forEach(function(chave) {
+      if (conf[chave] === 'ausente') {
+        var dataISO = chave.split('|')[0] || chave.split('__')[0];
+        if (dataISO && new Date(dataISO) >= hoje) ausentes++;
+      }
+    });
+  });
+  var btn = document.getElementById('btn-aba-conf');
+  if (btn) btn.innerHTML = '&#9989; Presenças' + (ausentes > 0 ? ' <span style="background:#ef4444;color:white;border-radius:10px;padding:1px 7px;font-size:10px">'+ausentes+'</span>' : '');
+}
+
+function renderConfirmacoes() {
+  var cont = document.getElementById('conf-lista-responsavel');
+  if (!cont) return;
+
+  var hoje = new Date(); hoje.setHours(0,0,0,0);
+  var filtroData = document.getElementById('conf-filtro-data');
+
+  // Monta lista de datas futuras com designações
+  var datas = Object.keys(escalaGerada).filter(function(d) {
+    return new Date(d) >= hoje;
+  }).sort();
+
+  // Popula select de datas
+  var selVal = filtroData ? filtroData.value : '';
+  if (filtroData) {
+    filtroData.innerHTML = '<option value="">Todas as próximas</option>' +
+      datas.map(function(d) {
+        var partes = d.split('-');
+        var obj = new Date(parseInt(partes[0]), parseInt(partes[1])-1, parseInt(partes[2]));
+        var label = obj.toLocaleDateString('pt-BR',{weekday:'long',day:'2-digit',month:'2-digit'});
+        return '<option value="'+d+'"'+(d===selVal?' selected':'')+'>'+label+'</option>';
+      }).join('');
+  }
+
+  var datasVer = selVal ? [selVal] : datas;
+  if (!datasVer.length) {
+    cont.innerHTML = '<p style="font-size:13px;color:#888;padding:10px 0">Nenhuma reunião futura na escala.</p>';
+    return;
+  }
+
+  var setorLabelsC = {palco1:'Palco (Coord.)',palco2:'Palco (Ajud.)',mic1:'Microfone',mic2:'Microfone',
+    audio:'Áudio',video:'Vídeo',zoom:'Zoom',indAud:'Indicador Aud.',indPat:'Indicador Pát.'};
+
+  var html = '';
+  datasVer.forEach(function(dataISO) {
+    var des = escalaGerada[dataISO];
+    if (!des) return;
+    var partes = dataISO.split('-');
+    var obj = new Date(parseInt(partes[0]), parseInt(partes[1])-1, parseInt(partes[2]));
+    var label = obj.toLocaleDateString('pt-BR',{weekday:'long',day:'2-digit',month:'2-digit',year:'numeric'});
+
+    // Monta lista de designados nesta data
+    var designados = [];
+    ['palco1','palco2','mic1','mic2','audio','video','zoom','indAud','indPat'].forEach(function(campo) {
+      var nome = des[campo]; if (!nome) return;
+      // Evita duplicar mic1/mic2 palco1/palco2
+      if ((campo==='mic2'||campo==='palco2') && designados.some(function(x){ return x.nome===nome; })) return;
+      designados.push({nome:nome, campo:campo, setor:setorLabelsC[campo]});
+    });
+
+    var temAusente = false;
+    var rows = designados.map(function(d) {
+      var nomeKey = d.nome.replace(/[.#$[\]]/g,'_');
+      var chaveConf = dataISO + '__' + d.campo;
+      var chaveConf2 = dataISO + '|' + d.campo;
+      var conf = (_todasConfirmacoes[nomeKey] && (_todasConfirmacoes[nomeKey][chaveConf] || _todasConfirmacoes[nomeKey][chaveConf2])) || 'pendente';
+      if (conf === 'ausente') temAusente = true;
+      var cor = conf==='confirmado' ? '#166534' : conf==='ausente' ? '#991b1b' : '#92400e';
+      var bg  = conf==='confirmado' ? '#dcfce7'  : conf==='ausente' ? '#fee2e2'  : '#fef3c7';
+      var icone = conf==='confirmado' ? '&#10003;' : conf==='ausente' ? '&#10007;' : '&#9203;';
+      var txt = conf==='confirmado' ? 'Confirmado' : conf==='ausente' ? 'Ausente' : 'Pendente';
+      return '<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 12px;border-bottom:1px solid #f0f0f0">' +
+        '<div><span style="font-size:13px;font-weight:bold;color:#1a1a2e">'+escHtml(d.nome)+'</span>' +
+        '<span style="font-size:11px;color:#5e6370;margin-left:8px">'+escHtml(d.setor)+'</span></div>' +
+        '<span style="font-size:12px;font-weight:bold;background:'+bg+';color:'+cor+';padding:3px 10px;border-radius:10px">'+icone+' '+txt+'</span>' +
+        '</div>';
+    }).join('');
+
+    html += '<div style="background:white;border:1px solid '+(temAusente?'#fca5a5':'#d0d5dd')+';border-radius:10px;margin-bottom:14px;overflow:hidden">' +
+      '<div style="background:'+(temAusente?'#fef2f2':'#f4f4f2')+';padding:10px 14px;font-size:13px;font-weight:bold;color:'+(temAusente?'#991b1b':'#1a4fa3')+'">'+
+      (temAusente?'&#9888;&#65039; ':'&#128197; ')+label+'</div>' +
+      rows + '</div>';
+  });
+
+  cont.innerHTML = html || '<p style="font-size:13px;color:#888;padding:10px 0">Nenhuma confirmação ainda.</p>';
+}
+
+// ===================== INICIALIZAÇÃO =====================
+// ── MODO REPARO ──
+var MSG_REPARO_PADRAO = '🛠️ Estamos melhorando o sistema para servi-los melhor!\nEnquanto isso, as designações estão disponíveis no quadro de anúncios e no grupo Departamentos. Obrigado pela paciência e cooperação! 🙏 ❤️';
 
 function pedirSenhaReparo() {
-  // Abre modal de senha com z-index acima do overlay de manutenção
   var ovSenha = document.getElementById('ov-senha');
   ovSenha.style.zIndex = '99999';
   pedirSenhaCallback = function() {
-    // Após senha correta: marca sessão e remove overlay
     sessionStorage.setItem('reparo_acesso', 'ok');
     removerBloqueioManutencao();
     ovSenha.style.zIndex = '';
@@ -1430,33 +2918,27 @@ function pedirSenhaReparo() {
 }
 
 function aplicarBloqueioManutencao() {
-  // NUNCA bloqueia o responsável — ele precisa ver e editar a escala durante o reparo
   if (modoResponsavel) return;
-  // Também não bloqueia se tiver a chave de acesso temporário
   if (sessionStorage.getItem('reparo_acesso') === 'ok') return;
-  
-  var overlayExistente = document.getElementById('bloqueio-manutencao');
-  if (overlayExistente) return;
-  
+  if (document.getElementById('bloqueio-manutencao')) return;
   var div = document.createElement('div');
   div.id = 'bloqueio-manutencao';
-  div.className = 'bloqueio-manutencao';
+  div.style.cssText = 'position:relative;z-index:99997';
   div.innerHTML = '<div class="mensagem-manutencao">' +
     '<h2>🔧 Manutenção</h2>' +
     '<p>' + (window.modoReparoMsg || MSG_REPARO_PADRAO).replace(/\n/g,'<br>') + '</p>' +
     '<small>O responsável está realizando ajustes no sistema.</small>' +
     '<div style="margin-top:20px">' +
-    '<button onclick="pedirSenhaReparo()" style="background:transparent;border:1px solid rgba(255,255,255,0.2);color:rgba(255,255,255,0.4);padding:6px 14px;border-radius:8px;font-size:11px;cursor:pointer;transition:all .3s" ' +
-    'onmouseover="this.style.color='white';this.style.borderColor='rgba(255,255,255,0.7)'" ' +
-    'onmouseout="this.style.color='rgba(255,255,255,0.4)';this.style.borderColor='rgba(255,255,255,0.2)'">🔐 Responsável</button>' +
-    '</div>' +
-    '</div>';
+    '<button onclick="pedirSenhaReparo()" style="background:transparent;border:1px solid rgba(255,255,255,0.2);color:rgba(255,255,255,0.35);padding:6px 14px;border-radius:8px;font-size:11px;cursor:pointer" ' +
+    'onmouseover="this.style.color='white';this.style.borderColor='rgba(255,255,255,0.8)'" ' +
+    'onmouseout="this.style.color='rgba(255,255,255,0.35)';this.style.borderColor='rgba(255,255,255,0.2)'">🔐 Responsável</button>' +
+    '</div></div>';
   document.body.appendChild(div);
 }
 
 function removerBloqueioManutencao() {
-  var overlay = document.getElementById('bloqueio-manutencao');
-  if (overlay) overlay.remove();
+  var el = document.getElementById('bloqueio-manutencao');
+  if (el) el.remove();
 }
 
 function verificarModoReparo() {
@@ -1464,231 +2946,28 @@ function verificarModoReparo() {
   db.ref('escala/modoReparo').on('value', function(snap) {
     var dados = snap.val();
     var banner = document.getElementById('banner-reparo');
-    var badge = document.getElementById('reparo-badge');
-    var btn = document.getElementById('btn-toggle-reparo');
-    var prev = document.getElementById('reparo-preview');
-    var msgEl = document.getElementById('reparo-msg-custom');
-    
     if (dados && dados.ativo) {
       window.modoReparoAtivo = true;
       window.modoReparoMsg = dados.msg || MSG_REPARO_PADRAO;
-      
-      banner.textContent = dados.msg || MSG_REPARO_PADRAO;
-      banner.style.display = 'block';
-      document.body.style.paddingTop = '44px';
-      
-      if (badge) badge.style.display = 'inline-block';
-      if (btn) { btn.textContent = '⏹ Desativar Modo Reparo'; btn.style.background = '#374151'; }
-      if (prev) { prev.style.display = 'block'; document.getElementById('reparo-preview-texto').innerHTML = (dados.msg || MSG_REPARO_PADRAO).replace(/\n/g,'<br>'); }
-      if (msgEl && !msgEl.value) msgEl.value = (dados.msg !== MSG_REPARO_PADRAO) ? dados.msg : '';
-      
-      // Só bloqueia se não for responsável e não tiver acesso de sessão
+      if (banner) { banner.textContent = dados.msg || MSG_REPARO_PADRAO; banner.style.display = 'block'; document.body.style.paddingTop = '44px'; }
       if (!modoResponsavel && sessionStorage.getItem('reparo_acesso') !== 'ok') {
         aplicarBloqueioManutencao();
       }
     } else {
       window.modoReparoAtivo = false;
-      banner.style.display = 'none';
-      document.body.style.paddingTop = '';
-      if (badge) badge.style.display = 'none';
-      if (btn) { btn.textContent = '🔧 Ativar Modo Reparo'; btn.style.background = '#dc2626'; }
-      if (prev) prev.style.display = 'none';
+      if (banner) { banner.style.display = 'none'; document.body.style.paddingTop = ''; }
       removerBloqueioManutencao();
     }
   });
 }
 
-// ===================== FUNÇÕES DE SENHA =====================
-function carregarSenhaFirebase() {
-  if (!firebaseOk || !db) return;
-  db.ref('escala/senhaMestra').once('value', function(snap) {
-    var s = snap.val();
-    if (s) SENHA = s;
-  });
-}
-
-var pedirSenhaCallback = null;
-
-function pedirSenha() {
-  document.getElementById('campo-senha').value='';
-  document.getElementById('senha-erro').style.display='none';
-  document.getElementById('ov-senha').classList.add('aberto');
-}
-
-function fecharSenha() { document.getElementById('ov-senha').classList.remove('aberto'); }
-
-function confirmarSenha() {
-  if (document.getElementById('campo-senha').value === SENHA) {
-    fecharSenha();
-    ativarModoResponsavel();
-    if (pedirSenhaCallback) {
-      // Callback especial (ex: acesso durante reparo, apagar mês)
-      var cb = pedirSenhaCallback;
-      pedirSenhaCallback = null;
-      cb();
-    } else {
-      abrirPrincipal('aba-eventos');
-    }
-  } else {
-    document.getElementById('senha-erro').style.display='block';
-  }
-}
-
-// ===================== FUNÇÕES DO MODAL PRINCIPAL =====================
-function abrirPrincipal(abaId) {
-  renderEventos();
-  popularSelTreino();
-  document.getElementById('ov-principal').classList.add('aberto');
-}
-
-function fecharPrincipal() { document.getElementById('ov-principal').classList.remove('aberto'); }
-
-function trocarAba(id,btn) {
-  document.querySelectorAll('.aba-conteudo').forEach(function(el){ el.classList.remove('ativa'); });
-  document.querySelectorAll('.aba-btn').forEach(function(el){ el.classList.remove('ativa'); });
-  document.getElementById(id).classList.add('ativa');
-  if(btn) btn.classList.add('ativa');
-  if(id==='aba-irmaos') renderGerenciarIrmaos();
-  if(id==='aba-treino') renderTreino();
-  if(id==='aba-trocas') renderGerenciarTrocas();
-  if(id==='aba-presencas') carregarPresencas();
-}
-
-// Botão "Ir para Edição" — fecha modal e ativa modo edição direto
-function irParaEdicao() {
-  fecharPrincipal();
-  ativarModoEdicao();
-  // Rola para o topo da escala
-  setTimeout(function(){
-    var lista = document.getElementById('lista');
-    if(lista) lista.scrollIntoView({behavior:'smooth', block:'start'});
-  }, 200);
-}
-
-function aplicarTudo() {
-  fecharPrincipal();
-  var chaves = Object.keys(mesesGerados).sort();
-  if(chaves.length === 0){ gerarEscalaAtual(); return; }
-  substituicoes={}; contadorPulo={}; aparicoes={}; ultimoAuditorio={};
-  idxM.v=0; idxA.v=0; idxV.v=0; idxZ.v=0; idxI.v=0; ultimoPar=-1;
-  var backup = Object.keys(mesesGerados);
-  mesesGerados = {};
-  document.getElementById('lista').innerHTML='';
-  backup.forEach(function(chave){
-    var parts = chave.split('-');
-    var a = parseInt(parts[0]), m = parseInt(parts[1]);
-    adicionarMeses(m, a, 1);
-  });
-}
-
-// ===================== RENDERIZAÇÃO PRINCIPAL =====================
-function nomeSpan(n, chave, setor, dataLabel) {
-  var atual = substituicoes[chave] || n;
-
-  // Modo edicao: todos os nomes clicaveis para substituicao permanente
-  if (modoEdicao) {
-    var setorMap = { 'Palco-Coord':'palco','Palco-Ajud':'palco',
-      'Mic1':'microfone','Mic2':'microfone',
-      'Audio':'audio','Video':'video','Zoom':'zoom',
-      'Ind-Aud':'indicador','Ind-Pat':'indicador' };
-    var setorKey = setorMap[setor] || setor.toLowerCase();
-    var emTreinoFlag = (typeof estaEmTreinamento === 'function') &&
-      estaEmTreinamento(atual) && treinamento[atual] && treinamento[atual][setorKey];
-    var badgeTreino = emTreinoFlag
-      ? ' <span style="font-size:9px;background:#fef3c7;color:#92400e;border:1px solid #fcd34d;border-radius:8px;padding:1px 5px;vertical-align:middle">treino</span>'
-      : '';
-    // Usa data-idx para evitar problema de aspas no onclick
-    var idx2 = _nomeSpanCache.length;
-    _nomeSpanCache.push({chave:chave, setor:setor, dataLabel:dataLabel});
-    return '<span class="nome-edicao" data-chave="'+escHtml(chave)+'" data-setor="'+escHtml(setor)+'" data-data="'+escHtml(dataLabel)+'" data-idx="'+idx2+'" title="Clique para substituir" onclick="_abrirSubstIdx(this)">'+escHtml(atual)+'</span>'+badgeTreino;
-  }
-
-  // Modo normal: guarda data-chave para ativacao posterior pelo modo edicao
-  if (meuNome && meuNome === atual) {
-    var idx2 = _nomeSpanCache.length;
-    _nomeSpanCache.push({chave:chave, setor:setor, dataLabel:dataLabel, nome:atual});
-    return '<span class="nome-troca" data-chave="'+escHtml(chave)+'" data-setor="'+escHtml(setor)+'" data-data="'+escHtml(dataLabel)+'" data-idx="'+idx2+'" onclick="_abrirTrocaIdx(this)">'+escHtml(atual)+'</span>';
-  }
-  return '<span class="nome-base" data-chave="'+escHtml(chave)+'" data-setor="'+escHtml(setor)+'" data-data="'+escHtml(dataLabel)+'">'+escHtml(atual)+'</span>';
-}
-
-// Cache para evitar problema de aspas no onclick
-var _nomeSpanCache = [];
-
-function _abrirSubstIdx(el) {
-  var idx2 = parseInt(el.getAttribute('data-idx') || '0');
-  var d = _nomeSpanCache[idx2] || {};
-  abrirSubst(d.chave||'', d.setor||'', d.dataLabel||'', el.textContent, el);
-}
-
-function _abrirTrocaIdx(el) {
-  var idx2 = parseInt(el.getAttribute('data-idx') || '0');
-  var d = _nomeSpanCache[idx2] || {};
-  abrirTroca(d.chave||'', d.setor||'', d.dataLabel||'', d.nome||el.textContent);
-}
-
-
-function linhaH(ic,lb,val){
-  return '<div class="linha"><span class="linha-icone">'+ic+'</span>'+
-    '<span class="linha-label">'+lb+'</span><span class="linha-nomes">'+val+'</span></div>';
-}
-
-// ===================== INICIALIZAÇÃO =====================
-function iniciarFirebase() {
-  try {
-    if (typeof firebase === 'undefined') return;
-    if (!firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG);
-    db = firebase.database();
-    firebaseOk = true;
-    carregarSenhaFirebase();
-    ouvirSubstituicoes();
-    ouvirMeses();
-    verificarModoReparo();
-  } catch(e) {
-    console.warn('Firebase erro:', e);
-  }
-}
-
-function ouvirSubstituicoes() {
-  if(!db) return;
-  db.ref('escala/estado/substituicoes').on('value', function(snap) {
-    var dados = snap.val() || {};
-    substituicoes = {};
-    Object.keys(dados).forEach(function(chave) { substituicoes[chave] = dados[chave]; });
-    if(document.querySelectorAll('.mes-bloco').length > 0) aplicarSubstituicoesNaTela();
-  });
-}
-
-function aplicarSubstituicoesNaTela() {
-  Object.keys(substituicoes).forEach(function(chave) {
-    var novo = substituicoes[chave];
-    var spans = document.querySelectorAll(
-      '.nome-clicavel[data-chave="'+chave+'"], ' +
-      '.nome-edicao[data-chave="'+chave+'"], ' +
-      '.nome-base[data-chave="'+chave+'"], ' +
-      '.nome-troca[data-chave="'+chave+'"]'
-    );
-    spans.forEach(function(span) {
-      if (span.textContent !== novo) span.textContent = novo;
-    });
-  });
-}
-
-// Funções placeholder para o código existente
-function renderEventos() {}
-function popularSelTreino() {}
-function renderGerenciarIrmaos() {}
-function renderTreino() {}
-function renderGerenciarTrocas() {}
-function carregarPresencas() {}
-function gerarEscalaAtual() {}
-function adicionarMeses(m,a,q) {}
-function ouvirMeses() {}
-
-// ===================== INICIALIZAÇÃO =====================
-iniciarFirebase();
+try { gerarEscalaAtual(); } catch(e) { console.error('Erro gerarEscalaAtual:', e); }
+try { iniciarFirebase(); } catch(e) { console.error('Erro iniciarFirebase:', e); }
 atualizarBotaoNotif();
-setTimeout(function() { try { vmcIniciar(); } catch(e) {} }, 100);
+// Verifica se já instalado como PWA
+if (window.matchMedia('(display-mode: standalone)').matches) {
+  document.getElementById('btn-instalar-pwa').style.display = 'none';
+}
 </script>
 </body>
 </html>
