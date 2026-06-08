@@ -1150,13 +1150,13 @@ function pedirRecuperacaoSenha() {
 function confirmarSenha() {
   if (document.getElementById('campo-senha').value===SENHA) {
     fecharSenha();
-    ativarModoResponsavel();
     if (pedirSenhaCallback) {
-      // Veio de uma ação protegida (ex: apagar mês) — executa e não abre painel
+      // Veio de uma ação protegida (ex: reparo, apagar mês) — o callback cuida de tudo
       var cb = pedirSenhaCallback;
       pedirSenhaCallback = null;
       cb();
     } else {
+      ativarModoResponsavel();
       abrirPrincipal('aba-eventos');
     }
   } else {
@@ -2305,9 +2305,14 @@ function pedirSenhaReparo() {
   var ovSenha = document.getElementById('ov-senha');
   ovSenha.style.zIndex = '99999';
   pedirSenhaCallback = function() {
+    // Marca como responsável PRIMEIRO — impede o listener do Firebase de reaplicar o bloqueio
+    modoResponsavel = true;
     sessionStorage.setItem('reparo_acesso', 'ok');
     removerBloqueioManutencao();
     ovSenha.style.zIndex = '';
+    // Ativa o modo responsável completo (badges, lista, etc.)
+    ativarModoResponsavel();
+    abrirPrincipal('aba-reparo');
   };
   document.getElementById('campo-senha').value = '';
   document.getElementById('senha-erro').style.display = 'none';
