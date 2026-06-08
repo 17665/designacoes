@@ -1113,6 +1113,18 @@ function pedirSenha() {
   pedirSenhaCallback = null;
   document.getElementById('campo-senha').value='';
   document.getElementById('senha-erro').style.display='none';
+  // Se bloqueio ativo, configura callback para removê-lo ao entrar com senha correta
+  if (document.getElementById('bloqueio-manutencao')) {
+    pedirSenhaCallback = function() {
+      modoResponsavel = true;
+      sessionStorage.setItem('reparo_acesso', 'ok');
+      var bloq = document.getElementById('bloqueio-manutencao');
+      if (bloq) bloq.remove();
+      if (firebaseOk && db) db.ref('escala/modoReparo').off();
+      ativarModoResponsavel();
+      abrirPrincipal('aba-reparo');
+    };
+  }
   document.getElementById('ov-senha').classList.add('aberto');
   setTimeout(function(){ document.getElementById('campo-senha').focus(); },100);
 }
@@ -1148,10 +1160,17 @@ function pedirRecuperacaoSenha() {
   });
 }
 function confirmarSenha() {
-  if (document.getElementById('campo-senha').value===SENHA) {
+  var digitada = document.getElementById('campo-senha').value;
+  if (digitada===SENHA) {
     fecharSenha();
+    // Sempre destrói o bloqueio e marca a sessão — independente de qualquer callback
+    modoResponsavel = true;
+    sessionStorage.setItem('reparo_acesso', 'ok');
+    var bloq = document.getElementById('bloqueio-manutencao');
+    if (bloq) bloq.remove();
+    if (firebaseOk && db) db.ref('escala/modoReparo').off();
+
     if (pedirSenhaCallback) {
-      // Veio de uma ação protegida (ex: reparo, apagar mês) — o callback cuida de tudo
       var cb = pedirSenhaCallback;
       pedirSenhaCallback = null;
       cb();
