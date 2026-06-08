@@ -119,9 +119,8 @@ h1 { font-size:22px; font-weight:700; color:#1a4fa3; margin-bottom:4px; }
 .mes-cab { background:#1a4fa3; color:white; padding:10px 18px; display:flex; align-items:center; justify-content:space-between; }
 .mes-nome { font-size:15px; font-weight:bold; text-transform:capitalize; }
 .mes-resp { font-size:11px; opacity:.8; }
-.btn-apagar-mes { background:rgba(255,255,255,0.15); color:white; border:1px solid rgba(255,255,255,0.4); border-radius:6px; padding:3px 10px; font-size:11px; cursor:pointer; white-space:nowrap; display:none; }
+.btn-apagar-mes { background:rgba(255,255,255,0.15); color:white; border:1px solid rgba(255,255,255,0.4); border-radius:6px; padding:3px 10px; font-size:11px; cursor:pointer; white-space:nowrap; }
 .btn-apagar-mes:hover { background:rgba(255,80,80,0.6); border-color:rgba(255,80,80,0.8); }
-.modo-responsavel-ativo .btn-apagar-mes { display:inline-block; }
 .reunioes-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(310px,1fr)); gap:1px; background:#d0d5dd; }
 .card { background:white; padding:12px 14px; }
 .card-topo { display:flex; align-items:center; gap:8px; margin-bottom:10px; padding-bottom:8px; border-bottom:1px solid #f4f4f2; flex-wrap:wrap; }
@@ -275,32 +274,6 @@ h1 { font-size:22px; font-weight:700; color:#1a4fa3; margin-bottom:4px; }
   .badge-sabado { background:#e1f5ee !important; color:#0f6e56 !important; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
   .nome-clicavel { border-bottom:none !important; color:#1a1a2e !important; cursor:default; }
   .nome-troca    { border-bottom:none !important; color:#1a1a2e !important; cursor:default; }
-.bloqueio-manutencao::before {
-  content: "";
-  position: fixed;
-  top: 0; left: 0; right: 0; bottom: 0;
-  background: rgba(30,30,30,0.96);
-  z-index: 99997;
-  backdrop-filter: blur(8px);
-}
-.mensagem-manutencao {
-  position: fixed;
-  top: 50%; left: 50%;
-  transform: translate(-50%,-50%);
-  background: #1e1e1e;
-  color: white;
-  padding: 40px 44px;
-  border-radius: 20px;
-  text-align: center;
-  z-index: 99998;
-  max-width: 480px;
-  width: 90vw;
-  box-shadow: 0 24px 48px rgba(0,0,0,0.5);
-  border: 1px solid rgba(220,38,38,0.4);
-}
-.mensagem-manutencao h2 { color:#f87171; margin-bottom:16px; font-size:22px; font-weight:700; letter-spacing:.3px; }
-.mensagem-manutencao p { margin:0; }
-.mensagem-manutencao small { color:#aaa; font-size:12px; }
   .linha { padding:2px 0; }
   .linha-label { min-width:100px; font-size:10px; }
   .linha-nomes { font-size:10px; }
@@ -366,9 +339,8 @@ body.dark-mode .conf-badge.pendente { background: #2a2a15; color: #ca8a04; borde
     <p class="subtitulo" id="subtitulo-periodo">Congregação Parque Tietê</p>
   </div>
   <div class="topo-acoes">
-    <div id="badge-responsavel" style="display:none;align-items:center;gap:8px;background:#dcfce7;border:1.5px solid #22c55e;border-radius:20px;padding:5px 14px;flex-wrap:wrap">
+    <div id="badge-responsavel" style="display:none;align-items:center;gap:8px;background:#dcfce7;border:1.5px solid #22c55e;border-radius:20px;padding:5px 14px">
       <span style="font-size:13px;font-weight:bold;color:#166534">&#128274; Modo Responsável</span>
-      <button onclick="abrirSubstituicaoManual()" style="background:#1a4fa3;color:white;border:none;border-radius:10px;padding:2px 10px;font-size:12px;font-weight:bold;cursor:pointer" title="Clique em qualquer nome na escala para substituí-lo permanentemente">&#128260; Substituição</button>
       <button onclick="sairModoResponsavel()" style="background:#ef4444;color:white;border:none;border-radius:10px;padding:2px 10px;font-size:12px;font-weight:bold;cursor:pointer">Sair</button>
     </div>
     <button class="btn-gerenciar" id="btn-area-responsavel" onclick="pedirSenha()">&#128100; Área do Responsável</button>
@@ -383,7 +355,7 @@ body.dark-mode .conf-badge.pendente { background: #2a2a15; color: #ca8a04; borde
 </div>
 
 <!-- OVERLAY SENHA -->
-<div class="overlay" id="ov-senha" style="z-index:100000">
+<div class="overlay" id="ov-senha">
   <div class="modal-senha">
     <div class="modal-senha-cab">&#128274; Acesso Restrito</div>
     <div class="modal-senha-body">
@@ -818,48 +790,29 @@ body.dark-mode .conf-badge.pendente { background: #2a2a15; color: #ca8a04; borde
 
       <!-- ABA REPARO -->
       <div class="aba-conteudo" id="aba-reparo">
-
-        <!-- Cabeçalho de status -->
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;flex-wrap:wrap;gap:10px">
-          <div style="display:flex;align-items:center;gap:10px">
-            <div style="width:40px;height:40px;background:#1a1a2e;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px">🔧</div>
-            <div>
-              <div style="font-size:15px;font-weight:bold;color:#1a1a2e">Modo Reparo</div>
-              <div style="font-size:11px;color:#5e6370">Bloqueia o acesso dos irmãos ao sistema</div>
-            </div>
+        <div style="background:#fee2e2;border:2px solid #fca5a5;border-radius:12px;padding:18px;margin-bottom:16px">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+            <span style="font-size:24px">🔧</span>
+            <strong style="font-size:15px;color:#991b1b">Modo Reparo</strong>
+            <span id="reparo-badge" style="display:none;background:#dc2626;color:white;font-size:11px;font-weight:bold;padding:2px 10px;border-radius:20px">ATIVO</span>
           </div>
-          <span id="reparo-badge" style="display:none;background:#dc2626;color:white;font-size:11px;font-weight:bold;padding:4px 14px;border-radius:20px;letter-spacing:.5px">● ATIVO</span>
-        </div>
-
-        <!-- Descrição -->
-        <div style="background:#f4f4f2;border-radius:10px;padding:14px 16px;margin-bottom:16px;display:flex;gap:12px;align-items:flex-start">
-          <span style="font-size:18px;flex-shrink:0;margin-top:2px">ℹ️</span>
-          <p style="font-size:13px;color:#3a3a4a;line-height:1.7;margin:0">
-            Quando ativado, uma <strong>tela de bloqueio</strong> cobre o site para todos os irmãos, exibindo a mensagem de manutenção.
-            Apenas você, com a senha, consegue acessar normalmente.
+          <p style="font-size:13px;color:#7f1d1d;line-height:1.6;margin-bottom:14px">
+            Quando ativado, um <strong>banner vermelho</strong> aparece no topo da página para todos os usuários,
+            informando que o sistema está em manutenção e que devem consultar as designações no quadro de anúncios e no grupo Departamentos.
           </p>
+          <div style="margin-bottom:12px">
+            <label style="font-size:12px;font-weight:bold;color:#7f1d1d;display:block;margin-bottom:6px">✏️ Mensagem personalizada (opcional):</label>
+            <textarea id="reparo-msg-custom" rows="4" style="width:100%;padding:10px;border:1px solid #fca5a5;border-radius:8px;font-size:13px;resize:vertical;box-sizing:border-box;color:#374151" placeholder="Deixe em branco para usar a mensagem padrão:&#10;&#10;🛠️ Estamos melhorando o sistema para servi-los melhor! Enquanto isso, as designações estão disponíveis no quadro de anúncios e no grupo Departamentos. Obrigado pela paciência e cooperação! 🙏❤️"></textarea>
+          </div>
+          <button id="btn-toggle-reparo" onclick="toggleModoReparo()"
+            style="background:#dc2626;color:white;border:none;padding:10px 22px;border-radius:8px;font-size:14px;font-weight:bold;cursor:pointer;width:100%">
+            🔧 Ativar Modo Reparo
+          </button>
         </div>
-
-        <!-- Mensagem personalizada -->
-        <div style="margin-bottom:16px">
-          <label style="font-size:12px;font-weight:bold;color:#5e6370;display:block;margin-bottom:8px;text-transform:uppercase;letter-spacing:.4px">✏️ Mensagem personalizada <span style="font-weight:normal;text-transform:none">(opcional)</span></label>
-          <textarea id="reparo-msg-custom" rows="3"
-            style="width:100%;padding:10px 12px;border:1.5px solid #d0d5dd;border-radius:8px;font-size:13px;resize:vertical;box-sizing:border-box;color:#1a1a2e;line-height:1.6;font-family:Arial,sans-serif"
-            placeholder="Deixe em branco para usar a mensagem padrão:&#10;🛠️ Estamos melhorando o sistema para servi-los melhor! Enquanto isso, as designações estão disponíveis no quadro de anúncios e no grupo Departamentos. Obrigado pela paciência e cooperação! 🙏❤️"></textarea>
+        <div id="reparo-preview" style="display:none;background:#fff7ed;border:1px solid #fed7aa;border-radius:8px;padding:12px;font-size:12px;color:#92400e">
+          <strong>Prévia do banner que os usuários verão:</strong>
+          <div id="reparo-preview-texto" style="margin-top:8px;background:#dc2626;color:white;padding:10px 14px;border-radius:6px;font-size:13px;line-height:1.5"></div>
         </div>
-
-        <!-- Botão -->
-        <button id="btn-toggle-reparo" onclick="toggleModoReparo()"
-          style="background:#dc2626;color:white;border:none;padding:12px 22px;border-radius:9px;font-size:14px;font-weight:bold;cursor:pointer;width:100%;letter-spacing:.3px">
-          🔧 Ativar Modo Reparo
-        </button>
-
-        <!-- Prévia -->
-        <div id="reparo-preview" style="display:none;margin-top:16px;border:1.5px solid #fca5a5;border-radius:10px;overflow:hidden">
-          <div style="background:#fee2e2;padding:8px 14px;font-size:11px;font-weight:bold;color:#991b1b;text-transform:uppercase;letter-spacing:.5px">Prévia — o que os irmãos verão</div>
-          <div id="reparo-preview-texto" style="background:#dc2626;color:white;padding:12px 16px;font-size:13px;line-height:1.6"></div>
-        </div>
-
       </div>
 
       <!-- ABA TESTE -->
@@ -1107,31 +1060,13 @@ function alterarSenha() {
   }
 }
 
-var pedirSenhaCallback = null;
-
 function pedirSenha() {
-  pedirSenhaCallback = null;
   document.getElementById('campo-senha').value='';
   document.getElementById('senha-erro').style.display='none';
-  // Se bloqueio ativo, configura callback para removê-lo ao entrar com senha correta
-  if (document.getElementById('bloqueio-manutencao')) {
-    pedirSenhaCallback = function() {
-      modoResponsavel = true;
-      sessionStorage.setItem('reparo_acesso', 'ok');
-      var bloq = document.getElementById('bloqueio-manutencao');
-      if (bloq) bloq.remove();
-      if (firebaseOk && db) db.ref('escala/modoReparo').off();
-      ativarModoResponsavel();
-      abrirPrincipal('aba-reparo');
-    };
-  }
   document.getElementById('ov-senha').classList.add('aberto');
   setTimeout(function(){ document.getElementById('campo-senha').focus(); },100);
 }
-function fecharSenha() {
-  pedirSenhaCallback = null;
-  document.getElementById('ov-senha').classList.remove('aberto');
-}
+function fecharSenha() { document.getElementById('ov-senha').classList.remove('aberto'); }
 function pedirRecuperacaoSenha() {
   if (!firebaseOk || !db) {
     alert('Sem conexão com Firebase. Não é possível recuperar a senha agora.');
@@ -1160,24 +1095,8 @@ function pedirRecuperacaoSenha() {
   });
 }
 function confirmarSenha() {
-  var digitada = document.getElementById('campo-senha').value;
-  if (digitada===SENHA) {
-    fecharSenha();
-    // Sempre destrói o bloqueio e marca a sessão — independente de qualquer callback
-    modoResponsavel = true;
-    sessionStorage.setItem('reparo_acesso', 'ok');
-    var bloq = document.getElementById('bloqueio-manutencao');
-    if (bloq) bloq.remove();
-    if (firebaseOk && db) db.ref('escala/modoReparo').off();
-
-    if (pedirSenhaCallback) {
-      var cb = pedirSenhaCallback;
-      pedirSenhaCallback = null;
-      cb();
-    } else {
-      ativarModoResponsavel();
-      abrirPrincipal('aba-eventos');
-    }
+  if (document.getElementById('campo-senha').value===SENHA) {
+    fecharSenha(); ativarModoResponsavel(); abrirPrincipal('aba-eventos');
   } else {
     document.getElementById('senha-erro').style.display='block';
     document.getElementById('campo-senha').value='';
@@ -1192,10 +1111,6 @@ function ativarModoResponsavel() {
   modoResponsavel = true;
   document.getElementById('badge-responsavel').style.display = 'flex';
   document.getElementById('btn-area-responsavel').style.display = 'none';
-  document.body.classList.add('modo-responsavel-ativo');
-  // Responsável sempre vê a lista, mesmo com modo reparo ativo
-  var lista = document.getElementById('lista');
-  if (lista) lista.style.display = '';
   // Re-renderiza para mostrar badges de treino
   var chaves = Object.keys(mesesGerados).sort();
   if (chaves.length > 0) {
@@ -1216,9 +1131,10 @@ function ativarModoResponsavel() {
       if (dadosEstado && dadosEstado.ultimoPar !== undefined) ultimoPar = dadosEstado.ultimoPar;
       // Carrega substituições do Firebase antes de renderizar
       if (dadosEstado && dadosEstado.substituicoes) Object.assign(substituicoes, dadosEstado.substituicoes);
-      // Limpa escalaGerada corrompido do Firebase (não deve ser salvo junto com substituições)
-      if (dadosEstado && dadosEstado.escalaGerada && firebaseOk && db) {
-        db.ref('escala/estado/escalaGerada').remove().catch(function(){});
+      // Restaura escalaGerada do Firebase para usar renderMesSalvo (mantém designações salvas)
+      if (dadosEstado && dadosEstado.escalaGerada) {
+        escalaGerada = {};
+        Object.assign(escalaGerada, dadosEstado.escalaGerada);
       }
       document.getElementById('lista').innerHTML = '';
       backup.forEach(function(chave){
@@ -1235,77 +1151,24 @@ function ativarModoResponsavel() {
   }
 }
 
-function abrirSubstituicaoManual() {
-  // Fecha o modal do responsável se estiver aberto
-  var ovPrinc = document.getElementById('ov-principal');
-  if (ovPrinc) ovPrinc.classList.remove('aberto');
-  // Mostra instrução temporária na tela
-  var aviso = document.getElementById('aviso-subst-manual');
-  if (!aviso) {
-    aviso = document.createElement('div');
-    aviso.id = 'aviso-subst-manual';
-    aviso.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#1a4fa3;color:white;padding:12px 22px;border-radius:12px;font-size:14px;font-weight:bold;z-index:9999;box-shadow:0 4px 20px rgba(0,0,0,0.3);text-align:center;max-width:90vw;cursor:pointer';
-    aviso.innerHTML = '&#128260; Clique em qualquer nome na escala para substituí-lo permanentemente<br><span style="font-size:11px;opacity:0.85">Clique aqui para cancelar</span>';
-    aviso.onclick = function() { document.body.removeChild(aviso); };
-    document.body.appendChild(aviso);
-    // Remove automaticamente após 15 segundos
-    setTimeout(function() { if (document.getElementById('aviso-subst-manual')) document.body.removeChild(aviso); }, 15000);
-  }
-  // Rolagem suave para o início da escala
-  var lista = document.getElementById('lista');
-  if (lista) lista.scrollIntoView({ behavior: 'smooth', block: 'start' });
-}
-
 function sairModoResponsavel() {
   modoResponsavel = false;
   document.getElementById('badge-responsavel').style.display = 'none';
   document.getElementById('btn-area-responsavel').style.display = '';
-  document.body.classList.remove('modo-responsavel-ativo');
-  // Re-renderiza escala sem badges de treino — carrega do Firebase para preservar substituições
+  // Re-renderiza escala sem badges de treino
   var chaves = Object.keys(mesesGerados).sort();
   var backup = chaves.slice();
+  // NÃO zera substituicoes — elas são permanentes e devem persistir
   contadorPulo = {}; aparicoes = {}; ultimoAuditorio = {};
   mesesGerados = {};
   idxM.v=0; idxA.v=0; idxV.v=0; idxZ.v=0; idxI.v=0; ultimoPar=-1;
   document.getElementById('lista').innerHTML = '';
-  var finalizarSaida = function(dados) {
-    dados = dados || {};
-    if (dados.escalaGerada && Object.keys(dados.escalaGerada).length > 0) {
-      escalaGerada = {};
-      Object.assign(escalaGerada, dados.escalaGerada);
-    }
-    if (dados.substituicoes) {
-      substituicoes = {};
-      Object.assign(substituicoes, dados.substituicoes);
-    }
-    backup.forEach(function(chave) {
-      var p = chave.split('-');
-      var a = parseInt(p[0]), m = parseInt(p[1]);
-      mesesGerados[chave] = true;
-      if (dados.escalaGerada && Object.keys(dados.escalaGerada).length > 0) {
-        renderMesSalvo(m, a, dados.escalaGerada, dados.substituicoes || substituicoes);
-      } else {
-        adicionarMeses(m, a, 1);
-      }
-    });
-    var lista = document.getElementById('lista');
-    var blocos = Array.from(lista.querySelectorAll('.mes-bloco'));
-    blocos.sort(function(a,b){ return (a.dataset.chavemes||'').localeCompare(b.dataset.chavemes||''); });
-    blocos.forEach(function(b){ lista.appendChild(b); });
-    aplicarSubstituicoesNaTela();
-    // Re-verifica modo reparo: se ativo, esconde lista para usuário comum
-    if (firebaseOk && db) {
-      db.ref('escala/modoReparo').once('value', function(snap) {
-        var d = snap.val();
-        if (d && d.ativo && lista) lista.style.display = 'none';
-      });
-    }
-  };
-  if (firebaseOk && db) {
-    db.ref('escala/estado').once('value', function(snap) { finalizarSaida(snap.val()); });
-  } else {
-    finalizarSaida(null);
-  }
+  backup.forEach(function(chave){
+    var p = chave.split('-');
+    adicionarMeses(parseInt(p[1]), parseInt(p[0]), 1);
+  });
+  // Reaplica substituições após renderizar
+  aplicarSubstituicoesNaTela();
 }
 function abrirPrincipal(abaId) {
   trocarAba(abaId,null); renderEventos(); popularSelTreino();
@@ -2169,12 +2032,6 @@ function regenerarTudoDoForm(){
 }
 
 function apagarMes(chave){
-  // Proteção: só o responsável pode apagar meses
-  if (!modoResponsavel) {
-    pedirSenhaCallback = function() { apagarMes(chave); };
-    pedirSenha();
-    return;
-  }
   if (!confirm('Apagar o mês ' + chave + ' da escala?')) return;
   var bloco=document.querySelector('[data-chavemes="'+chave+'"]');
   if(bloco){ bloco.remove(); }
@@ -2195,10 +2052,10 @@ function renderPainelMeses() {
   var mesesNomes = ['','Janeiro','Fevereiro','Março','Abril','Maio','Junho',
                     'Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
   cont.innerHTML = chaves.map(function(chave) {
-    // chave formato "M-YYYY"
+    // chave formato "ANO-MM" ex: "2026-06"
     var partes = chave.split('-');
-    var nomeMes = mesesNomes[parseInt(partes[0])] || chave;
-    var ano = partes[1] || '';
+    var ano = partes[0] || '';
+    var nomeMes = mesesNomes[parseInt(partes[1])] || chave;
     return '<div style="background:#f0f4ff;border:1px solid #c7d2fe;border-radius:8px;padding:8px 12px;display:flex;align-items:center;gap:10px">' +
       '<span style="font-size:13px;font-weight:bold;color:#1a4fa3">📅 ' + nomeMes + ' ' + ano + '</span>' +
       '<button onclick="apagarMes(\'' + chave + '\')" style="background:#fee2e2;color:#dc2626;border:1px solid #fca5a5;border-radius:6px;padding:3px 10px;font-size:11px;cursor:pointer;font-weight:bold">🗑️ Apagar</button>' +
@@ -2318,76 +2175,9 @@ function _criarDbProxy() {
 }
 
 // ── MODO REPARO ─────────────────────────────────────────────────
-var MSG_REPARO_PADRAO = '🛠️ Estamos melhorando o sistema para servi-los melhor!\nEnquanto isso, as designações estão disponíveis no quadro de anúncios e no grupo Departamentos. Obrigado pela paciência e cooperação! 🙏 ❤️';
-
-function pedirSenhaReparo() {
-  var ovSenha = document.getElementById('ov-senha');
-  ovSenha.style.zIndex = '99999';
-  pedirSenhaCallback = function() {
-    // Marca TUDO antes de qualquer chamada assíncrona
-    modoResponsavel = true;
-    sessionStorage.setItem('reparo_acesso', 'ok');
-    // Remove bloqueio e garante que não volta mais nesta sessão
-    removerBloqueioManutencao();
-    // Desativa o listener do Firebase para modoReparo nesta sessão
-    if (firebaseOk && db) db.ref('escala/modoReparo').off();
-    ovSenha.style.zIndex = '';
-    ativarModoResponsavel();
-    abrirPrincipal('aba-reparo');
-    // Reinicia o listener SÓ para atualizar o badge/botão na aba reparo, sem aplicar bloqueio
-    if (firebaseOk && db) {
-      db.ref('escala/modoReparo').on('value', function(snap) {
-        var dados = snap.val();
-        var badge = document.getElementById('reparo-badge');
-        var btn   = document.getElementById('btn-toggle-reparo');
-        var prev  = document.getElementById('reparo-preview');
-        var banner = document.getElementById('banner-reparo');
-        if (dados && dados.ativo) {
-          if (badge)  badge.style.display = 'inline-block';
-          if (btn)    { btn.textContent = '⏹ Desativar Modo Reparo'; btn.style.background = '#374151'; }
-          if (prev)   { prev.style.display = 'block'; document.getElementById('reparo-preview-texto').textContent = dados.msg || MSG_REPARO_PADRAO; }
-          if (banner) { banner.textContent = dados.msg || MSG_REPARO_PADRAO; banner.style.display = 'block'; }
-          // NUNCA aplica bloqueio — responsável já está autenticado
-        } else {
-          if (badge)  badge.style.display = 'none';
-          if (btn)    { btn.textContent = '🔧 Ativar Modo Reparo'; btn.style.background = '#dc2626'; }
-          if (prev)   prev.style.display = 'none';
-          if (banner) { banner.style.display = 'none'; }
-        }
-      });
-    }
-  };
-  document.getElementById('campo-senha').value = '';
-  document.getElementById('senha-erro').style.display = 'none';
-  ovSenha.classList.add('aberto');
-  setTimeout(function(){ document.getElementById('campo-senha').focus(); }, 100);
-}
-
-function aplicarBloqueioManutencao() {
-  if (modoResponsavel) return;
-  if (sessionStorage.getItem('reparo_acesso') === 'ok') return;
-  if (document.getElementById('bloqueio-manutencao')) return;
-  var div = document.createElement('div');
-  div.id = 'bloqueio-manutencao';
-  div.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;z-index:99997;background:rgba(20,20,20,0.97);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;padding:20px;box-sizing:border-box';
-  div.innerHTML =
-    '<div style="background:#1e1e1e;border:1px solid rgba(220,38,38,0.35);border-radius:20px;padding:44px 40px;max-width:460px;width:100%;text-align:center;box-shadow:0 24px 60px rgba(0,0,0,0.6)">' +
-      '<div style="font-size:44px;margin-bottom:16px">🛠️</div>' +
-      '<div style="font-size:22px;font-weight:700;color:#f87171;margin-bottom:8px;font-family:Arial,sans-serif">Manutenção</div>' +
-      '<div style="font-size:12px;color:#888;font-style:italic;margin-bottom:20px;font-family:Arial,sans-serif">O responsável está realizando ajustes no sistema.</div>' +
-      '<div style="width:36px;height:1px;background:rgba(255,255,255,0.12);margin:0 auto 20px"></div>' +
-      '<div style="font-size:14px;line-height:1.8;color:#d4d4d4;font-family:Arial,sans-serif;margin-bottom:28px;white-space:pre-line">' +
-        (window.modoReparoMsg || MSG_REPARO_PADRAO) +
-      '</div>' +
-      '<button onclick="pedirSenhaReparo()" style="background:transparent;border:1px solid rgba(255,255,255,0.12);color:rgba(255,255,255,0.28);padding:7px 18px;border-radius:8px;font-size:11px;cursor:pointer;font-family:Arial,sans-serif;letter-spacing:.3px">🔐 Responsável</button>' +
-    '</div>';
-  document.body.appendChild(div);
-}
-
-function removerBloqueioManutencao() {
-  var el = document.getElementById('bloqueio-manutencao');
-  if (el) el.remove();
-}
+var MSG_REPARO_PADRAO = '🛠️ Estamos melhorando o sistema para servi-los melhor! ' +
+  'Enquanto isso, as designações estão disponíveis no quadro de anúncios e no grupo Departamentos. ' +
+  'Obrigado pela paciência e cooperação! 🙏❤️';
 
 function toggleModoReparo() {
   var btn    = document.getElementById('btn-toggle-reparo');
@@ -2398,20 +2188,26 @@ function toggleModoReparo() {
   var ativo  = banner.style.display !== 'none';
 
   if (!ativo) {
+    // ATIVAR
     var msg = (msgEl && msgEl.value.trim()) ? msgEl.value.trim() : MSG_REPARO_PADRAO;
     banner.textContent = msg;
     banner.style.display = 'block';
     document.body.style.paddingTop = (parseInt(document.body.style.paddingTop || '0') + 44) + 'px';
-    if (badge) badge.style.display = 'inline-block';
-    if (btn)   { btn.textContent = '⏹ Desativar Modo Reparo'; btn.style.background = '#374151'; }
-    if (prev)  { prev.style.display = 'block'; document.getElementById('reparo-preview-texto').textContent = msg; }
+    badge.style.display = 'inline-block';
+    btn.textContent = '⏹ Desativar Modo Reparo';
+    btn.style.background = '#374151';
+    prev.style.display = 'block';
+    document.getElementById('reparo-preview-texto').textContent = msg;
+    // Salva no Firebase para todos verem
     if (firebaseOk && db) db.ref('escala/modoReparo').set({ ativo: true, msg: msg });
   } else {
+    // DESATIVAR
     banner.style.display = 'none';
     document.body.style.paddingTop = '';
-    if (badge) badge.style.display = 'none';
-    if (btn)   { btn.textContent = '🔧 Ativar Modo Reparo'; btn.style.background = '#dc2626'; }
-    if (prev)  prev.style.display = 'none';
+    badge.style.display = 'none';
+    btn.textContent = '🔧 Ativar Modo Reparo';
+    btn.style.background = '#dc2626';
+    prev.style.display = 'none';
     if (firebaseOk && db) db.ref('escala/modoReparo').remove();
   }
 }
@@ -2419,36 +2215,27 @@ function toggleModoReparo() {
 function verificarModoReparo() {
   if (!firebaseOk || !db) return;
   db.ref('escala/modoReparo').on('value', function(snap) {
-    var dados = snap.val();
     var banner = document.getElementById('banner-reparo');
     var badge  = document.getElementById('reparo-badge');
     var btn    = document.getElementById('btn-toggle-reparo');
     var prev   = document.getElementById('reparo-preview');
+    var dados  = snap.val();
     if (dados && dados.ativo) {
-      window.modoReparoAtivo = true;
-      window.modoReparoMsg = dados.msg || MSG_REPARO_PADRAO;
-      // Salva no cache local para bloqueio instantâneo na próxima visita
-      localStorage.setItem('modoReparo_ativo', '1');
-      localStorage.setItem('modoReparo_msg', dados.msg || MSG_REPARO_PADRAO);
-      if (banner) { banner.textContent = dados.msg || MSG_REPARO_PADRAO; banner.style.display = 'block'; document.body.style.paddingTop = '44px'; }
-      if (badge) badge.style.display = 'inline-block';
-      if (btn)   { btn.textContent = '⏹ Desativar Modo Reparo'; btn.style.background = '#374151'; }
-      if (prev)  { prev.style.display = 'block'; document.getElementById('reparo-preview-texto').textContent = dados.msg || MSG_REPARO_PADRAO; }
+      var msg = dados.msg || MSG_REPARO_PADRAO;
+      banner.textContent = msg;
+      banner.style.display = 'block';
+      document.body.style.paddingTop = '44px';
+      if (badge)  { badge.style.display = 'inline-block'; }
+      if (btn)    { btn.textContent = '⏹ Desativar Modo Reparo'; btn.style.background = '#374151'; }
+      if (prev)   { prev.style.display = 'block'; document.getElementById('reparo-preview-texto').textContent = msg; }
       var msgEl = document.getElementById('reparo-msg-custom');
-      if (msgEl && !msgEl.value) msgEl.value = dados.msg && dados.msg !== MSG_REPARO_PADRAO ? dados.msg : '';
-      if (!modoResponsavel && sessionStorage.getItem('reparo_acesso') !== 'ok') {
-        aplicarBloqueioManutencao();
-      }
+      if (msgEl && !msgEl.value) msgEl.value = msg !== MSG_REPARO_PADRAO ? msg : '';
     } else {
-      window.modoReparoAtivo = false;
-      // Limpa cache local
-      localStorage.removeItem('modoReparo_ativo');
-      localStorage.removeItem('modoReparo_msg');
-      if (banner) { banner.style.display = 'none'; document.body.style.paddingTop = ''; }
+      banner.style.display = 'none';
+      document.body.style.paddingTop = '';
       if (badge) badge.style.display = 'none';
       if (btn)   { btn.textContent = '🔧 Ativar Modo Reparo'; btn.style.background = '#dc2626'; }
       if (prev)  prev.style.display = 'none';
-      removerBloqueioManutencao();
     }
   });
 }
@@ -2783,19 +2570,17 @@ function abrirTroca(chave, setor, dataLabel, nomeAtual) {
       alert('Selecione seu nome primeiro!');
       return;
     }
-    // nomeAtual já é o nome exibido (pode ser substituto); verifica também via substituicoes para segurança
-    var nomeExibido = substituicoes[chave] || nomeAtual;
-    if (meuNomeConfirmado !== nomeExibido) {
-      alert('Voce so pode solicitar troca da sua propria designacao. Seu nome: ' + meuNomeConfirmado + ', Designado: ' + nomeExibido);
+    if (meuNomeConfirmado !== nomeAtual) {
+      alert('Voce so pode solicitar troca da sua propria designacao. Seu nome: ' + meuNomeConfirmado + ', Designado: ' + nomeAtual);
       return;
-    }
-    trocaAtual = { chave: chave, setor: setor, dataLabel: dataLabel, solicitante: nomeExibido };
+    }    
+    trocaAtual = { chave: chave, setor: setor, dataLabel: dataLabel, solicitante: nomeAtual };
     document.getElementById('troca-setor').textContent = setor;
     document.getElementById('troca-data').textContent = dataLabel;
-    document.getElementById('troca-solicitante').textContent = nomeExibido;
+    document.getElementById('troca-solicitante').textContent = nomeAtual;
     // Lista só irmãos do mesmo setor, excluindo ele mesmo
     var sel = document.getElementById('troca-select');
-    var irmaosSetor = irmaosDoSetor(setor).filter(function(n){ return n !== nomeExibido; });
+    var irmaosSetor = irmaosDoSetor(setor).filter(function(n){ return n !== nomeAtual; });
     if(irmaosSetor.length === 0){
       alert('Não há outros irmãos no mesmo setor para trocar.');
       return;
@@ -5193,18 +4978,7 @@ setTimeout(function() {
 }, 100);
 try { gerarEscalaAtual(); } catch(e) { console.error('Erro gerarEscalaAtual:', e); }
 atualizarBotaoNotif();
-
-// Aplica bloqueio IMEDIATAMENTE via cache local, sem esperar Firebase
-// Isso evita o delay de rede antes do bloqueio aparecer
-(function() {
-  if (sessionStorage.getItem('reparo_acesso') === 'ok') return;
-  if (localStorage.getItem('modoReparo_ativo') === '1') {
-    window.modoReparoMsg = localStorage.getItem('modoReparo_msg') || MSG_REPARO_PADRAO;
-    aplicarBloqueioManutencao();
-  }
-})();
-
-// Verifica modo reparo ao iniciar (para todos os usuários) — confirma/atualiza via Firebase
+// Verifica modo reparo ao iniciar (para todos os usuários)
 try { verificarModoReparo(); } catch(e) { console.error('Erro verificarModoReparo:', e); }
 
 // Verifica se já instalado como PWA
