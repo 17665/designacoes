@@ -1294,11 +1294,12 @@ function sairModoResponsavel() {
     blocos.sort(function(a,b){ return (a.dataset.chavemes||'').localeCompare(b.dataset.chavemes||''); });
     blocos.forEach(function(b){ lista.appendChild(b); });
     aplicarSubstituicoesNaTela();
-    // Re-verifica modo reparo: se ativo, esconde lista para usuário comum
+    // Re-verifica modo reparo: esconde lista apenas para quem NÃO é o responsável desta sessão
     if (firebaseOk && db) {
       db.ref('escala/modoReparo').once('value', function(snap) {
         var d = snap.val();
-        if (d && d.ativo && lista) lista.style.display = 'none';
+        var eResponsavelDaSessao = sessionStorage.getItem('reparo_acesso') === 'ok';
+        if (d && d.ativo && lista && !eResponsavelDaSessao) lista.style.display = 'none';
       });
     }
   };
