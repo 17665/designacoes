@@ -1691,20 +1691,7 @@ function confirmarSubst(){
     }
   }
 
-  // Atualiza escalaGerada com o nome substituto para que recarregar mostre o nome certo
-  var partesChave = substAtual.chave.split('|'); // dataISO|setor|nomeOriginal
-  if (partesChave.length === 3 && escalaGerada[partesChave[0]]) {
-    var setorMap = {
-      'Palco-Coord':'palco1','Palco-Ajud':'palco2',
-      'Mic1':'mic1','Mic2':'mic2',
-      'Audio':'audio','Video':'video','Zoom':'zoom',
-      'Ind-Aud':'indAud','Ind-Pat':'indPat'
-    };
-    var campo = setorMap[partesChave[1]];
-    if (campo) escalaGerada[partesChave[0]][campo] = novo;
-  }
-
-  // Persiste no Firebase — salva APENAS substituicoes (nunca sobrescreve escalaGerada)
+  // Persiste no Firebase — salva APENAS substituicoes (nunca modifica escalaGerada)
   if(firebaseOk && db) {
     db.ref('escala/estado/substituicoes').set(substituicoes)
       .catch(function(e){
@@ -2493,7 +2480,7 @@ function salvarMesesFirebase() {
     idxM: idxM.v, idxA: idxA.v, idxV: idxV.v, idxZ: idxZ.v, idxI: idxI.v,
     ultimoPar: ultimoPar,
     substituicoes: substituicoes,
-    escalaGerada: escalaGerada
+    escalaGerada: escalaGeradaOriginal  // sempre salva os nomes ORIGINAIS do rodízio
   };
   db.ref('escala/estado').set(payload).catch(function(e){
     console.warn('Erro ao salvar estado:', e);
@@ -2844,21 +2831,35 @@ function enviarSolicitacaoTroca() {
 }
 
 function responderTroca(id, resposta) {
-  if (!meuNome) {
-    alert('Selecione seu nome em "Minha Escala" primeiro!');
-    return;
-  }
-  
   var troca = trocasCache[id];
   if (!troca) return;
-  
+
+  // Se o usuário ainda não se identificou, pede identidade antes de responder
+  if (!meuNome) {
+    pedirIdentidade(function(nome) {
+      if (!nome) return;
+      if (nome !== troca.destinatario) {
+        alert('Apenas ' + troca.destinatario + ' pode responder esta troca.');
+        return;
+      }
+      _confirmarRespostaTroca(id, resposta, troca);
+    });
+    return;
+  }
+
   if (meuNome !== troca.destinatario) {
     alert('Apenas ' + troca.destinatario + ' pode responder esta troca.');
     return;
   }
-  
+
+  _confirmarRespostaTroca(id, resposta, troca);
+}
+
+function _confirmarRespostaTroca(id, resposta, troca) {
   if (firebaseOk && db) {
-    db.ref('trocas/' + id).update({ status: resposta }).catch(function(e){
+    db.ref('trocas/' + id).update({ status: resposta }).then(function() {
+      if (resposta === 'aceita') aplicarTrocaNaEscala(troca);
+    }).catch(function(e){
       alert('Erro: ' + e.message);
     });
   } else {
@@ -2871,21 +2872,40 @@ function responderTroca(id, resposta) {
 }
 
 function aplicarTrocaNaEscala(troca) {
-  // Troca os dois nomes na chave correspondente
+  // chaveA = dataISO|setor|nomeOriginalDoSolicitante
   var chaveA = troca.chave;
   var nomeA  = troca.solicitante;
   var nomeB  = troca.destinatario;
-  // Encontra a chave do destinatario na mesma data/setor
-  var partes = chaveA.split('|'); // formato: dataISO|setor|nome
-  var chaveB = partes[0] + '|' + partes[1] + '|' + nomeB;
+  var partes = chaveA.split('|'); // dataISO | setor | nomeOrigA
+  var dataISO = partes[0];
+  var setor   = partes[1];
+
+  // Descobre a chave original do destinatário buscando em escalaGeradaOriginal
+  var campoMap = {
+    'Palco-Coord':'palco1','Palco-Ajud':'palco2',
+    'Mic1':'mic1','Mic2':'mic2',
+    'Audio':'audio','Video':'video','Zoom':'zoom',
+    'Ind-Aud':'indAud','Ind-Pat':'indPat'
+  };
+  var campo = campoMap[setor];
+  var nomeOrigB = nomeB; // fallback: usa o próprio nome
+  if (campo && escalaGeradaOriginal && escalaGeradaOriginal[dataISO]) {
+    nomeOrigB = escalaGeradaOriginal[dataISO][campo] || nomeB;
+  }
+  var chaveB = dataISO + '|' + setor + '|' + nomeOrigB;
+
   substituicoes[chaveA] = nomeB;
   substituicoes[chaveB] = nomeA;
-  // Atualiza o DOM sem regeracao completa
-  document.querySelectorAll('.nome-clicavel,.nome-troca').forEach(function(el) {
-    var onclick = el.getAttribute('onclick') || '';
-    if (onclick.indexOf("'" + chaveA + "'") >= 0) el.textContent = nomeB;
-    if (onclick.indexOf("'" + chaveB + "'") >= 0) el.textContent = nomeA;
-  });
+
+  // Persiste no Firebase para que todos vejam após recarregar
+  if (firebaseOk && db) {
+    db.ref('escala/estado/substituicoes').set(substituicoes).catch(function(e){
+      console.warn('Erro ao salvar troca aceita:', e);
+    });
+  }
+
+  // Atualiza o DOM imediatamente
+  aplicarSubstituicoesNaTela();
 }
 
 // Escuta trocas em tempo real no Firebase
@@ -3013,14 +3033,14 @@ function renderPainelTrocas() {
     if (t.status === 'pendente') {
       icone = '&#9203;'; cls = 'troca-pendente';
       titulo = '<strong>' + t.solicitante + '</strong> quer trocar com <strong>' + t.destinatario + '</strong>';
-      if (meuNome && meuNome === t.destinatario) {
-  acoes = '<div class="troca-acoes">' +
-    '<button class="btn-aceitar" onclick="responderTroca(\'' + t.id + '\',\'aceita\')">&#10004; Aceitar troca</button>' +
-    '<button class="btn-recusar" onclick="responderTroca(\'' + t.id + '\',\'recusada\')">&#10008; Recusar</button>' +
-    '</div>';
-} else if (!meuNome) {
-  acoes = '<div style="font-size:11px;color:#888">Selecione seu nome em "Minha Escala" para responder</div>';
-}
+      // Mostra botões para destinatário (responderTroca pede identidade se necessário)
+      if (!meuNome || meuNome === t.destinatario) {
+        acoes = '<div class="troca-acoes">' +
+          '<button class="btn-aceitar" onclick="responderTroca(\'' + t.id + '\',\'aceita\')">' +
+          '&#10004; Aceitar troca</button>' +
+          '<button class="btn-recusar" onclick="responderTroca(\'' + t.id + '\',\'recusada\')">' +
+          '&#10008; Recusar</button></div>';
+      }
     } else if (t.status === 'aceita') {
       icone = '&#9989;'; cls = 'troca-aceita';
       titulo = 'Troca aceita: <strong>' + t.solicitante + '</strong> &#8644; <strong>' + t.destinatario + '</strong>';
@@ -5513,7 +5533,7 @@ function regenerarRodizioIndicadores() {
       ultimoPar: ultimoPar,
       ultimoAuditorio: ultimoAuditorio,
       substituicoes: substituicoes,
-      escalaGerada: escalaGerada
+      escalaGerada: escalaGeradaOriginal  // sempre salva os nomes ORIGINAIS do rodízio
     };
     db.ref('escala/estado').set(payload).then(function() {
       alert('✅ ' + atualizados + ' reuniões tiveram os indicadores renovados!');
