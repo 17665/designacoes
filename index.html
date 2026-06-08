@@ -818,29 +818,48 @@ body.dark-mode .conf-badge.pendente { background: #2a2a15; color: #ca8a04; borde
 
       <!-- ABA REPARO -->
       <div class="aba-conteudo" id="aba-reparo">
-        <div style="background:#fee2e2;border:2px solid #fca5a5;border-radius:12px;padding:18px;margin-bottom:16px">
-          <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
-            <span style="font-size:24px">🔧</span>
-            <strong style="font-size:15px;color:#991b1b">Modo Reparo</strong>
-            <span id="reparo-badge" style="display:none;background:#dc2626;color:white;font-size:11px;font-weight:bold;padding:2px 10px;border-radius:20px">ATIVO</span>
+
+        <!-- Cabeçalho de status -->
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;flex-wrap:wrap;gap:10px">
+          <div style="display:flex;align-items:center;gap:10px">
+            <div style="width:40px;height:40px;background:#1a1a2e;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px">🔧</div>
+            <div>
+              <div style="font-size:15px;font-weight:bold;color:#1a1a2e">Modo Reparo</div>
+              <div style="font-size:11px;color:#5e6370">Bloqueia o acesso dos irmãos ao sistema</div>
+            </div>
           </div>
-          <p style="font-size:13px;color:#7f1d1d;line-height:1.6;margin-bottom:14px">
-            Quando ativado, um <strong>banner vermelho</strong> aparece no topo da página para todos os usuários,
-            informando que o sistema está em manutenção e que devem consultar as designações no quadro de anúncios e no grupo Departamentos.
+          <span id="reparo-badge" style="display:none;background:#dc2626;color:white;font-size:11px;font-weight:bold;padding:4px 14px;border-radius:20px;letter-spacing:.5px">● ATIVO</span>
+        </div>
+
+        <!-- Descrição -->
+        <div style="background:#f4f4f2;border-radius:10px;padding:14px 16px;margin-bottom:16px;display:flex;gap:12px;align-items:flex-start">
+          <span style="font-size:18px;flex-shrink:0;margin-top:2px">ℹ️</span>
+          <p style="font-size:13px;color:#3a3a4a;line-height:1.7;margin:0">
+            Quando ativado, uma <strong>tela de bloqueio</strong> cobre o site para todos os irmãos, exibindo a mensagem de manutenção.
+            Apenas você, com a senha, consegue acessar normalmente.
           </p>
-          <div style="margin-bottom:12px">
-            <label style="font-size:12px;font-weight:bold;color:#7f1d1d;display:block;margin-bottom:6px">✏️ Mensagem personalizada (opcional):</label>
-            <textarea id="reparo-msg-custom" rows="4" style="width:100%;padding:10px;border:1px solid #fca5a5;border-radius:8px;font-size:13px;resize:vertical;box-sizing:border-box;color:#374151" placeholder="Deixe em branco para usar a mensagem padrão:&#10;&#10;🛠️ Estamos melhorando o sistema para servi-los melhor! Enquanto isso, as designações estão disponíveis no quadro de anúncios e no grupo Departamentos. Obrigado pela paciência e cooperação! 🙏❤️"></textarea>
-          </div>
-          <button id="btn-toggle-reparo" onclick="toggleModoReparo()"
-            style="background:#dc2626;color:white;border:none;padding:10px 22px;border-radius:8px;font-size:14px;font-weight:bold;cursor:pointer;width:100%">
-            🔧 Ativar Modo Reparo
-          </button>
         </div>
-        <div id="reparo-preview" style="display:none;background:#fff7ed;border:1px solid #fed7aa;border-radius:8px;padding:12px;font-size:12px;color:#92400e">
-          <strong>Prévia do banner que os usuários verão:</strong>
-          <div id="reparo-preview-texto" style="margin-top:8px;background:#dc2626;color:white;padding:10px 14px;border-radius:6px;font-size:13px;line-height:1.5"></div>
+
+        <!-- Mensagem personalizada -->
+        <div style="margin-bottom:16px">
+          <label style="font-size:12px;font-weight:bold;color:#5e6370;display:block;margin-bottom:8px;text-transform:uppercase;letter-spacing:.4px">✏️ Mensagem personalizada <span style="font-weight:normal;text-transform:none">(opcional)</span></label>
+          <textarea id="reparo-msg-custom" rows="3"
+            style="width:100%;padding:10px 12px;border:1.5px solid #d0d5dd;border-radius:8px;font-size:13px;resize:vertical;box-sizing:border-box;color:#1a1a2e;line-height:1.6;font-family:Arial,sans-serif"
+            placeholder="Deixe em branco para usar a mensagem padrão:&#10;🛠️ Estamos melhorando o sistema para servi-los melhor! Enquanto isso, as designações estão disponíveis no quadro de anúncios e no grupo Departamentos. Obrigado pela paciência e cooperação! 🙏❤️"></textarea>
         </div>
+
+        <!-- Botão -->
+        <button id="btn-toggle-reparo" onclick="toggleModoReparo()"
+          style="background:#dc2626;color:white;border:none;padding:12px 22px;border-radius:9px;font-size:14px;font-weight:bold;cursor:pointer;width:100%;letter-spacing:.3px">
+          🔧 Ativar Modo Reparo
+        </button>
+
+        <!-- Prévia -->
+        <div id="reparo-preview" style="display:none;margin-top:16px;border:1.5px solid #fca5a5;border-radius:10px;overflow:hidden">
+          <div style="background:#fee2e2;padding:8px 14px;font-size:11px;font-weight:bold;color:#991b1b;text-transform:uppercase;letter-spacing:.5px">Prévia — o que os irmãos verão</div>
+          <div id="reparo-preview-texto" style="background:#dc2626;color:white;padding:12px 16px;font-size:13px;line-height:1.6"></div>
+        </div>
+
       </div>
 
       <!-- ABA TESTE -->
