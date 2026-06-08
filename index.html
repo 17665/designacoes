@@ -1216,9 +1216,10 @@ function ativarModoResponsavel() {
       if (dadosEstado && dadosEstado.ultimoPar !== undefined) ultimoPar = dadosEstado.ultimoPar;
       // Carrega substituições do Firebase antes de renderizar
       if (dadosEstado && dadosEstado.substituicoes) Object.assign(substituicoes, dadosEstado.substituicoes);
-      // Limpa escalaGerada corrompido do Firebase (não deve ser salvo junto com substituições)
-      if (dadosEstado && dadosEstado.escalaGerada && firebaseOk && db) {
-        db.ref('escala/estado/escalaGerada').remove().catch(function(){});
+      // Restaura escalaGerada localmente (sem remover do Firebase — evita disparar ouvirMeses)
+      if (dadosEstado && dadosEstado.escalaGerada && Object.keys(dadosEstado.escalaGerada).length > 0) {
+        escalaGerada = {};
+        Object.assign(escalaGerada, dadosEstado.escalaGerada);
       }
       document.getElementById('lista').innerHTML = '';
       backup.forEach(function(chave){
@@ -2678,6 +2679,11 @@ function processarMeses(mesesSalvos, dadosEstado) {
   blocos.forEach(function(b){ lista.appendChild(b); });
   aplicarSubstituicoesNaTela();
   atualizarSubtitulo();
+  // Se responsável está logado, garante que a lista fique visível (modo reparo não oculta para ele)
+  if (modoResponsavel) {
+    var listaEl = document.getElementById('lista');
+    if (listaEl) listaEl.style.display = '';
+  }
   // Atualiza seletor de semanas do VMC agora que escalaGerada foi populado
   if (typeof vmcPreencherSeletores === 'function') vmcPreencherSeletores();
   // Atualiza painel de meses salvos
