@@ -275,6 +275,32 @@ h1 { font-size:22px; font-weight:700; color:#1a4fa3; margin-bottom:4px; }
   .badge-sabado { background:#e1f5ee !important; color:#0f6e56 !important; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
   .nome-clicavel { border-bottom:none !important; color:#1a1a2e !important; cursor:default; }
   .nome-troca    { border-bottom:none !important; color:#1a1a2e !important; cursor:default; }
+.bloqueio-manutencao::before {
+  content: "";
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(30,30,30,0.96);
+  z-index: 99997;
+  backdrop-filter: blur(8px);
+}
+.mensagem-manutencao {
+  position: fixed;
+  top: 50%; left: 50%;
+  transform: translate(-50%,-50%);
+  background: #1e1e1e;
+  color: white;
+  padding: 32px 40px;
+  border-radius: 20px;
+  text-align: center;
+  z-index: 99998;
+  max-width: 500px;
+  width: 90vw;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+  border: 1px solid #dc2626;
+}
+.mensagem-manutencao h2 { color:#f87171; margin-bottom:16px; font-size:24px; }
+.mensagem-manutencao p { font-size:16px; line-height:1.6; margin-bottom:10px; color:#e5e5e5; }
+.mensagem-manutencao small { color:#aaa; font-size:12px; }
   .linha { padding:2px 0; }
   .linha-label { min-width:100px; font-size:10px; }
   .linha-nomes { font-size:10px; }
@@ -2254,9 +2280,43 @@ function _criarDbProxy() {
 }
 
 // ── MODO REPARO ─────────────────────────────────────────────────
-var MSG_REPARO_PADRAO = '🛠️ Estamos melhorando o sistema para servi-los melhor! ' +
-  'Enquanto isso, as designações estão disponíveis no quadro de anúncios e no grupo Departamentos. ' +
-  'Obrigado pela paciência e cooperação! 🙏❤️';
+var MSG_REPARO_PADRAO = '🛠️ Estamos melhorando o sistema para servi-los melhor!\nEnquanto isso, as designações estão disponíveis no quadro de anúncios e no grupo Departamentos. Obrigado pela paciência e cooperação! 🙏 ❤️';
+
+function pedirSenhaReparo() {
+  var ovSenha = document.getElementById('ov-senha');
+  ovSenha.style.zIndex = '99999';
+  pedirSenhaCallback = function() {
+    sessionStorage.setItem('reparo_acesso', 'ok');
+    removerBloqueioManutencao();
+    ovSenha.style.zIndex = '';
+  };
+  document.getElementById('campo-senha').value = '';
+  document.getElementById('senha-erro').style.display = 'none';
+  ovSenha.classList.add('aberto');
+  setTimeout(function(){ document.getElementById('campo-senha').focus(); }, 100);
+}
+
+function aplicarBloqueioManutencao() {
+  if (modoResponsavel) return;
+  if (sessionStorage.getItem('reparo_acesso') === 'ok') return;
+  if (document.getElementById('bloqueio-manutencao')) return;
+  var div = document.createElement('div');
+  div.id = 'bloqueio-manutencao';
+  div.style.cssText = 'position:relative;z-index:99997';
+  div.innerHTML = '<div class="mensagem-manutencao">' +
+    '<h2>🔧 Manutenção</h2>' +
+    '<p>' + (window.modoReparoMsg || MSG_REPARO_PADRAO).replace(/\n/g,'<br>') + '</p>' +
+    '<small>O responsável está realizando ajustes no sistema.</small>' +
+    '<div style="margin-top:20px">' +
+    '<button onclick="pedirSenhaReparo()" style="background:transparent;border:1px solid rgba(255,255,255,0.2);color:rgba(255,255,255,0.35);padding:6px 14px;border-radius:8px;font-size:11px;cursor:pointer">🔐 Responsável</button>' +
+    '</div></div>';
+  document.body.appendChild(div);
+}
+
+function removerBloqueioManutencao() {
+  var el = document.getElementById('bloqueio-manutencao');
+  if (el) el.remove();
+}
 
 function toggleModoReparo() {
   var btn    = document.getElementById('btn-toggle-reparo');
@@ -2267,26 +2327,20 @@ function toggleModoReparo() {
   var ativo  = banner.style.display !== 'none';
 
   if (!ativo) {
-    // ATIVAR
     var msg = (msgEl && msgEl.value.trim()) ? msgEl.value.trim() : MSG_REPARO_PADRAO;
     banner.textContent = msg;
     banner.style.display = 'block';
     document.body.style.paddingTop = (parseInt(document.body.style.paddingTop || '0') + 44) + 'px';
-    badge.style.display = 'inline-block';
-    btn.textContent = '⏹ Desativar Modo Reparo';
-    btn.style.background = '#374151';
-    prev.style.display = 'block';
-    document.getElementById('reparo-preview-texto').textContent = msg;
-    // Salva no Firebase para todos verem
+    if (badge) badge.style.display = 'inline-block';
+    if (btn)   { btn.textContent = '⏹ Desativar Modo Reparo'; btn.style.background = '#374151'; }
+    if (prev)  { prev.style.display = 'block'; document.getElementById('reparo-preview-texto').textContent = msg; }
     if (firebaseOk && db) db.ref('escala/modoReparo').set({ ativo: true, msg: msg });
   } else {
-    // DESATIVAR
     banner.style.display = 'none';
     document.body.style.paddingTop = '';
-    badge.style.display = 'none';
-    btn.textContent = '🔧 Ativar Modo Reparo';
-    btn.style.background = '#dc2626';
-    prev.style.display = 'none';
+    if (badge) badge.style.display = 'none';
+    if (btn)   { btn.textContent = '🔧 Ativar Modo Reparo'; btn.style.background = '#dc2626'; }
+    if (prev)  prev.style.display = 'none';
     if (firebaseOk && db) db.ref('escala/modoReparo').remove();
   }
 }
@@ -2294,35 +2348,30 @@ function toggleModoReparo() {
 function verificarModoReparo() {
   if (!firebaseOk || !db) return;
   db.ref('escala/modoReparo').on('value', function(snap) {
+    var dados = snap.val();
     var banner = document.getElementById('banner-reparo');
     var badge  = document.getElementById('reparo-badge');
     var btn    = document.getElementById('btn-toggle-reparo');
     var prev   = document.getElementById('reparo-preview');
-    var lista  = document.getElementById('lista');
-    var dados  = snap.val();
     if (dados && dados.ativo) {
-      var msg = dados.msg || MSG_REPARO_PADRAO;
-      // Banner sempre aparece para todos (incluindo responsável)
-      banner.textContent = msg;
-      banner.style.display = 'block';
-      document.body.style.paddingTop = '44px';
-      if (badge) { badge.style.display = 'inline-block'; }
+      window.modoReparoAtivo = true;
+      window.modoReparoMsg = dados.msg || MSG_REPARO_PADRAO;
+      if (banner) { banner.textContent = dados.msg || MSG_REPARO_PADRAO; banner.style.display = 'block'; document.body.style.paddingTop = '44px'; }
+      if (badge) badge.style.display = 'inline-block';
       if (btn)   { btn.textContent = '⏹ Desativar Modo Reparo'; btn.style.background = '#374151'; }
-      if (prev)  { prev.style.display = 'block'; document.getElementById('reparo-preview-texto').textContent = msg; }
+      if (prev)  { prev.style.display = 'block'; document.getElementById('reparo-preview-texto').textContent = dados.msg || MSG_REPARO_PADRAO; }
       var msgEl = document.getElementById('reparo-msg-custom');
-      if (msgEl && !msgEl.value) msgEl.value = msg !== MSG_REPARO_PADRAO ? msg : '';
-      // Esconde escala APENAS para usuários comuns — responsável continua vendo tudo
-      if (!modoResponsavel && lista) {
-        lista.style.display = 'none';
+      if (msgEl && !msgEl.value) msgEl.value = dados.msg && dados.msg !== MSG_REPARO_PADRAO ? dados.msg : '';
+      if (!modoResponsavel && sessionStorage.getItem('reparo_acesso') !== 'ok') {
+        aplicarBloqueioManutencao();
       }
     } else {
-      banner.style.display = 'none';
-      document.body.style.paddingTop = '';
+      window.modoReparoAtivo = false;
+      if (banner) { banner.style.display = 'none'; document.body.style.paddingTop = ''; }
       if (badge) badge.style.display = 'none';
       if (btn)   { btn.textContent = '🔧 Ativar Modo Reparo'; btn.style.background = '#dc2626'; }
       if (prev)  prev.style.display = 'none';
-      // Restaura escala para todos
-      if (lista) lista.style.display = '';
+      removerBloqueioManutencao();
     }
   });
 }
