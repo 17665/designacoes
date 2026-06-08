@@ -2302,7 +2302,7 @@ function aplicarBloqueioManutencao() {
   if (document.getElementById('bloqueio-manutencao')) return;
   var div = document.createElement('div');
   div.id = 'bloqueio-manutencao';
-  div.style.cssText = 'position:relative;z-index:99997';
+  div.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;z-index:99997;background:rgba(30,30,30,0.96);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center';
   div.innerHTML = '<div class="mensagem-manutencao">' +
     '<h2>🔧 Manutenção</h2>' +
     '<p>' + (window.modoReparoMsg || MSG_REPARO_PADRAO).replace(/\n/g,'<br>') + '</p>' +
@@ -2356,6 +2356,9 @@ function verificarModoReparo() {
     if (dados && dados.ativo) {
       window.modoReparoAtivo = true;
       window.modoReparoMsg = dados.msg || MSG_REPARO_PADRAO;
+      // Salva no cache local para bloqueio instantâneo na próxima visita
+      localStorage.setItem('modoReparo_ativo', '1');
+      localStorage.setItem('modoReparo_msg', dados.msg || MSG_REPARO_PADRAO);
       if (banner) { banner.textContent = dados.msg || MSG_REPARO_PADRAO; banner.style.display = 'block'; document.body.style.paddingTop = '44px'; }
       if (badge) badge.style.display = 'inline-block';
       if (btn)   { btn.textContent = '⏹ Desativar Modo Reparo'; btn.style.background = '#374151'; }
@@ -2367,6 +2370,9 @@ function verificarModoReparo() {
       }
     } else {
       window.modoReparoAtivo = false;
+      // Limpa cache local
+      localStorage.removeItem('modoReparo_ativo');
+      localStorage.removeItem('modoReparo_msg');
       if (banner) { banner.style.display = 'none'; document.body.style.paddingTop = ''; }
       if (badge) badge.style.display = 'none';
       if (btn)   { btn.textContent = '🔧 Ativar Modo Reparo'; btn.style.background = '#dc2626'; }
@@ -5116,7 +5122,18 @@ setTimeout(function() {
 }, 100);
 try { gerarEscalaAtual(); } catch(e) { console.error('Erro gerarEscalaAtual:', e); }
 atualizarBotaoNotif();
-// Verifica modo reparo ao iniciar (para todos os usuários)
+
+// Aplica bloqueio IMEDIATAMENTE via cache local, sem esperar Firebase
+// Isso evita o delay de rede antes do bloqueio aparecer
+(function() {
+  if (sessionStorage.getItem('reparo_acesso') === 'ok') return;
+  if (localStorage.getItem('modoReparo_ativo') === '1') {
+    window.modoReparoMsg = localStorage.getItem('modoReparo_msg') || MSG_REPARO_PADRAO;
+    aplicarBloqueioManutencao();
+  }
+})();
+
+// Verifica modo reparo ao iniciar (para todos os usuários) — confirma/atualiza via Firebase
 try { verificarModoReparo(); } catch(e) { console.error('Erro verificarModoReparo:', e); }
 
 // Verifica se já instalado como PWA
