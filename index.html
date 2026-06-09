@@ -2238,14 +2238,28 @@ function atualizarSubtitulo(){
 }
 
 function gerarEscalaAtual(){
-  substituicoes={}; contadorPulo={}; aparicoes={}; ultimoAuditorio={};
+  // 🔥 CORREÇÃO: NÃO ZERA substituicoes para preservar trocas permanentes
+  // substituicoes={};  // REMOVIDO - isso apagava todas as substituições
+  
+  // Zera apenas os contadores de rodízio (necessário para nova escala)
+  contadorPulo={}; 
+  aparicoes={}; 
+  ultimoAuditorio={};
   mesesGerados={};
+  
   document.getElementById('lista').innerHTML='';
   idxM.v=0;idxA.v=0;idxV.v=0;idxZ.v=0;idxI.v=0;ultimoPar=-1;
   var mes=periodoAtual.mesInicio, ano=periodoAtual.ano;
   adicionarMeses(mes,ano,periodoAtual.qtd);
+  
+  // Após gerar a nova escala, reaplica as substituições salvas
+  setTimeout(function() {
+    if(typeof aplicarSubstituicoesNaTela === 'function') {
+      aplicarSubstituicoesNaTela();
+      console.log('✅ Substituições reaplicadas após gerar escala');
+    }
+  }, 200);
 }
-
 
 // ===================== FIREBASE CONFIG =====================
 // INSTRUCOES: substitua os valores abaixo pelos do seu projeto Firebase
