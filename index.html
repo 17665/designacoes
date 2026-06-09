@@ -949,19 +949,15 @@ body.dark-mode .conf-badge.pendente { background: #2a2a15; color: #ca8a04; borde
       <button class="btn-fechar" onclick="fecharMinhaEscala()" style="color:white">&#10005;</button>
     </div>
     <div style="padding:14px 20px;background:#f5f3ff;border-bottom:1px solid #ddd8fe">
-      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
-        <span style="font-size:13px;color:#6b21a8;font-weight:bold">Olá,</span>
-        <select id="sel-minha-escala-nome" onchange="trocarNomeMinhaEscala()" style="flex:1;padding:8px 12px;border:1.5px solid #a78bfa;border-radius:8px;font-size:14px;font-family:Arial,sans-serif;background:white;color:#1a1a2e">
-          <option value="">— selecione seu nome —</option>
-        </select>
-        <button id="btn-ativar-notif-escala" onclick="pedirPermissaoNotificacao()" style="background:#0f6e56;color:white;border:none;padding:8px 14px;border-radius:7px;font-size:12px;font-weight:bold;cursor:pointer">&#128276; Ativar avisos</button>
-<button onclick="testarNotificacao()" style="background:#6366f1;color:white;border:none;padding:6px 10px;border-radius:6px;font-size:11px;cursor:pointer;margin-left:4px">🔔 Testar</button>
-<button onclick="liberarNome()" style="background:#fee2e2;color:#991b1b;border:1px solid #fca5a5;padding:6px 10px;border-radius:6px;font-size:11px;cursor:pointer;display:none" id="btn-trocar-nome">✏️ Trocar nome</button>
-      </div>
-    </div>
-    <div class="modal-body" id="conteudo-minha-escala" style="padding:16px 20px">
-      <p style="text-align:center;color:#888;font-size:14px;padding:30px 0">Selecione seu nome para ver suas designações.</p>
-    </div>
+  <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+    <span style="font-size:13px;color:#6b21a8;font-weight:bold">Olá,</span>
+    <select id="sel-minha-escala-nome" onchange="trocarNomeMinhaEscala()" style="flex:1;padding:8px 12px;border:1.5px solid #a78bfa;border-radius:8px;font-size:14px;font-family:Arial,sans-serif;background:white;color:#1a1a2e">
+      <option value="">— selecione seu nome —</option>
+    </select>
+    <button id="btn-ativar-notif-escala" onclick="pedirPermissaoNotificacao()" style="background:#0f6e56;color:white;border:none;padding:8px 14px;border-radius:7px;font-size:12px;font-weight:bold;cursor:pointer">🔔 Ativar avisos</button>
+    <button onclick="limparNotificacoes()" style="background:#f59e0b;color:white;border:none;padding:8px 14px;border-radius:7px;font-size:12px;font-weight:bold;cursor:pointer">
+        🔕 Parar notificações
+    </button>
   </div>
 </div>
 
@@ -3556,108 +3552,49 @@ function buscarDesignacoesDe(nome) {
 
 function renderMinhaEscala(nome) {
   var cont = document.getElementById('conteudo-minha-escala');
-  if (!nome) { cont.innerHTML='<p style="text-align:center;color:#888;font-size:14px;padding:30px 0">Selecione seu nome.</p>'; return; }
-
-  // Se escalaGerada está vazia, busca do Firebase primeiro
-  if (Object.keys(escalaGerada).length === 0 && firebaseOk && db) {
-    cont.innerHTML = '<p style="text-align:center;color:#888;font-size:14px;padding:30px 0">&#9203; Carregando...</p>';
-    db.ref('escala/estado').once('value', function(snap) {
-      var dados = snap.val() || {};
-      if (dados.escalaGerada) Object.assign(escalaGerada, dados.escalaGerada);
-      if (dados.substituicoes) Object.assign(substituicoes, dados.substituicoes);
-      // Agora carrega confirmações e renderiza
-      if (firebaseOk && db) {
-        db.ref('confirmacoes/' + nome.replace(/[.#$[\]]/g,'_')).once('value', function(snap2) {
-          minhaEscalaConfirmacoes = snap2.val() || {};
-          _renderMinhaEscalaComConf(nome, cont);
-        });
-      } else {
-        _renderMinhaEscalaComConf(nome, cont);
-      }
-    });
-    return;
+  if (!nome) { 
+    cont.innerHTML = '<p style="text-align:center;color:#888;font-size:14px;padding:30px 0">Selecione seu nome.</p>'; 
+    return; 
   }
 
-  // Escala já carregada — só busca confirmações
-  if (firebaseOk && db) {
-    db.ref('confirmacoes/' + nome.replace(/[.#$[\]]/g,'_')).once('value', function(snap) {
-      minhaEscalaConfirmacoes = snap.val() || {};
-      _renderMinhaEscalaComConf(nome, cont);
-    });
-  } else {
-    _renderMinhaEscalaComConf(nome, cont);
-  }
-}
-
-function _renderMinhaEscalaComConf(nome, cont) {
+  // Buscar designações do nome
   var des = buscarDesignacoesDe(nome);
-  var hoje = new Date(); hoje.setHours(0,0,0,0);
+  var hoje = new Date(); 
+  hoje.setHours(0,0,0,0);
   var futuras = des.filter(function(d){ return !d.passada; });
   var passadas = des.filter(function(d){ return d.passada; }).slice(-6).reverse();
 
   if (!des.length) {
-    cont.innerHTML = '<div class="semana-vazia">&#128203; Nenhuma designa&#231;&#227;o encontrada para <strong>'+escHtml(nome)+'</strong> nos meses gerados.</div>';
-    notificarSeDesignado(nome, []);
+    cont.innerHTML = '<div class="semana-vazia">📋 Nenhuma designação encontrada para <strong>'+escHtml(nome)+'</strong> nos meses gerados.</div>';
     return;
   }
-  if (futuras.length) notificarSeDesignado(nome, futuras);
+  
+  // NOTIFICAÇÕES: Só chama UMA vez e apenas se houver futuras
+  if (futuras.length && !localStorage.getItem('notificacao_enviada_' + nome)) {
+    notificarSeDesignado(nome, futuras);
+    localStorage.setItem('notificacao_enviada_' + nome, Date.now());
+  }
 
-  // Guarda dados para os botões usarem via índice (evita problemas com aspas em onclick)
   window._minhaEscalaFuturas = futuras;
 
   var html = '';
   if (futuras.length) {
-    html += '<div style="font-size:12px;font-weight:bold;color:#6b21a8;text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px">Pr&#243;ximas designa&#231;&#245;es ('+futuras.length+')</div>';
+    html += '<div style="font-size:12px;font-weight:bold;color:#6b21a8;text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px">📌 Próximas designações ('+futuras.length+')</div>';
     futuras.forEach(function(d, idx) {
-      var chaveConf = d.dataISO + '|' + d.campo;
-      var conf = minhaEscalaConfirmacoes[chaveConf] || 'pendente';
-      var badgeTxt = conf==='confirmado'
-        ? '&#10003; Presen&#231;a confirmada'
-        : conf==='ausente'
-        ? '&#10007; Avisou aus&#234;ncia'
-        : '&#9203; Aguardando confirma&#231;&#227;o';
-      var badgeCls = 'conf-badge ' + conf;
-      var btns = '';
-      
-      // VERIFICAÇÃO: o nome selecionado é o designado?
-      var nomeSeletor = document.getElementById('sel-minha-escala-nome').value;
-      var designacoesDoNome = buscarDesignacoesDe(nomeSeletor);
-      var achou = false;
-      for (var dd = 0; dd < designacoesDoNome.length; dd++) {
-        if (designacoesDoNome[dd].dataISO === d.dataISO && designacoesDoNome[dd].campo === d.campo) {
-          achou = true;
-          break;
-        }
-      }
-      
-      if (achou) {
-        if (conf !== 'confirmado') {
-          btns += '<button class="btn-confirmar-presence btn-conf-sim" onclick="clicarConfirmar(' + idx + ', &quot;confirmado&quot;)">&#10003; Confirmar presen&#231;a</button>';
-        }
-        if (conf !== 'ausente') {
-          btns += '<button class="btn-confirmar-presence btn-conf-nao" onclick="clicarConfirmar(' + idx + ', &quot;ausente&quot;)">&#10007; Avisar aus&#234;ncia</button>';
-        }
-      }
-      
-      // Cor do cabeçalho: VMC usa verde, designações normais usam roxo
-      var cabBg = d.isVMC ? '#0f6e56' : '#7c3aed';
-      var icone = d.isVMC ? '📖' : '📌';
       html += '<div class="minha-card">' +
-        '<div class="minha-card-cab" style="background:'+cabBg+'">' +
+        '<div class="minha-card-cab" style="background:#7c3aed">' +
           '<span class="minha-card-data">'+escHtml(d.data)+'</span>' +
-          '<span class="minha-card-tipo">'+icone+' '+escHtml(d.setor)+'</span>' +
+          '<span class="minha-card-tipo">📌 '+escHtml(d.setor)+'</span>' +
         '</div>' +
         '<div class="minha-card-body">' +
-          (d.isVMC ? '<div style="font-size:10px;font-weight:bold;color:#0f6e56;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">Vida e Ministério Cristão</div>' : '') +
-          '<div class="minha-setor">&#128205; '+escHtml(d.setor)+'</div>' +
+          '<div class="minha-setor">📍 '+escHtml(d.setor)+'</div>' +
           (d.parceiros.length ? '<div class="minha-parceiros">'+escHtml(d.parceiros.join(' '))+'</div>' : '') +
-          '<span class="'+badgeCls+'">'+badgeTxt+'</span>' +
-          '<div style="margin-top:8px">'+btns+'</div>' +
         '</div></div>';
     });
   }
+  
   if (passadas.length) {
-    html += '<div style="font-size:12px;font-weight:bold;color:#9ca3af;text-transform:uppercase;letter-spacing:.5px;margin:16px 0 8px">&#218;ltimas designa&#231;&#245;es</div>';
+    html += '<div style="font-size:12px;font-weight:bold;color:#9ca3af;margin:16px 0 8px">📜 Últimas designações</div>';
     passadas.forEach(function(d) {
       html += '<div style="background:#f9f9f9;border:1px solid #e8e8e8;border-radius:8px;padding:8px 12px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center">' +
         '<span style="font-size:13px;color:#5e6370">'+escHtml(d.data)+'</span>' +
@@ -3668,7 +3605,6 @@ function _renderMinhaEscalaComConf(nome, cont) {
 
   cont.innerHTML = html;
 }
-
 // Chamado pelos botões da Minha Escala via índice numérico (sem problema de aspas)
 function clicarConfirmar(idx, resposta) {
   var d = window._minhaEscalaFuturas && window._minhaEscalaFuturas[idx];
@@ -5591,6 +5527,26 @@ function regenerarRodizioIndicadores() {
     alert('✅ ' + atualizados + ' reuniões tiveram os indicadores renovados!');
     location.reload();
   }
+}
+
+// ===================== LIMPAR NOTIFICAÇÕES =====================
+function limparNotificacoes() {
+    // Limpar notificações agendadas na memória
+    if(typeof avisosAgendados !== 'undefined') {
+        Object.keys(avisosAgendados).forEach(function(chave) {
+            delete avisosAgendados[chave];
+        });
+    }
+    
+    // Limpar cache de notificações enviadas
+    var keys = Object.keys(localStorage);
+    keys.forEach(function(key) {
+        if(key.startsWith('notificacao_enviada_')) {
+            localStorage.removeItem(key);
+        }
+    });
+    
+    alert('✅ Notificações paradas! Para reativar, recarregue a página e clique em "Ativar avisos".');
 }
 </script>
 </body>
