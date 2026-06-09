@@ -945,19 +945,23 @@ body.dark-mode .conf-badge.pendente { background: #2a2a15; color: #ca8a04; borde
 <div class="overlay" id="ov-minha-escala">
   <div class="modal-principal" style="max-width:600px">
     <div class="modal-cab" style="background:#7c3aed;color:white">
-      <span class="modal-cab-titulo" style="color:white">&#128100; Minha Escala</span>
-      <button class="btn-fechar" onclick="fecharMinhaEscala()" style="color:white">&#10005;</button>
+      <span class="modal-cab-titulo" style="color:white">👤 Minha Escala</span>
+      <button class="btn-fechar" onclick="fecharMinhaEscala()" style="color:white">✕</button>
     </div>
     <div style="padding:14px 20px;background:#f5f3ff;border-bottom:1px solid #ddd8fe">
-  <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
-    <span style="font-size:13px;color:#6b21a8;font-weight:bold">Olá,</span>
-    <select id="sel-minha-escala-nome" onchange="trocarNomeMinhaEscala()" style="flex:1;padding:8px 12px;border:1.5px solid #a78bfa;border-radius:8px;font-size:14px;font-family:Arial,sans-serif;background:white;color:#1a1a2e">
-      <option value="">— selecione seu nome —</option>
-    </select>
-    <button id="btn-ativar-notif-escala" onclick="pedirPermissaoNotificacao()" style="background:#0f6e56;color:white;border:none;padding:8px 14px;border-radius:7px;font-size:12px;font-weight:bold;cursor:pointer">🔔 Ativar avisos</button>
-    <button onclick="limparNotificacoes()" style="background:#f59e0b;color:white;border:none;padding:8px 14px;border-radius:7px;font-size:12px;font-weight:bold;cursor:pointer">
-        🔕 Parar notificações
-    </button>
+      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+        <span style="font-size:13px;color:#6b21a8;font-weight:bold">Olá,</span>
+        <select id="sel-minha-escala-nome" onchange="trocarNomeMinhaEscala()" style="flex:1;padding:8px 12px;border:1.5px solid #a78bfa;border-radius:8px;font-size:14px;font-family:Arial,sans-serif;background:white;color:#1a1a2e">
+          <option value="">— selecione seu nome —</option>
+        </select>
+        <button id="btn-toggle-notif" onclick="toggleNotificacoes()" style="background:#0f6e56;color:white;border:none;padding:8px 14px;border-radius:7px;font-size:12px;font-weight:bold;cursor:pointer">
+          🔔 Ativar notificações
+        </button>
+      </div>
+    </div>
+    <div class="modal-body" id="conteudo-minha-escala" style="padding:16px 20px">
+      <p style="text-align:center;color:#888;font-size:14px;padding:30px 0">Selecione seu nome para ver suas designações.</p>
+    </div>
   </div>
 </div>
 
@@ -5548,6 +5552,85 @@ function limparNotificacoes() {
     
     alert('✅ Notificações paradas! Para reativar, recarregue a página e clique em "Ativar avisos".');
 }
+
+// ===================== NOTIFICAÇÕES COM UM BOTÃO =====================
+
+// Alternar notificações (ligar/desligar)
+function toggleNotificacoes() {
+    var desativadas = localStorage.getItem('notificacoes_desativadas') === 'true';
+    var btn = document.getElementById('btn-toggle-notif');
+    
+    if(desativadas) {
+        // REATIVAR
+        localStorage.removeItem('notificacoes_desativadas');
+        if(btn) {
+            btn.textContent = '🔔 Ativar notificações';
+            btn.style.background = '#0f6e56';
+        }
+        alert('✅ Notificações REATIVADAS!\n\nVocê receberá apenas a PRÓXIMA designação.');
+    } else {
+        // DESATIVAR
+        localStorage.setItem('notificacoes_desativadas', 'true');
+        
+        // Limpar notificações agendadas
+        if(typeof avisosAgendados !== 'undefined') {
+            Object.keys(avisosAgendados).forEach(function(chave) {
+                delete avisosAgendados[chave];
+            });
+        }
+        
+        if(btn) {
+            btn.textContent = '🔕 Desativado';
+            btn.style.background = '#dc2626';
+        }
+        alert('🔕 Notificações DESATIVADAS!\n\nClique novamente para reativar.');
+    }
+}
+
+// Inicializar estado do botão ao carregar
+function initBotaoNotificacao() {
+    var desativadas = localStorage.getItem('notificacoes_desativadas') === 'true';
+    var btn = document.getElementById('btn-toggle-notif');
+    if(btn) {
+        if(desativadas) {
+            btn.textContent = '🔕 Desativado';
+            btn.style.background = '#dc2626';
+        } else {
+            btn.textContent = '🔔 Ativar notificações';
+            btn.style.background = '#0f6e56';
+        }
+    }
+}
+
+// Modificar a função notificarSeDesignado para respeitar desativado e enviar apenas uma
+function notificarSeDesignado(nome, designacoes) {
+    // SE DESATIVADO, NÃO ENVIA
+    if (localStorage.getItem('notificacoes_desativadas') === 'true') {
+        console.log('🔕 Notificações desativadas.');
+        return;
+    }
+    
+    if (!nome || Notification.permission !== 'granted') return;
+    
+    // Envia apenas a PRIMEIRA designação (a mais próxima)
+    if (designacoes && designacoes.length) {
+        var proxima = designacoes[0];
+        var bodyImediato = proxima.setor + ' — ' + proxima.data;
+        if (proxima.parceiros && proxima.parceiros.length) bodyImediato += '\n' + proxima.parceiros.join(', ');
+        
+        new Notification('📋 Sua próxima designação', {
+            body: bodyImediato,
+            icon: 'icon-192.svg',
+            badge: 'icon-192.svg',
+            tag: 'proxima-designacao',
+            vibrate: [200, 100, 200]
+        });
+    }
+}
+
+// Chamar no carregamento
+window.addEventListener('load', initBotaoNotificacao);
+
 </script>
 </body>
 </html>
