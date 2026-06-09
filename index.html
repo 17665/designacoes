@@ -3407,9 +3407,23 @@ function agendarAvisosDesignacoes(nome, designacoes) {
 // Re-agenda avisos ao recarregar a página (para quem já está designado)
 // Chamado uma vez na inicialização quando meuNome já está salvo
 function reagendarAvisosAoIniciar() {
+  // 🔥 VERIFICA SE NOTIFICAÇÕES ESTÃO DESATIVADAS
+  if (localStorage.getItem('notificacoes_desativadas') === 'true') {
+    console.log('🔕 Notificações desativadas. Não reagendando avisos.');
+    return;
+  }
+  
   var nomeSalvo = localStorage.getItem('meuNome') || localStorage.getItem('designacoes_nome_bloqueado');
   if (!nomeSalvo || Notification.permission !== 'granted') return;
-  // Espera escalaGerada carregar do Firebase (máx 5s)
+  
+  // Só reenvia se passou mais de 24h
+  var ultimoEnvio = localStorage.getItem('ultimo_envio_notificacoes_' + nomeSalvo);
+  var agora = Date.now();
+  if(ultimoEnvio && (agora - parseInt(ultimoEnvio)) < 24 * 60 * 60 * 1000) {
+    console.log('⏰ Já enviado nas últimas 24h. Ignorando.');
+    return;
+  }
+  
   var tentativas = 0;
   var intervalo = setInterval(function() {
     tentativas++;
@@ -3417,7 +3431,10 @@ function reagendarAvisosAoIniciar() {
       clearInterval(intervalo);
       var des = buscarDesignacoesDe(nomeSalvo);
       var futuras = des.filter(function(d){ return !d.passada; });
-      if (futuras.length) agendarAvisosDesignacoes(nomeSalvo, futuras);
+      if (futuras.length) {
+        notificarSeDesignado(nomeSalvo, [futuras[0]]);
+        localStorage.setItem('ultimo_envio_notificacoes_' + nomeSalvo, Date.now());
+      }
     }
   }, 500);
 }
