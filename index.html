@@ -2528,7 +2528,7 @@ function salvarMesesFirebase() {
       escalaGerada: escalaGeradaOriginal
     };
     
-    db.ref('escala/estado').set(payload).catch(e => console.warn('Erro ao salvar estado:', e));
+    db.ref('escala/estado').update(payload).catch(e => console.warn('Erro ao salvar estado:', e));
   });
 }
 function salvarConfigFirebase() {
