@@ -2486,21 +2486,28 @@ function toggleModoTeste() {
 
 function salvarMesesFirebase() {
   if (!firebaseOk || !db) return;
-  // Salva objeto {chave: true} com todos os meses ativos + estado do rodízio
-  var payload = {
-    meses: mesesGerados,
-    contadorPulo: contadorPulo,
-    aparicoes: aparicoes,
-    idxM: idxM.v, idxA: idxA.v, idxV: idxV.v, idxZ: idxZ.v, idxI: idxI.v,
-    ultimoPar: ultimoPar,
-    substituicoes: substituicoes,
-    escalaGerada: escalaGeradaOriginal  // sempre salva os nomes ORIGINAIS do rodízio
-  };
-  db.ref('escala/estado').set(payload).catch(function(e){
-    console.warn('Erro ao salvar estado:', e);
+  
+  // Primeiro, buscar as substituições atuais do Firebase (para não perder)
+  db.ref('escala/estado/substituicoes').once('value', snap => {
+    const substituicoesAtuais = snap.val() || {};
+    
+    var payload = {
+      meses: mesesGerados,
+      contadorPulo: contadorPulo,
+      aparicoes: aparicoes,
+      idxM: idxM.v,
+      idxA: idxA.v,
+      idxV: idxV.v,
+      idxZ: idxZ.v,
+      idxI: idxI.v,
+      ultimoPar: ultimoPar,
+      substituicoes: substituicoesAtuais,  // ← USA AS EXISTENTES
+      escalaGerada: escalaGeradaOriginal
+    };
+    
+    db.ref('escala/estado').set(payload).catch(e => console.warn('Erro ao salvar estado:', e));
   });
 }
-
 function salvarConfigFirebase() {
   if (!firebaseOk || !db) return;
   var payload = {
