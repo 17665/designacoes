@@ -362,41 +362,43 @@ body.dark-mode .conf-badge.pendente { background: #2a2a15; color: #ca8a04; borde
 
 <div class="topo">
   <div>
-    <h1>&#128203; Escala de Designações</h1>
+    <h1>📄 Escala de Designações</h1>
     <p class="subtitulo" id="subtitulo-periodo">Congregação Parque Tietê</p>
   </div>
   <div class="topo-acoes">
     <div id="badge-responsavel" style="display:none;align-items:center;gap:8px;background:#dcfce7;border:1.5px solid #22c55e;border-radius:20px;padding:5px 14px;flex-wrap:wrap">
-      <span style="font-size:13px;font-weight:bold;color:#166534">&#128274; Modo Responsável</span>
-      <button onclick="abrirSubstituicaoManual()" style="background:#1a4fa3;color:white;border:none;border-radius:10px;padding:2px 10px;font-size:12px;font-weight:bold;cursor:pointer" title="Clique em qualquer nome na escala para substituí-lo permanentemente">&#128260; Substituição</button>
+      <span style="font-size:13px;font-weight:bold;color:#166534">🔐 Modo Responsável</span>
       <button onclick="sairModoResponsavel()" style="background:#ef4444;color:white;border:none;border-radius:10px;padding:2px 10px;font-size:12px;font-weight:bold;cursor:pointer">Sair</button>
     </div>
-    <button class="btn-gerenciar" id="btn-area-responsavel" onclick="pedirSenha()">&#128100; Área do Responsável</button>
-    <button class="btn-imprimir"  onclick="window.print()">&#128424; Imprimir escala</button>
-    <a href="manual-usuario.html" target="_blank" style="background:#7c3aed;color:white;border:none;padding:9px 18px;border-radius:8px;font-size:14px;font-weight:bold;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:6px">&#128214; Manual do Irmão</a>
-    <button onclick="abrirProgramaVMC()" style="background:#0f6e56;color:white;border:none;padding:9px 18px;border-radius:8px;font-size:14px;font-weight:bold;cursor:pointer">&#128214; Programa</button>
-    <button id="btn-minha-escala" onclick="abrirMinhaEscala()" style="background:#7c3aed;color:white;border:none;padding:9px 18px;border-radius:8px;font-size:14px;font-weight:bold;cursor:pointer">&#128100; Minha Escala</button>
-    <button id="btn-notif" onclick="pedirPermissaoNotificacao()" style="display:none;background:#0f6e56;color:white;border:none;padding:9px 14px;border-radius:8px;font-size:14px;cursor:pointer" title="Ativar notificações">&#128276;</button>
-<button id="btn-instalar-pwa" onclick="instalarPWA()" style="display:none;background:#f59e0b;color:white;border:none;padding:9px 14px;border-radius:8px;font-size:13px;font-weight:bold;cursor:pointer">&#128187; Instalar App</button>
-<button onclick="alternarTema()" style="background:#374151;color:white;border:none;padding:9px 14px;border-radius:8px;font-size:13px;font-weight:bold;cursor:pointer" id="btn-tema" title="Alternar tema claro/escuro">🌙 Escuro</button>
+    <button class="btn-gerenciar" id="btn-area-responsavel" onclick="pedirSenha()">👨‍💼 Área do Responsável</button>
+    <button class="btn-imprimir" onclick="window.print()">🖨️ Imprimir escala</button>
+    <a href="manual-usuario.html" target="_blank" style="background:#7c3aed;color:white;border:none;padding:9px 18px;border-radius:8px;font-size:14px;font-weight:bold;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:6px">📘 Manual do Irmão</a>
+    <button onclick="abrirProgramaVMC()" style="background:#0f6e56;color:white;border:none;padding:9px 18px;border-radius:8px;font-size:14px;font-weight:bold;cursor:pointer">📖 Programa</button>
+    <button id="btn-minha-escala" onclick="abrirMinhaEscala()" style="background:#7c3aed;color:white;border:none;padding:9px 18px;border-radius:8px;font-size:14px;font-weight:bold;cursor:pointer">👤 Minha Escala</button>
+    <button id="btn-notif" onclick="pedirPermissaoNotificacao()" style="display:none;background:#0f6e56;color:white;border:none;padding:9px 14px;border-radius:8px;font-size:14px;cursor:pointer" title="Ativar notificações">🔔</button>
+    <button id="btn-instalar-pwa" onclick="instalarPWA()" style="display:none;background:#f59e0b;color:white;border:none;padding:9px 14px;border-radius:8px;font-size:13px;font-weight:bold;cursor:pointer">📱 Instalar App</button>
+    <button onclick="alternarTema()" style="background:#374151;color:white;border:none;padding:9px 14px;border-radius:8px;font-size:13px;font-weight:bold;cursor:pointer" id="btn-tema">🌙 Escuro</button>
+    <!-- Botão de identificação para pedir troca -->
+    <button onclick="pedirIdentidade(() => location.reload())" style="background:#f59e0b;color:white;border:none;padding:9px 18px;border-radius:8px;font-size:14px;font-weight:bold;cursor:pointer">
+        🔑 Identificar-se
+    </button>
   </div>
 </div>
 
 <!-- OVERLAY SENHA -->
-<div class="overlay" id="ov-senha" style="z-index:100000">
+<div class="overlay" id="ov-senha">
   <div class="modal-senha">
-    <div class="modal-senha-cab">&#128274; Acesso Restrito</div>
+    <div class="modal-senha-cab">🔒 Acesso Restrito</div>
     <div class="modal-senha-body">
       <p>Digite a senha do responsável para continuar.</p>
-      <input type="password" id="campo-senha" placeholder="••••••••"
-        onkeydown="if(event.key==='Enter')confirmarSenha()">
+      <input type="password" id="campo-senha" placeholder="••••••••" onkeydown="if(event.key==='Enter')confirmarSenha()">
       <div class="senha-erro" id="senha-erro">Senha incorreta. Tente novamente.</div>
       <div class="senha-btns">
         <button class="btn-cancelar" onclick="fecharSenha()">Cancelar</button>
-        <button class="btn-entrar"   onclick="confirmarSenha()">Entrar &#8594;</button>
+        <button class="btn-entrar" onclick="confirmarSenha()">Entrar →</button>
       </div>
       <div style="text-align:center;margin-top:12px">
-        <button onclick="pedirRecuperacaoSenha()" style="background:none;border:none;color:#1a4fa3;font-size:12px;cursor:pointer;text-decoration:underline">&#128273; Esqueci a senha</button>
+        <button onclick="pedirRecuperacaoSenha()" style="background:none;border:none;color:#1a4fa3;font-size:12px;cursor:pointer;text-decoration:underline">🔑 Esqueci a senha</button>
       </div>
     </div>
   </div>
@@ -406,26 +408,47 @@ body.dark-mode .conf-badge.pendente { background: #2a2a15; color: #ca8a04; borde
 <div class="overlay" id="ov-principal">
   <div class="modal-principal">
     <div class="modal-cab">
-      <span class="modal-cab-titulo">&#128100; Área do Responsável</span>
-      <button class="btn-fechar" onclick="fecharPrincipal()">&#10005;</button>
+      <span class="modal-cab-titulo">👨‍💼 Área do Responsável</span>
+      <button class="btn-fechar" onclick="fecharPrincipal()">✕</button>
     </div>
     <div class="abas">
-      <button class="aba-btn ativa" onclick="trocarAba('aba-eventos',this)">&#9881; Eventos</button>
-      <button class="aba-btn"       onclick="trocarAba('aba-irmaos',this)">&#128101; Irmãos</button>
-      <button class="aba-btn"       onclick="trocarAba('aba-treino',this)">&#127891; Treinamento</button>
-      <button class="aba-btn"       onclick="trocarAba('aba-gerar',this)">&#128197; Gerar Meses</button>
-      <button class="aba-btn"       onclick="trocarAba('aba-trocas',this)">&#128260; Trocas</button>
-      <button class="aba-btn"       onclick="trocarAba('aba-historico',this)">&#128202; Histórico</button>
-      <button class="aba-btn"       onclick="trocarAba('aba-vmc',this)">&#128214; VMC</button>
-      <button class="aba-btn"       onclick="trocarAba('aba-config',this)">&#128274; Senha</button>
-      <button class="aba-btn" onclick="trocarAba('aba-presencas',this)">&#128221; Presenças</button>
-      <button class="aba-btn"       onclick="trocarAba('aba-manual-resp',this)">&#128203; Manual</button>
-      <button class="aba-btn"       onclick="trocarAba('aba-reparo',this)" style="color:#dc2626">&#128295; Reparo</button>
-      <button class="aba-btn"       onclick="trocarAba('aba-teste',this)">&#129514; Teste</button>
+      <button class="aba-btn ativa" onclick="trocarAba('aba-eventos',this)">⚙️ Eventos</button>
+      <button class="aba-btn" onclick="trocarAba('aba-irmaos',this)">👥 Irmãos</button>
+      <button class="aba-btn" onclick="trocarAba('aba-treino',this)">📚 Treinamento</button>
+      <button class="aba-btn" onclick="trocarAba('aba-gerar',this)">📅 Gerar Meses</button>
+      <button class="aba-btn" onclick="trocarAba('aba-trocas',this)">🔄 Trocas</button>
+      <button class="aba-btn" onclick="trocarAba('aba-historico',this)">📊 Histórico</button>
+      <button class="aba-btn" onclick="trocarAba('aba-vmc',this)">📖 VMC</button>
+      <button class="aba-btn" onclick="trocarAba('aba-config',this)">🔑 Senha</button>
+      <button class="aba-btn" onclick="trocarAba('aba-presencas',this)">✅ Presenças</button>
+      <button class="aba-btn" onclick="trocarAba('aba-manual-resp',this)">📘 Manual</button>
+      <button class="aba-btn" onclick="trocarAba('aba-reparo',this)" style="color:#dc2626">🔧 Reparo</button>
+      <button class="aba-btn" onclick="trocarAba('aba-teste',this)">🧪 Teste</button>
     </div>
     <div class="modal-body">
-
       <!-- ABA EVENTOS -->
+      <div class="aba-conteudo ativa" id="aba-eventos">
+        <p style="font-size:13px;color:#5e6370;margin-bottom:14px;line-height:1.6">
+          Cadastre <strong>Congressos</strong>, <strong>Assembleias de Circuito</strong> ou
+          <strong>Visitas do Superintendente</strong>. Preencha o tema e informe ausentes.
+        </p>
+        <div id="lista-eventos"></div>
+        <button class="btn-add-ev" onclick="adicionarEvento()">+ Adicionar evento</button>
+      </div>
+
+      <!-- ABA IRMÃOS -->
+      <div class="aba-conteudo" id="aba-irmaos">
+        <p style="font-size:13px;color:#5e6370;margin-bottom:14px;line-height:1.6">
+          Gerencie os irmãos de cada departamento.
+        </p>
+        <div id="gerenciar-irmaos"></div>
+        <div style="margin-top:20px;border-top:2px solid #e8e8e8;padding-top:14px">
+          <strong style="color:#92400e">👻 Irmãos Espectadores (testes)</strong>
+          <p style="font-size:11px;color:#888;margin:4px 0 8px">Aparecem na lista mas NÃO entram nas designações.</p>
+          <button onclick="adicionarEspectador()" style="background:#f59e0b;color:white;border:none;padding:6px 14px;border-radius:6px;font-size:12px;font-weight:bold;cursor:pointer">+ Adicionar espectador</button>
+          <div id="lista-espectadores" style="margin-top:8px;display:flex;flex-wrap:wrap;gap:6px"></div>
+        </div>
+      </div>      <!-- ABA EVENTOS -->
       <div class="aba-conteudo ativa" id="aba-eventos">
         <p style="font-size:13px;color:#5e6370;margin-bottom:14px;line-height:1.6">
           Cadastre <strong>Congressos</strong>, <strong>Assembleias de Circuito</strong> ou
@@ -1844,11 +1867,6 @@ function nomeSpan(n, chave, setor, dataLabel) {
     }
   });
 
-  // Se o usuário NÃO está identificado (meuNome vazio)
-  if (!meuNome) {
-    return '<span class="nome-sem-identidade" onclick="pedirIdentidade(() => location.reload())" style="cursor:pointer;color:#f59e0b;border-bottom:1px dashed #f59e0b">🔑 Clique para se identificar</span>' + badgeTroca;
-  }
-
   // Modo responsável → todos sublinhados em azul
   if (modoResponsavel) {
     var setorChave = { 'Palco-Coord':'palco','Palco-Ajud':'palco','Palco':'palco',
@@ -1867,7 +1885,7 @@ function nomeSpan(n, chave, setor, dataLabel) {
     return '<span class="nome-troca" onclick="abrirTroca(\'' + chave + '\',\'' + setor.replace(/'/g, "\\'") + '\',\'' + dataLabel.replace(/'/g, "\\'") + '\',\'' + atual.replace(/'/g, "\\'") + '\')">' + escHtml(atual) + '</span>' + badgeTroca;
   }
 
-  // Nome de outros irmãos → sem sublinhado
+  // Nome de outros irmãos → sem sublinhado (mostra o nome normal)
   return '<span>' + escHtml(atual) + '</span>' + badgeTroca;
 }
 // Renderiza um mês usando a escala já salva no Firebase (sem rodar rodízio)
