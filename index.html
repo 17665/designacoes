@@ -5672,6 +5672,37 @@ function notificarSeDesignado(nome, designacoes) {
 // Chamar no carregamento
 window.addEventListener('load', initBotaoNotificacao);
 
+// Aplica as substituições salvas na tela
+function aplicarSubstituicoesNaTela() {
+  console.log('🔄 Aplicando substituições na tela...');
+  
+  Object.keys(substituicoes).forEach(function(chave) {
+    var novo = substituicoes[chave];
+    
+    // Busca spans do modo responsável
+    var spans = document.querySelectorAll('.nome-clicavel[data-chave="' + chave + '"]');
+    
+    // Busca spans do modo normal (troca)
+    var spansTroca = document.querySelectorAll('.nome-troca');
+    spansTroca.forEach(function(s) {
+      var oc = s.getAttribute('onclick') || '';
+      if (oc.indexOf("'" + chave + "'") >= 0) {
+        if (!spans.length) spans = [s];
+        else spans = Array.from(spans).concat(s);
+      }
+    });
+    
+    // Aplica a substituição em cada span encontrado
+    Array.from(spans).forEach(function(span) {
+      if(span.textContent !== novo) {
+        span.textContent = novo;
+      }
+    });
+  });
+  
+  console.log('✅ Substituições aplicadas:', Object.keys(substituicoes).length);
+}
+
 </script>
 </body>
 </html>
