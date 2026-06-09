@@ -380,7 +380,7 @@ body.dark-mode .conf-badge.pendente { background: #2a2a15; color: #ca8a04; borde
     <button onclick="alternarTema()" style="background:#374151;color:white;border:none;padding:9px 14px;border-radius:8px;font-size:13px;font-weight:bold;cursor:pointer" id="btn-tema">🌙 Escuro</button>
     <!-- Botão de identificação para pedir troca -->
     <button onclick="pedirIdentidade(() => location.reload())" style="background:#f59e0b;color:white;border:none;padding:9px 18px;border-radius:8px;font-size:14px;font-weight:bold;cursor:pointer">
-        🔑 Identificar-se
+        🔑 Trocar
     </button>
   </div>
 </div>
@@ -2783,8 +2783,12 @@ function fecharIdentidade() { document.getElementById('ov-identidade').classList
 function confirmarIdentidade() {
   var v = document.getElementById('sel-identidade').value;
   if (!v) { alert('Selecione seu nome.'); return; }
+  
+  // Salvar nos dois lugares para sincronizar com o Minha Escala
   meuNome = v;
   localStorage.setItem('designacoes_nome', v);
+  localStorage.setItem('designacoes_nome_bloqueado', v);  // ← ADICIONAR ESTA LINHA
+  
   fecharIdentidade();
   if (identidadeCallback) { identidadeCallback(v); identidadeCallback = null; }
 }
