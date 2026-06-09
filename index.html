@@ -1838,11 +1838,16 @@ function nomeSpan(n, chave, setor, dataLabel) {
   var badgeTroca = '';
   Object.keys(trocasCache).map(function(k){return trocasCache[k];}).forEach(function(t) {
     if (t.dataLabel === dataLabel && t.setor === setor) {
-      if (t.status === 'pendente') badgeTroca = ' <span class="badge-troca-pendente">&#9203; pendente</span>';
-      else if (t.status === 'aceita') badgeTroca = ' <span class="badge-troca-aceita">&#9989; aceita</span>';
-      else if (t.status === 'recusada') badgeTroca = ' <span class="badge-troca-recusada">&#10060; recusada</span>';
+      if (t.status === 'pendente') badgeTroca = ' <span class="badge-troca-pendente">⏳ pendente</span>';
+      else if (t.status === 'aceita') badgeTroca = ' <span class="badge-troca-aceita">✅ aceita</span>';
+      else if (t.status === 'recusada') badgeTroca = ' <span class="badge-troca-recusada">❌ recusada</span>';
     }
   });
+
+  // Se o usuário NÃO está identificado (meuNome vazio)
+  if (!meuNome) {
+    return '<span class="nome-sem-identidade" onclick="pedirIdentidade(() => location.reload())" style="cursor:pointer;color:#f59e0b;border-bottom:1px dashed #f59e0b">🔑 Clique para se identificar</span>' + badgeTroca;
+  }
 
   // Modo responsável → todos sublinhados em azul
   if (modoResponsavel) {
