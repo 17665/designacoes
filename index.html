@@ -3571,30 +3571,19 @@ function buscarDesignacoesDe(nome) {
   return resultado;
 }
 
-function renderMinhaEscala(nome) {
-  var cont = document.getElementById('conteudo-minha-escala');
-  if (!nome) { 
-    cont.innerHTML = '<p style="text-align:center;color:#888;font-size:14px;padding:30px 0">Selecione seu nome.</p>'; 
-    return; 
-  }
-
-  // Buscar designações do nome
+function _renderMinhaEscalaComConf(nome, cont) {
   var des = buscarDesignacoesDe(nome);
-  var hoje = new Date(); 
-  hoje.setHours(0,0,0,0);
+  var hoje = new Date(); hoje.setHours(0,0,0,0);
   var futuras = des.filter(function(d){ return !d.passada; });
   var passadas = des.filter(function(d){ return d.passada; }).slice(-6).reverse();
 
   if (!des.length) {
     cont.innerHTML = '<div class="semana-vazia">📋 Nenhuma designação encontrada para <strong>'+escHtml(nome)+'</strong> nos meses gerados.</div>';
+    notificarSeDesignado(nome, []);
     return;
   }
   
-  // NOTIFICAÇÕES: Só chama UMA vez e apenas se houver futuras
-  if (futuras.length && !localStorage.getItem('notificacao_enviada_' + nome)) {
-    notificarSeDesignado(nome, futuras);
-    localStorage.setItem('notificacao_enviada_' + nome, Date.now());
-  }
+  if (futuras.length) notificarSeDesignado(nome, futuras);
 
   window._minhaEscalaFuturas = futuras;
 
@@ -3602,14 +3591,49 @@ function renderMinhaEscala(nome) {
   if (futuras.length) {
     html += '<div style="font-size:12px;font-weight:bold;color:#6b21a8;text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px">📌 Próximas designações ('+futuras.length+')</div>';
     futuras.forEach(function(d, idx) {
+      var chaveConf = d.dataISO + '|' + d.campo;
+      var conf = minhaEscalaConfirmacoes[chaveConf] || 'pendente';
+      var badgeTxt = conf==='confirmado'
+        ? '✅ Presença confirmada'
+        : conf==='ausente'
+        ? '❌ Avisou ausência'
+        : '⏳ Aguardando confirmação';
+      var badgeCls = 'conf-badge ' + conf;
+      var btns = '';
+      
+      // VERIFICAÇÃO: o nome selecionado é o designado?
+      var nomeSeletor = document.getElementById('sel-minha-escala-nome').value;
+      var designacoesDoNome = buscarDesignacoesDe(nomeSeletor);
+      var achou = false;
+      for (var dd = 0; dd < designacoesDoNome.length; dd++) {
+        if (designacoesDoNome[dd].dataISO === d.dataISO && designacoesDoNome[dd].campo === d.campo) {
+          achou = true;
+          break;
+        }
+      }
+      
+      if (achou) {
+        if (conf !== 'confirmado') {
+          btns += '<button class="btn-confirmar-presence btn-conf-sim" onclick="clicarConfirmar(' + idx + ', &quot;confirmado&quot;)">✅ Confirmar presença</button>';
+        }
+        if (conf !== 'ausente') {
+          btns += '<button class="btn-confirmar-presence btn-conf-nao" onclick="clicarConfirmar(' + idx + ', &quot;ausente&quot;)">❌ Avisar ausência</button>';
+        }
+      }
+      
+      var cabBg = d.isVMC ? '#0f6e56' : '#7c3aed';
+      var icone = d.isVMC ? '📖' : '📌';
       html += '<div class="minha-card">' +
-        '<div class="minha-card-cab" style="background:#7c3aed">' +
+        '<div class="minha-card-cab" style="background:'+cabBg+'">' +
           '<span class="minha-card-data">'+escHtml(d.data)+'</span>' +
-          '<span class="minha-card-tipo">📌 '+escHtml(d.setor)+'</span>' +
+          '<span class="minha-card-tipo">'+icone+' '+escHtml(d.setor)+'</span>' +
         '</div>' +
         '<div class="minha-card-body">' +
+          (d.isVMC ? '<div style="font-size:10px;font-weight:bold;color:#0f6e56;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">Vida e Ministério Cristão</div>' : '') +
           '<div class="minha-setor">📍 '+escHtml(d.setor)+'</div>' +
           (d.parceiros.length ? '<div class="minha-parceiros">'+escHtml(d.parceiros.join(' '))+'</div>' : '') +
+          '<span class="'+badgeCls+'">'+badgeTxt+'</span>' +
+          '<div style="margin-top:8px">'+btns+'</div>' +
         '</div></div>';
     });
   }
