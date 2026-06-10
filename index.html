@@ -5700,25 +5700,55 @@ function aplicarSubstituicoesNaTela() {
     // Busca spans do modo responsável
     var spans = document.querySelectorAll('.nome-clicavel[data-chave="' + chave + '"]');
     
-    // Busca spans do modo normal (troca)
-    var spansTroca = document.querySelectorAll('.nome-troca');
-    spansTroca.forEach(function(s) {
-      var oc = s.getAttribute('onclick') || '';
-      if (oc.indexOf("'" + chave + "'") >= 0) {
-        if (!spans.length) spans = [s];
-        else spans = Array.from(spans).concat(s);
-      }
-    });
-    
-    // Aplica a substituição em cada span encontrado
-    Array.from(spans).forEach(function(span) {
-      if(span.textContent !== novo) {
-        span.textContent = novo;
-      }
-    });
+     // Busca spans do modo normal (troca)
+  var spansTroca = document.querySelectorAll('.nome-troca');
+  spansTroca.forEach(function(s) {
+    var oc = s.getAttribute('onclick') || '';
+    if (oc.indexOf("'" + chave + "'") >= 0) {
+      if (!spans.length) spans = [s];
+      else spans = Array.from(spans).concat(s);
+    }
   });
   
-  console.log('✅ Substituições aplicadas:', Object.keys(substituicoes).length);
+  // Aplica a substituição em cada span encontrado
+  Array.from(spans).forEach(function(span) {
+    if(span.textContent !== novo) {
+      span.textContent = novo;
+    }
+  });
+});
+
+console.log('✅ Substituições aplicadas:', Object.keys(substituicoes).length);
+}
+
+// ===================== BACKUP AUTOMÁTICO =====================
+(function iniciarBackupAutomatico() {
+    console.log('🔄 Sistema de backup automático iniciado (a cada 5 minutos)');
+    
+    setInterval(() => {
+        if(window.substituicoes && Object.keys(window.substituicoes).length > 0) {
+            if(db && firebaseOk) {
+                db.ref('backup/auto_substituicoes').set(window.substituicoes)
+                    .then(() => console.log('💾 Backup automático realizado:', Object.keys(window.substituicoes).length, 'substituições'))
+                    .catch(err => console.warn('⚠️ Erro no backup:', err));
+            }
+        }
+    }, 300000);
+})();
+
+// Função para restaurar backup (opcional - pode chamar do console)
+function restaurarBackup() {
+    if(!confirm('⚠️ Restaurar último backup?')) return;
+    db.ref('backup/auto_substituicoes').once('value', snap => {
+        const backup = snap.val();
+        if(backup) {
+            db.ref('escala/estado/substituicoes').set(backup);
+            alert('✅ Backup restaurado! Recarregue a página.');
+            location.reload();
+        } else {
+            alert('❌ Nenhum backup encontrado');
+        }
+    });
 }
 
 </script>
