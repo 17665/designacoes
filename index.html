@@ -2194,6 +2194,18 @@ function apagarMes(chave){
   var bloco=document.querySelector('[data-chavemes="'+chave+'"]');
   if(bloco){ bloco.remove(); }
   delete mesesGerados[chave];
+  
+  // 🔥 REMOVER DO FIREBASE TAMBÉM 🔥
+  if (firebaseOk && db) {
+    db.ref('escala/estado/meses/' + chave).remove()
+      .then(function() {
+        console.log('✅ Mês removido do Firebase:', chave);
+      })
+      .catch(function(e) {
+        console.warn('Erro ao remover do Firebase:', e);
+      });
+  }
+  
   atualizarSubtitulo();
   salvarMesesFirebase();
   renderPainelMeses();
@@ -2220,7 +2232,6 @@ function renderPainelMeses() {
     '</div>';
   }).join('');
 }
-
 function adicionarMeses(mesInicio, ano, qtd) {
   var lista = document.getElementById('lista');
   var novos = [];
@@ -5749,7 +5760,7 @@ function restaurarBackup() {
             alert('❌ Nenhum backup encontrado');
         }
     });
-}
+}F
 
 </script>
 </body>
