@@ -3451,9 +3451,12 @@ function abrirMinhaEscala() {
   document.getElementById('ov-minha-escala').classList.add('aberto');
   atualizarBotaoNotif();
 
-  if (meuNome) {
-    // Não carrega mais automaticamente - o irmão precisa selecionar
-  }
+ if(meuNome && meuNome !== '') {
+    setTimeout(function() {
+        var sel = document.getElementById('sel-minha-escala-nome');
+        if(sel) sel.value = meuNome;
+        trocarNomeMinhaEscala();
+    }, 100);
 }
 
 function fecharMinhaEscala() {
