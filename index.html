@@ -3451,18 +3451,21 @@ function abrirMinhaEscala() {
   document.getElementById('ov-minha-escala').classList.add('aberto');
   atualizarBotaoNotif();
 
- if(meuNome && meuNome !== '') {
+  // 🔥 CARREGAMENTO AUTOMÁTICO - DENTRO da função
+  if(meuNome && meuNome !== '') {
     setTimeout(function() {
-        var sel = document.getElementById('sel-minha-escala-nome');
-        if(sel) sel.value = meuNome;
+      var selAuto = document.getElementById('sel-minha-escala-nome');
+      if(selAuto) {
+        selAuto.value = meuNome;
         trocarNomeMinhaEscala();
+      }
     }, 100);
+  }
 }
 
 function fecharMinhaEscala() {
   document.getElementById('ov-minha-escala').classList.remove('aberto');
 }
-
 function trocarNomeMinhaEscala() {
   var sel = document.getElementById('sel-minha-escala-nome');
   var nome = sel.value;
