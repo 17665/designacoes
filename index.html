@@ -3483,13 +3483,20 @@ function trocarNomeMinhaEscala() {
           localStorage.removeItem('designacoes_nome_bloqueado');
           meuNome = nome;
           localStorage.setItem('designacoes_nome_bloqueado', nome);
-          renderMinhaEscala(nome);
+          // CORREÇÃO: usar _renderMinhaEscalaComConf em vez de renderMinhaEscala
+          var cont = document.getElementById('conteudo-minha-escala');
+          if (typeof _renderMinhaEscalaComConf === 'function') {
+            _renderMinhaEscalaComConf(nome, cont);
+          }
           document.getElementById('btn-trocar-nome').style.display = 'inline-block';
           alert('Nome trocado! Agora você é ' + nome);
         } else {
           alert('Você está registrado como ' + nomeSalvo + '.\nClique em "✏️ Trocar nome" para solicitar.');
           sel.value = nomeSalvo;
-          renderMinhaEscala(nomeSalvo);
+          var cont = document.getElementById('conteudo-minha-escala');
+          if (typeof _renderMinhaEscalaComConf === 'function') {
+            _renderMinhaEscalaComConf(nomeSalvo, cont);
+          }
         }
       });
       return;
@@ -3502,11 +3509,13 @@ function trocarNomeMinhaEscala() {
   
   meuNome = nome;
   localStorage.setItem('designacoes_nome_bloqueado', nome);
-  renderMinhaEscala(nome);
+  // CORREÇÃO: usar _renderMinhaEscalaComConf em vez de renderMinhaEscala
+  var cont = document.getElementById('conteudo-minha-escala');
+  if (typeof _renderMinhaEscalaComConf === 'function') {
+    _renderMinhaEscalaComConf(nome, cont);
+  }
   document.getElementById('btn-trocar-nome').style.display = 'inline-block';
-}
-
-function buscarDesignacoesDe(nome) {
+}function buscarDesignacoesDe(nome) {
   var resultado = [];
   if (!escalaGerada || !nome) return resultado;
   var setorLabelsLocal = {
