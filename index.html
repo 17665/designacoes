@@ -2191,26 +2191,41 @@ function apagarMes(chave){
     return;
   }
   if (!confirm('Apagar o mês ' + chave + ' da escala?')) return;
-  var bloco=document.querySelector('[data-chavemes="'+chave+'"]');
-  if(bloco){ bloco.remove(); }
+  
+  // Remove da tela
+  var bloco = document.querySelector('[data-chavemes="'+chave+'"]');
+  if(bloco) bloco.remove();
   delete mesesGerados[chave];
   
-  // 🔥 REMOVER DO FIREBASE TAMBÉM 🔥
+  // 🔥 REMOVER COMPLETAMENTE DO FIREBASE 🔥
   if (firebaseOk && db) {
-    db.ref('escala/estado/meses/' + chave).remove()
-      .then(function() {
-        console.log('✅ Mês removido do Firebase:', chave);
-      })
-      .catch(function(e) {
-        console.warn('Erro ao remover do Firebase:', e);
+    // 1. Remove a chave do nó "meses"
+    db.ref('escala/estado/meses/' + chave).remove();
+    
+    // 2. Remove TODAS as designações daquele mês
+    var ano = chave.split('-')[0];
+    var mes = chave.split('-')[1];
+    db.ref('escala/estado/escalaGerada').once('value', function(snap) {
+      var todas = snap.val() || {};
+      Object.keys(todas).forEach(function(dataISO) {
+        // dataISO formato "YYYY-MM-DD"
+        if (dataISO.startsWith(ano + '-' + mes)) {
+          db.ref('escala/estado/escalaGerada/' + dataISO).remove();
+        }
       });
+    });
+    
+    console.log('✅ Mês ' + chave + ' removido completamente do Firebase');
   }
   
   atualizarSubtitulo();
-  salvarMesesFirebase();
   renderPainelMeses();
+  
+  // Recarrega a página para sincronizar completamente
+  setTimeout(function() {
+    location.reload();
+  }, 500);
 }
-
 function renderPainelMeses() {
   var cont = document.getElementById('painel-meses-salvos');
   if (!cont) return;
@@ -2521,31 +2536,33 @@ function toggleModoTeste() {
 
 // ── PERSISTÊNCIA DE MESES NO FIREBASE ──────────────────────────────────────
 
-function salvarMesesFirebase() {
-  if (!firebaseOk || !db) return;
+function apagarMes(chave){
+  if (!modoResponsavel) {
+    pedirSenhaCallback = function() { apagarMes(chave); };
+    pedirSenha();
+    return;
+  }
+  if (!confirm('Apagar o mês ' + chave + ' da escala?')) return;
+  var bloco=document.querySelector('[data-chavemes="'+chave+'"]');
+  if(bloco){ bloco.remove(); }
+  delete mesesGerados[chave];
   
-  // Primeiro, buscar as substituições atuais do Firebase (para não perder)
-  db.ref('escala/estado/substituicoes').once('value', snap => {
-    const substituicoesAtuais = snap.val() || {};
-    
-    var payload = {
-      meses: mesesGerados,
-      contadorPulo: contadorPulo,
-      aparicoes: aparicoes,
-      idxM: idxM.v,
-      idxA: idxA.v,
-      idxV: idxV.v,
-      idxZ: idxZ.v,
-      idxI: idxI.v,
-      ultimoPar: ultimoPar,
-      substituicoes: substituicoesAtuais,  // ← USA AS EXISTENTES
-      escalaGerada: escalaGeradaOriginal
-    };
-    
-    db.ref('escala/estado').update(payload).catch(e => console.warn('Erro ao salvar estado:', e));
-  });
-}
-function salvarConfigFirebase() {
+  if (firebaseOk && db) {
+    db.ref('escala/estado/meses/' + chave).remove()
+      .then(function() {
+        console.log('✅ Mês removido do Firebase:', chave);
+      })
+      .catch(function(e) {
+        console.warn('Erro ao remover do Firebase:', e);
+      });
+  }
+  
+  atualizarSubtitulo();
+  // 🔥 REMOVA ESTA LINHA 🔥
+  // salvarMesesFirebase();  ← NÃO CHAME MAIS AQUI
+  
+  renderPainelMeses();
+}function salvarConfigFirebase() {
   if (!firebaseOk || !db) return;
   var payload = {
     listas: JSON.parse(JSON.stringify(listas)),
@@ -5276,8 +5293,9 @@ setTimeout(reagendarAvisosAoIniciar, 1000);
 setTimeout(function() {
   try { vmcIniciar(); } catch(e) { console.error('Erro vmcIniciar:', e); }
 }, 100);
-try { gerarEscalaAtual(); } catch(e) { console.error('Erro gerarEscalaAtual:', e); }
-atualizarBotaoNotif();
+// 🔥 REMOVIDO - Impede geração automática ao carregar 🔥
+// try { gerarEscalaAtual(); } catch(e) { console.error('Erro gerarEscalaAtual:', e); }
+console.log('⚠️ Escala NÃO foi gerada automaticamente. Use a aba "Gerar Meses" para criar.');atualizarBotaoNotif();
 
 // Aplica bloqueio IMEDIATAMENTE via cache local, sem esperar Firebase
 // Isso evita o delay de rede antes do bloqueio aparecer
