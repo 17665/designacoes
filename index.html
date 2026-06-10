@@ -957,6 +957,10 @@ body.dark-mode .conf-badge.pendente { background: #2a2a15; color: #ca8a04; borde
         <button id="btn-toggle-notif" onclick="toggleNotificacoes()" style="background:#0f6e56;color:white;border:none;padding:8px 14px;border-radius:7px;font-size:12px;font-weight:bold;cursor:pointer">
           🔔 Ativar notificações
         </button>
+        <!-- 🔥 BOTÃO ADICIONADO 🔥 -->
+        <button id="btn-trocar-nome" onclick="liberarNome()" style="background:#fee2e2;color:#991b1b;border:1px solid #fca5a5;padding:6px 10px;border-radius:6px;font-size:11px;cursor:pointer;display:none">
+          ✏️ Trocar nome
+        </button>
       </div>
     </div>
     <div class="modal-body" id="conteudo-minha-escala" style="padding:16px 20px">
@@ -964,7 +968,6 @@ body.dark-mode .conf-badge.pendente { background: #2a2a15; color: #ca8a04; borde
     </div>
   </div>
 </div>
-
 <!-- OVERLAY CONFIRMAÇÃO DE PRESENÇA -->
 <div class="overlay" id="ov-confirmar">
   <div class="modal-senha" style="max-width:400px">
