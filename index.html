@@ -2278,6 +2278,22 @@ function adicionarMeses(mesInicio, ano, qtd) {
   salvarMesesFirebase();
 }
 
+function salvarMesesFirebase() {
+  if (!firebaseOk || !db) return;
+  var payload = {
+    meses: mesesGerados,
+    contadorPulo: contadorPulo,
+    aparicoes: aparicoes,
+    idxM: idxM.v, idxA: idxA.v, idxV: idxV.v, idxZ: idxZ.v, idxI: idxI.v,
+    ultimoPar: ultimoPar,
+    substituicoes: substituicoes,
+    escalaGerada: escalaGeradaOriginal   // nomes ORIGINAIS do rodízio, imutáveis
+  };
+  db.ref('escala/estado').set(payload).catch(function(e){
+    console.warn('Erro ao salvar estado:', e);
+  });
+}
+
 function atualizarSubtitulo(){
   var chaves=Object.keys(mesesGerados).sort();
   if(chaves.length===0){ document.getElementById('subtitulo-periodo').textContent='Congregação Parque Tietê'; return; }
@@ -2723,6 +2739,12 @@ function processarMeses(mesesSalvos, dadosEstado) {
   }
 
   var temEscalaGerada = dadosEstado && dadosEstado.escalaGerada && Object.keys(dadosEstado.escalaGerada).length > 0;
+
+  // Restaura escalaGeradaOriginal do Firebase (nomes imutáveis do rodízio)
+  if (temEscalaGerada) {
+    escalaGeradaOriginal = {};
+    Object.assign(escalaGeradaOriginal, dadosEstado.escalaGerada);
+  }
 
   chavesSalvas.forEach(function(chave){
     var p = chave.split('-');
