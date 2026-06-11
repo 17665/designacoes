@@ -1230,7 +1230,6 @@ function ativarModoResponsavel() {
       // NÃO zera substituicoes — são permanentes
       contadorPulo = {}; aparicoes = {}; ultimoAuditorio = {};
       mesesGerados = {};
-      escalaGeradaOriginal = {}; // reseta nomes originais para nova geração
       idxM.v=0; idxA.v=0; idxV.v=0; idxZ.v=0; idxI.v=0; ultimoPar=-1;
       if (dadosEstado && dadosEstado.contadorPulo) Object.assign(contadorPulo, dadosEstado.contadorPulo);
       if (dadosEstado && dadosEstado.aparicoes)    Object.assign(aparicoes, dadosEstado.aparicoes);
@@ -1242,10 +1241,13 @@ function ativarModoResponsavel() {
       if (dadosEstado && dadosEstado.ultimoPar !== undefined) ultimoPar = dadosEstado.ultimoPar;
       // Carrega substituições do Firebase antes de renderizar
       if (dadosEstado && dadosEstado.substituicoes) Object.assign(substituicoes, dadosEstado.substituicoes);
-      // Restaura escalaGerada localmente (sem remover do Firebase — evita disparar ouvirMeses)
+      // Restaura escalaGeradaOriginal e escalaGerada do Firebase ANTES de renderizar
+      // Nunca reseta escalaGeradaOriginal aqui — os nomes originais são imutáveis
       if (dadosEstado && dadosEstado.escalaGerada && Object.keys(dadosEstado.escalaGerada).length > 0) {
         escalaGerada = {};
+        escalaGeradaOriginal = {};
         Object.assign(escalaGerada, dadosEstado.escalaGerada);
+        Object.assign(escalaGeradaOriginal, dadosEstado.escalaGerada);
       }
       document.getElementById('lista').innerHTML = '';
       backup.forEach(function(chave){
@@ -2259,7 +2261,7 @@ function adicionarMeses(mesInicio, ano, qtd) {
     novos.push({ m: m, a: a });
   }
   if (novos.length === 0) {
-    alert('Todos os meses selecionados já foram gerados.');
+    // Todos os meses já existem — não precisa fazer nada
     return;
   }
   // Se já tem escalaGerada do Firebase, usa renderMesSalvo
