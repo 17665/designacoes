@@ -448,28 +448,6 @@ body.dark-mode .conf-badge.pendente { background: #2a2a15; color: #ca8a04; borde
           <button onclick="adicionarEspectador()" style="background:#f59e0b;color:white;border:none;padding:6px 14px;border-radius:6px;font-size:12px;font-weight:bold;cursor:pointer">+ Adicionar espectador</button>
           <div id="lista-espectadores" style="margin-top:8px;display:flex;flex-wrap:wrap;gap:6px"></div>
         </div>
-      </div>      <!-- ABA EVENTOS -->
-      <div class="aba-conteudo ativa" id="aba-eventos">
-        <p style="font-size:13px;color:#5e6370;margin-bottom:14px;line-height:1.6">
-          Cadastre <strong>Congressos</strong>, <strong>Assembleias de Circuito</strong> ou
-          <strong>Visitas do Superintendente</strong>. Preencha o tema e informe ausentes.
-        </p>
-        <div id="lista-eventos"></div>
-        <button class="btn-add-ev" onclick="adicionarEvento()">+ Adicionar evento</button>
-      </div>
-
-      <!-- ABA IRMÃOS -->
-      <div class="aba-conteudo" id="aba-irmaos">
-        <p style="font-size:13px;color:#5e6370;margin-bottom:14px;line-height:1.6">
-          Gerencie os irmãos de cada departamento.
-        </p>
-        <div id="gerenciar-irmaos"></div>
-<div style="margin-top:20px;border-top:2px solid #e8e8e8;padding-top:14px">
-  <strong style="color:#92400e">👻 Irmãos Espectadores (testes)</strong>
-  <p style="font-size:11px;color:#888;margin:4px 0 8px">Aparecem na lista mas NÃO entram nas designações.</p>
-  <button onclick="adicionarEspectador()" style="background:#f59e0b;color:white;border:none;padding:6px 14px;border-radius:6px;font-size:12px;font-weight:bold;cursor:pointer">+ Adicionar espectador</button>
-  <div id="lista-espectadores" style="margin-top:8px;display:flex;flex-wrap:wrap;gap:6px"></div>
-</div>
       </div>
 
       <!-- ABA TREINAMENTO -->
@@ -5230,6 +5208,9 @@ function vmcIniciar() {
     vmcAtualizarListasDeIrmaos();
     vmcRenderConfigListas();
     vmcPreencherSeletores();
+    vmcRenderIrmaos();
+    vmcRenderPublicadoras();
+    vmcRenderAjudantes();
   }
 
   if (!db) {
@@ -5247,6 +5228,9 @@ function vmcIniciar() {
     var cfg = snap.val() || {};
     if (cfg.cadastro) {
       vmcCadastro = cfg.cadastro;
+      if (!vmcCadastro.irmaos) vmcCadastro.irmaos = {};
+      if (!vmcCadastro.publicadoras) vmcCadastro.publicadoras = [];
+      if (!vmcCadastro.ajudantes) vmcCadastro.ajudantes = [];
     } else {
       // Primeira vez no servidor: importa irmãos já cadastrados
       var todosJs = vmcGetTodosParaCampo();
@@ -5258,6 +5242,9 @@ function vmcIniciar() {
     if (cfg.idx)    Object.assign(vmcIdx,    cfg.idx);
     vmcAtualizarListasDeIrmaos();
     vmcRenderConfigListas();
+    vmcRenderIrmaos();
+    vmcRenderPublicadoras();
+    vmcRenderAjudantes();
   });
 }
 
