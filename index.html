@@ -540,7 +540,7 @@ body.dark-mode .conf-badge.pendente { background: #2a2a15; color: #ca8a04; borde
         <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:12px">
           <label style="font-size:12px;font-weight:bold;color:#5e6370">Semana:</label>
           <select id="vmc-sel-data" onchange="vmcCarregarSemana()" style="padding:6px 10px;border:1px solid #d0d5dd;border-radius:6px;font-size:13px;background:white;min-width:220px"></select>
-          <select id="vmc-sel-mes" style="padding:6px 10px;border:1px solid #d0d5dd;border-radius:6px;font-size:13px;background:white">
+          <select id="vmc-sel-mes" onchange="vmcPreencherSeletores()" style="padding:6px 10px;border:1px solid #d0d5dd;border-radius:6px;font-size:13px;background:white">
             <option value="janeiro">Janeiro</option>
             <option value="fevereiro">Fevereiro</option>
             <option value="mar%C3%A7o">Março</option>
@@ -1332,7 +1332,8 @@ function trocarAba(id,btn) {
   if(id==='aba-treino') renderTreino();
   if(id==='aba-trocas') renderGerenciarTrocas();
   if(id==='aba-config') carregarPerguntaAtual();
-  if(id==='aba-presencas') carregarPresencas(); 
+  if(id==='aba-presencas') carregarPresencas();
+  if(id==='aba-vmc' && typeof vmcPreencherSeletores === 'function') vmcPreencherSeletores();
 }
 function aplicarTudo() {
   // Aplica mudancas de irmaos/eventos sem apagar meses ja gerados
@@ -4904,7 +4905,9 @@ function vmcPreencherSeletores() {
     if (datas.length) {
       document.getElementById('vmc-form').style.display = 'block';
       document.getElementById('vmc-vazio').style.display = 'none';
-      if (!vmcSemanaAtual) vmcSemanaAtual = datas[0].iso;
+      var isoSet = {};
+      datas.forEach(function(d){ isoSet[d.iso] = true; });
+      if (!vmcSemanaAtual || !isoSet[vmcSemanaAtual]) vmcSemanaAtual = datas[0].iso;
       sel.value = vmcSemanaAtual;
       vmcCarregarSemana();
     } else {
@@ -4923,30 +4926,42 @@ function vmcPreencherSeletores() {
 }
 
 function vmcGetDatas() {
+  var mesesNomes = ['janeiro','fevereiro','março','abril','maio','junho','julho',
+                     'agosto','setembro','outubro','novembro','dezembro'];
+  var selMes = document.getElementById('vmc-sel-mes');
+  var valorMes = selMes ? decodeURIComponent(selMes.value) : 'maio';
+  var mesIdx = mesesNomes.indexOf(valorMes);
+  if (mesIdx < 0) mesIdx = new Date().getMonth();
+  var ano = new Date().getFullYear();
+
+  var primeiroDia = new Date(ano, mesIdx, 1);
+  var ultimoDia   = new Date(ano, mesIdx + 1, 0);
+
   var list = [];
-  // A escala armazena quartas-feiras — calcula a segunda da mesma semana
-  Object.keys(escalaGerada).sort().forEach(function(iso) {
-    var d = new Date(iso + 'T00:00:00');
-    if (d.getDay() !== 3) return; // só quartas
+  // Gera as semanas do MÊS DA APOSTILA selecionado (independente da escala de
+  // indicadores/microfone/áudio/vídeo, que é outra planilha sem relação com o VMC).
+  // Cada semana da reunião vai de segunda a domingo, com a reunião na quarta-feira.
+  var d = new Date(primeiroDia);
+  while (d <= ultimoDia) {
+    if (d.getDay() === 3) { // quarta-feira
+      var seg = new Date(d); seg.setDate(d.getDate() - 2); // segunda da mesma semana
+      var dom = new Date(d); dom.setDate(d.getDate() + 4); // domingo
 
-    // Segunda da mesma semana (quarta - 2 dias)
-    var seg = new Date(d); seg.setDate(d.getDate() - 2);
-    var dom = new Date(d); dom.setDate(d.getDate() + 4); // domingo
+      var diaIni = seg.getDate();
+      var diaFim = dom.getDate();
+      var mesIni = seg.toLocaleDateString('pt-BR', {month:'long'});
+      var mesFim = dom.toLocaleDateString('pt-BR', {month:'long'});
+      var anoLbl = seg.getFullYear();
 
-    var diaIni = seg.getDate();
-    var diaFim = dom.getDate();
-    var mesIni = seg.toLocaleDateString('pt-BR', {month:'long'});
-    var mesFim = dom.toLocaleDateString('pt-BR', {month:'long'});
-    var ano    = seg.getFullYear();
+      var periodo = diaIni +
+        (mesIni !== mesFim ? ' de ' + mesIni : '') +
+        '-' + diaFim + ' de ' + mesFim + ' de ' + anoLbl;
 
-    var periodo = diaIni +
-      (mesIni !== mesFim ? ' de ' + mesIni : '') +
-      '-' + diaFim + ' de ' + mesFim + ' de ' + ano;
-
-    // Usa o ISO da segunda como chave do VMC
-    var segISO = seg.toISOString().slice(0,10);
-    list.push({ iso: segISO, label: periodo.charAt(0).toUpperCase() + periodo.slice(1) });
-  });
+      var segISO = seg.toISOString().slice(0,10);
+      list.push({ iso: segISO, label: periodo.charAt(0).toUpperCase() + periodo.slice(1) });
+    }
+    d.setDate(d.getDate() + 1);
+  }
   return list;
 }
 
