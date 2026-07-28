@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Versão: v2026.08.06 — corrige bug crítico: campos de Ministério/Vida Cristã não carregavam os nomes já salvos ao reabrir uma semana (risco de apagar designações ao salvar de novo) -->
+<!-- Versão: v2026.08.07 — remove tempo duplicado (min) mesmo em dados salvos antes da correção anterior, sem precisar reimportar (tela, impressão semana/mês, visão pública) -->
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
@@ -411,7 +411,7 @@ body.dark-mode .conf-badge.pendente { background: #2a2a15; color: #ca8a04; borde
     <div class="modal-cab">
       <span>
         <span class="modal-cab-titulo">👨‍💼 Área do Responsável</span>
-        <span style="font-size:10px;color:#9ca3af;font-weight:normal;margin-left:8px">v2026.08.06</span>
+        <span style="font-size:10px;color:#9ca3af;font-weight:normal;margin-left:8px">v2026.08.07</span>
       </span>
       <button class="btn-fechar" onclick="fecharPrincipal()">✕</button>
     </div>
@@ -4538,6 +4538,20 @@ function vmcSincronizarOracaoAbertura() {
 }
 
 // ── Carregar semana salva no formulário ─────────────────────────
+// ── Remove tempo já embutido no texto do tema (dados antigos importados
+// antes da correção do parser vinham com "(10 min)" ou "— 4 min" dentro do
+// texto; isso evita duplicar o tempo quando a impressão soma o tempo de novo) ──
+function vmcLimparTempo(txt) {
+  if (!txt) return '';
+  var t = String(txt);
+  t = t.replace(/\(\s*\d+\s*min\.?\s*\)/gi, '');       // remove "(10 min)" em qualquer posição
+  t = t.replace(/[—-]\s*\d+\s*min\.?\s*$/i, '');        // remove "— 4 min" no final
+  t = t.replace(/^\s*[—-]\s*/, '');                     // remove travessão solto que sobrar no início
+  t = t.replace(/\s{2,}/g, ' ').trim();
+  if (/^Joias Espirituais$/i.test(t)) t = '';           // texto redundante com o próprio título da seção
+  return t;
+}
+
 function vmcCarregarSemana() {
   var sel = document.getElementById('vmc-sel-data');
   if (!sel) return;
@@ -4552,10 +4566,10 @@ function vmcCarregarSemana() {
   set('vmc-cantico-abertura',  dados.canticoAbertura);
   set('vmc-cantico-meio',      dados.canticoMeio);
   set('vmc-cantico-fim',       dados.canticoFim);
-  set('vmc-tesouro-tema',      dados.tesouroTema);
-  set('vmc-joias-tema',        dados.joiasTema);
-  set('vmc-leitura-tema',      dados.leituraTema);
-  set('vmc-estudo-tema',       dados.estudoTema);
+  set('vmc-tesouro-tema',      vmcLimparTempo(dados.tesouroTema));
+  set('vmc-joias-tema',        vmcLimparTempo(dados.joiasTema));
+  set('vmc-leitura-tema',      vmcLimparTempo(dados.leituraTema));
+  set('vmc-estudo-tema',       vmcLimparTempo(dados.estudoTema));
 
   function fillSel(id, listKey, val) {
     var e = document.getElementById(id);
@@ -4762,6 +4776,10 @@ function vmcRodizioAuto() {
 function vmcImprimirSemana() {
   if (!vmcSemanaAtual) { alert('Selecione uma semana.'); return; }
   var dados = vmcColetarDados();
+  dados.tesouroTema = vmcLimparTempo(dados.tesouroTema);
+  dados.joiasTema   = vmcLimparTempo(dados.joiasTema);
+  dados.leituraTema = vmcLimparTempo(dados.leituraTema);
+  dados.estudoTema  = vmcLimparTempo(dados.estudoTema);
   var d = new Date(vmcSemanaAtual + 'T00:00:00');
   var semanaStr = d.toLocaleDateString('pt-BR', {day:'2-digit',month:'long',year:'numeric'});
   // Calcula período da semana (seg-dom)
@@ -4929,6 +4947,12 @@ function vmcImprimirMes() {
     var periodo = ini.getDate() + '-' + fim.getDate() + ' de ' +
       ini.toLocaleDateString('pt-BR',{month:'long'}) + ' de ' + ini.getFullYear();
     var d = vmcDados[semana.iso] || {};
+    d = Object.assign({}, d, {
+      tesouroTema: vmcLimparTempo(d.tesouroTema),
+      joiasTema:   vmcLimparTempo(d.joiasTema),
+      leituraTema: vmcLimparTempo(d.leituraTema),
+      estudoTema:  vmcLimparTempo(d.estudoTema)
+    });
     var preenchida = d.presidente || d.tesouro || (d.ministerioPartes||[]).length > 0;
 
     return '<div class="semana-card">' +
@@ -5053,6 +5077,12 @@ function vmcRenderPublico() {
   if (!sel) return;
   var iso = sel.value;
   var dados = vmcDados[iso] || {};
+  dados = Object.assign({}, dados, {
+    tesouroTema: vmcLimparTempo(dados.tesouroTema),
+    joiasTema:   vmcLimparTempo(dados.joiasTema),
+    leituraTema: vmcLimparTempo(dados.leituraTema),
+    estudoTema:  vmcLimparTempo(dados.estudoTema)
+  });
   var corpo = document.getElementById('vmc-pub-corpo');
   if (!iso || !Object.keys(dados).some(function(k){return dados[k];})) {
     corpo.innerHTML = '<p style="text-align:center;color:#888;padding:30px 0;font-size:13px">⏳ Programa ainda não foi preenchido pelo responsável.</p>';
