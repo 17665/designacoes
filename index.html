@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Versão: v2026.08.03 — inclui correção do parser VMC (JW.org), sincronização Presidente/Oração de abertura e ajustes de designação automática -->
+<!-- Versão: v2026.08.06 — corrige bug crítico: campos de Ministério/Vida Cristã não carregavam os nomes já salvos ao reabrir uma semana (risco de apagar designações ao salvar de novo) -->
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
@@ -411,7 +411,7 @@ body.dark-mode .conf-badge.pendente { background: #2a2a15; color: #ca8a04; borde
     <div class="modal-cab">
       <span>
         <span class="modal-cab-titulo">👨‍💼 Área do Responsável</span>
-        <span style="font-size:10px;color:#9ca3af;font-weight:normal;margin-left:8px">v2026.08.03</span>
+        <span style="font-size:10px;color:#9ca3af;font-weight:normal;margin-left:8px">v2026.08.06</span>
       </span>
       <button class="btn-fechar" onclick="fecharPrincipal()">✕</button>
     </div>
@@ -574,6 +574,9 @@ body.dark-mode .conf-badge.pendente { background: #2a2a15; color: #ca8a04; borde
           <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:10px 14px;margin-bottom:14px;font-size:12px;color:#166534;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px">
             <span>📅 <strong id="vmc-data-label"></strong></span>
             <span id="vmc-import-badge" style="display:none;background:#8b5cf6;color:white;font-size:11px;padding:2px 10px;border-radius:20px;font-weight:bold">✓ Programação importada do JW.org</span>
+          </div>
+          <div id="vmc-aviso-visita" style="display:none;background:#fff7ed;border:1px solid #fdba74;border-radius:8px;padding:10px 14px;margin-bottom:14px;font-size:12px;color:#9a3412;font-weight:bold;align-items:center;gap:8px">
+            📅 Atenção: nesta semana teremos a visita do superintendente de circuito.
           </div>
 
           <!-- SEÇÃO: ABERTURA -->
@@ -4354,9 +4357,9 @@ function vmcProcessarHtmlJW(texto) {
   if (texTes) {
     extrairBlocos(texTes).map(processarBloco).forEach(function(b) {
       if (/[Jj]oias [Ee]spirituais/i.test(b.titulo)) {
-        prog.joiasTema = 'Joias Espirituais (' + (b.tempo || '10') + ' min)';
+        prog.joiasTema = '';
       } else if (/[Ll]eitura da [Bb][íi]blia/i.test(b.titulo)) {
-        prog.leituraTema = b.conteudo + (b.tempo ? ' — ' + b.tempo + ' min' : ' — 4 min');
+        prog.leituraTema = b.conteudo;
       } else if (!prog.tesouroTema && b.titulo) {
         prog.tesouroTema = b.titulo;
       }
@@ -4385,7 +4388,7 @@ function vmcProcessarHtmlJW(texto) {
   if (texVida) {
     extrairBlocos(texVida).map(processarBloco).forEach(function(b) {
       if (/[Ee]studo [Bb][íi]blico de [Cc]ongregação/i.test(b.titulo)) {
-        prog.estudoTema = '(' + (b.tempo || '30') + ' min) ' + b.conteudo;
+        prog.estudoTema = b.conteudo;
       } else if (/[Nn]ecessidades [Ll]ocais/i.test(b.titulo)) {
         vidaPartes.push({ titulo: 'Necessidades Locais', tempo: b.tempo ? b.tempo + ' min' : '7 min' });
       } else if (vidaPartes.length < 4) {
@@ -4466,11 +4469,11 @@ function vmcAddParteMinist(dados, idx) {
           '</select>' +
         '</div>' +
         '<div class="vmc-parte-publ" style="display:' + (!ehDiscurso?'flex':'none') + ';gap:6px;align-items:center;flex-wrap:wrap;margin-top:4px">' +
-          '<span class="vmc-label">Publicadora</span>' + vmcSelectHtml('ministerioPubl', '') +
-          '<span class="vmc-label">Ajudante</span>'    + vmcSelectHtml('ministerioAjud', '') +
+          '<span class="vmc-label">Publicadora</span>' + vmcSelectHtml('ministerioPubl', dados.publNome || '') +
+          '<span class="vmc-label">Ajudante</span>'    + vmcSelectHtml('ministerioAjud', dados.ajudNome || '') +
         '</div>' +
         '<div class="vmc-parte-irmao" style="display:' + (ehDiscurso?'flex':'none') + ';gap:6px;align-items:center;flex-wrap:wrap;margin-top:4px">' +
-          '<span class="vmc-label">Irmão</span>' + vmcSelectHtml('ministerioIrmao', '') +
+          '<span class="vmc-label">Irmão</span>' + vmcSelectHtml('ministerioIrmao', dados.irmaoNome || '') +
         '</div>' +
       '</div>' +
     '</div>';
@@ -4499,7 +4502,7 @@ function vmcAddParteVida(dados, idx) {
     '<div class="vmc-linha" style="flex-wrap:wrap;gap:6px">' +
       '<input type="text" class="vmc-tema" style="flex:2" value="' + (dados.titulo||'') + '" placeholder="Título da parte">' +
       '<input type="text" class="vmc-tema" style="max-width:80px" value="' + (dados.tempo||'') + '" placeholder="min">' +
-      vmcSelectHtml('vidaCristaParte', '') +
+      vmcSelectHtml('vidaCristaParte', dados.irmao || '') +
       '<button onclick="vmcRemoverParte(this)" style="background:#fee2e2;color:#991b1b;border:none;border-radius:5px;padding:4px 10px;cursor:pointer;font-size:13px">✕</button>' +
     '</div>';
   cont.appendChild(div);
@@ -4523,6 +4526,8 @@ function vmcSelectHtml(listKey, valorSelecionado) {
 // (mesmo irmão nas duas funções, exceto em semana de Visita do Superintendente)
 function vmcSincronizarOracaoAbertura() {
   var chkVisita = document.getElementById('vmc-visita-superintendente');
+  var avisoVisita = document.getElementById('vmc-aviso-visita');
+  if (avisoVisita) avisoVisita.style.display = (chkVisita && chkVisita.checked) ? 'flex' : 'none';
   if (chkVisita && chkVisita.checked) return; // outro irmão fará a oração nessa semana
   var presidenteSel = document.getElementById('vmc-presidente');
   var oracaoSel = document.getElementById('vmc-oracao-abertura');
@@ -4563,9 +4568,17 @@ function vmcCarregarSemana() {
   }
   fillSel('vmc-presidente',      'presidente',      dados.presidente);
   fillSel('vmc-oracao-abertura', 'oracaoAbertura',  dados.oracaoAbertura);
+  // Detecta automaticamente se há evento "Visita do Superintendente" cadastrado
+  // no calendário para a quarta-feira desta semana (independente do checkbox manual).
+  var quartaSemana = new Date(vmcSemanaAtual + 'T00:00:00'); quartaSemana.setDate(quartaSemana.getDate() + 2);
+  var evSemana = eventoNaSemana(quartaSemana);
+  var autoVisita = !!(evSemana && evSemana.tipo === 'muda-dia');
   var chkVisita = document.getElementById('vmc-visita-superintendente');
-  if (chkVisita) chkVisita.checked = !!dados.visitaSuperintendente;
-  if (!dados.oracaoAbertura && !dados.visitaSuperintendente) vmcSincronizarOracaoAbertura();
+  var temVisita = !!dados.visitaSuperintendente || autoVisita;
+  if (chkVisita) chkVisita.checked = temVisita;
+  var avisoVisita = document.getElementById('vmc-aviso-visita');
+  if (avisoVisita) avisoVisita.style.display = temVisita ? 'flex' : 'none';
+  if (!dados.oracaoAbertura && !temVisita) vmcSincronizarOracaoAbertura();
   fillSel('vmc-tesouro',         'tesouro',         dados.tesouro);
   fillSel('vmc-joias',           'joias',           dados.joias);
   fillSel('vmc-leitura',         'leitura',         dados.leitura);
@@ -4795,6 +4808,7 @@ function vmcImprimirSemana() {
     '<h1>📋 Vida e Ministério Cristão</h1>'+
     '<div class="sub">Congregação Parque Tietê &nbsp;|&nbsp; Semana: '+periodoStr+'</div>'+
     (dados.leituraSemanal ? '<div style="background:#eff6ff;border-left:3px solid #1a4fa3;padding:5px 10px;margin-bottom:10px;font-size:11px"><strong>Leitura semanal:</strong> '+dados.leituraSemanal+'</div>' : '')+
+    (dados.visitaSuperintendente ? '<div style="background:#fff7ed;border:1px solid #fdba74;color:#9a3412;padding:6px 10px;margin-bottom:10px;font-size:11px;font-weight:bold">📅 Atenção: nesta semana teremos a visita do superintendente de circuito.</div>' : '')+
     '<table>'+
     cantRow(dados.canticoAbertura)+
     ln('Presidente', dados.presidente, '', '')+
@@ -4877,10 +4891,10 @@ function vmcImprimirMes() {
     if (d.canticoAbertura) r += '<div class="cantico">🎵 ' + d.canticoAbertura + '</div>';
     r += '<div class="parte-row"><span class="parte-label">Presidente</span><span class="parte-nome">' + nomeParticipante(d,'presidente') + '</span></div>';
     r += '<div class="parte-row"><span class="parte-label">Oração abertura</span><span class="parte-nome">' + nomeParticipante(d,'oracaoAbertura') + '</span></div>';
-    r += '<div class="parte-row"><span class="parte-label">1. Tesouros</span><span class="parte-nome">' + nomeParticipante(d,'tesouro') + '</span></div>';
+    r += '<div class="parte-row"><span class="parte-label">1. Tesouros (10 min)</span><span class="parte-nome">' + nomeParticipante(d,'tesouro') + '</span></div>';
     if (d.tesouroTema) r += '<div class="parte-tema">' + d.tesouroTema + '</div>';
-    r += '<div class="parte-row"><span class="parte-label">2. Joias Esp.</span><span class="parte-nome">' + nomeParticipante(d,'joias') + '</span></div>';
-    r += '<div class="parte-row"><span class="parte-label">3. Leitura Bíblia</span><span class="parte-nome">' + nomeParticipante(d,'leitura') + '</span></div>';
+    r += '<div class="parte-row"><span class="parte-label">2. Joias Esp. (10 min)</span><span class="parte-nome">' + nomeParticipante(d,'joias') + '</span></div>';
+    r += '<div class="parte-row"><span class="parte-label">3. Leitura Bíblia (4 min)</span><span class="parte-nome">' + nomeParticipante(d,'leitura') + '</span></div>';
     if (d.leituraTema) r += '<div class="parte-tema">' + d.leituraTema + '</div>';
     return r;
   }
@@ -4901,7 +4915,7 @@ function vmcImprimirMes() {
     (d.vidaPartes || []).forEach(function(p, i) {
       r += '<div class="parte-empilhada"><span class="pe-titulo">' + (p.titulo||'') + (p.tempo?' ('+p.tempo+')':'') + '</span><span class="pe-nome">' + (p.irmao||'—') + '</span></div>';
     });
-    r += '<div class="parte-row"><span class="parte-label">Condutor Estudo</span><span class="parte-nome">' + nomeParticipante(d,'estudoCondutor') + '</span></div>';
+    r += '<div class="parte-row"><span class="parte-label">Condutor Estudo (30 min)</span><span class="parte-nome">' + nomeParticipante(d,'estudoCondutor') + '</span></div>';
     if (d.estudoTema) r += '<div class="parte-tema">' + d.estudoTema + '</div>';
     r += '<div class="parte-row"><span class="parte-label">Leitor Estudo</span><span class="parte-nome">' + nomeParticipante(d,'estudoLeitor') + '</span></div>';
     if (d.canticoFim) r += '<div class="cantico" style="margin-top:2px">🎵 ' + d.canticoFim + '</div>';
@@ -4923,6 +4937,7 @@ function vmcImprimirMes() {
         (d.leituraSemanal ? '<span class="semana-leitura">📖 ' + d.leituraSemanal + '</span>' : '') +
         (!preenchida ? '<span style="color:#fca5a5;font-size:8px">⚠️ Não preenchida</span>' : '') +
       '</div>' +
+      (d.visitaSuperintendente ? '<div style="background:#fff7ed;color:#9a3412;font-size:8.5px;font-weight:bold;padding:3px 8px;border-bottom:1px solid #fdba74">📅 Visita do superintendente de circuito nesta semana</div>' : '') +
       '<div class="semana-body">' +
         '<div class="col-sec">' + colTesouros(d) + '</div>' +
         '<div class="col-sec">' + colMinisterio(d) + '</div>' +
@@ -4997,6 +5012,12 @@ function vmcGetDatas() {
   var d = new Date(primeiroDia);
   while (d <= ultimoDia) {
     if (d.getDay() === 3) { // quarta-feira
+      // Congresso, assembleia ou celebração suspendem a reunião de quarta-feira
+      // (manutenção e limpeza NÃO afetam a reunião/designações de quarta).
+      var ev = eventoNaSemana(d);
+      var evCancela = ev && (ev.tipo==='congresso' || ev.tipo==='assembleia' || ev.tipo==='celebracao');
+      if (evCancela) { d.setDate(d.getDate() + 1); continue; }
+
       var seg = new Date(d); seg.setDate(d.getDate() - 2); // segunda da mesma semana
       var dom = new Date(d); dom.setDate(d.getDate() + 4); // domingo
 
@@ -5011,7 +5032,15 @@ function vmcGetDatas() {
         '-' + diaFim + ' de ' + mesFim + ' de ' + anoLbl;
 
       var segISO = seg.toISOString().slice(0,10);
-      list.push({ iso: segISO, label: periodo.charAt(0).toUpperCase() + periodo.slice(1) });
+      // Marca também se essa semana tem visita do superintendente (evento "muda-dia"),
+      // para exibir aviso mais adiante mesmo antes do responsável marcar o checkbox.
+      var evMuda = eventoNaSemana(d);
+      var temMudaDia = !!(evMuda && evMuda.tipo === 'muda-dia');
+      list.push({
+        iso: segISO,
+        label: periodo.charAt(0).toUpperCase() + periodo.slice(1),
+        mudaDia: temMudaDia
+      });
     }
     d.setDate(d.getDate() + 1);
   }
@@ -5046,13 +5075,14 @@ function vmcRenderPublico() {
   }).join('');
 
   corpo.innerHTML =
+    (dados.visitaSuperintendente ? '<div style="background:#fff7ed;border:1px solid #fdba74;color:#9a3412;padding:8px 12px;border-radius:6px;margin-bottom:10px;font-size:12px;font-weight:bold">📅 Atenção: nesta semana teremos a visita do superintendente de circuito.</div>' : '')+
     '<div class="vmc-pub-secao">'+
       '<div class="vmc-pub-titulo tesouro">💎 Tesouros da Palavra de Deus</div>'+
       (dados.leituraSemanal?'<div style="font-size:11px;color:#555;padding:4px 8px">Leitura: '+dados.leituraSemanal+'</div>':'')+
       linha('Presidente', dados.presidente, '')+
-      linha('1. Tesouros', dados.tesouro, dados.tesouroTema)+
-      linha('2. Joias Espirituais', dados.joias, dados.joiasTema)+
-      linha('3. Leitura da Bíblia', dados.leitura, dados.leituraTema)+
+      linha('1. Tesouros (10 min)', dados.tesouro, dados.tesouroTema)+
+      linha('2. Joias Espirituais (10 min)', dados.joias, dados.joiasTema)+
+      linha('3. Leitura da Bíblia (4 min)', dados.leitura, dados.leituraTema)+
     '</div>'+
     '<div class="vmc-pub-secao">'+
       '<div class="vmc-pub-titulo escola">🗺️ Faça Seu Melhor no Ministério</div>'+
@@ -5061,7 +5091,7 @@ function vmcRenderPublico() {
     '<div class="vmc-pub-secao">'+
       '<div class="vmc-pub-titulo vida">📖 Nossa Vida Cristã</div>'+
       linhasVida+
-      linha('Condutor — Estudo Bíblico', dados.estudoCondutor, dados.estudoTema)+
+      linha('Condutor — Estudo Bíblico (30 min)', dados.estudoCondutor, dados.estudoTema)+
       linha('Leitor — Estudo Bíblico', dados.estudoLeitor, '')+
     '</div>';
 }
