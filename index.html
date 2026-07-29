@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Versão: v2026.08.12 — Estudo Bíblico de Congregação vira parte numerada própria (separada de Condutor/Leitor), com numeração automática -->
+<!-- Versão: v2026.08.14 — Estudo Bíblico de Congregação vira parte numerada própria (separada de Condutor/Leitor), com numeração automática -->
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
@@ -411,7 +411,7 @@ body.dark-mode .conf-badge.pendente { background: #2a2a15; color: #ca8a04; borde
     <div class="modal-cab">
       <span>
         <span class="modal-cab-titulo">👨‍💼 Área do Responsável</span>
-        <span style="font-size:10px;color:#9ca3af;font-weight:normal;margin-left:8px">v2026.08.12</span>
+        <span style="font-size:10px;color:#9ca3af;font-weight:normal;margin-left:8px">v2026.08.14</span>
       </span>
       <button class="btn-fechar" onclick="fecharPrincipal()">✕</button>
     </div>
@@ -687,10 +687,9 @@ body.dark-mode .conf-badge.pendente { background: #2a2a15; color: #ca8a04; borde
           <div id="vmc-painel-irmaos">
             <div style="display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap">
               <input type="text" id="vmc-novo-irmao" placeholder="Nome do irmão..." style="flex:1;min-width:160px;padding:7px 10px;border:1px solid #d0d5dd;border-radius:6px;font-size:13px">
-              <input type="text" id="vmc-novo-irmao-familia" placeholder="Família (opcional)" title="Preencha só se ele tiver esposa/filho(a) também cadastrado(a) — usa-se o mesmo nome de família nos dois" style="width:150px;padding:7px 10px;border:1px solid #d0d5dd;border-radius:6px;font-size:13px">
               <button onclick="vmcAddIrmao()" style="background:#1a4fa3;color:white;border:none;padding:7px 16px;border-radius:6px;font-size:13px;font-weight:bold;cursor:pointer">+ Adicionar</button>
             </div>
-            <p style="font-size:11px;color:#5e6370;margin-bottom:8px">💡 "Família": preencha com o mesmo texto (ex: sobrenome) para marido/esposa ou pai/mãe e filho(a) cadastrados. Isso permite que formem dupla no Ministério mesmo sendo de sexos diferentes.</p>
+            <p style="font-size:11px;color:#5e6370;margin-bottom:8px">💡 Depois de cadastrar, clique em "🔗 Vínculos" no nome dele pra marcar quem é cônjuge/pai/mãe/filho(a)/irmão(ã) — permite formar dupla no Ministério mesmo sendo de sexo diferente.</p>
             <div id="vmc-lista-irmaos"></div>
           </div>
 
@@ -698,7 +697,6 @@ body.dark-mode .conf-badge.pendente { background: #2a2a15; color: #ca8a04; borde
           <div id="vmc-painel-publicadoras" style="display:none">
             <div style="display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap">
               <input type="text" id="vmc-nova-publicadora" placeholder="Nome da irmã..." style="flex:1;min-width:160px;padding:7px 10px;border:1px solid #d0d5dd;border-radius:6px;font-size:13px">
-              <input type="text" id="vmc-nova-publicadora-familia" placeholder="Família (opcional)" title="Preencha só se ela tiver marido/filho(a) também cadastrado(a) — usa-se o mesmo nome de família nos dois" style="width:150px;padding:7px 10px;border:1px solid #d0d5dd;border-radius:6px;font-size:13px">
               <button onclick="vmcAddPublicadora()" style="background:#7c3aed;color:white;border:none;padding:7px 16px;border-radius:6px;font-size:13px;font-weight:bold;cursor:pointer">+ Adicionar</button>
             </div>
             <p style="font-size:11px;color:#5e6370;margin-bottom:8px">Publicadoras fazem as partes principais do Ministério (DE CASA EM CASA, demonstrações etc.)</p>
@@ -709,7 +707,6 @@ body.dark-mode .conf-badge.pendente { background: #2a2a15; color: #ca8a04; borde
           <div id="vmc-painel-ajudantes" style="display:none">
             <div style="display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap">
               <input type="text" id="vmc-nova-ajudante" placeholder="Nome da irmã..." style="flex:1;min-width:160px;padding:7px 10px;border:1px solid #d0d5dd;border-radius:6px;font-size:13px">
-              <input type="text" id="vmc-nova-ajudante-familia" placeholder="Família (opcional)" title="Preencha só se ela tiver marido/filho(a) também cadastrado(a) — usa-se o mesmo nome de família nos dois" style="width:150px;padding:7px 10px;border:1px solid #d0d5dd;border-radius:6px;font-size:13px">
               <button onclick="vmcAddAjudante()" style="background:#0891b2;color:white;border:none;padding:7px 16px;border-radius:6px;font-size:13px;font-weight:bold;cursor:pointer">+ Adicionar</button>
             </div>
             <p style="font-size:11px;color:#5e6370;margin-bottom:8px">Ajudantes auxiliam as publicadoras nas partes do Ministério. Podem evoluir para publicadoras.</p>
@@ -5285,6 +5282,11 @@ function vmcNormalizarLista(lista) {
   });
 }
 
+// Converte o texto digitado ("Cristiana Oliveira, Fulano de Tal") numa lista de nomes
+function vmcParseVinculos(texto) {
+  return (texto || '').split(',').map(function(n){return n.trim();}).filter(Boolean);
+}
+
 // Mostra painel correto
 function vmcMostrarCadastro(painel) {
   ['irmaos','publicadoras','ajudantes'].forEach(function(p) {
@@ -5297,23 +5299,102 @@ function vmcMostrarCadastro(painel) {
 // ── Irmãos ──────────────────────────────────────────────────────
 function vmcAddIrmao() {
   var inp = document.getElementById('vmc-novo-irmao');
-  var inpFam = document.getElementById('vmc-novo-irmao-familia');
   var nome = inp ? inp.value.trim() : '';
   if (!nome) return;
   if (!vmcCadastro.irmaos[nome]) vmcCadastro.irmaos[nome] = {};
-  vmcCadastro.irmaos[nome].familia = inpFam ? inpFam.value.trim() : '';
   inp.value = '';
-  if (inpFam) inpFam.value = '';
   vmcSalvarCadastro();
   vmcRenderIrmaos();
   vmcAtualizarListasDeIrmaos();
 }
 
-function vmcAtualizarFamiliaIrmao(nome, valor) {
-  if (!vmcCadastro.irmaos[nome]) vmcCadastro.irmaos[nome] = {};
-  vmcCadastro.irmaos[nome].familia = valor.trim();
+// ── Vínculos (cônjuge/pai-mãe/filho(a)/irmão-irmã) ──────────────
+// Guardados internamente como texto separado por vírgula no campo "familia"
+// de cada pessoa (irmão, publicadora ou ajudante), mas editados via checkbox.
+function vmcGetVinculoLista(nome) {
+  if (vmcCadastro.irmaos[nome]) return vmcParseVinculos(vmcCadastro.irmaos[nome].familia);
+  var pub = vmcNormalizarLista(vmcCadastro.publicadoras).filter(function(p){return p.nome===nome;})[0];
+  if (pub) return vmcParseVinculos(pub.familia);
+  var aju = vmcNormalizarLista(vmcCadastro.ajudantes).filter(function(a){return a.nome===nome;})[0];
+  if (aju) return vmcParseVinculos(aju.familia);
+  return [];
+}
+
+function vmcSetVinculoLista(nome, lista) {
+  var texto = lista.join(', ');
+  if (vmcCadastro.irmaos[nome]) { vmcCadastro.irmaos[nome].familia = texto; return; }
+  var pubList = vmcNormalizarLista(vmcCadastro.publicadoras);
+  if (pubList.some(function(p){return p.nome===nome;})) {
+    pubList.forEach(function(p){ if (p.nome===nome) p.familia = texto; });
+    vmcCadastro.publicadoras = pubList; return;
+  }
+  var ajuList = vmcNormalizarLista(vmcCadastro.ajudantes);
+  if (ajuList.some(function(a){return a.nome===nome;})) {
+    ajuList.forEach(function(a){ if (a.nome===nome) a.familia = texto; });
+    vmcCadastro.ajudantes = ajuList;
+  }
+}
+
+// Todos os nomes cadastrados no VMC (irmãos + publicadoras + ajudantes), sem repetir
+function vmcTodosNomesCadastrados() {
+  var nomes = Object.keys(vmcCadastro.irmaos || {})
+    .concat(vmcNormalizarLista(vmcCadastro.publicadoras).map(function(p){return p.nome;}))
+    .concat(vmcNormalizarLista(vmcCadastro.ajudantes).map(function(a){return a.nome;}));
+  var vistos = {};
+  var unicos = [];
+  nomes.forEach(function(n){ if (!vistos[n]) { vistos[n]=true; unicos.push(n); } });
+  return unicos.sort(function(a,b){return a.localeCompare(b,'pt-BR');});
+}
+
+// Marca/desmarca o vínculo dos dois lados ao mesmo tempo
+function vmcToggleVinculo(nome, outro, marcado) {
+  var listaA = vmcGetVinculoLista(nome);
+  var listaB = vmcGetVinculoLista(outro);
+  if (marcado) {
+    if (listaA.indexOf(outro) < 0) listaA.push(outro);
+    if (listaB.indexOf(nome)  < 0) listaB.push(nome);
+  } else {
+    listaA = listaA.filter(function(n){return n!==outro;});
+    listaB = listaB.filter(function(n){return n!==nome;});
+  }
+  vmcSetVinculoLista(nome, listaA);
+  vmcSetVinculoLista(outro, listaB);
   vmcSalvarCadastro();
   vmcAtualizarListasDeIrmaos();
+  vmcRenderConfigListas();
+}
+
+// Gera um ID de HTML seguro a partir de um nome (índice evita colisão)
+function vmcVincPainelId(prefixo, i) { return 'vinc-painel-' + prefixo + '-' + i; }
+
+function vmcRenderPainelVinculos(nome) {
+  var outros = vmcTodosNomesCadastrados().filter(function(n){return n!==nome;});
+  var vinculosAtuais = vmcGetVinculoLista(nome);
+  if (!outros.length) return '<div style="padding:8px;font-size:12px;color:#aaa">Nenhuma outra pessoa cadastrada ainda.</div>';
+  var itens = outros.map(function(outro) {
+    var marcado = vinculosAtuais.indexOf(outro) >= 0;
+    return '<label class="vmc-vinc-item" data-nome="' + outro.toLowerCase() + '" style="display:flex;align-items:center;gap:6px;padding:3px 6px;font-size:12px;cursor:pointer">' +
+      '<input type="checkbox" ' + (marcado?'checked':'') + ' onchange="vmcToggleVinculo(\'' + nome + '\',\'' + outro + '\',this.checked)">' + outro +
+    '</label>';
+  }).join('');
+  return '<div style="background:white;border:1px solid #d0d5dd;border-radius:8px;padding:8px;margin-top:6px;max-height:180px;overflow:auto">' +
+    '<input type="text" placeholder="🔍 Buscar nome..." oninput="vmcFiltrarVinculos(this)" style="width:100%;padding:5px 8px;border:1px solid #e5e7eb;border-radius:5px;font-size:12px;margin-bottom:6px;box-sizing:border-box">' +
+    itens +
+  '</div>';
+}
+
+function vmcFiltrarVinculos(inp) {
+  var termo = inp.value.toLowerCase();
+  var painel = inp.parentElement;
+  painel.querySelectorAll('.vmc-vinc-item').forEach(function(item){
+    item.style.display = item.getAttribute('data-nome').indexOf(termo) >= 0 ? 'flex' : 'none';
+  });
+}
+
+function vmcAlternarPainelVinculo(painelId) {
+  var el = document.getElementById(painelId);
+  if (!el) return;
+  el.style.display = el.style.display === 'none' ? 'block' : 'none';
 }
 
 function vmcRenderIrmaos() {
@@ -5322,7 +5403,7 @@ function vmcRenderIrmaos() {
   var nomes = Object.keys(vmcCadastro.irmaos).sort(function(a,b){return a.localeCompare(b,'pt-BR');});
   if (!nomes.length) { cont.innerHTML = '<p style="font-size:12px;color:#aaa">Nenhum irmão cadastrado.</p>'; return; }
 
-  cont.innerHTML = nomes.map(function(nome) {
+  cont.innerHTML = nomes.map(function(nome, i) {
     var funcoes = vmcCadastro.irmaos[nome] || {};
     var checks = vmcFuncoes.map(function(f) {
       var chk = funcoes[f.key] ? 'checked' : '';
@@ -5332,13 +5413,16 @@ function vmcRenderIrmaos() {
         '<input type="checkbox" ' + chk + ' onchange="vmcToggleFuncao(\'' + nome + '\',\'' + f.key + '\',this.checked)" style="margin:0">' +
         f.label + '</label>';
     }).join('');
+    var qtdVinc = vmcGetVinculoLista(nome).length;
+    var painelId = vmcVincPainelId('irm', i);
     return '<div style="background:#f9f9f9;border:1px solid #e8e8e8;border-radius:8px;padding:10px 12px;margin-bottom:8px">' +
       '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;flex-wrap:wrap;gap:6px">' +
         '<span style="font-size:13px;font-weight:bold;color:#1a1a2e">👨 ' + nome + '</span>' +
-        '<input type="text" value="' + (funcoes.familia||'') + '" placeholder="Família (opcional)" onchange="vmcAtualizarFamiliaIrmao(\'' + nome + '\',this.value)" style="width:130px;padding:3px 8px;border:1px solid #d0d5dd;border-radius:5px;font-size:11px">' +
+        '<button onclick="vmcAlternarPainelVinculo(\'' + painelId + '\')" style="background:#eef2ff;color:#4338ca;border:none;border-radius:5px;padding:3px 10px;font-size:11px;cursor:pointer">🔗 Vínculos' + (qtdVinc?' ('+qtdVinc+')':'') + '</button>' +
         '<button onclick="vmcRemoverIrmaoVMC(\'' + nome + '\')" style="background:#fee2e2;color:#dc2626;border:none;border-radius:5px;padding:3px 10px;font-size:11px;cursor:pointer">✕ Remover</button>' +
       '</div>' +
       '<div style="display:flex;flex-wrap:wrap;gap:2px">' + checks + '</div>' +
+      '<div id="' + painelId + '" style="display:none">' + vmcRenderPainelVinculos(nome) + '</div>' +
     '</div>';
   }).join('');
 }
@@ -5363,26 +5447,16 @@ function vmcRemoverIrmaoVMC(nome) {
 // ── Publicadoras ────────────────────────────────────────────────
 function vmcAddPublicadora() {
   var inp = document.getElementById('vmc-nova-publicadora');
-  var inpFam = document.getElementById('vmc-nova-publicadora-familia');
   var nome = inp ? inp.value.trim() : '';
   if (!nome) return;
   var lista = vmcNormalizarLista(vmcCadastro.publicadoras);
   if (!lista.some(function(p){return p.nome===nome;})) {
-    lista.push({ nome: nome, familia: inpFam ? inpFam.value.trim() : '' });
+    lista.push({ nome: nome, familia: '' });
   }
   vmcCadastro.publicadoras = lista;
   inp.value = '';
-  if (inpFam) inpFam.value = '';
   vmcSalvarCadastro();
   vmcRenderPublicadoras();
-  vmcAtualizarListasDeIrmaos();
-}
-
-function vmcAtualizarFamiliaPublicadora(nome, valor) {
-  var lista = vmcNormalizarLista(vmcCadastro.publicadoras);
-  lista.forEach(function(p){ if (p.nome === nome) p.familia = valor.trim(); });
-  vmcCadastro.publicadoras = lista;
-  vmcSalvarCadastro();
   vmcAtualizarListasDeIrmaos();
 }
 
@@ -5391,11 +5465,16 @@ function vmcRenderPublicadoras() {
   if (!cont) return;
   var lista = vmcNormalizarLista(vmcCadastro.publicadoras);
   if (!lista.length) { cont.innerHTML = '<p style="font-size:12px;color:#aaa">Nenhuma publicadora cadastrada.</p>'; return; }
-  cont.innerHTML = lista.sort(function(a,b){return a.nome.localeCompare(b.nome,'pt-BR');}).map(function(p) {
-    return '<div style="display:inline-flex;align-items:center;gap:6px;background:#f5f3ff;border:1px solid #ddd6fe;border-radius:8px;padding:6px 12px;margin:3px">' +
-      '<span style="font-size:13px">👩 ' + p.nome + '</span>' +
-      '<input type="text" value="' + (p.familia||'') + '" placeholder="Família" onchange="vmcAtualizarFamiliaPublicadora(\'' + p.nome + '\',this.value)" style="width:90px;padding:2px 6px;border:1px solid #ddd6fe;border-radius:4px;font-size:11px">' +
-      '<button onclick="vmcRemoverPublicadora(\'' + p.nome + '\')" style="background:none;border:none;color:#dc2626;cursor:pointer;font-size:14px;line-height:1">×</button>' +
+  cont.innerHTML = lista.sort(function(a,b){return a.nome.localeCompare(b.nome,'pt-BR');}).map(function(p, i) {
+    var qtdVinc = vmcGetVinculoLista(p.nome).length;
+    var painelId = vmcVincPainelId('pub', i);
+    return '<div style="display:inline-flex;flex-direction:column;gap:2px;background:#f5f3ff;border:1px solid #ddd6fe;border-radius:8px;padding:6px 12px;margin:3px;vertical-align:top">' +
+      '<div style="display:flex;align-items:center;gap:6px">' +
+        '<span style="font-size:13px">👩 ' + p.nome + '</span>' +
+        '<button onclick="vmcAlternarPainelVinculo(\'' + painelId + '\')" style="background:#eef2ff;color:#4338ca;border:none;border-radius:5px;padding:2px 8px;font-size:11px;cursor:pointer">🔗' + (qtdVinc?' ('+qtdVinc+')':'') + '</button>' +
+        '<button onclick="vmcRemoverPublicadora(\'' + p.nome + '\')" style="background:none;border:none;color:#dc2626;cursor:pointer;font-size:14px;line-height:1">×</button>' +
+      '</div>' +
+      '<div id="' + painelId + '" style="display:none;width:220px">' + vmcRenderPainelVinculos(p.nome) + '</div>' +
     '</div>';
   }).join('');
 }
@@ -5408,26 +5487,16 @@ function vmcRemoverPublicadora(nome) {
 // ── Ajudantes ───────────────────────────────────────────────────
 function vmcAddAjudante() {
   var inp = document.getElementById('vmc-nova-ajudante');
-  var inpFam = document.getElementById('vmc-nova-ajudante-familia');
   var nome = inp ? inp.value.trim() : '';
   if (!nome) return;
   var lista = vmcNormalizarLista(vmcCadastro.ajudantes);
   if (!lista.some(function(a){return a.nome===nome;})) {
-    lista.push({ nome: nome, familia: inpFam ? inpFam.value.trim() : '' });
+    lista.push({ nome: nome, familia: '' });
   }
   vmcCadastro.ajudantes = lista;
   inp.value = '';
-  if (inpFam) inpFam.value = '';
   vmcSalvarCadastro();
   vmcRenderAjudantes();
-  vmcAtualizarListasDeIrmaos();
-}
-
-function vmcAtualizarFamiliaAjudante(nome, valor) {
-  var lista = vmcNormalizarLista(vmcCadastro.ajudantes);
-  lista.forEach(function(a){ if (a.nome === nome) a.familia = valor.trim(); });
-  vmcCadastro.ajudantes = lista;
-  vmcSalvarCadastro();
   vmcAtualizarListasDeIrmaos();
 }
 
@@ -5436,11 +5505,16 @@ function vmcRenderAjudantes() {
   if (!cont) return;
   var lista = vmcNormalizarLista(vmcCadastro.ajudantes);
   if (!lista.length) { cont.innerHTML = '<p style="font-size:12px;color:#aaa">Nenhuma ajudante cadastrada.</p>'; return; }
-  cont.innerHTML = lista.sort(function(a,b){return a.nome.localeCompare(b.nome,'pt-BR');}).map(function(a) {
-    return '<div style="display:inline-flex;align-items:center;gap:6px;background:#ecfeff;border:1px solid #a5f3fc;border-radius:8px;padding:6px 12px;margin:3px">' +
-      '<span style="font-size:13px">👩 ' + a.nome + '</span>' +
-      '<input type="text" value="' + (a.familia||'') + '" placeholder="Família" onchange="vmcAtualizarFamiliaAjudante(\'' + a.nome + '\',this.value)" style="width:90px;padding:2px 6px;border:1px solid #a5f3fc;border-radius:4px;font-size:11px">' +
-      '<button onclick="vmcRemoverAjudante(\'' + a.nome + '\')" style="background:none;border:none;color:#dc2626;cursor:pointer;font-size:14px;line-height:1">×</button>' +
+  cont.innerHTML = lista.sort(function(a,b){return a.nome.localeCompare(b.nome,'pt-BR');}).map(function(a, i) {
+    var qtdVinc = vmcGetVinculoLista(a.nome).length;
+    var painelId = vmcVincPainelId('aju', i);
+    return '<div style="display:inline-flex;flex-direction:column;gap:2px;background:#ecfeff;border:1px solid #a5f3fc;border-radius:8px;padding:6px 12px;margin:3px;vertical-align:top">' +
+      '<div style="display:flex;align-items:center;gap:6px">' +
+        '<span style="font-size:13px">👩 ' + a.nome + '</span>' +
+        '<button onclick="vmcAlternarPainelVinculo(\'' + painelId + '\')" style="background:#eef2ff;color:#4338ca;border:none;border-radius:5px;padding:2px 8px;font-size:11px;cursor:pointer">🔗' + (qtdVinc?' ('+qtdVinc+')':'') + '</button>' +
+        '<button onclick="vmcRemoverAjudante(\'' + a.nome + '\')" style="background:none;border:none;color:#dc2626;cursor:pointer;font-size:14px;line-height:1">×</button>' +
+      '</div>' +
+      '<div id="' + painelId + '" style="display:none;width:220px">' + vmcRenderPainelVinculos(a.nome) + '</div>' +
     '</div>';
   }).join('');
 }
@@ -5456,19 +5530,19 @@ function vmcAtualizarListasDeIrmaos() {
   // Zera listas de irmãos
   vmcFuncoes.forEach(function(f) { vmcListas[f.key] = []; });
   vmcPessoas = {};
-  // Preenche por função marcada + registra sexo/família de cada irmão
+  // Preenche por função marcada + registra sexo/vínculos de cada irmão
   Object.keys(vmcCadastro.irmaos).forEach(function(nome) {
     var funcoes = vmcCadastro.irmaos[nome] || {};
-    vmcPessoas[nome] = { sexo: 'M', familia: funcoes.familia || '' };
+    vmcPessoas[nome] = { sexo: 'M', vinculos: vmcParseVinculos(funcoes.familia) };
     vmcFuncoes.forEach(function(f) {
       if (funcoes[f.key]) vmcListas[f.key].push(nome);
     });
   });
-  // Publicadoras e ajudantes (irmãs) — registra sexo/família também
+  // Publicadoras e ajudantes (irmãs) — registra sexo/vínculos também
   var publicadorasNorm = vmcNormalizarLista(vmcCadastro.publicadoras);
   var ajudantesNorm    = vmcNormalizarLista(vmcCadastro.ajudantes);
-  publicadorasNorm.forEach(function(p) { vmcPessoas[p.nome] = { sexo: 'F', familia: p.familia || '' }; });
-  ajudantesNorm.forEach(function(a)    { vmcPessoas[a.nome] = { sexo: 'F', familia: a.familia || '' }; });
+  publicadorasNorm.forEach(function(p) { vmcPessoas[p.nome] = { sexo: 'F', vinculos: vmcParseVinculos(p.familia) }; });
+  ajudantesNorm.forEach(function(a)    { vmcPessoas[a.nome] = { sexo: 'F', vinculos: vmcParseVinculos(a.familia) }; });
 
   // Publicador(a) e Ajudante do Ministério: junta irmãs cadastradas + irmãos marcados elegíveis
   vmcListas.ministerioPubl = publicadorasNorm.map(function(p){return p.nome;})
@@ -5481,7 +5555,7 @@ function vmcAtualizarListasDeIrmaos() {
 
 // Retorna, dentre a lista de ajudantes cadastrados, apenas os compatíveis com
 // o publicador escolhido: mesmo sexo sempre é permitido; sexo diferente só se
-// forem da mesma família (mesmo texto preenchido em "Família").
+// um deles apontar o outro pelo nome exato no campo "Vínculo".
 function vmcAjudantesCompativeis(nomePublicador) {
   var todos = vmcListas.ministerioAjud || [];
   if (!nomePublicador) return todos;
@@ -5492,7 +5566,7 @@ function vmcAjudantesCompativeis(nomePublicador) {
     var aj = vmcPessoas[nome];
     if (!aj) return true;
     if (aj.sexo === pub.sexo) return true;
-    return !!(pub.familia && aj.familia && pub.familia === aj.familia);
+    return (pub.vinculos||[]).indexOf(nome) >= 0 || (aj.vinculos||[]).indexOf(nomePublicador) >= 0;
   });
 }
 
