@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Versão: v2026.08.18 — Estudo Bíblico de Congregação vira parte numerada própria (separada de Condutor/Leitor), com numeração automática -->
+<!-- Versão: v2026.08.20 — Estudo Bíblico de Congregação vira parte numerada própria (separada de Condutor/Leitor), com numeração automática -->
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
@@ -411,7 +411,7 @@ body.dark-mode .conf-badge.pendente { background: #2a2a15; color: #ca8a04; borde
     <div class="modal-cab">
       <span>
         <span class="modal-cab-titulo">👨‍💼 Área do Responsável</span>
-        <span style="font-size:10px;color:#9ca3af;font-weight:normal;margin-left:8px">v2026.08.18</span>
+        <span style="font-size:10px;color:#9ca3af;font-weight:normal;margin-left:8px">v2026.08.20</span>
       </span>
       <button class="btn-fechar" onclick="fecharPrincipal()">✕</button>
     </div>
@@ -4461,7 +4461,7 @@ function vmcAddParteMinist(dados, idx) {
   div.id = id;
   // Tipo de participante
   var tipoVal = dados.tipo || '';
-  var ehDiscurso = /[Dd]iscurso|[Dd]emonstração/.test(tipoVal);
+  var ehDiscurso = tipoVal === 'irmao' || /[Dd]iscurso|[Dd]emonstração/.test(tipoVal);
   div.innerHTML =
     '<div style="display:flex;align-items:flex-start;gap:6px;margin-bottom:6px">' +
       '<div style="flex:1">' +
@@ -4541,8 +4541,10 @@ function vmcSelectHtml(listKey, valorSelecionado, onchangeAttr) {
 }
 
 function vmcSelectHtmlLista(lista, valorSelecionado, onchangeAttr, listKey) {
+  lista = (lista || []).slice();
+  if (valorSelecionado && lista.indexOf(valorSelecionado) < 0) lista.unshift(valorSelecionado);
   var opts = '<option value="">— não definido —</option>' +
-    (lista || []).map(function(n){
+    lista.map(function(n){
       return '<option value="'+n+'"'+(valorSelecionado===n?' selected':'')+'>'+n+'</option>';
     }).join('');
   return '<select class="vmc-sel"' + (listKey?' data-lista="'+listKey+'"':'') +
@@ -4601,7 +4603,11 @@ function vmcCarregarSemana() {
   function fillSel(id, listKey, val) {
     var e = document.getElementById(id);
     if (!e) return;
-    var lista = vmcListas[listKey] || [];
+    var lista = (vmcListas[listKey] || []).slice();
+    // Garante que o nome já designado apareça mesmo que não esteja mais na
+    // lista de elegíveis (ex: checkbox da função foi desmarcada depois) —
+    // sem isso, a designação sumia da tela e se perdia ao salvar de novo.
+    if (val && lista.indexOf(val) < 0) lista.unshift(val);
     e.innerHTML = '<option value="">— não definido —</option>' +
       lista.map(function(n){
         return '<option value="'+n+'"'+(val===n?' selected':'')+'>'+n+'</option>';
@@ -4915,12 +4921,18 @@ function vmcImprimirDesignacoes() {
   var dia7 = new Date(d); dia7.setDate(d.getDate() + 2); // quarta-feira (dia da reunião)
   var dataStr = dia7.toLocaleDateString('pt-BR', {day:'2-digit',month:'2-digit',year:'numeric'});
 
-  var partes = (dados.ministerioPartes || []).filter(function(p) {
+  var slipsInfo = [];
+  if (dados.leitura) {
+    slipsInfo.push({ numero: '3. Leitura da Bíblia', nome: dados.leitura, ajudante: '' });
+  }
+  (dados.ministerioPartes || []).forEach(function(p, i) {
     var nome = p.tipo === 'publicadora' ? p.publNome : p.irmaoNome;
-    return !!nome;
+    if (!nome) return;
+    var ajudante = p.tipo === 'publicadora' ? (p.ajudNome || '') : '';
+    slipsInfo.push({ numero: (i + 4) + '. ' + (p.titulo || ''), nome: nome, ajudante: ajudante });
   });
 
-  if (!partes.length) { alert('Nenhum designado em "Faça Seu Melhor no Ministério" nesta semana.'); return; }
+  if (!slipsInfo.length) { alert('Nenhum designado na Leitura da Bíblia ou em "Faça Seu Melhor no Ministério" nesta semana.'); return; }
 
   function slip(numero, nome, ajudante) {
     return '<div class="slip">' +
@@ -4941,11 +4953,8 @@ function vmcImprimirDesignacoes() {
     '</div>';
   }
 
-  var slips = partes.map(function(p, i) {
-    var nome = p.tipo === 'publicadora' ? p.publNome : p.irmaoNome;
-    var ajudante = p.tipo === 'publicadora' ? (p.ajudNome || '') : '';
-    var numero = (i + 4) + '. ' + (p.titulo || '');
-    return slip(numero, nome, ajudante);
+  var slips = slipsInfo.map(function(s) {
+    return slip(s.numero, s.nome, s.ajudante);
   }).join('');
 
   var html = '<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8">'+
