@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Versão: v2026.08.15 — Estudo Bíblico de Congregação vira parte numerada própria (separada de Condutor/Leitor), com numeração automática -->
+<!-- Versão: v2026.08.17 — Estudo Bíblico de Congregação vira parte numerada própria (separada de Condutor/Leitor), com numeração automática -->
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
@@ -411,7 +411,7 @@ body.dark-mode .conf-badge.pendente { background: #2a2a15; color: #ca8a04; borde
     <div class="modal-cab">
       <span>
         <span class="modal-cab-titulo">👨‍💼 Área do Responsável</span>
-        <span style="font-size:10px;color:#9ca3af;font-weight:normal;margin-left:8px">v2026.08.15</span>
+        <span style="font-size:10px;color:#9ca3af;font-weight:normal;margin-left:8px">v2026.08.17</span>
       </span>
       <button class="btn-fechar" onclick="fecharPrincipal()">✕</button>
     </div>
@@ -544,12 +544,12 @@ body.dark-mode .conf-badge.pendente { background: #2a2a15; color: #ca8a04; borde
         <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:12px">
           <label style="font-size:12px;font-weight:bold;color:#5e6370">Semana:</label>
           <select id="vmc-sel-data" onchange="vmcCarregarSemana()" style="padding:6px 10px;border:1px solid #d0d5dd;border-radius:6px;font-size:13px;background:white;min-width:220px"></select>
-          <select id="vmc-sel-mes" onchange="vmcPreencherSeletores()" style="padding:6px 10px;border:1px solid #d0d5dd;border-radius:6px;font-size:13px;background:white">
+          <select id="vmc-sel-mes" onchange="vmcPreencherSeletores();vmcAtualizarBotaoPublicar()" style="padding:6px 10px;border:1px solid #d0d5dd;border-radius:6px;font-size:13px;background:white">
             <option value="janeiro">Janeiro</option>
             <option value="fevereiro">Fevereiro</option>
             <option value="mar%C3%A7o">Março</option>
             <option value="abril">Abril</option>
-            <option value="maio" selected>Maio</option>
+            <option value="maio">Maio</option>
             <option value="junho">Junho</option>
             <option value="julho">Julho</option>
             <option value="agosto">Agosto</option>
@@ -562,6 +562,7 @@ body.dark-mode .conf-badge.pendente { background: #2a2a15; color: #ca8a04; borde
           <button onclick="vmcColarTexto()" style="background:#0891b2;color:white;border:none;padding:7px 14px;border-radius:6px;font-size:12px;font-weight:bold;cursor:pointer">📋 Colar programação</button>
           <button onclick="vmcRodizioAuto()" style="background:#1a4fa3;color:white;border:none;padding:7px 14px;border-radius:6px;font-size:12px;font-weight:bold;cursor:pointer">🎲 Rodízio automático</button>
           <button onclick="vmcSalvarSemana()" style="background:#0f6e56;color:white;border:none;padding:7px 14px;border-radius:6px;font-size:12px;font-weight:bold;cursor:pointer">💾 Salvar semana</button>
+          <button id="vmc-btn-publicar" onclick="vmcTogglePublicarMes()" style="background:#f59e0b;color:white;border:none;padding:7px 14px;border-radius:6px;font-size:12px;font-weight:bold;cursor:pointer">📢 Publicar mês</button>
           <button onclick="vmcImprimirSemana()" style="background:#b45309;color:white;border:none;padding:7px 14px;border-radius:6px;font-size:12px;font-weight:bold;cursor:pointer">🖨️ Imprimir semana</button>
           <button onclick="vmcImprimirMes()" style="background:#7c3aed;color:white;border:none;padding:7px 14px;border-radius:6px;font-size:12px;font-weight:bold;cursor:pointer">📅 Imprimir mês</button>
           <button onclick="vmcImprimirDesignacoes()" style="background:#1a1a2e;color:#f2a922;border:none;padding:7px 14px;border-radius:6px;font-size:12px;font-weight:bold;cursor:pointer">🌾 Slips (S-89-T)</button>
@@ -1005,6 +1006,8 @@ body.dark-mode .conf-badge.pendente { background: #2a2a15; color: #ca8a04; borde
     </div>
     <!-- Seletor de semana pública -->
     <div style="padding:12px 20px;background:#f0fdf4;border-bottom:1px solid #bbf7d0;display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+      <label style="font-size:12px;font-weight:bold;color:#166534">Mês:</label>
+      <select id="vmc-pub-sel-mes" onchange="vmcAtualizarPublicoSemanas()" style="padding:6px 10px;border:1px solid #bbf7d0;border-radius:6px;font-size:13px;background:white"></select>
       <label style="font-size:12px;font-weight:bold;color:#166534">Semana:</label>
       <select id="vmc-pub-sel" onchange="vmcRenderPublico()" style="padding:6px 10px;border:1px solid #bbf7d0;border-radius:6px;font-size:13px;background:white;min-width:200px"></select>
     </div>
@@ -4138,6 +4141,9 @@ var vmcListas = {
   oracaoFim:      [],
 };
 
+// Meses liberados para a congregação ver na aba "📖 Programa" (chave = nome do mês em minúsculo)
+var vmcPublicados = {};
+
 // Preenche todas as listas VMC com todos os irmãos cadastrados
 // (o responsável apaga quem não se aplica a cada função)
 function vmcInicializarListasComTodos() {
@@ -5124,21 +5130,115 @@ function vmcPreencherSeletores() {
       document.getElementById('vmc-vazio').style.display = 'block';
     }
   }
-  // Overlay público
-  var pubSel = document.getElementById('vmc-pub-sel');
-  if (pubSel) {
-    pubSel.innerHTML = datas.map(function(d){
-      return '<option value="'+d.iso+'">'+d.label+'</option>';
-    }).join('') || '<option value="">— Nenhuma reunião —</option>';
-    if (datas.length) vmcRenderPublico();
+  vmcAtualizarBotaoPublicar();
+  vmcAtualizarSeletorMesPublico();
+  vmcAtualizarPublicoSemanas();
+}
+
+// ── Publicação: controla quais meses a congregação pode ver em "📖 Programa" ──
+function vmcMesSelecionadoAdmin() {
+  var sel = document.getElementById('vmc-sel-mes');
+  return sel ? decodeURIComponent(sel.value) : 'maio';
+}
+
+function vmcTogglePublicarMes() {
+  var mes = vmcMesSelecionadoAdmin();
+  vmcPublicados[mes] = !vmcPublicados[mes];
+  vmcSalvarCadastro();
+  vmcAtualizarBotaoPublicar();
+  vmcAtualizarSeletorMesPublico();
+  alert(vmcPublicados[mes]
+    ? '✅ ' + mes.charAt(0).toUpperCase() + mes.slice(1) + ' agora está visível para a congregação em "📖 Programa".'
+    : '🚫 ' + mes.charAt(0).toUpperCase() + mes.slice(1) + ' foi ocultado da congregação.');
+}
+
+function vmcAtualizarBotaoPublicar() {
+  var btn = document.getElementById('vmc-btn-publicar');
+  if (!btn) return;
+  var mes = vmcMesSelecionadoAdmin();
+  var publicado = !!vmcPublicados[mes];
+  btn.textContent = publicado ? '✅ Publicado (clique p/ ocultar)' : '📢 Publicar mês';
+  btn.style.background = publicado ? '#16a34a' : '#f59e0b';
+}
+
+function vmcAtualizarSeletorMesPublico() {
+  var mesesNomes = ['janeiro','fevereiro','março','abril','maio','junho','julho',
+                     'agosto','setembro','outubro','novembro','dezembro'];
+  var sel = document.getElementById('vmc-pub-sel-mes');
+  if (!sel) return;
+  var publicadosOrdenados = mesesNomes.filter(function(m){ return vmcPublicados[m]; });
+  var valorAtual = sel.value;
+  sel.innerHTML = publicadosOrdenados.map(function(m){
+    return '<option value="'+m+'">'+m.charAt(0).toUpperCase()+m.slice(1)+'</option>';
+  }).join('') || '<option value="">— Nenhum mês publicado ainda —</option>';
+  if (publicadosOrdenados.indexOf(valorAtual) >= 0) {
+    sel.value = valorAtual;
+  } else {
+    var mesHoje = mesesNomes[new Date().getMonth()];
+    sel.value = publicadosOrdenados.indexOf(mesHoje) >= 0 ? mesHoje : (publicadosOrdenados[0] || '');
   }
 }
 
-function vmcGetDatas() {
+// Monta a lista de semanas públicas a partir do mês PUBLICADO escolhido
+// (independente do mês que o responsável está editando no momento)
+function vmcAtualizarPublicoSemanas() {
+  var selMesPub = document.getElementById('vmc-pub-sel-mes');
+  var pubSel = document.getElementById('vmc-pub-sel');
+  if (!pubSel) return;
+  var mesPub = selMesPub ? selMesPub.value : '';
+  var datasPub = mesPub ? vmcGetDatas(mesPub) : [];
+  pubSel.innerHTML = datasPub.map(function(d){
+    return '<option value="'+d.iso+'">'+d.label+'</option>';
+  }).join('') || '<option value="">— Nenhuma reunião publicada —</option>';
+  if (datasPub.length) {
+    var isoHoje = vmcSemanaDeHoje(datasPub);
+    if (isoHoje) pubSel.value = isoHoje;
+    vmcRenderPublico();
+  } else {
+    var corpo = document.getElementById('vmc-pub-corpo');
+    if (corpo) corpo.innerHTML = '<p style="text-align:center;color:#888;padding:30px 0">Nenhum mês publicado ainda. Volte em breve!</p>';
+  }
+}
+
+// Mês atual de verdade (não fica preso em nenhum valor fixo — sempre calcula pela data real do dispositivo)
+function vmcMesAtualValue() {
+  var meses = ['janeiro','fevereiro','mar%C3%A7o','abril','maio','junho','julho',
+               'agosto','setembro','outubro','novembro','dezembro'];
+  return meses[new Date().getMonth()];
+}
+function vmcDefinirMesAtual() {
+  var sel = document.getElementById('vmc-sel-mes');
+  if (sel) sel.value = vmcMesAtualValue();
+}
+
+// Acha, dentre as semanas do mês selecionado, a que contém a data de hoje
+// (ou, se hoje já passou de todas, a próxima semana futura mais próxima)
+function vmcSemanaDeHoje(datas) {
+  if (!datas || !datas.length) return null;
+  var hoje = new Date(); hoje.setHours(0,0,0,0);
+  for (var i = 0; i < datas.length; i++) {
+    var seg = new Date(datas[i].iso + 'T00:00:00');
+    var dom = new Date(seg); dom.setDate(seg.getDate() + 6);
+    if (hoje >= seg && hoje <= dom) return datas[i].iso;
+  }
+  // Nenhuma semana contém hoje (mês diferente do atual): usa a primeira semana futura, senão a última
+  for (var j = 0; j < datas.length; j++) {
+    var seg2 = new Date(datas[j].iso + 'T00:00:00');
+    if (seg2 >= hoje) return datas[j].iso;
+  }
+  return datas[datas.length - 1].iso;
+}
+
+function vmcGetDatas(mesOverride) {
   var mesesNomes = ['janeiro','fevereiro','março','abril','maio','junho','julho',
                      'agosto','setembro','outubro','novembro','dezembro'];
-  var selMes = document.getElementById('vmc-sel-mes');
-  var valorMes = selMes ? decodeURIComponent(selMes.value) : 'maio';
+  var valorMes;
+  if (mesOverride) {
+    valorMes = mesOverride;
+  } else {
+    var selMes = document.getElementById('vmc-sel-mes');
+    valorMes = selMes ? decodeURIComponent(selMes.value) : 'maio';
+  }
   var mesIdx = mesesNomes.indexOf(valorMes);
   if (mesIdx < 0) mesIdx = new Date().getMonth();
   var ano = new Date().getFullYear();
@@ -5150,17 +5250,22 @@ function vmcGetDatas() {
   // Gera as semanas do MÊS DA APOSTILA selecionado (independente da escala de
   // indicadores/microfone/áudio/vídeo, que é outra planilha sem relação com o VMC).
   // Cada semana da reunião vai de segunda a domingo, com a reunião na quarta-feira.
+  // IMPORTANTE: a semana pertence ao mês em que cai a SEGUNDA-FEIRA (início da
+  // semana) — não ao mês em que cai a quarta. Isso é o que a apostila oficial
+  // faz quando o mês termina numa segunda (ex: 31 de agosto a 6 de setembro
+  // continua sendo a última semana de agosto, mesmo a quarta caindo em setembro).
   var d = new Date(primeiroDia);
   while (d <= ultimoDia) {
-    if (d.getDay() === 3) { // quarta-feira
+    if (d.getDay() === 1) { // segunda-feira = início da semana
+      var seg = new Date(d);
+      var qua = new Date(d); qua.setDate(d.getDate() + 2); // quarta (dia da reunião)
+      var dom = new Date(d); dom.setDate(d.getDate() + 6); // domingo
+
       // Congresso, assembleia ou celebração suspendem a reunião de quarta-feira
       // (manutenção e limpeza NÃO afetam a reunião/designações de quarta).
-      var ev = eventoNaSemana(d);
+      var ev = eventoNaSemana(qua);
       var evCancela = ev && (ev.tipo==='congresso' || ev.tipo==='assembleia' || ev.tipo==='celebracao');
       if (evCancela) { d.setDate(d.getDate() + 1); continue; }
-
-      var seg = new Date(d); seg.setDate(d.getDate() - 2); // segunda da mesma semana
-      var dom = new Date(d); dom.setDate(d.getDate() + 4); // domingo
 
       var diaIni = seg.getDate();
       var diaFim = dom.getDate();
@@ -5175,7 +5280,7 @@ function vmcGetDatas() {
       var segISO = seg.toISOString().slice(0,10);
       // Marca também se essa semana tem visita do superintendente (evento "muda-dia"),
       // para exibir aviso mais adiante mesmo antes do responsável marcar o checkbox.
-      var evMuda = eventoNaSemana(d);
+      var evMuda = eventoNaSemana(qua);
       var temMudaDia = !!(evMuda && evMuda.tipo === 'muda-dia');
       list.push({
         iso: segISO,
@@ -5587,7 +5692,7 @@ function vmcAtualizarAjudanteCompativel(selPublicador) {
 
 // ── Salvar/carregar cadastro no Firebase ────────────────────────
 function vmcSalvarCadastro() {
-  if (db) db.ref('vmc_config').update({ cadastro: vmcCadastro, listas: vmcListas, idx: vmcIdx });
+  if (db) db.ref('vmc_config').update({ cadastro: vmcCadastro, listas: vmcListas, idx: vmcIdx, publicados: vmcPublicados });
 }
 
 function vmcRenderConfigListas() {
@@ -5635,6 +5740,8 @@ function vmcIniciar() {
     vmcRenderIrmaos();
     vmcRenderPublicadoras();
     vmcRenderAjudantes();
+    vmcAtualizarSeletorMesPublico();
+    vmcAtualizarPublicoSemanas();
   }
 
   if (!db) {
@@ -5664,16 +5771,20 @@ function vmcIniciar() {
     }
     if (cfg.listas) Object.assign(vmcListas, cfg.listas);
     if (cfg.idx)    Object.assign(vmcIdx,    cfg.idx);
+    if (cfg.publicados) vmcPublicados = cfg.publicados;
     vmcAtualizarListasDeIrmaos();
     vmcRenderConfigListas();
     vmcRenderIrmaos();
     vmcRenderPublicadoras();
     vmcRenderAjudantes();
+    vmcAtualizarBotaoPublicar();
+    vmcAtualizarSeletorMesPublico();
+    vmcAtualizarPublicoSemanas();
   });
 }
 
 // Overlay público
-function abrirProgramaVMC() { vmcPreencherSeletores(); document.getElementById('ov-programa-vmc').classList.add('aberto'); }
+function abrirProgramaVMC() { vmcAtualizarSeletorMesPublico(); vmcAtualizarPublicoSemanas(); document.getElementById('ov-programa-vmc').classList.add('aberto'); }
 function fecharProgramaVMC() { document.getElementById('ov-programa-vmc').classList.remove('aberto'); }
 
 // Integração com Minha Escala
@@ -5726,7 +5837,7 @@ setTimeout(reagendarAvisosAoIniciar, 1000);
 // Inicia sistema VMC
 // VMC inicia após carregar — todosIrmaos já está disponível no arquivo
 setTimeout(function() {
-  try { vmcIniciar(); } catch(e) { console.error('Erro vmcIniciar:', e); }
+  try { vmcDefinirMesAtual(); vmcIniciar(); } catch(e) { console.error('Erro vmcIniciar:', e); }
 }, 100);
 // 🔥 REMOVIDO - Impede geração automática ao carregar 🔥
 // try { gerarEscalaAtual(); } catch(e) { console.error('Erro gerarEscalaAtual:', e); }
