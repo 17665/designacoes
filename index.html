@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Versão: v2026.08.17 — Estudo Bíblico de Congregação vira parte numerada própria (separada de Condutor/Leitor), com numeração automática -->
+<!-- Versão: v2026.08.18 — Estudo Bíblico de Congregação vira parte numerada própria (separada de Condutor/Leitor), com numeração automática -->
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
@@ -411,7 +411,7 @@ body.dark-mode .conf-badge.pendente { background: #2a2a15; color: #ca8a04; borde
     <div class="modal-cab">
       <span>
         <span class="modal-cab-titulo">👨‍💼 Área do Responsável</span>
-        <span style="font-size:10px;color:#9ca3af;font-weight:normal;margin-left:8px">v2026.08.17</span>
+        <span style="font-size:10px;color:#9ca3af;font-weight:normal;margin-left:8px">v2026.08.18</span>
       </span>
       <button class="btn-fechar" onclick="fecharPrincipal()">✕</button>
     </div>
@@ -5523,6 +5523,7 @@ function vmcRenderIrmaos() {
     return '<div style="background:#f9f9f9;border:1px solid #e8e8e8;border-radius:8px;padding:10px 12px;margin-bottom:8px">' +
       '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;flex-wrap:wrap;gap:6px">' +
         '<span style="font-size:13px;font-weight:bold;color:#1a1a2e">👨 ' + nome + '</span>' +
+        '<button onclick="vmcRenomearPessoa(\'' + nome + '\')" style="background:#fef9c3;color:#854d0e;border:none;border-radius:5px;padding:3px 10px;font-size:11px;cursor:pointer">✏️ Editar nome</button>' +
         '<button onclick="vmcAlternarPainelVinculo(\'' + painelId + '\')" style="background:#eef2ff;color:#4338ca;border:none;border-radius:5px;padding:3px 10px;font-size:11px;cursor:pointer">🔗 Vínculos' + (qtdVinc?' ('+qtdVinc+')':'') + '</button>' +
         '<button onclick="vmcRemoverIrmaoVMC(\'' + nome + '\')" style="background:#fee2e2;color:#dc2626;border:none;border-radius:5px;padding:3px 10px;font-size:11px;cursor:pointer">✕ Remover</button>' +
       '</div>' +
@@ -5547,6 +5548,101 @@ function vmcRemoverIrmaoVMC(nome) {
   vmcSalvarCadastro();
   vmcRenderIrmaos();
   vmcAtualizarListasDeIrmaos();
+}
+
+// ── Renomear pessoa (corrige erro de digitação e propaga pra tudo) ──
+// Atualiza: cadastro (irmãos/publicadoras/ajudantes), vínculos de outras
+// pessoas que apontavam pro nome antigo, e TODAS as semanas já salvas em
+// vmc (presidente, orações, tesouro, joias, leitura, partes do ministério,
+// partes de vida cristã, condutor/leitor do estudo).
+function vmcRenomearPessoa(nomeAntigo) {
+  var novoNome = prompt('Corrigir/editar o nome de "' + nomeAntigo + '" para:', nomeAntigo);
+  if (novoNome === null) return;
+  novoNome = novoNome.trim();
+  if (!novoNome || novoNome === nomeAntigo) return;
+
+  if (vmcTodosNomesCadastrados().indexOf(novoNome) >= 0) {
+    if (!confirm('Já existe alguém cadastrado como "' + novoNome + '". Deseja mesclar os dois cadastros nesse nome mesmo assim?')) return;
+  }
+
+  var qtdSemanas = vmcContarDesignacoes(nomeAntigo);
+  if (!confirm('Isso vai renomear "' + nomeAntigo + '" para "' + novoNome + '" no cadastro E em ' + qtdSemanas + ' semana(s) já designada(s). Confirma?')) return;
+
+  // 1) Cadastro
+  if (vmcCadastro.irmaos[nomeAntigo]) {
+    vmcCadastro.irmaos[novoNome] = vmcCadastro.irmaos[nomeAntigo];
+    delete vmcCadastro.irmaos[nomeAntigo];
+  }
+  var pubList = vmcNormalizarLista(vmcCadastro.publicadoras);
+  pubList.forEach(function(p){ if (p.nome === nomeAntigo) p.nome = novoNome; });
+  vmcCadastro.publicadoras = pubList;
+  var ajuList = vmcNormalizarLista(vmcCadastro.ajudantes);
+  ajuList.forEach(function(a){ if (a.nome === nomeAntigo) a.nome = novoNome; });
+  vmcCadastro.ajudantes = ajuList;
+
+  // 2) Vínculos de outras pessoas que apontavam pro nome antigo
+  Object.keys(vmcCadastro.irmaos).forEach(function(nome) {
+    var vinc = vmcParseVinculos(vmcCadastro.irmaos[nome].familia);
+    var idx = vinc.indexOf(nomeAntigo);
+    if (idx >= 0) { vinc[idx] = novoNome; vmcCadastro.irmaos[nome].familia = vinc.join(', '); }
+  });
+  var pubList2 = vmcNormalizarLista(vmcCadastro.publicadoras);
+  pubList2.forEach(function(p) {
+    var vinc = vmcParseVinculos(p.familia);
+    var idx = vinc.indexOf(nomeAntigo);
+    if (idx >= 0) { vinc[idx] = novoNome; p.familia = vinc.join(', '); }
+  });
+  vmcCadastro.publicadoras = pubList2;
+  var ajuList2 = vmcNormalizarLista(vmcCadastro.ajudantes);
+  ajuList2.forEach(function(a) {
+    var vinc = vmcParseVinculos(a.familia);
+    var idx = vinc.indexOf(nomeAntigo);
+    if (idx >= 0) { vinc[idx] = novoNome; a.familia = vinc.join(', '); }
+  });
+  vmcCadastro.ajudantes = ajuList2;
+
+  // 3) Propaga pra todas as semanas já designadas
+  vmcSubstituirNomeEmDesignacoes(nomeAntigo, novoNome);
+
+  vmcSalvarCadastro();
+  vmcAtualizarListasDeIrmaos();
+  vmcRenderConfigListas();
+  alert('Pronto! "' + nomeAntigo + '" foi renomeado para "' + novoNome + '" no cadastro e em ' + qtdSemanas + ' semana(s) já designada(s).');
+}
+
+// Conta em quantas semanas salvas o nome aparece (pra mostrar antes de confirmar)
+function vmcContarDesignacoes(nome) {
+  var camposSimples = ['presidente','oracaoAbertura','tesouro','joias','leitura','estudoCondutor','estudoLeitor','oracaoFim'];
+  var qtd = 0;
+  Object.keys(vmcDados || {}).forEach(function(iso) {
+    var d = vmcDados[iso];
+    if (!d) return;
+    var achou = camposSimples.some(function(c){ return d[c] === nome; }) ||
+      (d.ministerioPartes || []).some(function(p){ return p.publNome===nome || p.ajudNome===nome || p.irmaoNome===nome; }) ||
+      (d.vidaPartes || []).some(function(p){ return p.irmao===nome; });
+    if (achou) qtd++;
+  });
+  return qtd;
+}
+
+// Substitui o nome em todas as semanas salvas (vmcDados) e salva no Firebase
+function vmcSubstituirNomeEmDesignacoes(nomeAntigo, novoNome) {
+  var camposSimples = ['presidente','oracaoAbertura','tesouro','joias','leitura','estudoCondutor','estudoLeitor','oracaoFim'];
+  Object.keys(vmcDados || {}).forEach(function(iso) {
+    var d = vmcDados[iso];
+    if (!d) return;
+    camposSimples.forEach(function(c){ if (d[c] === nomeAntigo) d[c] = novoNome; });
+    (d.ministerioPartes || []).forEach(function(p) {
+      if (p.publNome  === nomeAntigo) p.publNome  = novoNome;
+      if (p.ajudNome  === nomeAntigo) p.ajudNome  = novoNome;
+      if (p.irmaoNome === nomeAntigo) p.irmaoNome = novoNome;
+    });
+    (d.vidaPartes || []).forEach(function(p) { if (p.irmao === nomeAntigo) p.irmao = novoNome; });
+  });
+  if (db) db.ref('vmc').set(vmcDados);
+  // Se a semana aberta na tela agora foi alterada, recarrega o formulário
+  if (vmcSemanaAtual && vmcDados[vmcSemanaAtual]) vmcCarregarSemana();
+  vmcRenderPublico();
 }
 
 // ── Publicadoras ────────────────────────────────────────────────
@@ -5576,6 +5672,7 @@ function vmcRenderPublicadoras() {
     return '<div style="display:inline-flex;flex-direction:column;gap:2px;background:#f5f3ff;border:1px solid #ddd6fe;border-radius:8px;padding:6px 12px;margin:3px;vertical-align:top">' +
       '<div style="display:flex;align-items:center;gap:6px">' +
         '<span style="font-size:13px">👩 ' + p.nome + '</span>' +
+        '<button onclick="vmcRenomearPessoa(\'' + p.nome + '\')" style="background:none;border:none;color:#854d0e;cursor:pointer;font-size:12px">✏️</button>' +
         '<button onclick="vmcAlternarPainelVinculo(\'' + painelId + '\')" style="background:#eef2ff;color:#4338ca;border:none;border-radius:5px;padding:2px 8px;font-size:11px;cursor:pointer">🔗' + (qtdVinc?' ('+qtdVinc+')':'') + '</button>' +
         '<button onclick="vmcRemoverPublicadora(\'' + p.nome + '\')" style="background:none;border:none;color:#dc2626;cursor:pointer;font-size:14px;line-height:1">×</button>' +
       '</div>' +
@@ -5616,6 +5713,7 @@ function vmcRenderAjudantes() {
     return '<div style="display:inline-flex;flex-direction:column;gap:2px;background:#ecfeff;border:1px solid #a5f3fc;border-radius:8px;padding:6px 12px;margin:3px;vertical-align:top">' +
       '<div style="display:flex;align-items:center;gap:6px">' +
         '<span style="font-size:13px">👩 ' + a.nome + '</span>' +
+        '<button onclick="vmcRenomearPessoa(\'' + a.nome + '\')" style="background:none;border:none;color:#854d0e;cursor:pointer;font-size:12px">✏️</button>' +
         '<button onclick="vmcAlternarPainelVinculo(\'' + painelId + '\')" style="background:#eef2ff;color:#4338ca;border:none;border-radius:5px;padding:2px 8px;font-size:11px;cursor:pointer">🔗' + (qtdVinc?' ('+qtdVinc+')':'') + '</button>' +
         '<button onclick="vmcRemoverAjudante(\'' + a.nome + '\')" style="background:none;border:none;color:#dc2626;cursor:pointer;font-size:14px;line-height:1">×</button>' +
       '</div>' +
