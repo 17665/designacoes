@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Versão: v2026.08.20 — Estudo Bíblico de Congregação vira parte numerada própria (separada de Condutor/Leitor), com numeração automática -->
+<!-- Versão: v2026.08.21 — Estudo Bíblico de Congregação vira parte numerada própria (separada de Condutor/Leitor), com numeração automática -->
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
@@ -411,7 +411,7 @@ body.dark-mode .conf-badge.pendente { background: #2a2a15; color: #ca8a04; borde
     <div class="modal-cab">
       <span>
         <span class="modal-cab-titulo">👨‍💼 Área do Responsável</span>
-        <span style="font-size:10px;color:#9ca3af;font-weight:normal;margin-left:8px">v2026.08.20</span>
+        <span style="font-size:10px;color:#9ca3af;font-weight:normal;margin-left:8px">v2026.08.21</span>
       </span>
       <button class="btn-fechar" onclick="fecharPrincipal()">✕</button>
     </div>
@@ -5341,6 +5341,7 @@ function vmcRenderPublico() {
       '<div class="vmc-pub-titulo tesouro">💎 Tesouros da Palavra de Deus</div>'+
       (dados.leituraSemanal?'<div style="font-size:11px;color:#555;padding:4px 8px">Leitura: '+dados.leituraSemanal+'</div>':'')+
       linha('Presidente', dados.presidente, '')+
+      linha('Oração de abertura', dados.oracaoAbertura, '')+
       linha('1. Tesouros (10 min)', dados.tesouro, dados.tesouroTema)+
       linha('2. Joias Espirituais (10 min)', dados.joias, dados.joiasTema)+
       linha('3. Leitura da Bíblia (4 min)', dados.leitura, dados.leituraTema)+
