@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Versão: v2026.08.21 — Estudo Bíblico de Congregação vira parte numerada própria (separada de Condutor/Leitor), com numeração automática -->
+<!-- Versão: v2026.08.22 — Estudo Bíblico de Congregação vira parte numerada própria (separada de Condutor/Leitor), com numeração automática -->
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
@@ -372,6 +372,7 @@ body.dark-mode .conf-badge.pendente { background: #2a2a15; color: #ca8a04; borde
       <button onclick="sairModoResponsavel()" style="background:#ef4444;color:white;border:none;border-radius:10px;padding:2px 10px;font-size:12px;font-weight:bold;cursor:pointer">Sair</button>
     </div>
     <button class="btn-gerenciar" id="btn-area-responsavel" onclick="pedirSenha()">👨‍💼 Área do Responsável</button>
+    <button onclick="pedirSenhaVMC()" style="background:#b45309;color:white;border:none;padding:9px 18px;border-radius:8px;font-size:14px;font-weight:bold;cursor:pointer">🌾 Acesso VMC</button>
     <button class="btn-imprimir" onclick="window.print()">🖨️ Imprimir escala</button>
     <a href="manual-usuario.html" target="_blank" style="background:#7c3aed;color:white;border:none;padding:9px 18px;border-radius:8px;font-size:14px;font-weight:bold;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:6px">📘 Manual do Irmão</a>
     <button onclick="abrirProgramaVMC()" style="background:#0f6e56;color:white;border:none;padding:9px 18px;border-radius:8px;font-size:14px;font-weight:bold;cursor:pointer">📖 Programa</button>
@@ -405,17 +406,33 @@ body.dark-mode .conf-badge.pendente { background: #2a2a15; color: #ca8a04; borde
   </div>
 </div>
 
+<!-- OVERLAY SENHA DO ASSISTENTE VMC -->
+<div class="overlay" id="ov-senha-vmc">
+  <div class="modal-senha">
+    <div class="modal-senha-cab" style="color:#b45309">🌾 Acesso VMC</div>
+    <div class="modal-senha-body">
+      <p>Digite a senha que o responsável te passou para editar o Programa VMC.</p>
+      <input type="password" id="campo-senha-vmc" placeholder="••••••••" onkeydown="if(event.key==='Enter')confirmarSenhaVMC()">
+      <div class="senha-erro" id="senha-vmc-erro">Senha incorreta, ou seu acesso foi desativado. Fale com o responsável.</div>
+      <div class="senha-btns">
+        <button class="btn-cancelar" onclick="fecharSenhaVMC()">Cancelar</button>
+        <button class="btn-entrar" onclick="confirmarSenhaVMC()">Entrar →</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- OVERLAY PRINCIPAL -->
 <div class="overlay" id="ov-principal">
   <div class="modal-principal">
     <div class="modal-cab">
       <span>
         <span class="modal-cab-titulo">👨‍💼 Área do Responsável</span>
-        <span style="font-size:10px;color:#9ca3af;font-weight:normal;margin-left:8px">v2026.08.21</span>
+        <span style="font-size:10px;color:#9ca3af;font-weight:normal;margin-left:8px">v2026.08.22</span>
       </span>
       <button class="btn-fechar" onclick="fecharPrincipal()">✕</button>
     </div>
-    <div class="abas">
+    <div class="abas" id="barra-abas">
       <button class="aba-btn ativa" onclick="trocarAba('aba-eventos',this)">⚙️ Eventos</button>
       <button class="aba-btn" onclick="trocarAba('aba-irmaos',this)">👥 Irmãos</button>
       <button class="aba-btn" onclick="trocarAba('aba-treino',this)">📚 Treinamento</button>
@@ -670,6 +687,18 @@ body.dark-mode .conf-badge.pendente { background: #2a2a15; color: #ca8a04; borde
         <!-- Mensagem quando não há semanas -->
         <div id="vmc-vazio" style="text-align:center;padding:30px;color:#888;font-size:13px">
           ⚠️ Nenhuma reunião encontrada. Gere os meses primeiro na aba "Gerar Meses".
+        </div>
+
+        <!-- Assistentes com acesso só a esta aba (escondido no modo assistente) -->
+        <div id="vmc-secao-assistentes" style="margin-top:20px;border-top:2px solid #e8e8e8;padding-top:16px">
+          <div style="font-size:13px;font-weight:bold;color:#92400e;margin-bottom:4px">🌾 Assistentes com acesso só à aba VMC</div>
+          <p style="font-size:12px;color:#5e6370;margin-bottom:10px">Dê a alguém uma senha própria pra editar só esta aba (inclusive publicar meses), sem acesso ao resto da Área do Responsável.</p>
+          <div style="display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap">
+            <input type="text" id="vmc-novo-assistente-nome" placeholder="Nome do assistente..." style="flex:1;min-width:160px;padding:7px 10px;border:1px solid #d0d5dd;border-radius:6px;font-size:13px">
+            <input type="text" id="vmc-novo-assistente-senha" placeholder="Senha (ex: 4 dígitos)" style="width:160px;padding:7px 10px;border:1px solid #d0d5dd;border-radius:6px;font-size:13px">
+            <button onclick="vmcAddAssistente()" style="background:#b45309;color:white;border:none;padding:7px 16px;border-radius:6px;font-size:13px;font-weight:bold;cursor:pointer">+ Adicionar</button>
+          </div>
+          <div id="vmc-lista-assistentes"></div>
         </div>
 
         <!-- Configuração das listas por parte -->
@@ -1340,7 +1369,16 @@ function abrirPrincipal(abaId) {
   trocarAba(abaId,null); renderEventos(); popularSelTreino();
   document.getElementById('ov-principal').classList.add('aberto');
 }
-function fecharPrincipal() { document.getElementById('ov-principal').classList.remove('aberto'); }
+function fecharPrincipal() {
+  document.getElementById('ov-principal').classList.remove('aberto');
+  if (vmcModoAssistente) {
+    vmcModoAssistente = false;
+    var barra = document.getElementById('barra-abas');
+    if (barra) barra.style.display = '';
+    var secaoAssist = document.getElementById('vmc-secao-assistentes');
+    if (secaoAssist) secaoAssist.style.display = '';
+  }
+}
 function trocarAba(id,btn) {
   document.querySelectorAll('.aba-conteudo').forEach(function(el){ el.classList.remove('ativa'); });
   document.querySelectorAll('.aba-btn').forEach(function(el){ el.classList.remove('ativa'); });
@@ -4144,6 +4182,104 @@ var vmcListas = {
 // Meses liberados para a congregação ver na aba "📖 Programa" (chave = nome do mês em minúsculo)
 var vmcPublicados = {};
 
+// ── Acesso de assistentes só à aba VMC (senha própria por pessoa) ──
+var vmcAssistentes = {};   // { "Nome da pessoa": { senha: "1234", ativo: true } }
+var vmcModoAssistente = false;
+
+function pedirSenhaVMC() {
+  document.getElementById('campo-senha-vmc').value = '';
+  document.getElementById('senha-vmc-erro').style.display = 'none';
+  document.getElementById('ov-senha-vmc').classList.add('aberto');
+  setTimeout(function(){ document.getElementById('campo-senha-vmc').focus(); }, 100);
+}
+function fecharSenhaVMC() {
+  document.getElementById('ov-senha-vmc').classList.remove('aberto');
+}
+function confirmarSenhaVMC() {
+  var digitada = document.getElementById('campo-senha-vmc').value;
+  var encontrado = !!digitada && Object.keys(vmcAssistentes).some(function(nome) {
+    var a = vmcAssistentes[nome] || {};
+    return a.ativo && a.senha === digitada;
+  });
+  if (encontrado) {
+    fecharSenhaVMC();
+    vmcModoAssistente = true;
+    trocarAba('aba-vmc', null);
+    var barra = document.getElementById('barra-abas');
+    if (barra) barra.style.display = 'none';
+    var secaoAssist = document.getElementById('vmc-secao-assistentes');
+    if (secaoAssist) secaoAssist.style.display = 'none';
+    document.getElementById('ov-principal').classList.add('aberto');
+  } else {
+    document.getElementById('senha-vmc-erro').style.display = 'block';
+    document.getElementById('campo-senha-vmc').value = '';
+    document.getElementById('campo-senha-vmc').focus();
+  }
+}
+
+// ── Gerenciamento dos assistentes (feito pelo responsável principal) ──
+function vmcAddAssistente() {
+  var inpNome = document.getElementById('vmc-novo-assistente-nome');
+  var inpSenha = document.getElementById('vmc-novo-assistente-senha');
+  var nome = inpNome ? inpNome.value.trim() : '';
+  var senha = inpSenha ? inpSenha.value.trim() : '';
+  if (!nome || !senha) { alert('Preencha o nome e a senha.'); return; }
+  vmcAssistentes[nome] = { senha: senha, ativo: true };
+  inpNome.value = ''; inpSenha.value = '';
+  vmcSalvarCadastro();
+  vmcRenderAssistentes();
+}
+
+function vmcToggleAssistenteAtivo(nome) {
+  if (!vmcAssistentes[nome]) return;
+  vmcAssistentes[nome].ativo = !vmcAssistentes[nome].ativo;
+  vmcSalvarCadastro();
+  vmcRenderAssistentes();
+}
+
+function vmcRemoverAssistente(nome) {
+  if (!confirm('Remover o acesso de ' + nome + '?')) return;
+  delete vmcAssistentes[nome];
+  vmcSalvarCadastro();
+  vmcRenderAssistentes();
+}
+
+function vmcMostrarSenhaAssistente(nome, btn) {
+  var span = document.getElementById('vmc-assist-senha-' + vmcSlugAssistente(nome));
+  if (!span) return;
+  if (span.textContent === '••••••') {
+    span.textContent = (vmcAssistentes[nome] || {}).senha || '';
+    btn.textContent = '🙈';
+  } else {
+    span.textContent = '••••••';
+    btn.textContent = '👁️';
+  }
+}
+
+function vmcSlugAssistente(nome) {
+  return nome.replace(/[^a-zA-Z0-9]/g, '_');
+}
+
+function vmcRenderAssistentes() {
+  var cont = document.getElementById('vmc-lista-assistentes');
+  if (!cont) return;
+  var nomes = Object.keys(vmcAssistentes).sort(function(a,b){return a.localeCompare(b,'pt-BR');});
+  if (!nomes.length) { cont.innerHTML = '<p style="font-size:12px;color:#aaa">Nenhum assistente com acesso ainda.</p>'; return; }
+  cont.innerHTML = nomes.map(function(nome) {
+    var a = vmcAssistentes[nome];
+    var slug = vmcSlugAssistente(nome);
+    return '<div style="display:flex;align-items:center;gap:8px;background:#fffbeb;border:1px solid #fde68a;border-radius:8px;padding:8px 12px;margin-bottom:6px;flex-wrap:wrap">' +
+      '<span style="font-size:13px;font-weight:bold;flex:1;min-width:120px">🌾 ' + nome + '</span>' +
+      '<span style="font-size:12px;color:#666">Senha: <span id="vmc-assist-senha-' + slug + '" style="font-family:monospace">••••••</span></span>' +
+      '<button onclick="vmcMostrarSenhaAssistente(\'' + nome + '\', this)" style="background:none;border:none;cursor:pointer;font-size:13px">👁️</button>' +
+      '<label style="display:flex;align-items:center;gap:4px;font-size:12px;cursor:pointer">' +
+        '<input type="checkbox" ' + (a.ativo?'checked':'') + ' onchange="vmcToggleAssistenteAtivo(\'' + nome + '\')"> Ativo' +
+      '</label>' +
+      '<button onclick="vmcRemoverAssistente(\'' + nome + '\')" style="background:#fee2e2;color:#dc2626;border:none;border-radius:5px;padding:3px 10px;font-size:11px;cursor:pointer">✕</button>' +
+    '</div>';
+  }).join('');
+}
+
 // Preenche todas as listas VMC com todos os irmãos cadastrados
 // (o responsável apaga quem não se aplica a cada função)
 function vmcInicializarListasComTodos() {
@@ -5800,7 +5936,7 @@ function vmcAtualizarAjudanteCompativel(selPublicador) {
 
 // ── Salvar/carregar cadastro no Firebase ────────────────────────
 function vmcSalvarCadastro() {
-  if (db) db.ref('vmc_config').update({ cadastro: vmcCadastro, listas: vmcListas, idx: vmcIdx, publicados: vmcPublicados });
+  if (db) db.ref('vmc_config').update({ cadastro: vmcCadastro, listas: vmcListas, idx: vmcIdx, publicados: vmcPublicados, assistentes: vmcAssistentes });
 }
 
 function vmcRenderConfigListas() {
@@ -5848,6 +5984,7 @@ function vmcIniciar() {
     vmcRenderIrmaos();
     vmcRenderPublicadoras();
     vmcRenderAjudantes();
+    vmcRenderAssistentes();
     vmcAtualizarSeletorMesPublico();
     vmcAtualizarPublicoSemanas();
   }
@@ -5880,11 +6017,13 @@ function vmcIniciar() {
     if (cfg.listas) Object.assign(vmcListas, cfg.listas);
     if (cfg.idx)    Object.assign(vmcIdx,    cfg.idx);
     if (cfg.publicados) vmcPublicados = cfg.publicados;
+    if (cfg.assistentes) vmcAssistentes = cfg.assistentes;
     vmcAtualizarListasDeIrmaos();
     vmcRenderConfigListas();
     vmcRenderIrmaos();
     vmcRenderPublicadoras();
     vmcRenderAjudantes();
+    vmcRenderAssistentes();
     vmcAtualizarBotaoPublicar();
     vmcAtualizarSeletorMesPublico();
     vmcAtualizarPublicoSemanas();
