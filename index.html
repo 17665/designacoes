@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Versão: v2026.08.22 — Estudo Bíblico de Congregação vira parte numerada própria (separada de Condutor/Leitor), com numeração automática -->
+<!-- Versão: v2026.08.23 — Estudo Bíblico de Congregação vira parte numerada própria (separada de Condutor/Leitor), com numeração automática -->
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
@@ -376,6 +376,7 @@ body.dark-mode .conf-badge.pendente { background: #2a2a15; color: #ca8a04; borde
     <button class="btn-imprimir" onclick="window.print()">🖨️ Imprimir escala</button>
     <a href="manual-usuario.html" target="_blank" style="background:#7c3aed;color:white;border:none;padding:9px 18px;border-radius:8px;font-size:14px;font-weight:bold;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:6px">📘 Manual do Irmão</a>
     <button onclick="abrirProgramaVMC()" style="background:#0f6e56;color:white;border:none;padding:9px 18px;border-radius:8px;font-size:14px;font-weight:bold;cursor:pointer">📖 Programa</button>
+    <button onclick="dpAbrirPrograma()" style="background:#1a4fa3;color:white;border:none;padding:9px 18px;border-radius:8px;font-size:14px;font-weight:bold;cursor:pointer">🎤 Reunião Pública</button>
     <button id="btn-minha-escala" onclick="abrirMinhaEscala()" style="background:#7c3aed;color:white;border:none;padding:9px 18px;border-radius:8px;font-size:14px;font-weight:bold;cursor:pointer">👤 Minha Escala</button>
     <button id="btn-notif" onclick="pedirPermissaoNotificacao()" style="display:none;background:#0f6e56;color:white;border:none;padding:9px 14px;border-radius:8px;font-size:14px;cursor:pointer" title="Ativar notificações">🔔</button>
     <button id="btn-instalar-pwa" onclick="instalarPWA()" style="display:none;background:#f59e0b;color:white;border:none;padding:9px 14px;border-radius:8px;font-size:13px;font-weight:bold;cursor:pointer">📱 Instalar App</button>
@@ -428,7 +429,7 @@ body.dark-mode .conf-badge.pendente { background: #2a2a15; color: #ca8a04; borde
     <div class="modal-cab">
       <span>
         <span class="modal-cab-titulo">👨‍💼 Área do Responsável</span>
-        <span style="font-size:10px;color:#9ca3af;font-weight:normal;margin-left:8px">v2026.08.22</span>
+        <span style="font-size:10px;color:#9ca3af;font-weight:normal;margin-left:8px">v2026.08.23</span>
       </span>
       <button class="btn-fechar" onclick="fecharPrincipal()">✕</button>
     </div>
@@ -440,6 +441,7 @@ body.dark-mode .conf-badge.pendente { background: #2a2a15; color: #ca8a04; borde
       <button class="aba-btn" onclick="trocarAba('aba-trocas',this)">🔄 Trocas</button>
       <button class="aba-btn" onclick="trocarAba('aba-historico',this)">📊 Histórico</button>
       <button class="aba-btn" onclick="trocarAba('aba-vmc',this)">📖 VMC</button>
+      <button class="aba-btn" onclick="trocarAba('aba-dp',this)">🎤 Discurso Público</button>
       <button class="aba-btn" onclick="trocarAba('aba-config',this)">🔑 Senha</button>
       <button class="aba-btn" onclick="trocarAba('aba-presencas',this)">✅ Presenças</button>
       <button class="aba-btn" onclick="trocarAba('aba-manual-resp',this)">📘 Manual</button>
@@ -865,6 +867,116 @@ body.dark-mode .conf-badge.pendente { background: #2a2a15; color: #ca8a04; borde
         </div>
       </div>
 
+      <!-- ABA DISCURSO PÚBLICO / SENTINELA -->
+      <div class="aba-conteudo" id="aba-dp">
+        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:14px">
+          <label style="font-size:12px;font-weight:bold;color:#374151">Mês:</label>
+          <select id="dp-sel-mes" onchange="dpPreencherSeletores();dpAtualizarBotaoPublicar()" style="padding:6px 10px;border:1px solid #d0d5dd;border-radius:6px;font-size:13px;background:white">
+            <option value="janeiro">Janeiro</option><option value="fevereiro">Fevereiro</option>
+            <option value="mar%C3%A7o">Março</option><option value="abril">Abril</option>
+            <option value="maio">Maio</option><option value="junho">Junho</option>
+            <option value="julho">Julho</option><option value="agosto">Agosto</option>
+            <option value="setembro">Setembro</option><option value="outubro">Outubro</option>
+            <option value="novembro">Novembro</option><option value="dezembro">Dezembro</option>
+          </select>
+          <label style="font-size:12px;font-weight:bold;color:#374151">Domingo:</label>
+          <select id="dp-sel-data" onchange="dpCarregarSemana()" style="padding:6px 10px;border:1px solid #d0d5dd;border-radius:6px;font-size:13px;background:white;min-width:200px"></select>
+          <button onclick="dpRodizioAuto()" style="background:#7c3aed;color:white;border:none;padding:7px 14px;border-radius:6px;font-size:12px;font-weight:bold;cursor:pointer">🎲 Rodízio automático</button>
+          <button onclick="dpSalvarSemana()" style="background:#0f6e56;color:white;border:none;padding:7px 14px;border-radius:6px;font-size:12px;font-weight:bold;cursor:pointer">💾 Salvar domingo</button>
+          <button id="dp-btn-publicar" onclick="dpTogglePublicarMes()" style="background:#f59e0b;color:white;border:none;padding:7px 14px;border-radius:6px;font-size:12px;font-weight:bold;cursor:pointer">📢 Publicar mês</button>
+          <button onclick="dpImprimirSemana()" style="background:#b45309;color:white;border:none;padding:7px 14px;border-radius:6px;font-size:12px;font-weight:bold;cursor:pointer">🖨️ Imprimir domingo</button>
+          <button onclick="dpImprimirMes()" style="background:#1a4fa3;color:white;border:none;padding:7px 14px;border-radius:6px;font-size:12px;font-weight:bold;cursor:pointer">📅 Imprimir mês</button>
+        </div>
+
+        <div id="dp-vazio" style="text-align:center;padding:30px;color:#888;font-size:13px">
+          ⚠️ Nenhum domingo encontrado para este mês.
+        </div>
+
+        <div id="dp-form" style="display:none">
+          <div class="vmc-secao">
+            <div class="vmc-secao-titulo" style="background:#374151">🎵 Abertura</div>
+            <div class="vmc-linha">
+              <span class="vmc-label">Presidente</span>
+              <select id="dp-presidente" class="vmc-sel" onchange="dpSincronizarOracaoInicial()"></select>
+            </div>
+            <div class="vmc-linha">
+              <span class="vmc-label">Cântico inicial</span>
+              <input type="text" id="dp-cantico-inicial" class="vmc-tema" placeholder="Nº do cântico...">
+            </div>
+            <div class="vmc-linha">
+              <span class="vmc-label">Oração inicial</span>
+              <select id="dp-oracao-inicial" class="vmc-sel"></select>
+            </div>
+          </div>
+
+          <div class="vmc-secao">
+            <div class="vmc-secao-titulo" style="background:#1a4fa3">🎤 Discurso Público (30 min)</div>
+            <div class="vmc-linha">
+              <span class="vmc-label">Orador</span>
+              <select id="dp-orador" class="vmc-sel" onchange="dpPreencherCongregacaoOrador()"></select>
+            </div>
+            <div class="vmc-linha">
+              <span class="vmc-label">Congregação</span>
+              <input type="text" id="dp-congregacao-orador" class="vmc-tema" placeholder="Congregação de origem..." readonly style="background:#f3f4f6">
+            </div>
+            <div class="vmc-linha">
+              <span class="vmc-label">Tema</span>
+              <input type="text" id="dp-tema-discurso" class="vmc-tema" placeholder="Nº e título do discurso...">
+            </div>
+          </div>
+
+          <div class="vmc-secao">
+            <div class="vmc-secao-titulo" style="background:#0f6e56">📖 Estudo de A Sentinela</div>
+            <div class="vmc-linha">
+              <span class="vmc-label">Cântico do meio</span>
+              <input type="text" id="dp-cantico-meio" class="vmc-tema" placeholder="Nº do cântico (1º da Sentinela)...">
+            </div>
+            <div class="vmc-linha">
+              <span class="vmc-label">Condutor</span>
+              <select id="dp-condutor-sentinela" class="vmc-sel"></select>
+            </div>
+            <div class="vmc-linha">
+              <span class="vmc-label">Leitor</span>
+              <select id="dp-leitor-sentinela" class="vmc-sel"></select>
+            </div>
+          </div>
+
+          <div class="vmc-secao">
+            <div class="vmc-secao-titulo" style="background:#374151">🎵 Encerramento</div>
+            <div class="vmc-linha">
+              <span class="vmc-label">Cântico final</span>
+              <input type="text" id="dp-cantico-final" class="vmc-tema" placeholder="Nº do cântico...">
+            </div>
+            <div class="vmc-linha">
+              <span class="vmc-label">Oração final</span>
+              <select id="dp-oracao-final" class="vmc-sel"></select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Configuração: Superintendente do Estudo (condutor fixo) -->
+        <div style="margin-top:20px;border-top:2px solid #e8e8e8;padding-top:16px">
+          <div style="font-size:13px;font-weight:bold;color:#0f6e56;margin-bottom:4px">⚙️ Superintendente do Estudo de A Sentinela</div>
+          <p style="font-size:12px;color:#5e6370;margin-bottom:10px">Esse é um cargo fixo (não é rodízio) — preenche automaticamente o "Condutor" toda semana. Só muda se precisar de um substituto pontual.</p>
+          <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+            <select id="dp-condutor-fixo" class="vmc-sel" onchange="dpSalvarCondutorFixo()" style="min-width:220px"></select>
+          </div>
+        </div>
+
+        <!-- Cadastro de Oradores Visitantes -->
+        <div style="margin-top:20px;border-top:2px solid #e8e8e8;padding-top:16px">
+          <div style="font-size:13px;font-weight:bold;color:#1a4fa3;margin-bottom:4px">🎤 Cadastro de Oradores Visitantes</div>
+          <p style="font-size:12px;color:#5e6370;margin-bottom:10px">Presidente, Leitor e Oração final usam o mesmo cadastro de irmãos do VMC (aba VMC → funções "Presidente (Domingo)", "Leitor (A Sentinela)", "Oração final (Domingo)"). Aqui é só a lista de oradores visitantes de outras congregações.</p>
+          <div style="display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap">
+            <input type="text" id="dp-novo-orador-nome" placeholder="Nome do orador..." style="flex:1;min-width:160px;padding:7px 10px;border:1px solid #d0d5dd;border-radius:6px;font-size:13px">
+            <input type="text" id="dp-novo-orador-congregacao" placeholder="Congregação de origem..." style="flex:1;min-width:160px;padding:7px 10px;border:1px solid #d0d5dd;border-radius:6px;font-size:13px">
+            <input type="text" id="dp-novo-orador-telefone" placeholder="Telefone (opcional)" style="width:150px;padding:7px 10px;border:1px solid #d0d5dd;border-radius:6px;font-size:13px">
+            <button onclick="dpAddOrador()" style="background:#1a4fa3;color:white;border:none;padding:7px 16px;border-radius:6px;font-size:13px;font-weight:bold;cursor:pointer">+ Adicionar</button>
+          </div>
+          <div id="dp-lista-oradores"></div>
+        </div>
+      </div>
+
       <!-- ABA REPARO -->
       <div class="aba-conteudo" id="aba-reparo">
 
@@ -1042,6 +1154,25 @@ body.dark-mode .conf-badge.pendente { background: #2a2a15; color: #ca8a04; borde
     </div>
     <div class="modal-body" id="vmc-pub-corpo" style="padding:16px 20px">
       <p style="text-align:center;color:#888;padding:30px 0">Selecione uma semana acima.</p>
+    </div>
+  </div>
+</div>
+
+<!-- OVERLAY PROGRAMA DISCURSO PÚBLICO (visão pública) -->
+<div class="overlay" id="ov-programa-dp">
+  <div class="modal-principal" style="max-width:680px">
+    <div class="modal-cab" style="background:#1a4fa3;color:white">
+      <span class="modal-cab-titulo" style="color:white">🎤 Reunião Pública — Discurso e A Sentinela</span>
+      <button class="btn-fechar" onclick="dpFecharPrograma()" style="color:white">✕</button>
+    </div>
+    <div style="padding:12px 20px;background:#eff6ff;border-bottom:1px solid #bfdbfe;display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+      <label style="font-size:12px;font-weight:bold;color:#1e3a8a">Mês:</label>
+      <select id="dp-pub-sel-mes" onchange="dpAtualizarPublicoSemanas()" style="padding:6px 10px;border:1px solid #bfdbfe;border-radius:6px;font-size:13px;background:white"></select>
+      <label style="font-size:12px;font-weight:bold;color:#1e3a8a">Domingo:</label>
+      <select id="dp-pub-sel" onchange="dpRenderPublico()" style="padding:6px 10px;border:1px solid #bfdbfe;border-radius:6px;font-size:13px;background:white;min-width:200px"></select>
+    </div>
+    <div class="modal-body" id="dp-pub-corpo" style="padding:16px 20px">
+      <p style="text-align:center;color:#888;padding:30px 0">Selecione um domingo acima.</p>
     </div>
   </div>
 </div>
@@ -1393,6 +1524,7 @@ function trocarAba(id,btn) {
   if(id==='aba-config') carregarPerguntaAtual();
   if(id==='aba-presencas') carregarPresencas();
   if(id==='aba-vmc' && typeof vmcPreencherSeletores === 'function') vmcPreencherSeletores();
+  if(id==='aba-dp' && typeof dpPreencherSeletores === 'function') dpPreencherSeletores();
 }
 function aplicarTudo() {
   // Aplica mudancas de irmaos/eventos sem apagar meses ja gerados
@@ -5519,6 +5651,9 @@ var vmcFuncoes = [
   { key:'ministerioIrmao', label:'Ministério (discurso)' },
   { key:'ministerioPubl',  label:'Ministério (publicador dupla)' },
   { key:'ministerioAjud',  label:'Ministério (ajudante dupla)' },
+  { key:'presidenteDominical',   label:'Presidente (Domingo)' },
+  { key:'leitorSentinela',       label:'Leitor (A Sentinela)' },
+  { key:'oracaoFinalDominical',  label:'Oração final (Domingo)' },
 ];
 
 // Cadastro unificado de sexo/família por nome, reconstruído em
@@ -5900,6 +6035,8 @@ function vmcAtualizarListasDeIrmaos() {
     .concat(vmcListas.ministerioAjud || []);
 
   vmcCarregarSemana();
+  if (typeof dpCarregarSemana === 'function') dpCarregarSemana();
+  if (typeof dpAtualizarCondutorFixoSelect === 'function') dpAtualizarCondutorFixoSelect();
 }
 
 // Retorna, dentre a lista de ajudantes cadastrados, apenas os compatíveis com
@@ -6083,9 +6220,469 @@ try { iniciarFirebase(); } catch(e) { console.error('Erro iniciarFirebase:', e);
 setTimeout(reagendarAvisosAoIniciar, 1000);
 // Inicia sistema VMC
 // VMC inicia após carregar — todosIrmaos já está disponível no arquivo
-setTimeout(function() {
-  try { vmcDefinirMesAtual(); vmcIniciar(); } catch(e) { console.error('Erro vmcIniciar:', e); }
-}, 100);
+// ═══════════════════════════════════════════════════════════════
+// DISCURSO PÚBLICO / ESTUDO DE A SENTINELA (Reunião de domingo)
+// ═══════════════════════════════════════════════════════════════
+var dpDados = {};        // { iso: {presidente, oracaoInicial, ...} }
+var dpOradores = [];     // [{nome, congregacao, telefone}]
+var dpCondutorFixo = ''; // Superintendente do Estudo (cargo fixo)
+var dpPublicados = {};   // meses liberados pro público
+var dpIdx = {};          // índices de rodízio (independentes do VMC)
+var dpSemanaAtual = null;
+
+function dpMesAtualValue() {
+  var meses = ['janeiro','fevereiro','mar%C3%A7o','abril','maio','junho','julho',
+               'agosto','setembro','outubro','novembro','dezembro'];
+  return meses[new Date().getMonth()];
+}
+function dpDefinirMesAtual() {
+  var sel = document.getElementById('dp-sel-mes');
+  if (sel) sel.value = dpMesAtualValue();
+}
+
+// Lista de domingos do mês selecionado (independente do VMC)
+function dpGetDatas(mesOverride) {
+  var mesesNomes = ['janeiro','fevereiro','março','abril','maio','junho','julho',
+                     'agosto','setembro','outubro','novembro','dezembro'];
+  var valorMes;
+  if (mesOverride) {
+    valorMes = mesOverride;
+  } else {
+    var selMes = document.getElementById('dp-sel-mes');
+    valorMes = selMes ? decodeURIComponent(selMes.value) : mesesNomes[new Date().getMonth()];
+  }
+  var mesIdx = mesesNomes.indexOf(valorMes);
+  if (mesIdx < 0) mesIdx = new Date().getMonth();
+  var ano = new Date().getFullYear();
+  var primeiroDia = new Date(ano, mesIdx, 1);
+  var ultimoDia   = new Date(ano, mesIdx + 1, 0);
+
+  var list = [];
+  var d = new Date(primeiroDia);
+  while (d <= ultimoDia) {
+    if (d.getDay() === 0) { // domingo
+      var ev = typeof eventoNaSemana === 'function' ? eventoNaSemana(d) : null;
+      var evCancela = ev && (ev.tipo==='congresso' || ev.tipo==='assembleia' || ev.tipo==='celebracao');
+      if (!evCancela) {
+        var diaLbl = d.getDate();
+        var mesLbl = d.toLocaleDateString('pt-BR', {month:'long'});
+        var anoLbl = d.getFullYear();
+        var iso = d.toISOString().slice(0,10);
+        list.push({ iso: iso, label: diaLbl + ' de ' + mesLbl + ' de ' + anoLbl });
+      }
+    }
+    d.setDate(d.getDate() + 1);
+  }
+  return list;
+}
+
+function dpPreencherSeletores() {
+  var datas = dpGetDatas();
+  var sel = document.getElementById('dp-sel-data');
+  if (sel) {
+    sel.innerHTML = datas.map(function(d){ return '<option value="'+d.iso+'">'+d.label+'</option>'; })
+      .join('') || '<option value="">— Nenhum domingo —</option>';
+    if (datas.length) {
+      document.getElementById('dp-form').style.display = 'block';
+      document.getElementById('dp-vazio').style.display = 'none';
+      var isoSet = {};
+      datas.forEach(function(d){ isoSet[d.iso] = true; });
+      if (!dpSemanaAtual || !isoSet[dpSemanaAtual]) dpSemanaAtual = datas[0].iso;
+      sel.value = dpSemanaAtual;
+      dpCarregarSemana();
+    } else {
+      document.getElementById('dp-form').style.display = 'none';
+      document.getElementById('dp-vazio').style.display = 'block';
+    }
+  }
+  dpAtualizarBotaoPublicar();
+  dpAtualizarSeletorMesPublico();
+  dpAtualizarPublicoSemanas();
+}
+
+function dpFillSel(id, listKey, val) {
+  var e = document.getElementById(id);
+  if (!e) return;
+  var lista = (vmcListas[listKey] || []).slice();
+  if (val && lista.indexOf(val) < 0) lista.unshift(val);
+  e.innerHTML = '<option value="">— não definido —</option>' +
+    lista.map(function(n){ return '<option value="'+n+'"'+(val===n?' selected':'')+'>'+n+'</option>'; }).join('');
+}
+
+function dpCarregarSemana() {
+  var sel = document.getElementById('dp-sel-data');
+  dpSemanaAtual = sel ? sel.value : dpSemanaAtual;
+  if (!dpSemanaAtual) return;
+  var dados = dpDados[dpSemanaAtual] || {};
+
+  dpFillSel('dp-presidente', 'presidenteDominical', dados.presidente);
+  dpFillSel('dp-oracao-inicial', 'presidenteDominical', dados.oracaoInicial);
+  dpFillSel('dp-leitor-sentinela', 'leitorSentinela', dados.leitorSentinela);
+  dpFillSel('dp-oracao-final', 'oracaoFinalDominical', dados.oracaoFinal);
+
+  // Condutor: cargo fixo, mas com opção de substituto pontual naquela semana
+  var condutorLista = vmcTodosNomesCadastrados();
+  var condutorVal = dados.condutorSentinela || dpCondutorFixo;
+  var selCond = document.getElementById('dp-condutor-sentinela');
+  if (selCond) {
+    var listaC = condutorLista.slice();
+    if (condutorVal && listaC.indexOf(condutorVal) < 0) listaC.unshift(condutorVal);
+    selCond.innerHTML = listaC.map(function(n){ return '<option value="'+n+'"'+(condutorVal===n?' selected':'')+'>'+n+'</option>'; }).join('');
+  }
+
+  var selOrador = document.getElementById('dp-orador');
+  if (selOrador) {
+    var valOrador = dados.orador || '';
+    selOrador.innerHTML = '<option value="">— não definido —</option>' +
+      dpOradores.map(function(o){ return '<option value="'+o.nome+'"'+(valOrador===o.nome?' selected':'')+'>'+o.nome+'</option>'; }).join('');
+  }
+
+  document.getElementById('dp-congregacao-orador').value = dados.congregacaoOrador || '';
+  document.getElementById('dp-tema-discurso').value      = dados.temaDiscurso || '';
+  document.getElementById('dp-cantico-inicial').value    = dados.canticoInicial || '';
+  document.getElementById('dp-cantico-meio').value       = dados.canticoMeio || '';
+  document.getElementById('dp-cantico-final').value      = dados.canticoFinal || '';
+}
+
+function dpSincronizarOracaoInicial() {
+  var presSel = document.getElementById('dp-presidente');
+  var oracaoSel = document.getElementById('dp-oracao-inicial');
+  if (!presSel || !oracaoSel || !presSel.value) return;
+  if ([].some.call(oracaoSel.options, function(o){ return o.value === presSel.value; })) {
+    oracaoSel.value = presSel.value;
+  }
+}
+
+function dpPreencherCongregacaoOrador() {
+  var selOrador = document.getElementById('dp-orador');
+  var campoCong = document.getElementById('dp-congregacao-orador');
+  if (!selOrador || !campoCong) return;
+  var orador = dpOradores.filter(function(o){ return o.nome === selOrador.value; })[0];
+  campoCong.value = orador ? (orador.congregacao || '') : '';
+}
+
+function dpColetarDados() {
+  function gv(id){ var e=document.getElementById(id); return e?e.value:''; }
+  return {
+    presidente:        gv('dp-presidente'),
+    oracaoInicial:      gv('dp-oracao-inicial'),
+    canticoInicial:     gv('dp-cantico-inicial'),
+    orador:             gv('dp-orador'),
+    congregacaoOrador:  gv('dp-congregacao-orador'),
+    temaDiscurso:       gv('dp-tema-discurso'),
+    canticoMeio:        gv('dp-cantico-meio'),
+    condutorSentinela:  gv('dp-condutor-sentinela'),
+    leitorSentinela:    gv('dp-leitor-sentinela'),
+    canticoFinal:       gv('dp-cantico-final'),
+    oracaoFinal:        gv('dp-oracao-final')
+  };
+}
+
+function dpSalvarSemana() {
+  if (!dpSemanaAtual) { alert('Selecione um domingo.'); return; }
+  dpDados[dpSemanaAtual] = dpColetarDados();
+  if (db) db.ref('dp').update(dpDados);
+  dpAtualizarPublicoSemanas();
+  alert('✅ Domingo salvo!');
+}
+
+// ── Rodízio automático (Presidente, Leitor, Oração final) ───────
+function dpRodizioAuto() {
+  if (!dpSemanaAtual) { alert('Selecione um domingo.'); return; }
+  var usados = [];
+  function pegar(campo) {
+    var lista = (vmcListas[campo] || []).filter(function(n){ return usados.indexOf(n) < 0; });
+    if (!lista.length) lista = vmcListas[campo] || [];
+    if (!lista.length) return '';
+    var idx = dpIdx[campo] || 0;
+    var escolhido = lista[idx % lista.length];
+    dpIdx[campo] = (idx + 1) % (vmcListas[campo] || []).length || 0;
+    usados.push(escolhido);
+    return escolhido;
+  }
+  function aplicar(id, val) { var e = document.getElementById(id); if (e) e.value = val; }
+
+  aplicar('dp-presidente', pegar('presidenteDominical'));
+  dpSincronizarOracaoInicial();
+  aplicar('dp-leitor-sentinela', pegar('leitorSentinela'));
+  aplicar('dp-oracao-final', pegar('oracaoFinalDominical'));
+  if (dpCondutorFixo) aplicar('dp-condutor-sentinela', dpCondutorFixo);
+  if (db) db.ref('dp_config').update({ idx: dpIdx });
+}
+
+// ── Cadastro de oradores visitantes ──────────────────────────────
+function dpAddOrador() {
+  var inpN = document.getElementById('dp-novo-orador-nome');
+  var inpC = document.getElementById('dp-novo-orador-congregacao');
+  var inpT = document.getElementById('dp-novo-orador-telefone');
+  var nome = inpN ? inpN.value.trim() : '';
+  if (!nome) return;
+  dpOradores.push({ nome: nome, congregacao: inpC ? inpC.value.trim() : '', telefone: inpT ? inpT.value.trim() : '' });
+  inpN.value = ''; inpC.value = ''; inpT.value = '';
+  dpSalvarConfig();
+  dpRenderOradores();
+}
+
+function dpRemoverOrador(nome) {
+  dpOradores = dpOradores.filter(function(o){ return o.nome !== nome; });
+  dpSalvarConfig();
+  dpRenderOradores();
+}
+
+function dpRenderOradores() {
+  var cont = document.getElementById('dp-lista-oradores');
+  if (!cont) return;
+  if (!dpOradores.length) { cont.innerHTML = '<p style="font-size:12px;color:#aaa">Nenhum orador cadastrado.</p>'; return; }
+  cont.innerHTML = dpOradores.slice().sort(function(a,b){return a.nome.localeCompare(b.nome,'pt-BR');}).map(function(o) {
+    return '<div style="display:flex;align-items:center;gap:8px;background:#eff6ff;border:1px solid #bfdbfe;border-radius:8px;padding:8px 12px;margin-bottom:6px;flex-wrap:wrap">' +
+      '<span style="font-size:13px;font-weight:bold;flex:1;min-width:120px">🎤 ' + o.nome + '</span>' +
+      '<span style="font-size:12px;color:#555">' + (o.congregacao || '—') + '</span>' +
+      (o.telefone ? '<span style="font-size:11px;color:#888">📞 '+o.telefone+'</span>' : '') +
+      '<button onclick="dpRemoverOrador(\'' + o.nome + '\')" style="background:#fee2e2;color:#dc2626;border:none;border-radius:5px;padding:3px 10px;font-size:11px;cursor:pointer">✕</button>' +
+    '</div>';
+  }).join('');
+}
+
+// ── Superintendente do Estudo (condutor fixo) ────────────────────
+function dpSalvarCondutorFixo() {
+  var sel = document.getElementById('dp-condutor-fixo');
+  dpCondutorFixo = sel ? sel.value : '';
+  dpSalvarConfig();
+}
+
+function dpAtualizarCondutorFixoSelect() {
+  var sel = document.getElementById('dp-condutor-fixo');
+  if (!sel) return;
+  var todos = vmcTodosNomesCadastrados();
+  if (dpCondutorFixo && todos.indexOf(dpCondutorFixo) < 0) todos.unshift(dpCondutorFixo);
+  sel.innerHTML = '<option value="">— não definido —</option>' +
+    todos.map(function(n){ return '<option value="'+n+'"'+(dpCondutorFixo===n?' selected':'')+'>'+n+'</option>'; }).join('');
+}
+
+function dpSalvarConfig() {
+  if (db) db.ref('dp_config').update({ oradores: dpOradores, condutorFixo: dpCondutorFixo, publicados: dpPublicados, idx: dpIdx });
+}
+
+// ── Publicação (igual VMC, mas independente) ─────────────────────
+function dpTogglePublicarMes() {
+  var sel = document.getElementById('dp-sel-mes');
+  var mes = sel ? decodeURIComponent(sel.value) : '';
+  dpPublicados[mes] = !dpPublicados[mes];
+  dpSalvarConfig();
+  dpAtualizarBotaoPublicar();
+  dpAtualizarSeletorMesPublico();
+  alert(dpPublicados[mes]
+    ? '✅ ' + mes.charAt(0).toUpperCase() + mes.slice(1) + ' agora está visível para a congregação.'
+    : '🚫 ' + mes.charAt(0).toUpperCase() + mes.slice(1) + ' foi ocultado da congregação.');
+}
+
+function dpAtualizarBotaoPublicar() {
+  var btn = document.getElementById('dp-btn-publicar');
+  if (!btn) return;
+  var sel = document.getElementById('dp-sel-mes');
+  var mes = sel ? decodeURIComponent(sel.value) : '';
+  var publicado = !!dpPublicados[mes];
+  btn.textContent = publicado ? '✅ Publicado (clique p/ ocultar)' : '📢 Publicar mês';
+  btn.style.background = publicado ? '#16a34a' : '#f59e0b';
+}
+
+function dpAtualizarSeletorMesPublico() {
+  var mesesNomes = ['janeiro','fevereiro','março','abril','maio','junho','julho',
+                     'agosto','setembro','outubro','novembro','dezembro'];
+  var sel = document.getElementById('dp-pub-sel-mes');
+  if (!sel) return;
+  var publicadosOrdenados = mesesNomes.filter(function(m){ return dpPublicados[m]; });
+  var valorAtual = sel.value;
+  sel.innerHTML = publicadosOrdenados.map(function(m){ return '<option value="'+m+'">'+m.charAt(0).toUpperCase()+m.slice(1)+'</option>'; })
+    .join('') || '<option value="">— Nenhum mês publicado ainda —</option>';
+  if (publicadosOrdenados.indexOf(valorAtual) >= 0) {
+    sel.value = valorAtual;
+  } else {
+    var mesHoje = mesesNomes[new Date().getMonth()];
+    sel.value = publicadosOrdenados.indexOf(mesHoje) >= 0 ? mesHoje : (publicadosOrdenados[0] || '');
+  }
+}
+
+function dpAtualizarPublicoSemanas() {
+  var selMesPub = document.getElementById('dp-pub-sel-mes');
+  var pubSel = document.getElementById('dp-pub-sel');
+  if (!pubSel) return;
+  var mesPub = selMesPub ? selMesPub.value : '';
+  var datasPub = mesPub ? dpGetDatas(mesPub) : [];
+  pubSel.innerHTML = datasPub.map(function(d){ return '<option value="'+d.iso+'">'+d.label+'</option>'; })
+    .join('') || '<option value="">— Nenhum domingo publicado —</option>';
+  if (datasPub.length) {
+    var isoHoje = typeof vmcSemanaDeHoje === 'function' ? vmcSemanaDeHoje(datasPub) : datasPub[0].iso;
+    if (isoHoje) pubSel.value = isoHoje;
+    dpRenderPublico();
+  } else {
+    var corpo = document.getElementById('dp-pub-corpo');
+    if (corpo) corpo.innerHTML = '<p style="text-align:center;color:#888;padding:30px 0">Nenhum mês publicado ainda. Volte em breve!</p>';
+  }
+}
+
+function dpRenderPublico() {
+  var sel = document.getElementById('dp-pub-sel');
+  var corpo = document.getElementById('dp-pub-corpo');
+  if (!sel || !corpo || !sel.value) return;
+  var dados = dpDados[sel.value] || {};
+  function linha(papel, nome, tema) {
+    if (!nome) return '';
+    return '<div class="vmc-pub-linha"><span class="vmc-pub-papel">'+papel+'</span><span class="vmc-pub-nome">'+nome+'</span>'+
+      (tema?'<div class="vmc-pub-tema">'+tema+'</div>':'')+'</div>';
+  }
+  corpo.innerHTML =
+    '<div class="vmc-pub-secao">'+
+      '<div class="vmc-pub-titulo tesouro">🎵 Abertura</div>'+
+      linha('Presidente', dados.presidente, '')+
+      linha('Cântico inicial', dados.canticoInicial, '')+
+      linha('Oração inicial', dados.oracaoInicial, '')+
+    '</div>'+
+    '<div class="vmc-pub-secao">'+
+      '<div class="vmc-pub-titulo escola">🎤 Discurso Público (30 min)</div>'+
+      linha('Orador', dados.orador, dados.congregacaoOrador)+
+      linha('Tema', dados.temaDiscurso, '')+
+    '</div>'+
+    '<div class="vmc-pub-secao">'+
+      '<div class="vmc-pub-titulo vida">📖 Estudo de A Sentinela</div>'+
+      linha('Cântico do meio', dados.canticoMeio, '')+
+      linha('Condutor', dados.condutorSentinela, '')+
+      linha('Leitor', dados.leitorSentinela, '')+
+      linha('Cântico final', dados.canticoFinal, '')+
+      linha('Oração final', dados.oracaoFinal, '')+
+    '</div>';
+}
+
+function dpAbrirPrograma() {
+  dpAtualizarSeletorMesPublico();
+  dpAtualizarPublicoSemanas();
+  document.getElementById('ov-programa-dp').classList.add('aberto');
+}
+function dpFecharPrograma() { document.getElementById('ov-programa-dp').classList.remove('aberto'); }
+
+// ── Impressão semanal ────────────────────────────────────────────
+function dpImprimirSemana() {
+  if (!dpSemanaAtual) { alert('Selecione um domingo.'); return; }
+  var dados = dpColetarDados();
+  var d = new Date(dpSemanaAtual + 'T00:00:00');
+  var dataStr = d.toLocaleDateString('pt-BR', {day:'2-digit',month:'2-digit',year:'numeric'});
+  var diaSemanaStr = d.toLocaleDateString('pt-BR', {weekday:'long', day:'2-digit', month:'long', year:'numeric'});
+
+  function ln(papel, nome, tema, tempo) {
+    return '<tr><td style="padding:6px 8px;font-size:11px;color:#555;white-space:nowrap">'+papel+(tempo?' ('+tempo+')':'')+'</td>'+
+      '<td style="padding:6px 8px;font-size:12px;font-weight:bold">'+(nome||'—')+
+      (tema?'<div style="font-size:10px;color:#777;font-style:italic;font-weight:normal">'+tema+'</div>':'')+
+      '</td></tr>';
+  }
+  function secH(titulo, cor) {
+    return '<tr><td colspan="2" style="background:'+cor+';color:white;font-weight:bold;font-size:12px;padding:6px 10px">'+titulo+'</td></tr>';
+  }
+
+  var html = '<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8">'+
+    '<title>Reunião Pública — '+dataStr+'</title><style>'+
+    'body{font-family:Arial,sans-serif;font-size:11px;margin:0;padding:16px;color:#111}'+
+    'h1{font-size:16px;color:#1a4fa3;margin:0 0 4px}'+
+    'table{width:100%;border-collapse:collapse;margin-top:10px}'+
+    'td{border-bottom:1px solid #eee}'+
+    '@media print{@page{size:A4 portrait;margin:12mm}}'+
+    '</style></head><body>'+
+    '<h1>🎤 Reunião Pública — Discurso e Estudo de A Sentinela</h1>'+
+    '<div style="font-size:12px;color:#555;text-transform:capitalize">'+diaSemanaStr+'</div>'+
+    '<table>'+
+    secH('🎵 Abertura', '#374151')+
+    ln('Presidente', dados.presidente, '', '')+
+    ln('Cântico inicial', dados.canticoInicial, '', '')+
+    ln('Oração inicial', dados.oracaoInicial, '', '')+
+    secH('🎤 Discurso Público', '#1a4fa3')+
+    ln('Orador', dados.orador, dados.congregacaoOrador, '30 min')+
+    ln('Tema', dados.temaDiscurso, '', '')+
+    secH('📖 Estudo de A Sentinela', '#0f6e56')+
+    ln('Cântico do meio', dados.canticoMeio, '', '')+
+    ln('Condutor', dados.condutorSentinela, '', '')+
+    ln('Leitor', dados.leitorSentinela, '', '')+
+    secH('🎵 Encerramento', '#374151')+
+    ln('Cântico final', dados.canticoFinal, '', '')+
+    ln('Oração final', dados.oracaoFinal, '', '')+
+    '</table>'+
+    '<div style="margin-top:20px;font-size:9px;color:#aaa;text-align:right">Gerado em '+new Date().toLocaleDateString('pt-BR')+'</div>'+
+    '<script>window.onload=function(){window.print();}<\/script>'+
+    '</body></html>';
+
+  var w = window.open('', '_blank');
+  if (w) { w.document.write(html); w.document.close(); }
+  else alert('Permita pop-ups para imprimir.');
+}
+
+// ── Impressão mensal (grade com todos os domingos do mês) ────────
+function dpImprimirMes() {
+  var datas = dpGetDatas();
+  if (!datas.length) { alert('Nenhum domingo neste mês.'); return; }
+  var selMes = document.getElementById('dp-sel-mes');
+  var mesLbl = selMes ? selMes.options[selMes.selectedIndex].text : '';
+  var ano = new Date().getFullYear();
+
+  function linha(papel, nome, tema) {
+    return '<div class="linha"><span class="papel">'+papel+'</span><span class="nome">'+(nome||'—')+'</span></div>'+
+      (tema?'<div class="tema">'+tema+'</div>':'');
+  }
+
+  var cards = datas.map(function(d) {
+    var dados = dpDados[d.iso] || {};
+    return '<div class="card">'+
+      '<div class="card-titulo">📅 '+d.label+'</div>'+
+      linha('Presidente', dados.presidente, '')+
+      linha('Orador', dados.orador, dados.congregacaoOrador)+
+      linha('Tema', dados.temaDiscurso, '')+
+      linha('Condutor', dados.condutorSentinela, '')+
+      linha('Leitor', dados.leitorSentinela, '')+
+      linha('Oração final', dados.oracaoFinal, '')+
+    '</div>';
+  }).join('');
+
+  var html = '<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8">'+
+    '<title>Reunião Pública — '+mesLbl+' '+ano+'</title><style>'+
+    'body{font-family:Arial,sans-serif;margin:0;padding:14px;color:#111}'+
+    'h1{font-size:18px;color:#1a4fa3;margin:0 0 12px}'+
+    '.grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}'+
+    '.card{border:1px solid #d0d5dd;border-radius:8px;padding:10px;page-break-inside:avoid}'+
+    '.card-titulo{font-weight:bold;font-size:12px;color:#1a4fa3;margin-bottom:6px;border-bottom:1px solid #eee;padding-bottom:4px}'+
+    '.linha{display:flex;justify-content:space-between;font-size:10.5px;margin-bottom:2px}'+
+    '.papel{color:#666}.nome{font-weight:bold}'+
+    '.tema{font-size:9px;color:#888;font-style:italic;margin-bottom:4px}'+
+    '@media print{@page{size:A4 portrait;margin:10mm}}'+
+    '</style></head><body>'+
+    '<h1>🎤 Reunião Pública — '+mesLbl+' '+ano+'</h1>'+
+    '<div class="grid">'+cards+'</div>'+
+    '<script>window.onload=function(){window.print();}<\/script>'+
+    '</body></html>';
+
+  var w = window.open('', '_blank');
+  if (w) { w.document.write(html); w.document.close(); }
+  else alert('Permita pop-ups para imprimir.');
+}
+
+// ── Inicialização ─────────────────────────────────────────────
+function dpIniciar() {
+  if (!db) return;
+  db.ref('dp').on('value', function(snap) {
+    dpDados = snap.val() || {};
+    dpPreencherSeletores();
+  });
+  db.ref('dp_config').once('value', function(snap) {
+    var cfg = snap.val() || {};
+    if (cfg.oradores) dpOradores = cfg.oradores;
+    if (cfg.condutorFixo) dpCondutorFixo = cfg.condutorFixo;
+    if (cfg.publicados) dpPublicados = cfg.publicados;
+    if (cfg.idx) dpIdx = cfg.idx;
+    dpRenderOradores();
+    dpAtualizarCondutorFixoSelect();
+    dpAtualizarBotaoPublicar();
+    dpAtualizarSeletorMesPublico();
+    dpAtualizarPublicoSemanas();
+  });
+}
+
+
 // 🔥 REMOVIDO - Impede geração automática ao carregar 🔥
 // try { gerarEscalaAtual(); } catch(e) { console.error('Erro gerarEscalaAtual:', e); }
 console.log('⚠️ Escala NÃO foi gerada automaticamente. Use a aba "Gerar Meses" para criar.');atualizarBotaoNotif();
