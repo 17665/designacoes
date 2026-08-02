@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Versão: v2026.08.23 — Estudo Bíblico de Congregação vira parte numerada própria (separada de Condutor/Leitor), com numeração automática -->
+<!-- Versão: v2026.08.24 — Estudo Bíblico de Congregação vira parte numerada própria (separada de Condutor/Leitor), com numeração automática -->
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
@@ -429,7 +429,7 @@ body.dark-mode .conf-badge.pendente { background: #2a2a15; color: #ca8a04; borde
     <div class="modal-cab">
       <span>
         <span class="modal-cab-titulo">👨‍💼 Área do Responsável</span>
-        <span style="font-size:10px;color:#9ca3af;font-weight:normal;margin-left:8px">v2026.08.23</span>
+        <span style="font-size:10px;color:#9ca3af;font-weight:normal;margin-left:8px">v2026.08.24</span>
       </span>
       <button class="btn-fechar" onclick="fecharPrincipal()">✕</button>
     </div>
@@ -442,6 +442,7 @@ body.dark-mode .conf-badge.pendente { background: #2a2a15; color: #ca8a04; borde
       <button class="aba-btn" onclick="trocarAba('aba-historico',this)">📊 Histórico</button>
       <button class="aba-btn" onclick="trocarAba('aba-vmc',this)">📖 VMC</button>
       <button class="aba-btn" onclick="trocarAba('aba-dp',this)">🎤 Discurso Público</button>
+      <button class="aba-btn" onclick="trocarAba('aba-env',this)">📤 Enviar Oradores</button>
       <button class="aba-btn" onclick="trocarAba('aba-config',this)">🔑 Senha</button>
       <button class="aba-btn" onclick="trocarAba('aba-presencas',this)">✅ Presenças</button>
       <button class="aba-btn" onclick="trocarAba('aba-manual-resp',this)">📘 Manual</button>
@@ -974,6 +975,75 @@ body.dark-mode .conf-badge.pendente { background: #2a2a15; color: #ca8a04; borde
             <button onclick="dpAddOrador()" style="background:#1a4fa3;color:white;border:none;padding:7px 16px;border-radius:6px;font-size:13px;font-weight:bold;cursor:pointer">+ Adicionar</button>
           </div>
           <div id="dp-lista-oradores"></div>
+        </div>
+      </div>
+
+      <!-- ABA ENVIAR ORADORES (designações de saída pra outras congregações) -->
+      <div class="aba-conteudo" id="aba-env">
+        <p style="font-size:12px;color:#5e6370;margin-bottom:14px;line-height:1.6">
+          Gerencie os discursos que os irmãos desta congregação vão dar em <strong>outras</strong> congregações,
+          e imprima a ficha de designação pra entregar pra eles.
+        </p>
+
+        <!-- Nossa congregação (usada como "Cong:" de origem na ficha) -->
+        <div style="margin-bottom:18px">
+          <span class="vmc-label" style="display:inline-block;width:auto;margin-right:8px">Nome da nossa congregação (usado na ficha):</span>
+          <input type="text" id="env-nossa-congregacao" value="Congregação Parque Tietê de Duque de Caxias - RJ" onchange="envSalvarConfig()" style="width:340px;padding:6px 10px;border:1px solid #d0d5dd;border-radius:6px;font-size:13px">
+        </div>
+
+        <!-- Congregações Convidadas -->
+        <div style="border-top:2px solid #e8e8e8;padding-top:16px;margin-bottom:20px">
+          <div style="font-size:13px;font-weight:bold;color:#1a4fa3;margin-bottom:4px">🏠 Congregações Convidadas</div>
+          <p style="font-size:12px;color:#5e6370;margin-bottom:10px">Cadastre uma vez, reutiliza em várias designações.</p>
+          <div style="display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap">
+            <input type="text" id="env-nova-cong-nome" placeholder="Nome da congregação (ex: Wona - de Belford Roxo)" style="flex:1;min-width:200px;padding:7px 10px;border:1px solid #d0d5dd;border-radius:6px;font-size:13px">
+            <input type="text" id="env-nova-cong-diahorario" placeholder="Dia e horário (ex: Sábado 19h)" style="width:170px;padding:7px 10px;border:1px solid #d0d5dd;border-radius:6px;font-size:13px">
+            <input type="text" id="env-nova-cong-endereco" placeholder="Endereço completo..." style="flex:2;min-width:220px;padding:7px 10px;border:1px solid #d0d5dd;border-radius:6px;font-size:13px">
+            <button onclick="envAddCongregacao()" style="background:#1a4fa3;color:white;border:none;padding:7px 16px;border-radius:6px;font-size:13px;font-weight:bold;cursor:pointer">+ Adicionar</button>
+          </div>
+          <div id="env-lista-congregacoes"></div>
+        </div>
+
+        <!-- Nova designação -->
+        <div style="border-top:2px solid #e8e8e8;padding-top:16px;margin-bottom:20px">
+          <div style="font-size:13px;font-weight:bold;color:#0f6e56;margin-bottom:10px">➕ Nova designação de envio</div>
+          <div class="vmc-secao">
+            <div class="vmc-linha">
+              <span class="vmc-label">Congregação destino</span>
+              <select id="env-sel-congregacao" class="vmc-sel" onchange="envAtualizarDadosCongregacao()"></select>
+            </div>
+            <div class="vmc-linha">
+              <span class="vmc-label">Dia e horário</span>
+              <input type="text" id="env-diahorario" class="vmc-tema" placeholder="Ex: Sábado 19h">
+            </div>
+            <div class="vmc-linha">
+              <span class="vmc-label">Endereço</span>
+              <input type="text" id="env-endereco" class="vmc-tema" placeholder="Endereço completo...">
+            </div>
+            <div class="vmc-linha">
+              <span class="vmc-label">Data</span>
+              <input type="date" id="env-data" class="vmc-sel">
+            </div>
+            <div class="vmc-linha">
+              <span class="vmc-label">Orador</span>
+              <select id="env-orador" class="vmc-sel"></select>
+            </div>
+            <div class="vmc-linha">
+              <span class="vmc-label">Cântico</span>
+              <input type="text" id="env-cantico" class="vmc-tema" placeholder="Nº do cântico (opcional)...">
+            </div>
+            <div class="vmc-linha">
+              <span class="vmc-label">Tema</span>
+              <input type="text" id="env-tema" class="vmc-tema" placeholder='Ex: "55" — Você está fazendo um bom nome perante Deus?'>
+            </div>
+          </div>
+          <button onclick="envAddDesignacao()" style="background:#0f6e56;color:white;border:none;padding:8px 18px;border-radius:6px;font-size:13px;font-weight:bold;cursor:pointer;margin-top:8px">+ Adicionar designação</button>
+        </div>
+
+        <!-- Lista de designações -->
+        <div style="border-top:2px solid #e8e8e8;padding-top:16px">
+          <div style="font-size:13px;font-weight:bold;color:#1a1a2e;margin-bottom:10px">📋 Designações de envio</div>
+          <div id="env-lista-designacoes"></div>
         </div>
       </div>
 
@@ -1525,6 +1595,7 @@ function trocarAba(id,btn) {
   if(id==='aba-presencas') carregarPresencas();
   if(id==='aba-vmc' && typeof vmcPreencherSeletores === 'function') vmcPreencherSeletores();
   if(id==='aba-dp' && typeof dpPreencherSeletores === 'function') dpPreencherSeletores();
+  if(id==='aba-env' && typeof envAtualizarSelectCongregacoes === 'function') envAtualizarSelectCongregacoes();
 }
 function aplicarTudo() {
   // Aplica mudancas de irmaos/eventos sem apagar meses ja gerados
@@ -5654,6 +5725,7 @@ var vmcFuncoes = [
   { key:'presidenteDominical',   label:'Presidente (Domingo)' },
   { key:'leitorSentinela',       label:'Leitor (A Sentinela)' },
   { key:'oracaoFinalDominical',  label:'Oração final (Domingo)' },
+  { key:'oradorEnviado',         label:'Orador (enviar p/ outras congregações)' },
 ];
 
 // Cadastro unificado de sexo/família por nome, reconstruído em
@@ -6037,6 +6109,7 @@ function vmcAtualizarListasDeIrmaos() {
   vmcCarregarSemana();
   if (typeof dpCarregarSemana === 'function') dpCarregarSemana();
   if (typeof dpAtualizarCondutorFixoSelect === 'function') dpAtualizarCondutorFixoSelect();
+  if (typeof envAtualizarSelectCongregacoes === 'function') envAtualizarSelectCongregacoes();
 }
 
 // Retorna, dentre a lista de ajudantes cadastrados, apenas os compatíveis com
@@ -6662,6 +6735,199 @@ function dpImprimirMes() {
 }
 
 // ── Inicialização ─────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════════
+// ENVIAR ORADORES (designações de discurso público pra OUTRAS congregações)
+// ═══════════════════════════════════════════════════════════════
+var envCongregacoes = [];      // [{nome, endereco, diahorario}]
+var envDesignacoes = {};       // { id: {congNome, congEndereco, congDiaHorario, data, orador, cantico, temaTexto} }
+var envNossaCongregacao = 'Congregação Parque Tietê de Duque de Caxias - RJ';
+
+function envSalvarConfig() {
+  var campo = document.getElementById('env-nossa-congregacao');
+  if (campo) envNossaCongregacao = campo.value.trim() || envNossaCongregacao;
+  if (db) db.ref('env_config').update({
+    congregacoes: envCongregacoes,
+    designacoes: envDesignacoes,
+    nossaCongregacao: envNossaCongregacao
+  });
+}
+
+// ── Congregações Convidadas ──────────────────────────────────────
+function envAddCongregacao() {
+  var inpN = document.getElementById('env-nova-cong-nome');
+  var inpD = document.getElementById('env-nova-cong-diahorario');
+  var inpE = document.getElementById('env-nova-cong-endereco');
+  var nome = inpN ? inpN.value.trim() : '';
+  if (!nome) return;
+  envCongregacoes.push({ nome: nome, diahorario: inpD ? inpD.value.trim() : '', endereco: inpE ? inpE.value.trim() : '' });
+  inpN.value = ''; inpD.value = ''; inpE.value = '';
+  envSalvarConfig();
+  envRenderCongregacoes();
+  envAtualizarSelectCongregacoes();
+}
+
+function envRemoverCongregacao(nome) {
+  envCongregacoes = envCongregacoes.filter(function(c){ return c.nome !== nome; });
+  envSalvarConfig();
+  envRenderCongregacoes();
+  envAtualizarSelectCongregacoes();
+}
+
+function envRenderCongregacoes() {
+  var cont = document.getElementById('env-lista-congregacoes');
+  if (!cont) return;
+  if (!envCongregacoes.length) { cont.innerHTML = '<p style="font-size:12px;color:#aaa">Nenhuma congregação cadastrada.</p>'; return; }
+  cont.innerHTML = envCongregacoes.slice().sort(function(a,b){return a.nome.localeCompare(b.nome,'pt-BR');}).map(function(c) {
+    return '<div style="display:flex;align-items:center;gap:8px;background:#eff6ff;border:1px solid #bfdbfe;border-radius:8px;padding:8px 12px;margin-bottom:6px;flex-wrap:wrap">' +
+      '<span style="font-size:13px;font-weight:bold;flex:1;min-width:140px">🏠 ' + c.nome + '</span>' +
+      '<span style="font-size:12px;color:#555">' + (c.diahorario || '—') + '</span>' +
+      '<span style="font-size:11px;color:#888;flex:2;min-width:180px">' + (c.endereco || '') + '</span>' +
+      '<button onclick="envRemoverCongregacao(\'' + c.nome + '\')" style="background:#fee2e2;color:#dc2626;border:none;border-radius:5px;padding:3px 10px;font-size:11px;cursor:pointer">✕</button>' +
+    '</div>';
+  }).join('');
+}
+
+function envAtualizarSelectCongregacoes() {
+  var sel = document.getElementById('env-sel-congregacao');
+  if (sel) {
+    sel.innerHTML = '<option value="">— selecione ou digite abaixo —</option>' +
+      envCongregacoes.map(function(c){ return '<option value="'+c.nome+'">'+c.nome+'</option>'; }).join('');
+  }
+  var selOrador = document.getElementById('env-orador');
+  if (selOrador) {
+    var lista = vmcListas.oradorEnviado || [];
+    selOrador.innerHTML = '<option value="">— não definido —</option>' +
+      lista.map(function(n){ return '<option value="'+n+'">'+n+'</option>'; }).join('');
+  }
+}
+
+function envAtualizarDadosCongregacao() {
+  var sel = document.getElementById('env-sel-congregacao');
+  var cong = envCongregacoes.filter(function(c){ return c.nome === sel.value; })[0];
+  if (cong) {
+    document.getElementById('env-diahorario').value = cong.diahorario || '';
+    document.getElementById('env-endereco').value = cong.endereco || '';
+  }
+}
+
+// ── Designações de envio ──────────────────────────────────────────
+function envAddDesignacao() {
+  var congNome = (document.getElementById('env-sel-congregacao') || {}).value || '';
+  var diahorario = (document.getElementById('env-diahorario') || {}).value || '';
+  var endereco = (document.getElementById('env-endereco') || {}).value || '';
+  var data = (document.getElementById('env-data') || {}).value || '';
+  var orador = (document.getElementById('env-orador') || {}).value || '';
+  var cantico = (document.getElementById('env-cantico') || {}).value || '';
+  var tema = (document.getElementById('env-tema') || {}).value || '';
+
+  if (!congNome || !orador || !data) { alert('Preencha ao menos Congregação destino, Data e Orador.'); return; }
+
+  var id = 'env' + Date.now();
+  envDesignacoes[id] = {
+    congNome: congNome, congDiaHorario: diahorario, congEndereco: endereco,
+    data: data, orador: orador, cantico: cantico, tema: tema
+  };
+  envSalvarConfig();
+  envRenderDesignacoes();
+
+  // Limpa o formulário
+  document.getElementById('env-sel-congregacao').value = '';
+  document.getElementById('env-diahorario').value = '';
+  document.getElementById('env-endereco').value = '';
+  document.getElementById('env-data').value = '';
+  document.getElementById('env-orador').value = '';
+  document.getElementById('env-cantico').value = '';
+  document.getElementById('env-tema').value = '';
+}
+
+function envRemoverDesignacao(id) {
+  if (!confirm('Remover esta designação?')) return;
+  delete envDesignacoes[id];
+  envSalvarConfig();
+  envRenderDesignacoes();
+}
+
+function envRenderDesignacoes() {
+  var cont = document.getElementById('env-lista-designacoes');
+  if (!cont) return;
+  var ids = Object.keys(envDesignacoes).sort(function(a,b) {
+    return (envDesignacoes[a].data||'').localeCompare(envDesignacoes[b].data||'');
+  });
+  if (!ids.length) { cont.innerHTML = '<p style="font-size:12px;color:#aaa">Nenhuma designação de envio ainda.</p>'; return; }
+  cont.innerHTML = ids.map(function(id) {
+    var d = envDesignacoes[id];
+    var dataFmt = d.data ? new Date(d.data + 'T00:00:00').toLocaleDateString('pt-BR') : '—';
+    return '<div style="background:#f9f9f9;border:1px solid #e8e8e8;border-radius:8px;padding:10px 12px;margin-bottom:8px">' +
+      '<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">' +
+        '<div>' +
+          '<span style="font-size:13px;font-weight:bold;color:#1a1a2e">📤 ' + d.orador + '</span>' +
+          '<span style="font-size:12px;color:#666"> → ' + d.congNome + ' (' + dataFmt + (d.congDiaHorario ? ', '+d.congDiaHorario : '') + ')</span>' +
+        '</div>' +
+        '<div style="display:flex;gap:6px">' +
+          '<button onclick="envImprimirDesignacao(\'' + id + '\')" style="background:#0f6e56;color:white;border:none;border-radius:5px;padding:4px 12px;font-size:11px;font-weight:bold;cursor:pointer">🖨️ Imprimir</button>' +
+          '<button onclick="envRemoverDesignacao(\'' + id + '\')" style="background:#fee2e2;color:#dc2626;border:none;border-radius:5px;padding:4px 10px;font-size:11px;cursor:pointer">✕</button>' +
+        '</div>' +
+      '</div>' +
+      (d.tema ? '<div style="font-size:11px;color:#888;font-style:italic;margin-top:4px">Tema: '+d.tema+'</div>' : '') +
+    '</div>';
+  }).join('');
+}
+
+function envImprimirDesignacao(id) {
+  var d = envDesignacoes[id];
+  if (!d) return;
+  var dataFmt = d.data ? new Date(d.data + 'T00:00:00').toLocaleDateString('pt-BR') : '';
+
+  function linha(label, valor) {
+    return '<div class="env-linha"><span class="env-label">' + label + ':</span> <span class="env-valor">' + (valor || '') + '</span></div>';
+  }
+
+  var html = '<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8">' +
+    '<title>Designação Discurso Público — ' + d.congNome + '</title><style>' +
+    'body{font-family:Arial,sans-serif;margin:0;padding:24px;color:#111;background:white}' +
+    '.ficha{max-width:480px;margin:0 auto;border:2px solid #1a4fa3;border-radius:10px;padding:20px}' +
+    '.titulo{font-weight:bold;font-size:15px;color:#1a4fa3;margin-bottom:2px}' +
+    '.subtitulo{font-size:12px;color:#666;margin-bottom:14px}' +
+    '.env-linha{font-size:13px;margin-bottom:10px;border-bottom:1px dotted #ddd;padding-bottom:6px}' +
+    '.env-label{font-weight:bold;color:#374151}' +
+    '.env-valor{color:#111}' +
+    '@media print{@page{size:A5 portrait;margin:10mm}}' +
+    '</style></head><body>' +
+    '<div class="ficha">' +
+      '<div class="titulo">Designação Discurso Público — Cong: ' + d.congNome + '</div>' +
+      '<div class="subtitulo">' + (d.congDiaHorario || '') + '</div>' +
+      linha('Endereço', d.congEndereco) +
+      linha('Data', dataFmt) +
+      linha('Cântico', d.cantico) +
+      linha('Cong', envNossaCongregacao) +
+      linha('Orador', d.orador) +
+      linha('Tema', d.tema) +
+    '</div>' +
+    '<script>window.onload=function(){window.print();}<\/script>' +
+    '</body></html>';
+
+  var w = window.open('', '_blank');
+  if (w) { w.document.write(html); w.document.close(); }
+  else alert('Permita pop-ups para imprimir.');
+}
+
+function envIniciar() {
+  if (!db) { envAtualizarSelectCongregacoes(); return; }
+  db.ref('env_config').once('value', function(snap) {
+    var cfg = snap.val() || {};
+    if (cfg.congregacoes) envCongregacoes = cfg.congregacoes;
+    if (cfg.designacoes) envDesignacoes = cfg.designacoes;
+    if (cfg.nossaCongregacao) {
+      envNossaCongregacao = cfg.nossaCongregacao;
+      var campo = document.getElementById('env-nossa-congregacao');
+      if (campo) campo.value = envNossaCongregacao;
+    }
+    envRenderCongregacoes();
+    envAtualizarSelectCongregacoes();
+    envRenderDesignacoes();
+  });
+}
+
 function dpIniciar() {
   if (!db) return;
   db.ref('dp').on('value', function(snap) {
@@ -6681,6 +6947,14 @@ function dpIniciar() {
     dpAtualizarPublicoSemanas();
   });
 }
+
+// Inicia os módulos VMC e Discurso Público (só depois que o Firebase conectou)
+setTimeout(function() {
+  try { vmcDefinirMesAtual(); vmcIniciar(); } catch(e) { console.error('Erro vmcIniciar:', e); }
+  try { dpDefinirMesAtual(); dpIniciar(); } catch(e) { console.error('Erro dpIniciar:', e); }
+  try { envIniciar(); } catch(e) { console.error('Erro envIniciar:', e); }
+}, 100);
+
 
 
 // 🔥 REMOVIDO - Impede geração automática ao carregar 🔥
