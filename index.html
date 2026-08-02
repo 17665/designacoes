@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Versão: v2026.08.24 — Estudo Bíblico de Congregação vira parte numerada própria (separada de Condutor/Leitor), com numeração automática -->
+<!-- Versão: v2026.08.26 — Estudo Bíblico de Congregação vira parte numerada própria (separada de Condutor/Leitor), com numeração automática -->
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
@@ -429,7 +429,7 @@ body.dark-mode .conf-badge.pendente { background: #2a2a15; color: #ca8a04; borde
     <div class="modal-cab">
       <span>
         <span class="modal-cab-titulo">👨‍💼 Área do Responsável</span>
-        <span style="font-size:10px;color:#9ca3af;font-weight:normal;margin-left:8px">v2026.08.24</span>
+        <span style="font-size:10px;color:#9ca3af;font-weight:normal;margin-left:8px">v2026.08.26</span>
       </span>
       <button class="btn-fechar" onclick="fecharPrincipal()">✕</button>
     </div>
@@ -886,7 +886,6 @@ body.dark-mode .conf-badge.pendente { background: #2a2a15; color: #ca8a04; borde
           <button onclick="dpSalvarSemana()" style="background:#0f6e56;color:white;border:none;padding:7px 14px;border-radius:6px;font-size:12px;font-weight:bold;cursor:pointer">💾 Salvar domingo</button>
           <button id="dp-btn-publicar" onclick="dpTogglePublicarMes()" style="background:#f59e0b;color:white;border:none;padding:7px 14px;border-radius:6px;font-size:12px;font-weight:bold;cursor:pointer">📢 Publicar mês</button>
           <button onclick="dpImprimirSemana()" style="background:#b45309;color:white;border:none;padding:7px 14px;border-radius:6px;font-size:12px;font-weight:bold;cursor:pointer">🖨️ Imprimir domingo</button>
-          <button onclick="dpImprimirMes()" style="background:#1a4fa3;color:white;border:none;padding:7px 14px;border-radius:6px;font-size:12px;font-weight:bold;cursor:pointer">📅 Imprimir mês</button>
         </div>
 
         <div id="dp-vazio" style="text-align:center;padding:30px;color:#888;font-size:13px">
@@ -914,7 +913,8 @@ body.dark-mode .conf-badge.pendente { background: #2a2a15; color: #ca8a04; borde
             <div class="vmc-secao-titulo" style="background:#1a4fa3">🎤 Discurso Público (30 min)</div>
             <div class="vmc-linha">
               <span class="vmc-label">Orador</span>
-              <select id="dp-orador" class="vmc-sel" onchange="dpPreencherCongregacaoOrador()"></select>
+              <input type="text" id="dp-orador" class="vmc-tema" list="dp-lista-oradores-sugestao" placeholder="Nome do orador visitante..." oninput="dpPreencherCongregacaoOrador()">
+              <datalist id="dp-lista-oradores-sugestao"></datalist>
             </div>
             <div class="vmc-linha">
               <span class="vmc-label">Congregação</span>
@@ -6107,9 +6107,9 @@ function vmcAtualizarListasDeIrmaos() {
     .concat(vmcListas.ministerioAjud || []);
 
   vmcCarregarSemana();
-  if (typeof dpCarregarSemana === 'function') dpCarregarSemana();
-  if (typeof dpAtualizarCondutorFixoSelect === 'function') dpAtualizarCondutorFixoSelect();
-  if (typeof envAtualizarSelectCongregacoes === 'function') envAtualizarSelectCongregacoes();
+  try { if (typeof dpCarregarSemana === 'function') dpCarregarSemana(); } catch(e) { console.error('Erro dpCarregarSemana (não afeta o VMC):', e); }
+  try { if (typeof dpAtualizarCondutorFixoSelect === 'function') dpAtualizarCondutorFixoSelect(); } catch(e) { console.error('Erro dpAtualizarCondutorFixoSelect (não afeta o VMC):', e); }
+  try { if (typeof envAtualizarSelectCongregacoes === 'function') envAtualizarSelectCongregacoes(); } catch(e) { console.error('Erro envAtualizarSelectCongregacoes (não afeta o VMC):', e); }
 }
 
 // Retorna, dentre a lista de ajudantes cadastrados, apenas os compatíveis com
@@ -6394,7 +6394,7 @@ function dpCarregarSemana() {
   dpFillSel('dp-oracao-final', 'oracaoFinalDominical', dados.oracaoFinal);
 
   // Condutor: cargo fixo, mas com opção de substituto pontual naquela semana
-  var condutorLista = vmcTodosNomesCadastrados();
+  var condutorLista = Object.keys(vmcCadastro.irmaos || {}).sort(function(a,b){return a.localeCompare(b,'pt-BR');});
   var condutorVal = dados.condutorSentinela || dpCondutorFixo;
   var selCond = document.getElementById('dp-condutor-sentinela');
   if (selCond) {
@@ -6403,11 +6403,11 @@ function dpCarregarSemana() {
     selCond.innerHTML = listaC.map(function(n){ return '<option value="'+n+'"'+(condutorVal===n?' selected':'')+'>'+n+'</option>'; }).join('');
   }
 
-  var selOrador = document.getElementById('dp-orador');
-  if (selOrador) {
-    var valOrador = dados.orador || '';
-    selOrador.innerHTML = '<option value="">— não definido —</option>' +
-      dpOradores.map(function(o){ return '<option value="'+o.nome+'"'+(valOrador===o.nome?' selected':'')+'>'+o.nome+'</option>'; }).join('');
+  var inpOrador = document.getElementById('dp-orador');
+  if (inpOrador) inpOrador.value = dados.orador || '';
+  var listaSugestao = document.getElementById('dp-lista-oradores-sugestao');
+  if (listaSugestao) {
+    listaSugestao.innerHTML = dpOradores.map(function(o){ return '<option value="'+o.nome+'">'; }).join('');
   }
 
   document.getElementById('dp-congregacao-orador').value = dados.congregacaoOrador || '';
@@ -6426,12 +6426,15 @@ function dpSincronizarOracaoInicial() {
   }
 }
 
+// Se o nome digitado já é um orador conhecido, preenche a congregação dele
+// automaticamente. Se não for (visitante novo/único), não mexe no campo —
+// assim não apaga o que o responsável já tiver digitado manualmente.
 function dpPreencherCongregacaoOrador() {
-  var selOrador = document.getElementById('dp-orador');
+  var inpOrador = document.getElementById('dp-orador');
   var campoCong = document.getElementById('dp-congregacao-orador');
-  if (!selOrador || !campoCong) return;
-  var orador = dpOradores.filter(function(o){ return o.nome === selOrador.value; })[0];
-  campoCong.value = orador ? (orador.congregacao || '') : '';
+  if (!inpOrador || !campoCong) return;
+  var orador = dpOradores.filter(function(o){ return o.nome === inpOrador.value; })[0];
+  if (orador) campoCong.value = orador.congregacao || '';
 }
 
 function dpColetarDados() {
@@ -6453,8 +6456,19 @@ function dpColetarDados() {
 
 function dpSalvarSemana() {
   if (!dpSemanaAtual) { alert('Selecione um domingo.'); return; }
-  dpDados[dpSemanaAtual] = dpColetarDados();
+  var dados = dpColetarDados();
+  dpDados[dpSemanaAtual] = dados;
   if (db) db.ref('dp').update(dpDados);
+
+  // Lembra o orador pra próxima vez (não obriga cadastro manual antes)
+  if (dados.orador && !dpOradores.some(function(o){ return o.nome === dados.orador; })) {
+    dpOradores.push({ nome: dados.orador, congregacao: dados.congregacaoOrador || '', telefone: '' });
+    dpRenderOradores();
+  } else if (dados.orador && dados.congregacaoOrador) {
+    dpOradores.forEach(function(o){ if (o.nome === dados.orador && !o.congregacao) o.congregacao = dados.congregacaoOrador; });
+  }
+  dpSalvarConfig();
+
   dpAtualizarPublicoSemanas();
   alert('✅ Domingo salvo!');
 }
@@ -6526,7 +6540,7 @@ function dpSalvarCondutorFixo() {
 function dpAtualizarCondutorFixoSelect() {
   var sel = document.getElementById('dp-condutor-fixo');
   if (!sel) return;
-  var todos = vmcTodosNomesCadastrados();
+  var todos = Object.keys(vmcCadastro.irmaos || {}).sort(function(a,b){return a.localeCompare(b,'pt-BR');});
   if (dpCondutorFixo && todos.indexOf(dpCondutorFixo) < 0) todos.unshift(dpCondutorFixo);
   sel.innerHTML = '<option value="">— não definido —</option>' +
     todos.map(function(n){ return '<option value="'+n+'"'+(dpCondutorFixo===n?' selected':'')+'>'+n+'</option>'; }).join('');
@@ -6687,52 +6701,7 @@ function dpImprimirSemana() {
 }
 
 // ── Impressão mensal (grade com todos os domingos do mês) ────────
-function dpImprimirMes() {
-  var datas = dpGetDatas();
-  if (!datas.length) { alert('Nenhum domingo neste mês.'); return; }
-  var selMes = document.getElementById('dp-sel-mes');
-  var mesLbl = selMes ? selMes.options[selMes.selectedIndex].text : '';
-  var ano = new Date().getFullYear();
-
-  function linha(papel, nome, tema) {
-    return '<div class="linha"><span class="papel">'+papel+'</span><span class="nome">'+(nome||'—')+'</span></div>'+
-      (tema?'<div class="tema">'+tema+'</div>':'');
-  }
-
-  var cards = datas.map(function(d) {
-    var dados = dpDados[d.iso] || {};
-    return '<div class="card">'+
-      '<div class="card-titulo">📅 '+d.label+'</div>'+
-      linha('Presidente', dados.presidente, '')+
-      linha('Orador', dados.orador, dados.congregacaoOrador)+
-      linha('Tema', dados.temaDiscurso, '')+
-      linha('Condutor', dados.condutorSentinela, '')+
-      linha('Leitor', dados.leitorSentinela, '')+
-      linha('Oração final', dados.oracaoFinal, '')+
-    '</div>';
-  }).join('');
-
-  var html = '<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8">'+
-    '<title>Reunião Pública — '+mesLbl+' '+ano+'</title><style>'+
-    'body{font-family:Arial,sans-serif;margin:0;padding:14px;color:#111}'+
-    'h1{font-size:18px;color:#1a4fa3;margin:0 0 12px}'+
-    '.grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}'+
-    '.card{border:1px solid #d0d5dd;border-radius:8px;padding:10px;page-break-inside:avoid}'+
-    '.card-titulo{font-weight:bold;font-size:12px;color:#1a4fa3;margin-bottom:6px;border-bottom:1px solid #eee;padding-bottom:4px}'+
-    '.linha{display:flex;justify-content:space-between;font-size:10.5px;margin-bottom:2px}'+
-    '.papel{color:#666}.nome{font-weight:bold}'+
-    '.tema{font-size:9px;color:#888;font-style:italic;margin-bottom:4px}'+
-    '@media print{@page{size:A4 portrait;margin:10mm}}'+
-    '</style></head><body>'+
-    '<h1>🎤 Reunião Pública — '+mesLbl+' '+ano+'</h1>'+
-    '<div class="grid">'+cards+'</div>'+
-    '<script>window.onload=function(){window.print();}<\/script>'+
-    '</body></html>';
-
-  var w = window.open('', '_blank');
-  if (w) { w.document.write(html); w.document.close(); }
-  else alert('Permita pop-ups para imprimir.');
-}
+// [Removido a pedido — o formato certo de designação de envio fica na aba "Enviar Oradores"]
 
 // ── Inicialização ─────────────────────────────────────────────
 // ═══════════════════════════════════════════════════════════════
