@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Versão: v2026.08.26 — Estudo Bíblico de Congregação vira parte numerada própria (separada de Condutor/Leitor), com numeração automática -->
+<!-- Versão: v2026.08.27 — Estudo Bíblico de Congregação vira parte numerada própria (separada de Condutor/Leitor), com numeração automática -->
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
@@ -429,7 +429,7 @@ body.dark-mode .conf-badge.pendente { background: #2a2a15; color: #ca8a04; borde
     <div class="modal-cab">
       <span>
         <span class="modal-cab-titulo">👨‍💼 Área do Responsável</span>
-        <span style="font-size:10px;color:#9ca3af;font-weight:normal;margin-left:8px">v2026.08.26</span>
+        <span style="font-size:10px;color:#9ca3af;font-weight:normal;margin-left:8px">v2026.08.27</span>
       </span>
       <button class="btn-fechar" onclick="fecharPrincipal()">✕</button>
     </div>
@@ -6179,9 +6179,28 @@ function vmcSalvarConfig() {
 }
 
 // ── Iniciar VMC ─────────────────────────────────────────────────
+function vmcMostrarAvisoCadastroNaoCarregou(motivo) {
+  if (document.getElementById('vmc-aviso-cadastro-banner')) return;
+  var b = document.createElement('div');
+  b.id = 'vmc-aviso-cadastro-banner';
+  b.style.cssText = 'background:#7f1d1d;color:white;padding:10px 16px;font-size:13px;text-align:center;font-weight:bold;position:relative;z-index:9999';
+  b.innerHTML = '⚠️ O cadastro do VMC não carregou (' + motivo + '). As caixinhas de designação vão aparecer vazias/erradas até isso resolver. ' +
+    'Verifique sua internet e recarregue a página. Se persistir, avise o suporte.';
+  document.body.insertBefore(b, document.body.firstChild);
+}
+
 function vmcIniciar() {
+  // Se em ~8s o cadastro (irmãos) ainda não carregou de jeito nenhum, avisa
+  // claramente em vez de deixar as caixinhas vazias sem explicação.
+  setTimeout(function() {
+    if (!Object.keys(vmcCadastro.irmaos || {}).length) {
+      vmcMostrarAvisoCadastroNaoCarregou(db ? 'sem resposta do banco de dados' : 'sem conexão com o Firebase');
+    }
+  }, 8000);
+
   // Carrega irmãos do sistema local como ponto de partida (funciona sem Firebase)
   function carregarCadastroLocal() {
+    vmcMostrarAvisoCadastroNaoCarregou('sem conexão com o Firebase');
     if (!Object.keys(vmcCadastro.irmaos).length) {
       var todosJs = vmcGetTodosParaCampo();
       todosJs.forEach(function(nome) {
