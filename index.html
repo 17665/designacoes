@@ -561,32 +561,57 @@ body.dark-mode .conf-badge.pendente { background: #2a2a15; color: #ca8a04; borde
         </p>
 
         <!-- Seletor de semana + ações -->
-        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:12px">
-          <label style="font-size:12px;font-weight:bold;color:#5e6370">Semana:</label>
-          <select id="vmc-sel-data" onchange="vmcCarregarSemana()" style="padding:6px 10px;border:1px solid #d0d5dd;border-radius:6px;font-size:13px;background:white;min-width:220px"></select>
-          <select id="vmc-sel-mes" onchange="vmcPreencherSeletores();vmcAtualizarBotaoPublicar()" style="padding:6px 10px;border:1px solid #d0d5dd;border-radius:6px;font-size:13px;background:white">
-            <option value="janeiro">Janeiro</option>
-            <option value="fevereiro">Fevereiro</option>
-            <option value="mar%C3%A7o">Março</option>
-            <option value="abril">Abril</option>
-            <option value="maio">Maio</option>
-            <option value="junho">Junho</option>
-            <option value="julho">Julho</option>
-            <option value="agosto">Agosto</option>
-            <option value="setembro">Setembro</option>
-            <option value="outubro">Outubro</option>
-            <option value="novembro">Novembro</option>
-            <option value="dezembro">Dezembro</option>
-          </select>
-          <button onclick="vmcAbrirJW()" style="background:#8b5cf6;color:white;border:none;padding:7px 14px;border-radius:6px;font-size:12px;font-weight:bold;cursor:pointer">🌐 Abrir JW.org</button>
-          <button onclick="vmcColarTexto()" style="background:#0891b2;color:white;border:none;padding:7px 14px;border-radius:6px;font-size:12px;font-weight:bold;cursor:pointer">📋 Colar programação</button>
-          <button onclick="vmcRodizioAuto()" style="background:#1a4fa3;color:white;border:none;padding:7px 14px;border-radius:6px;font-size:12px;font-weight:bold;cursor:pointer">🎲 Rodízio automático</button>
-          <button onclick="vmcSalvarSemana()" style="background:#0f6e56;color:white;border:none;padding:7px 14px;border-radius:6px;font-size:12px;font-weight:bold;cursor:pointer">💾 Salvar semana</button>
-          <button id="vmc-btn-publicar" onclick="vmcTogglePublicarMes()" style="background:#f59e0b;color:white;border:none;padding:7px 14px;border-radius:6px;font-size:12px;font-weight:bold;cursor:pointer">📢 Publicar mês</button>
-          <button onclick="vmcImprimirSemana()" style="background:#b45309;color:white;border:none;padding:7px 14px;border-radius:6px;font-size:12px;font-weight:bold;cursor:pointer">🖨️ Imprimir semana</button>
-          <button onclick="vmcImprimirMes()" style="background:#7c3aed;color:white;border:none;padding:7px 14px;border-radius:6px;font-size:12px;font-weight:bold;cursor:pointer">📅 Imprimir mês</button>
-          <button onclick="vmcImprimirDesignacoes()" style="background:#1a1a2e;color:#f2a922;border:none;padding:7px 14px;border-radius:6px;font-size:12px;font-weight:bold;cursor:pointer">🌾 Slips (S-89-T)</button>
-        </div>
+        <style>
+  /* Estilo geral dos botões */
+  .vmc-btn {
+    color: white;
+    border: none;
+    padding: 7px 14px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.3s ease;
+  }
+
+  /* Efeitos de hover para cada cor */
+  .vmc-btn-purple:hover { background:#6d28d9; }
+  .vmc-btn-cyan:hover   { background:#0369a1; }
+  .vmc-btn-blue:hover   { background:#0f3d91; }
+  .vmc-btn-green:hover  { background:#065f46; }
+  .vmc-btn-yellow:hover { background:#d97706; }
+  .vmc-btn-orange:hover { background:#92400e; }
+  .vmc-btn-violet:hover { background:#5b21b6; }
+  .vmc-btn-dark:hover   { background:#111827; }
+</style>
+
+<div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:12px">
+  <label style="font-size:12px;font-weight:bold;color:#5e6370">Semana:</label>
+  <select id="vmc-sel-data" onchange="vmcCarregarSemana()" style="padding:6px 10px;border:1px solid #d0d5dd;border-radius:6px;font-size:13px;background:white;min-width:220px"></select>
+  <select id="vmc-sel-mes" onchange="vmcPreencherSeletores();vmcAtualizarBotaoPublicar()" style="padding:6px 10px;border:1px solid #d0d5dd;border-radius:6px;font-size:13px;background:white">
+    <option value="janeiro">Janeiro</option>
+    <option value="fevereiro">Fevereiro</option>
+    <option value="mar%C3%A7o">Março</option>
+    <option value="abril">Abril</option>
+    <option value="maio">Maio</option>
+    <option value="junho">Junho</option>
+    <option value="julho">Julho</option>
+    <option value="agosto">Agosto</option>
+    <option value="setembro">Setembro</option>
+    <option value="outubro">Outubro</option>
+    <option value="novembro">Novembro</option>
+    <option value="dezembro">Dezembro</option>
+  </select>
+
+  <button onclick="vmcAbrirJW()" class="vmc-btn vmc-btn-purple" style="background:#8b5cf6">🌐 Abrir JW.org</button>
+  <button onclick="window.open('https://wol.jw.org/pt/wol/meetings/r5/lp-t/2026/31','_blank')" class="vmc-btn vmc-btn-cyan" style="background:#0891b2">📋 Colar programação</button>
+  <button onclick="vmcRodizioAuto()" class="vmc-btn vmc-btn-blue" style="background:#1a4fa3">🎲 Rodízio automático</button>
+  <button onclick="vmcSalvarSemana()" class="vmc-btn vmc-btn-green" style="background:#0f6e56">💾 Salvar semana</button>
+  <button id="vmc-btn-publicar" onclick="vmcTogglePublicarMes()" class="vmc-btn vmc-btn-yellow" style="background:#f59e0b">📢 Publicar mês</button>
+  <button onclick="vmcImprimirSemana()" class="vmc-btn vmc-btn-orange" style="background:#b45309">🖨️ Imprimir semana</button>
+  <button onclick="vmcImprimirMes()" class="vmc-btn vmc-btn-violet" style="background:#7c3aed">📅 Imprimir mês</button>
+  <button onclick="vmcImprimirDesignacoes()" class="vmc-btn vmc-btn-dark" style="background:#1a1a2e;color:#f2a922">🌾 Slips (S-89-T)</button>
+</div>
 
         <!-- Status importação -->
         <div id="vmc-import-status" style="display:none;background:#fffbeb;border:1px solid #fcd34d;border-radius:7px;padding:8px 14px;font-size:12px;color:#92400e;margin-bottom:10px"></div>
