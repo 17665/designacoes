@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Versão: v2026.08.27 — Estudo Bíblico de Congregação vira parte numerada própria (separada de Condutor/Leitor), com numeração automática -->
+<!-- Versão: v2026.08.29 — Estudo Bíblico de Congregação vira parte numerada própria (separada de Condutor/Leitor), com numeração automática -->
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
@@ -429,7 +429,7 @@ body.dark-mode .conf-badge.pendente { background: #2a2a15; color: #ca8a04; borde
     <div class="modal-cab">
       <span>
         <span class="modal-cab-titulo">👨‍💼 Área do Responsável</span>
-        <span style="font-size:10px;color:#9ca3af;font-weight:normal;margin-left:8px">v2026.08.27</span>
+        <span style="font-size:10px;color:#9ca3af;font-weight:normal;margin-left:8px">v2026.08.29</span>
       </span>
       <button class="btn-fechar" onclick="fecharPrincipal()">✕</button>
     </div>
@@ -913,7 +913,7 @@ body.dark-mode .conf-badge.pendente { background: #2a2a15; color: #ca8a04; borde
             <div class="vmc-secao-titulo" style="background:#1a4fa3">🎤 Discurso Público (30 min)</div>
             <div class="vmc-linha">
               <span class="vmc-label">Orador</span>
-              <input type="text" id="dp-orador" class="vmc-tema" list="dp-lista-oradores-sugestao" placeholder="Nome do orador visitante..." oninput="dpPreencherCongregacaoOrador()">
+              <input type="text" id="dp-orador" class="vmc-tema" list="dp-lista-oradores-sugestao" placeholder="Nome do orador visitante..." oninput="dpPreencherCongregacaoOrador();dpSincronizarOracaoFinal()">
               <datalist id="dp-lista-oradores-sugestao"></datalist>
             </div>
             <div class="vmc-linha">
@@ -922,15 +922,36 @@ body.dark-mode .conf-badge.pendente { background: #2a2a15; color: #ca8a04; borde
             </div>
             <div class="vmc-linha">
               <span class="vmc-label">Tema</span>
-              <input type="text" id="dp-tema-discurso" class="vmc-tema" placeholder="Nº e título do discurso...">
+              <input type="text" id="dp-tema-discurso" class="vmc-tema" list="dp-lista-temas-catalogo" placeholder="Digite o número ou o título do tema...">
+              <datalist id="dp-lista-temas-catalogo"></datalist>
             </div>
           </div>
 
           <div class="vmc-secao">
             <div class="vmc-secao-titulo" style="background:#0f6e56">📖 Estudo de A Sentinela</div>
+            <div style="padding:10px 12px 0">
+              <button onclick="dpMostrarColarSentinela()" style="background:#0f6e56;color:white;border:none;padding:6px 14px;border-radius:6px;font-size:12px;font-weight:bold;cursor:pointer">📋 Colar dados do WOL</button>
+              <span style="font-size:11px;color:#888;margin-left:6px">Cole o texto da página "Estudo de A Sentinela" do wol.jw.org</span>
+              <div id="dp-colar-sentinela-box" style="display:none;margin-top:8px">
+                <textarea id="dp-texto-colado-sentinela" rows="6" style="width:100%;padding:8px;border:1px solid #d0d5dd;border-radius:6px;font-size:12px;box-sizing:border-box" placeholder="Cole aqui o texto da página do Estudo de A Sentinela..."></textarea>
+                <div style="margin-top:6px">
+                  <button onclick="dpProcessarSentinela()" style="background:#0f6e56;color:white;border:none;padding:6px 14px;border-radius:6px;font-size:12px;font-weight:bold;cursor:pointer">✅ Processar</button>
+                  <button onclick="document.getElementById('dp-colar-sentinela-box').style.display='none'" style="background:#e5e7eb;color:#374151;border:none;padding:6px 14px;border-radius:6px;font-size:12px;cursor:pointer">Cancelar</button>
+                  <span id="dp-sentinela-status" style="font-size:12px;margin-left:8px"></span>
+                </div>
+              </div>
+            </div>
             <div class="vmc-linha">
               <span class="vmc-label">Cântico do meio</span>
               <input type="text" id="dp-cantico-meio" class="vmc-tema" placeholder="Nº do cântico (1º da Sentinela)...">
+            </div>
+            <div class="vmc-linha">
+              <span class="vmc-label">Tema do estudo</span>
+              <input type="text" id="dp-tema-estudo" class="vmc-tema" placeholder="Título do artigo da Sentinela...">
+            </div>
+            <div class="vmc-linha">
+              <span class="vmc-label">Texto base</span>
+              <input type="text" id="dp-texto-base-estudo" class="vmc-tema" placeholder="Texto bíblico base do estudo...">
             </div>
             <div class="vmc-linha">
               <span class="vmc-label">Condutor</span>
@@ -949,8 +970,15 @@ body.dark-mode .conf-badge.pendente { background: #2a2a15; color: #ca8a04; borde
               <input type="text" id="dp-cantico-final" class="vmc-tema" placeholder="Nº do cântico...">
             </div>
             <div class="vmc-linha">
+              <label style="display:flex;align-items:center;gap:6px;font-size:12px;color:#9ca3af;cursor:pointer">
+                <input type="checkbox" id="dp-orador-nao-fica" onchange="dpSincronizarOracaoFinal()">
+                O orador não vai ficar até o final (Presidente escolhe outro irmão pra oração final)
+              </label>
+            </div>
+            <div class="vmc-linha">
               <span class="vmc-label">Oração final</span>
-              <select id="dp-oracao-final" class="vmc-sel"></select>
+              <input type="text" id="dp-oracao-final" class="vmc-tema" list="dp-lista-oracao-final-sugestao" placeholder="Normalmente o próprio orador...">
+              <datalist id="dp-lista-oracao-final-sugestao"></datalist>
             </div>
           </div>
         </div>
@@ -975,6 +1003,17 @@ body.dark-mode .conf-badge.pendente { background: #2a2a15; color: #ca8a04; borde
             <button onclick="dpAddOrador()" style="background:#1a4fa3;color:white;border:none;padding:7px 16px;border-radius:6px;font-size:13px;font-weight:bold;cursor:pointer">+ Adicionar</button>
           </div>
           <div id="dp-lista-oradores"></div>
+        </div>
+
+        <!-- Temas especiais (fora dos 194 padrão) -->
+        <div style="margin-top:20px;border-top:2px solid #e8e8e8;padding-top:16px">
+          <div style="font-size:13px;font-weight:bold;color:#7c3aed;margin-bottom:4px">⭐ Temas Especiais</div>
+          <p style="font-size:12px;color:#5e6370;margin-bottom:10px">Além dos 194 esboços padrão, adicione aqui temas especiais (ex: de assembleia, visita do superintendente).</p>
+          <div style="display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap">
+            <input type="text" id="dp-novo-tema-especial" placeholder='Ex: "E-1" — Tema especial da assembleia' style="flex:1;min-width:220px;padding:7px 10px;border:1px solid #d0d5dd;border-radius:6px;font-size:13px">
+            <button onclick="dpAddTemaEspecial()" style="background:#7c3aed;color:white;border:none;padding:7px 16px;border-radius:6px;font-size:13px;font-weight:bold;cursor:pointer">+ Adicionar</button>
+          </div>
+          <div id="dp-lista-temas-especiais"></div>
         </div>
       </div>
 
@@ -5733,6 +5772,109 @@ var vmcFuncoes = [
 // ajudante deve ser do mesmo sexo do publicador, exceto se for da mesma família.
 var vmcPessoas = {};
 
+// ── Catálogo de temas de discurso público (Esboços 1-194 + especiais) ──
+var dpTemasCatalogo = [
+  "1. Você conhece bem a Deus?", "2. Você vai sobreviver aos últimos dias?",
+  "3. Você está avançando com a organização unida de Jeová?", "4. Que provas temos de que Deus existe?",
+  "5. Você pode ter uma família feliz!", "6. O dilúvio dos dias de Noé e você",
+  "7. Imite a misericórdia de Jeová", "8. Viva para fazer a vontade de Deus",
+  "9. Escute e faça o que a Bíblia diz", "10. Seja honesto em tudo",
+  "11. Imite a Jesus e não faça parte do mundo", "12. Deus quer que você respeite quem tem autoridade",
+  "13. Qual o ponto de vista de Deus sobre o sexo e o casamento?", "14. Um povo puro e limpo honra a Jeová",
+  "15. Faça o bem a todos", "16. Seja cada vez mais amigo de Jeová",
+  "17. Glorifique a Deus com tudo o que você tem", "18. Faça de Jeová a sua fortaleza",
+  "19. Como você pode saber seu futuro?", "20. Chegou o tempo de Deus governar o mundo?",
+  "21. Dê valor ao seu lugar no Reino de Deus", "22. Você está usando bem o que Jeová lhe deu?",
+  "23. A vida tem objetivo", "24. Você encontrou \"uma pérola de grande valor\"?",
+  "25. Lute contra o espírito do mundo", "26. Você é importante para Deus?",
+  "27. Como construir um casamento feliz", "28. Mostre respeito e amor no seu casamento",
+  "29. As responsabilidades e recompensas de ter filhos", "30. Como melhorar a comunicação na família",
+  "31. Você tem consciência da sua necessidade espiritual?", "32. Como lidar com as ansiedades da vida",
+  "33. Quando vai existir verdadeira justiça?", "34. Você vai ser marcado para sobreviver?",
+  "35. É possível viver para sempre? O que você precisa fazer?", "36. Será que a vida é só isso?",
+  "37. Obedecer a Deus é mesmo a melhor coisa a fazer?", "38. Como você pode sobreviver ao fim do mundo?",
+  "39. Jesus Cristo vence o mundo — Como e quando?", "40. O que vai acontecer em breve?",
+  "41. Fiquem parados e vejam como Jeová os salvará", "42. O amor pode vencer o ódio?",
+  "43. Tudo o que Deus nos pede é para o nosso bem", "44. Como os ensinos de Jesus podem ajudar você?",
+  "45. Continue andando no caminho que leva à vida", "46. Fortaleça sua confiança em Jeová",
+  "47. \"Tenha fé nas boas novas\"", "48. Seja leal a Deus mesmo quando for testado",
+  "49. Será que um dia a Terra vai ser limpa?", "50. Será que sempre tomar as melhores decisões",
+  "51. Será que a verdade da Bíblia está mudando a sua vida?", "52. Quem é o seu Deus?",
+  "53. Você pensa como Deus?", "54. Fortaleça sua fé em Deus e em suas promessas",
+  "55. Você está fazendo um bom nome perante Deus?", "56. Existe um líder em quem você pode confiar?",
+  "57. Como suportar perseguição", "58. Quem são os verdadeiros seguidores de Cristo?",
+  "59. Ceifará o que semear", "60. Você tem um objetivo na vida?",
+  "61. Nas promessas de quem você confia?", "62. Onde encontrar uma esperança real para o futuro?",
+  "63. É possível encontrar a verdade?", "64. Você ama os prazeres ou a Deus?",
+  "65. Como podemos ser pacíficos num mundo cheio de ódio?", "66. Você também vai participar na colheita?",
+  "67. Medite na Bíblia e nas criações de Jeová", "68. \"Continuem a perdoar uns aos outros liberalmente\"",
+  "69. Por que mostrar amor abnegado?", "70. Por que Deus merece sua confiança?",
+  "71. \"Mantenha-se desperto\" — Por que e como?", "72. O amor identifica os cristãos verdadeiros",
+  "73. Você tem \"um coração sábio\"?", "74. Os olhos de Jeová estão em todo lugar",
+  "75. Mostre que você apoia o direito de Jeová governar",
+  "76. Princípios bíblicos — Podem nos ajudar a lidar com os problemas atuais?",
+  "77. \"Sempre mostrem hospitalidade\"", "78. Sirva a Jeová com um coração alegre",
+  "79. Você vai escolher ser amigo de Deus?", "80. Você baseia sua esperança na ciência ou na Bíblia?",
+  "81. Quem está qualificado para fazer discípulos?", "82. Jeová e Cristo fazem parte de uma trindade?",
+  "83. Será que os cristãos precisam obedecer aos Dez Mandamentos?", "84. Escapará do destino deste mundo?",
+  "85. Boas notícias num mundo violento", "86. Como orar a Deus e ser ouvido por ele?",
+  "87. Qual é a sua relação com Deus?", "88. Por que viver de acordo com os padrões da Bíblia?",
+  "89. Quem tem sede da verdade, venha!", "90. Faça o máximo para alcançar a verdadeira vida!",
+  "91. A presença do Messias e seu domínio", "92. O papel da religião nos assuntos do mundo",
+  "93. Desastres naturais — Quando vão acabar?", "94. A religião verdadeira atende às necessidades da sociedade humana",
+  "95. Não seja enganado pelo ocultismo!", "96. O que vai acontecer com as religiões?",
+  "97. Permaneçamos inculpes em meio a uma geração pervertida", "98. \"A cena deste mundo está mudando\"",
+  "99. Por que podemos confiar no que a Bíblia diz?", "100. Como fazer amizades fortes e verdadeiras",
+  "101. Jeová é o \"Grandioso Criador\"", "102. Preste atenção à \"palavra profética\"",
+  "103. Como você pode ter a verdadeira alegria?", "104. Pais, vocês estão construindo com materiais à prova de fogo?",
+  "105. Somos consolados em todas as nossas tribulações", "106. Arruinar a terra provocará retribuição divina",
+  "107. Você está treinando bem a sua consciência?", "108. Você pode encarar o futuro com confiança!",
+  "109. O Reino de Deus está próximo", "110. Deus vem primeiro na vida familiar bem-sucedida",
+  "111. É possível que a humanidade seja completamente curada?", "112. É possível mostrar amor num mundo egoísta",
+  "113. Jovens - Como vocês podem ter uma vida feliz?", "114. Aprecie as maravilhas da criação de Deus",
+  "115. Não caia nas armadilhas de Satanás", "116. Escolha sabiamente com quem irá associar-se",
+  "117. Como vencer o mal com o bem", "118. Olhemos os jovens do ponto de vista de Jeová",
+  "119. Por que é benéfico que os cristãos vivam separados do mundo", "120. Por que se submeter à regência de Deus agora",
+  "121. Uma família mundial que será salva da destruição", "122. Paz global — de onde virá?",
+  "123. Por que os cristãos têm de ser diferentes", "124. Razões para crer que a Bíblia é de autoria divina",
+  "125. Por que a humanidade precisa de resgate", "126. Quem se salvará?",
+  "127. O que acontece quando morremos?", "128. É o inferno um lugar de tormento ardente?",
+  "129. O que a Bíblia diz sobre a Trindade?", "130. A terra permanecerá para sempre?",
+  "131. Tome posição contra o Diabo!", "132. Ressurreição — A vitória sobre a morte",
+  "133. Tem importância o que cremos sobre a nossa origem?", "134. Será que os cristãos precisam guardar o sábado?",
+  "135. A santidade da vida e do sangue", "136. Será que Deus aprova o uso de imagens na adoração?",
+  "137. Ocorreram realmente os milagres da Bíblia?", "138. Viva com bom juízo num mundo depravado",
+  "139. Sabedoria divina num mundo científico", "140. Quem é realmente Jesus Cristo?",
+  "141. Quando terão fim os gemidos da criação humana?", "142. Por que refugiar-se em Jeová?",
+  "143. Confie no Deus de todo consolo", "144. Uma congregação leal sob a liderança de Cristo",
+  "145. Quem é semelhante a Jeová, nosso Deus?", "146. Use a educação para louvar a Jeová",
+  "147. Confie que Jeová tem o poder para nos salvar", "148. Você tem o mesmo conceito de Deus sobre a vida?",
+  "149. O que significa \"andar com Deus\"?", "150. Este mundo está condenado à destruição?",
+  "151. Jeová é \"uma altura protetora\" para seu povo", "152. Armagedom — por que e quando?",
+  "153. Tenha bem em mente o \"atemorizante dia\"", "154. O governo humano é pesado na balança",
+  "155. Chegou a hora do julgamento de Babilônia?", "156. O Dia do Juízo — tempo de temor ou de esperança?",
+  "157. Como os verdadeiros cristãos adornam o ensino divino", "158. Seja corajoso e confie em Jeová",
+  "159. Como encontrar segurança num mundo perigoso", "160. Mantenha a identidade cristã!",
+  "161. Por que Jesus sofreu e morreu?", "162. Seja liberto deste mundo em escuridão",
+  "163. Por que temer o Deus verdadeiro?", "164. Será que Deus ainda está no controle?",
+  "165. Os valores de quem você preza?", "166. Verdadeira fé — O que é e como mostrar",
+  "167. Ajamos sabiamente num mundo insensato", "168. Você pode sentir-se seguro neste mundo atribulado!",
+  "169. Por que ser orientado pela Bíblia?", "170. Quem está qualificado para governar a humanidade?",
+  "171. Poderá viver em paz agora — e para sempre?", "172. Que reputação você tem perante Deus?",
+  "173. Existe uma religião verdadeira do ponto de vista de Deus?", "174. Quem se qualificará para entrar no novo mundo de Deus?",
+  "175. O que prova que a Bíblia é autêntica?", "176. Quando haverá verdadeira paz e segurança?",
+  "177. Onde encontrar ajuda em tempos de aflição?", "178. Ande no caminho da integridade",
+  "179. Rejeite as fantasias do mundo, empenhe-se pelas realidades do reino", "180. A Ressurreição — Por que essa esperança deve ser real para você",
+  "181. Já é mais tarde do que você imagina?", "182. O que o Reino de Deus está fazendo por nós agora?",
+  "183. Desvie seus olhos do que é fútil", "184. A morte é o fim de tudo?",
+  "185. Será que a verdade influencia sua vida?", "186. Sirva em união com o povo feliz de Deus",
+  "187. Por que um Deus amoroso permite a maldade?", "188. Você confia em Jeová?",
+  "189. Ande com Deus e receba bênçãos para sempre", "190. Como se cumprirá a promessa de perfeita felicidade familiar",
+  "191. Como o amor e a fé vencem o mundo?", "192. Você está no caminho para a vida eterna?",
+  "193. Os problemas de hoje logo serão coisa do passado", "194. Como a sabedoria de Deus nos ajuda"
+];
+var dpTemasEspeciais = []; // temas especiais adicionados manualmente pelo responsável
+
 function vmcNormalizarLista(lista) {
   // Aceita tanto o formato antigo (array de strings) quanto o novo ({nome,familia})
   return (lista || []).map(function(item) {
@@ -6396,6 +6538,10 @@ function dpFillSel(id, listKey, val) {
   var e = document.getElementById(id);
   if (!e) return;
   var lista = (vmcListas[listKey] || []).slice();
+  // Se ninguém foi marcado ainda pra essa função específica, mostra todos os
+  // irmãos cadastrados como opção (em vez de ficar vazio) — o responsável pode
+  // ir refinando com o tempo marcando as funções específicas no cadastro.
+  if (!lista.length) lista = Object.keys(vmcCadastro.irmaos || {}).sort(function(a,b){return a.localeCompare(b,'pt-BR');});
   if (val && lista.indexOf(val) < 0) lista.unshift(val);
   e.innerHTML = '<option value="">— não definido —</option>' +
     lista.map(function(n){ return '<option value="'+n+'"'+(val===n?' selected':'')+'>'+n+'</option>'; }).join('');
@@ -6410,7 +6556,18 @@ function dpCarregarSemana() {
   dpFillSel('dp-presidente', 'presidenteDominical', dados.presidente);
   dpFillSel('dp-oracao-inicial', 'presidenteDominical', dados.oracaoInicial);
   dpFillSel('dp-leitor-sentinela', 'leitorSentinela', dados.leitorSentinela);
-  dpFillSel('dp-oracao-final', 'oracaoFinalDominical', dados.oracaoFinal);
+
+  var inpOracaoFinal = document.getElementById('dp-oracao-final');
+  if (inpOracaoFinal) inpOracaoFinal.value = dados.oracaoFinal || '';
+  var listaOFSugestao = document.getElementById('dp-lista-oracao-final-sugestao');
+  if (listaOFSugestao) {
+    var candidatosOF = (vmcListas.oracaoFinalDominical && vmcListas.oracaoFinalDominical.length)
+      ? vmcListas.oracaoFinalDominical
+      : Object.keys(vmcCadastro.irmaos || {});
+    listaOFSugestao.innerHTML = candidatosOF.map(function(n){ return '<option value="'+n+'">'; }).join('');
+  }
+  var chkNaoFica = document.getElementById('dp-orador-nao-fica');
+  if (chkNaoFica) chkNaoFica.checked = !!dados.oradorNaoFica;
 
   // Condutor: cargo fixo, mas com opção de substituto pontual naquela semana
   var condutorLista = Object.keys(vmcCadastro.irmaos || {}).sort(function(a,b){return a.localeCompare(b,'pt-BR');});
@@ -6434,6 +6591,25 @@ function dpCarregarSemana() {
   document.getElementById('dp-cantico-inicial').value    = dados.canticoInicial || '';
   document.getElementById('dp-cantico-meio').value       = dados.canticoMeio || '';
   document.getElementById('dp-cantico-final').value      = dados.canticoFinal || '';
+  document.getElementById('dp-tema-estudo').value        = dados.temaEstudo || '';
+  document.getElementById('dp-texto-base-estudo').value  = dados.textoBaseEstudo || '';
+
+  var listaTemas = document.getElementById('dp-lista-temas-catalogo');
+  if (listaTemas) {
+    listaTemas.innerHTML = dpTemasCatalogo.concat(dpTemasEspeciais).map(function(t){ return '<option value="'+t+'">'; }).join('');
+  }
+}
+
+// Oração final = o próprio orador, por padrão — exceto se marcado que ele
+// não vai ficar até o final (aí o campo fica livre pro Presidente escolher
+// um irmão local, com sugestões de quem está marcado pra essa função).
+function dpSincronizarOracaoFinal() {
+  var chk = document.getElementById('dp-orador-nao-fica');
+  var campoOF = document.getElementById('dp-oracao-final');
+  if (!campoOF) return;
+  if (chk && chk.checked) return; // deixa livre pro responsável escolher
+  var orador = document.getElementById('dp-orador');
+  campoOF.value = orador ? orador.value : '';
 }
 
 function dpSincronizarOracaoInicial() {
@@ -6458,6 +6634,7 @@ function dpPreencherCongregacaoOrador() {
 
 function dpColetarDados() {
   function gv(id){ var e=document.getElementById(id); return e?e.value:''; }
+  function gc(id){ var e=document.getElementById(id); return e?e.checked:false; }
   return {
     presidente:        gv('dp-presidente'),
     oracaoInicial:      gv('dp-oracao-inicial'),
@@ -6469,8 +6646,81 @@ function dpColetarDados() {
     condutorSentinela:  gv('dp-condutor-sentinela'),
     leitorSentinela:    gv('dp-leitor-sentinela'),
     canticoFinal:       gv('dp-cantico-final'),
-    oracaoFinal:        gv('dp-oracao-final')
+    oracaoFinal:        gv('dp-oracao-final'),
+    oradorNaoFica:      gc('dp-orador-nao-fica'),
+    temaEstudo:         gv('dp-tema-estudo'),
+    textoBaseEstudo:    gv('dp-texto-base-estudo')
   };
+}
+
+// ── Colar dados do Estudo de A Sentinela (wol.jw.org) ─────────────
+function dpMostrarColarSentinela() {
+  var box = document.getElementById('dp-colar-sentinela-box');
+  box.style.display = box.style.display === 'none' ? 'block' : 'none';
+}
+
+function dpProcessarSentinela() {
+  var status = document.getElementById('dp-sentinela-status');
+  var texto = document.getElementById('dp-texto-colado-sentinela').value;
+  if (!texto || texto.length < 50) {
+    status.textContent = '❌ Cole o texto da página primeiro.'; status.style.color = '#dc2626'; return;
+  }
+
+  // Remove links em formato markdown [texto](url) -> texto, caso venham assim
+  texto = texto.replace(/\[([^\]]+)\]\([^)]*\)/g, '$1');
+  texto = texto.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+  var linhas = texto.split('\n').map(function(l){ return l.trim(); }).filter(Boolean);
+
+  // Acha a linha da data da semana (ex: "27 DE JULHO–2 DE AGOSTO DE 2026"),
+  // que marca o início do conteúdo real — tudo antes disso é menu/cabeçalho do site.
+  var idxData = -1;
+  for (var i = 0; i < linhas.length; i++) {
+    if (/^\d{1,2}\s+DE\s+[A-ZÇÃÕÁÉÍÓÚÂÊÔ]+.*DE\s+\d{4}$/i.test(linhas[i])) { idxData = i; break; }
+  }
+  var corpo = idxData >= 0 ? linhas.slice(idxData) : linhas;
+
+  // Todas as ocorrências de "CÂNTICO N título" no texto
+  var canticos = [];
+  corpo.forEach(function(l, i) {
+    var m = l.match(/^C[ÂA]NTICO\s+(\d+)\s*(.*)$/i);
+    if (m) canticos.push({ idx: i, numero: m[1], titulo: m[2].trim() });
+  });
+
+  if (!canticos.length) {
+    status.textContent = '❌ Não encontrei nenhum "CÂNTICO" no texto colado. Confira se copiou a página certa.';
+    status.style.color = '#dc2626';
+    return;
+  }
+
+  var prog = {};
+  // Primeiro cântico = o que abre o Estudo de A Sentinela ("cântico do meio" da reunião)
+  prog.canticoMeio = 'Cântico ' + canticos[0].numero + (canticos[0].titulo ? ' — ' + canticos[0].titulo : '');
+  // Se houver mais de um, o último é o cântico de encerramento da reunião toda
+  if (canticos.length > 1) {
+    var ultimo = canticos[canticos.length - 1];
+    prog.canticoFinal = 'Cântico ' + ultimo.numero + (ultimo.titulo ? ' — ' + ultimo.titulo : '');
+  }
+
+  // Tema do estudo: primeira linha não vazia depois do primeiro cântico que não seja outro cântico
+  for (var j = canticos[0].idx + 1; j < corpo.length; j++) {
+    if (corpo[j] && !/^C[ÂA]NTICO/i.test(corpo[j])) { prog.temaEstudo = corpo[j]; break; }
+  }
+  // Texto base: a linha seguinte ao tema (geralmente entre aspas, com a citação bíblica)
+  if (prog.temaEstudo) {
+    var idxTema = corpo.indexOf(prog.temaEstudo, canticos[0].idx + 1);
+    for (var k = idxTema + 1; k < corpo.length; k++) {
+      if (corpo[k]) { prog.textoBaseEstudo = corpo[k].replace(/[""]/g, '').trim(); break; }
+    }
+  }
+
+  if (prog.canticoMeio) document.getElementById('dp-cantico-meio').value = prog.canticoMeio;
+  if (prog.canticoFinal) document.getElementById('dp-cantico-final').value = prog.canticoFinal;
+  if (prog.temaEstudo) document.getElementById('dp-tema-estudo').value = prog.temaEstudo;
+  if (prog.textoBaseEstudo) document.getElementById('dp-texto-base-estudo').value = prog.textoBaseEstudo;
+
+  status.textContent = '✅ Preenchido! Confira os campos abaixo antes de salvar.';
+  status.style.color = '#16a34a';
+  document.getElementById('dp-texto-colado-sentinela').value = '';
 }
 
 function dpSalvarSemana() {
@@ -6497,12 +6747,15 @@ function dpRodizioAuto() {
   if (!dpSemanaAtual) { alert('Selecione um domingo.'); return; }
   var usados = [];
   function pegar(campo) {
-    var lista = (vmcListas[campo] || []).filter(function(n){ return usados.indexOf(n) < 0; });
-    if (!lista.length) lista = vmcListas[campo] || [];
+    var todos = vmcListas[campo] && vmcListas[campo].length
+      ? vmcListas[campo]
+      : Object.keys(vmcCadastro.irmaos || {}).sort(function(a,b){return a.localeCompare(b,'pt-BR');});
+    var lista = todos.filter(function(n){ return usados.indexOf(n) < 0; });
+    if (!lista.length) lista = todos;
     if (!lista.length) return '';
     var idx = dpIdx[campo] || 0;
     var escolhido = lista[idx % lista.length];
-    dpIdx[campo] = (idx + 1) % (vmcListas[campo] || []).length || 0;
+    dpIdx[campo] = (idx + 1) % todos.length || 0;
     usados.push(escolhido);
     return escolhido;
   }
@@ -6511,7 +6764,14 @@ function dpRodizioAuto() {
   aplicar('dp-presidente', pegar('presidenteDominical'));
   dpSincronizarOracaoInicial();
   aplicar('dp-leitor-sentinela', pegar('leitorSentinela'));
-  aplicar('dp-oracao-final', pegar('oracaoFinalDominical'));
+
+  var chkNaoFica = document.getElementById('dp-orador-nao-fica');
+  if (chkNaoFica && chkNaoFica.checked) {
+    aplicar('dp-oracao-final', pegar('oracaoFinalDominical'));
+  } else {
+    dpSincronizarOracaoFinal();
+  }
+
   if (dpCondutorFixo) aplicar('dp-condutor-sentinela', dpCondutorFixo);
   if (db) db.ref('dp_config').update({ idx: dpIdx });
 }
@@ -6566,7 +6826,37 @@ function dpAtualizarCondutorFixoSelect() {
 }
 
 function dpSalvarConfig() {
-  if (db) db.ref('dp_config').update({ oradores: dpOradores, condutorFixo: dpCondutorFixo, publicados: dpPublicados, idx: dpIdx });
+  if (db) db.ref('dp_config').update({ oradores: dpOradores, condutorFixo: dpCondutorFixo, publicados: dpPublicados, idx: dpIdx, temasEspeciais: dpTemasEspeciais });
+}
+
+function dpAddTemaEspecial() {
+  var inp = document.getElementById('dp-novo-tema-especial');
+  var tema = inp ? inp.value.trim() : '';
+  if (!tema) return;
+  if (dpTemasEspeciais.indexOf(tema) < 0) dpTemasEspeciais.push(tema);
+  inp.value = '';
+  dpSalvarConfig();
+  dpRenderTemasEspeciais();
+  dpCarregarSemana();
+}
+
+function dpRemoverTemaEspecial(tema) {
+  dpTemasEspeciais = dpTemasEspeciais.filter(function(t){ return t !== tema; });
+  dpSalvarConfig();
+  dpRenderTemasEspeciais();
+  dpCarregarSemana();
+}
+
+function dpRenderTemasEspeciais() {
+  var cont = document.getElementById('dp-lista-temas-especiais');
+  if (!cont) return;
+  if (!dpTemasEspeciais.length) { cont.innerHTML = '<p style="font-size:12px;color:#aaa">Nenhum tema especial cadastrado.</p>'; return; }
+  cont.innerHTML = dpTemasEspeciais.map(function(t) {
+    return '<div style="display:flex;align-items:center;gap:8px;background:#f5f3ff;border:1px solid #ddd6fe;border-radius:8px;padding:6px 12px;margin-bottom:6px">' +
+      '<span style="font-size:13px;flex:1">⭐ ' + t + '</span>' +
+      '<button onclick="dpRemoverTemaEspecial(\'' + t.replace(/'/g,"\\'") + '\')" style="background:#fee2e2;color:#dc2626;border:none;border-radius:5px;padding:3px 10px;font-size:11px;cursor:pointer">✕</button>' +
+    '</div>';
+  }).join('');
 }
 
 // ── Publicação (igual VMC, mas independente) ─────────────────────
@@ -6652,6 +6942,7 @@ function dpRenderPublico() {
     '<div class="vmc-pub-secao">'+
       '<div class="vmc-pub-titulo vida">📖 Estudo de A Sentinela</div>'+
       linha('Cântico do meio', dados.canticoMeio, '')+
+      linha('Tema do estudo', dados.temaEstudo, dados.textoBaseEstudo)+
       linha('Condutor', dados.condutorSentinela, '')+
       linha('Leitor', dados.leitorSentinela, '')+
       linha('Cântico final', dados.canticoFinal, '')+
@@ -6704,6 +6995,7 @@ function dpImprimirSemana() {
     ln('Tema', dados.temaDiscurso, '', '')+
     secH('📖 Estudo de A Sentinela', '#0f6e56')+
     ln('Cântico do meio', dados.canticoMeio, '', '')+
+    ln('Tema do estudo', dados.temaEstudo, dados.textoBaseEstudo, '')+
     ln('Condutor', dados.condutorSentinela, '', '')+
     ln('Leitor', dados.leitorSentinela, '', '')+
     secH('🎵 Encerramento', '#374151')+
@@ -6928,7 +7220,9 @@ function dpIniciar() {
     if (cfg.condutorFixo) dpCondutorFixo = cfg.condutorFixo;
     if (cfg.publicados) dpPublicados = cfg.publicados;
     if (cfg.idx) dpIdx = cfg.idx;
+    if (cfg.temasEspeciais) dpTemasEspeciais = cfg.temasEspeciais;
     dpRenderOradores();
+    dpRenderTemasEspeciais();
     dpAtualizarCondutorFixoSelect();
     dpAtualizarBotaoPublicar();
     dpAtualizarSeletorMesPublico();
