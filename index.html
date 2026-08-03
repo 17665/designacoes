@@ -927,33 +927,20 @@ body.dark-mode .conf-badge.pendente { background: #2a2a15; color: #ca8a04; borde
             </div>
           </div>
 
-          <di<div class="vmc-secao">
-  <div class="vmc-secao-titulo" style="background:#0f6e56">📖 Estudo de A Sentinela</div>
-  <div style="padding:10px 12px 0">
-    <button onclick="window.open('https://wol.jw.org/pt/wol/meetings/r5/lp-t/2026/31','_blank')" 
-            style="background:#0f6e56;color:white;border:none;padding:6px 14px;border-radius:6px;font-size:12px;font-weight:bold;cursor:pointer">
-      📋 Colar programação
-    </button>
-    <span style="font-size:11px;color:#888;margin-left:6px">
-      Cole o texto da página "Estudo de A Sentinela" do wol.jw.org
-    </span>
-    <div id="dp-colar-sentinela-box" style="display:none;margin-top:8px">
-      <textarea id="dp-texto-colado-sentinela" rows="6" style="width:100%;padding:8px;border:1px solid #d0d5dd;border-radius:6px;font-size:12px;box-sizing:border-box" placeholder="Cole aqui o texto da página do Estudo de A Sentinela..."></textarea>
-      <div style="margin-top:6px">
-        <button onclick="dpProcessarSentinela()" 
-                style="background:#0f6e56;color:white;border:none;padding:6px 14px;border-radius:6px;font-size:12px;font-weight:bold;cursor:pointer">
-          ✅ Processar
-        </button>
-        <button onclick="document.getElementById('dp-colar-sentinela-box').style.display='none'" 
-                style="background:#e5e7eb;color:#374151;border:none;padding:6px 14px;border-radius:6px;font-size:12px;cursor:pointer">
-          Cancelar
-        </button>
-        <span id="dp-sentinela-status" style="font-size:12px;margin-left:8px"></span>
-      </div>
-    </div>
-  </div>
-</div>
-
+          <div class="vmc-secao">
+            <div class="vmc-secao-titulo" style="background:#0f6e56">📖 Estudo de A Sentinela</div>
+            <div style="padding:10px 12px 0">
+              <button onclick="dpMostrarColarSentinela()" style="background:#0f6e56;color:white;border:none;padding:6px 14px;border-radius:6px;font-size:12px;font-weight:bold;cursor:pointer">📋 https://www.jw.org/pt/biblioteca/musicas-canticos/cante-de-coracao/, </button>
+              <span style="font-size:11px;color:#888;margin-left:6px">Cole o texto da página "Estudo de A Sentinela" do wol.jw.org</span>
+              <div id="dp-colar-sentinela-box" style="display:none;margin-top:8px">
+                <textarea id="dp-texto-colado-sentinela" rows="6" style="width:100%;padding:8px;border:1px solid #d0d5dd;border-radius:6px;font-size:12px;box-sizing:border-box" placeholder="Cole aqui o texto da página do Estudo de A Sentinela..."></textarea>
+                <div style="margin-top:6px">
+                  <button onclick="dpProcessarSentinela()" style="background:#0f6e56;color:white;border:none;padding:6px 14px;border-radius:6px;font-size:12px;font-weight:bold;cursor:pointer">✅ Processar</button>
+                  <button onclick="document.getElementById('dp-colar-sentinela-box').style.display='none'" style="background:#e5e7eb;color:#374151;border:none;padding:6px 14px;border-radius:6px;font-size:12px;cursor:pointer">Cancelar</button>
+                  <span id="dp-sentinela-status" style="font-size:12px;margin-left:8px"></span>
+                </div>
+              </div>
+            </div>
             <div class="vmc-linha">
               <span class="vmc-label">Cântico do meio</span>
               <input type="text" id="dp-cantico-meio" class="vmc-tema" placeholder="Nº do cântico (1º da Sentinela)...">
