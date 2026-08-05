@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Versão: v2026.08.30 — Estudo Bíblico de Congregação vira parte numerada própria (separada de Condutor/Leitor), com numeração automática -->
+<!-- Versão: v2026.09.01 — Estudo Bíblico de Congregação vira parte numerada própria (separada de Condutor/Leitor), com numeração automática -->
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
@@ -880,16 +880,16 @@ body.dark-mode .conf-badge.pendente { background: #2a2a15; color: #ca8a04; borde
             <option value="setembro">Setembro</option><option value="outubro">Outubro</option>
             <option value="novembro">Novembro</option><option value="dezembro">Dezembro</option>
           </select>
-          <label style="font-size:12px;font-weight:bold;color:#374151">Domingo:</label>
+          <label style="font-size:12px;font-weight:bold;color:#374151">Sábado:</label>
           <select id="dp-sel-data" onchange="dpCarregarSemana()" style="padding:6px 10px;border:1px solid #d0d5dd;border-radius:6px;font-size:13px;background:white;min-width:200px"></select>
           <button onclick="dpRodizioAuto()" style="background:#7c3aed;color:white;border:none;padding:7px 14px;border-radius:6px;font-size:12px;font-weight:bold;cursor:pointer">🎲 Rodízio automático</button>
-          <button onclick="dpSalvarSemana()" style="background:#0f6e56;color:white;border:none;padding:7px 14px;border-radius:6px;font-size:12px;font-weight:bold;cursor:pointer">💾 Salvar domingo</button>
+          <button onclick="dpSalvarSemana()" style="background:#0f6e56;color:white;border:none;padding:7px 14px;border-radius:6px;font-size:12px;font-weight:bold;cursor:pointer">💾 Salvar sábado</button>
           <button id="dp-btn-publicar" onclick="dpTogglePublicarMes()" style="background:#f59e0b;color:white;border:none;padding:7px 14px;border-radius:6px;font-size:12px;font-weight:bold;cursor:pointer">📢 Publicar mês</button>
-          <button onclick="dpImprimirSemana()" style="background:#b45309;color:white;border:none;padding:7px 14px;border-radius:6px;font-size:12px;font-weight:bold;cursor:pointer">🖨️ Imprimir domingo</button>
+          <button onclick="dpImprimirSemana()" style="background:#b45309;color:white;border:none;padding:7px 14px;border-radius:6px;font-size:12px;font-weight:bold;cursor:pointer">🖨️ Imprimir sábado</button>
         </div>
 
         <div id="dp-vazio" style="text-align:center;padding:30px;color:#888;font-size:13px">
-          ⚠️ Nenhum domingo encontrado para este mês.
+          ⚠️ Nenhum sábado encontrado para este mês.
         </div>
 
         <div id="dp-form" style="display:none">
@@ -901,7 +901,8 @@ body.dark-mode .conf-badge.pendente { background: #2a2a15; color: #ca8a04; borde
             </div>
             <div class="vmc-linha">
               <span class="vmc-label">Cântico inicial</span>
-              <input type="text" id="dp-cantico-inicial" class="vmc-tema" placeholder="Nº do cântico...">
+              <input type="text" id="dp-cantico-inicial" class="vmc-tema" list="dp-lista-canticos-catalogo" placeholder="Nº ou título do cântico...">
+              <datalist id="dp-lista-canticos-catalogo"></datalist>
             </div>
             <div class="vmc-linha">
               <span class="vmc-label">Oração inicial</span>
@@ -930,7 +931,7 @@ body.dark-mode .conf-badge.pendente { background: #2a2a15; color: #ca8a04; borde
           <div class="vmc-secao">
             <div class="vmc-secao-titulo" style="background:#0f6e56">📖 Estudo de A Sentinela</div>
             <div style="padding:10px 12px 0">
-            <button onclick="window.open('https://wol.jw.org/pt/wol/meetings/r5/lp-t/2026/31','_blank');document.getElementById('dp-colar-sentinela-box').style.display='block'" 
+            <button onclick="dpAbrirWOLSentinela()"
         style="background:#0f6e56;color:white;border:none;padding:6px 14px;border-radius:6px;font-size:12px;font-weight:bold;cursor:pointer">
   📋 Colar programação
 </button>
@@ -946,7 +947,7 @@ body.dark-mode .conf-badge.pendente { background: #2a2a15; color: #ca8a04; borde
             </div>
             <div class="vmc-linha">
               <span class="vmc-label">Cântico do meio</span>
-              <input type="text" id="dp-cantico-meio" class="vmc-tema" placeholder="Nº do cântico (1º da Sentinela)...">
+              <input type="text" id="dp-cantico-meio" class="vmc-tema" list="dp-lista-canticos-catalogo" placeholder="Nº do cântico (1º da Sentinela)...">
             </div>
             <div class="vmc-linha">
               <span class="vmc-label">Tema do estudo</span>
@@ -970,7 +971,7 @@ body.dark-mode .conf-badge.pendente { background: #2a2a15; color: #ca8a04; borde
             <div class="vmc-secao-titulo" style="background:#374151">🎵 Encerramento</div>
             <div class="vmc-linha">
               <span class="vmc-label">Cântico final</span>
-              <input type="text" id="dp-cantico-final" class="vmc-tema" placeholder="Nº do cântico...">
+              <input type="text" id="dp-cantico-final" class="vmc-tema" list="dp-lista-canticos-catalogo" placeholder="Nº ou título do cântico...">
             </div>
             <div class="vmc-linha">
               <label style="display:flex;align-items:center;gap:6px;font-size:12px;color:#9ca3af;cursor:pointer">
@@ -998,7 +999,7 @@ body.dark-mode .conf-badge.pendente { background: #2a2a15; color: #ca8a04; borde
         <!-- Cadastro de Oradores Visitantes -->
         <div style="margin-top:20px;border-top:2px solid #e8e8e8;padding-top:16px">
           <div style="font-size:13px;font-weight:bold;color:#1a4fa3;margin-bottom:4px">🎤 Cadastro de Oradores Visitantes</div>
-          <p style="font-size:12px;color:#5e6370;margin-bottom:10px">Presidente, Leitor e Oração final usam o mesmo cadastro de irmãos do VMC (aba VMC → funções "Presidente (Domingo)", "Leitor (A Sentinela)", "Oração final (Domingo)"). Aqui é só a lista de oradores visitantes de outras congregações.</p>
+          <p style="font-size:12px;color:#5e6370;margin-bottom:10px">Presidente, Leitor e Oração final usam o mesmo cadastro de irmãos do VMC (aba VMC → funções "Presidente (Sábado)", "Leitor (A Sentinela)", "Oração final (Sábado)"). Aqui é só a lista de oradores visitantes de outras congregações.</p>
           <div style="display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap">
             <input type="text" id="dp-novo-orador-nome" placeholder="Nome do orador..." style="flex:1;min-width:160px;padding:7px 10px;border:1px solid #d0d5dd;border-radius:6px;font-size:13px">
             <input type="text" id="dp-novo-orador-congregacao" placeholder="Congregação de origem..." style="flex:1;min-width:160px;padding:7px 10px;border:1px solid #d0d5dd;border-radius:6px;font-size:13px">
@@ -1280,11 +1281,11 @@ body.dark-mode .conf-badge.pendente { background: #2a2a15; color: #ca8a04; borde
     <div style="padding:12px 20px;background:#eff6ff;border-bottom:1px solid #bfdbfe;display:flex;gap:8px;align-items:center;flex-wrap:wrap">
       <label style="font-size:12px;font-weight:bold;color:#1e3a8a">Mês:</label>
       <select id="dp-pub-sel-mes" onchange="dpAtualizarPublicoSemanas()" style="padding:6px 10px;border:1px solid #bfdbfe;border-radius:6px;font-size:13px;background:white"></select>
-      <label style="font-size:12px;font-weight:bold;color:#1e3a8a">Domingo:</label>
+      <label style="font-size:12px;font-weight:bold;color:#1e3a8a">Sábado:</label>
       <select id="dp-pub-sel" onchange="dpRenderPublico()" style="padding:6px 10px;border:1px solid #bfdbfe;border-radius:6px;font-size:13px;background:white;min-width:200px"></select>
     </div>
     <div class="modal-body" id="dp-pub-corpo" style="padding:16px 20px">
-      <p style="text-align:center;color:#888;padding:30px 0">Selecione um domingo acima.</p>
+      <p style="text-align:center;color:#888;padding:30px 0">Selecione um sábado acima.</p>
     </div>
   </div>
 </div>
@@ -5764,9 +5765,9 @@ var vmcFuncoes = [
   { key:'ministerioIrmao', label:'Ministério (discurso)' },
   { key:'ministerioPubl',  label:'Ministério (publicador dupla)' },
   { key:'ministerioAjud',  label:'Ministério (ajudante dupla)' },
-  { key:'presidenteDominical',   label:'Presidente (Domingo)' },
+  { key:'presidenteDominical',   label:'Presidente (Sábado)' },
   { key:'leitorSentinela',       label:'Leitor (A Sentinela)' },
-  { key:'oracaoFinalDominical',  label:'Oração final (Domingo)' },
+  { key:'oracaoFinalDominical',  label:'Oração final (Sábado)' },
   { key:'oradorEnviado',         label:'Orador (enviar p/ outras congregações)' },
 ];
 
@@ -5877,6 +5878,65 @@ var dpTemasCatalogo = [
   "193. Os problemas de hoje logo serão coisa do passado", "194. Como a sabedoria de Deus nos ajuda"
 ];
 var dpTemasEspeciais = []; // temas especiais adicionados manualmente pelo responsável
+
+// ── Catálogo de cânticos "Cante de Coração para Jeová" (1-163) ──
+var dpCanticosCatalogo = [
+  "1. As qualidades de Jeová", "2. Teu nome é Jeová", "3. Jeová, minha força e esperança",
+  "4. \"Jeová é o meu Pastor\"", "5. As obras maravilhosas de Deus", "6. Os céus declaram a glória de Deus",
+  "7. Jeová, nossa força e poder", "8. Jeová é um refúgio", "9. Jeová é nosso Rei!",
+  "10. A Jeová vou agradecer!", "11. A criação dá glória a Jeová", "12. Nosso grandioso Deus, Jeová",
+  "13. Cristo, o nosso exemplo", "14. O novo Rei da Terra", "15. Louve o Filho de Jeová!",
+  "16. Jeová escolheu nosso Rei", "17. \"Eu quero!\"", "18. Obrigado pelo resgate!",
+  "19. A Ceia do Senhor", "20. Jeová nos deu o seu melhor", "21. Vou buscar primeiro o Reino",
+  "22. Que venha o Reino de Deus!", "23. Jeová começou a reinar!", "24. Venham para o monte de Jeová!",
+  "25. Os filhos ungidos de Jeová", "26. \"Se fez por meus irmãos, você fez por mim\"", "27. A vitória dos filhos de Deus",
+  "28. Quem pode ser amigo de Jeová?", "29. Que nossa vida dê honra ao teu nome!", "30. Meu Deus, meu Amigo e Pai",
+  "31. Ande com Deus", "32. Escolha o lado de Jeová!", "33. Deixe Jeová levar seus fardos",
+  "34. Andarei em integridade", "35. O que é mais importante", "36. Proteja o coração",
+  "37. Amo a Jeová de todo o coração", "38. Jeová vai te dar força", "39. Um bom nome",
+  "40. Você já decidiu?", "41. Escuta minha oração", "42. Minha oração a Jeová",
+  "43. Uma oração de agradecimento", "44. Oração de um servo aflito", "45. Os pensamentos do meu coração",
+  "46. Obrigado, Jeová!", "47. Sempre a Deus vou orar", "48. Caminhamos sempre com Jeová",
+  "49. Como alegrar a Jeová", "50. Minha oração de dedicação", "51. Dedicamos nossa vida a Jeová",
+  "52. Nossa dedicação", "53. Pronto para pregar", "54. \"Este é o caminho\"",
+  "55. Nada temam, meus amados!", "56. Faça da verdade a sua vida", "57. Pregue a todo tipo de pessoas",
+  "58. Procuramos os amigos da paz", "59. Vamos louvar a Jeová!", "60. A mensagem de vida",
+  "61. Avancem, Testemunhas!", "62. O novo cântico", "63. Somos Testemunhas de Jeová!",
+  "64. Participamos com alegria na colheita", "65. Confiantes, nós vamos continuar!", "66. Vamos declarar as boas novas",
+  "67. \"Pregue a palavra\"", "68. Plantando a semente do Reino", "69. Continue pregando!",
+  "70. Procurem os merecedores", "71. Marchamos com Jeová", "72. Pregar as verdades do Reino",
+  "73. Dá-nos coragem", "74. A canção do Reino", "75. 'Estou aqui!'",
+  "76. Um sentimento especial", "77. Luz num mundo sombrio", "78. Ensine a verdade com amor",
+  "79. Ensine-os a se manter firmes", "80. \"Provem e vejam que Jeová é bom\"", "81. A vida de um pioneiro",
+  "82. 'Deixe a luz brilhar'", "83. \"De casa em casa\"", "84. Vamos fazer nosso melhor",
+  "85. Sejam bem-vindos!", "86. As reuniões são o nosso lugar", "87. As reuniões nos encorajam",
+  "88. Os teus caminhos quero entender", "89. Escute, obedeça e seja abençoado", "90. \"Encorajando uns aos outros\"",
+  "91. Construímos com amor", "92. Um lugar que leva teu nome", "93. Abençoa nossas reuniões",
+  "94. Muito obrigado pela Bíblia", "95. A luz clareia mais e mais", "96. O livro de Deus é um tesouro",
+  "97. A Palavra de Deus nos ajuda a viver", "98. A Bíblia, um presente de Deus", "99. Muitos irmãos ao meu lado",
+  "100. Vamos ser hospitaleiros!", "101. Servimos a Jeová em união", "102. Ajude os que estão fracos",
+  "103. Os anciãos são um presente de Jeová", "104. Espírito santo — um presente de Deus", "105. \"Deus é amor\"",
+  "106. Amor — a qualidade que é sem igual", "107. Jeová — o exemplo perfeito de amor", "108. O amor leal de Jeová",
+  "109. Mostre amor de coração", "110. \"A alegria que vem de Jeová\"", "111. Nossos motivos de alegria",
+  "112. Jeová, Deus de paz", "113. A paz que vem de Deus", "114. Seja paciente",
+  "115. A paciência de Deus é salvação", "116. A força da bondade", "117. A qualidade da bondade",
+  "118. Jeová, a ti pedimos mais fé", "119. Temos que ter fé", "120. Seja humilde como Jesus",
+  "121. Precisamos ter autodomínio", "122. Vamos continuar firmes!", "123. Obedecemos a Jeová e à sua organização",
+  "124. Sempre leais", "125. \"Felizes os misericordiosos\"", "126. Sempre fortes, firmes e despertos",
+  "127. Que tipo de pessoa eu devo ser", "128. Persevere até o fim", "129. Eu vou perseverar",
+  "130. Vamos perdoar uns aos outros", "131. O que Jeová uniu", "132. Nós somos um",
+  "133. Quero ser um jovem leal", "134. Os filhos são uma herança de Deus", "135. \"Seja sábio, meu filho\"",
+  "136. Jeová o recompensará", "137. Mulheres fiéis", "138. A beleza dos cabelos brancos",
+  "139. Imagine a si mesmo no Paraíso", "140. Vida eterna, enfim!", "141. O milagre da vida",
+  "142. A esperança que nos dá coragem", "143. Continue ativo e desperto!", "144. Olhe para as bênçãos!",
+  "145. Deus prometeu um paraíso", "146. \"Estou fazendo novas todas as coisas\"", "147. A vida eterna — que bela promessa!",
+  "148. Jeová é nosso Salvador", "149. Um cântico de vitória", "150. Busquem a Deus para obter livramento",
+  "151. Ele chamará", "152. Um lugar para teu louvor", "153. Jeová, me dá coragem",
+  "154. Eterno amor", "155. Nossa alegria eterna", "156. Olhar com fé",
+  "157. Paz, enfim!", "158. 'Não vai se atrasar!'", "159. Toda a glória vou te dar",
+  "160. As boas novas sobre Jesus", "161. Fazer tua vontade é o meu prazer", "162. Preciso de ti",
+  "163. Felizes são esses olhos"
+];
 
 function vmcNormalizarLista(lista) {
   // Aceita tanto o formato antigo (array de strings) quanto o novo ({nome,familia})
@@ -6458,7 +6518,7 @@ setTimeout(reagendarAvisosAoIniciar, 1000);
 // Inicia sistema VMC
 // VMC inicia após carregar — todosIrmaos já está disponível no arquivo
 // ═══════════════════════════════════════════════════════════════
-// DISCURSO PÚBLICO / ESTUDO DE A SENTINELA (Reunião de domingo)
+// DISCURSO PÚBLICO / ESTUDO DE A SENTINELA (Reunião de sábado)
 // ═══════════════════════════════════════════════════════════════
 var dpDados = {};        // { iso: {presidente, oracaoInicial, ...} }
 var dpOradores = [];     // [{nome, congregacao, telefone}]
@@ -6477,7 +6537,7 @@ function dpDefinirMesAtual() {
   if (sel) sel.value = dpMesAtualValue();
 }
 
-// Lista de domingos do mês selecionado (independente do VMC)
+// Lista de sábados do mês selecionado (independente do VMC)
 function dpGetDatas(mesOverride) {
   var mesesNomes = ['janeiro','fevereiro','março','abril','maio','junho','julho',
                      'agosto','setembro','outubro','novembro','dezembro'];
@@ -6497,7 +6557,7 @@ function dpGetDatas(mesOverride) {
   var list = [];
   var d = new Date(primeiroDia);
   while (d <= ultimoDia) {
-    if (d.getDay() === 0) { // domingo
+    if (d.getDay() === 6) { // sábado
       var ev = typeof eventoNaSemana === 'function' ? eventoNaSemana(d) : null;
       var evCancela = ev && (ev.tipo==='congresso' || ev.tipo==='assembleia' || ev.tipo==='celebracao');
       if (!evCancela) {
@@ -6518,7 +6578,7 @@ function dpPreencherSeletores() {
   var sel = document.getElementById('dp-sel-data');
   if (sel) {
     sel.innerHTML = datas.map(function(d){ return '<option value="'+d.iso+'">'+d.label+'</option>'; })
-      .join('') || '<option value="">— Nenhum domingo —</option>';
+      .join('') || '<option value="">— Nenhum sábado —</option>';
     if (datas.length) {
       document.getElementById('dp-form').style.display = 'block';
       document.getElementById('dp-vazio').style.display = 'none';
@@ -6601,6 +6661,10 @@ function dpCarregarSemana() {
   if (listaTemas) {
     listaTemas.innerHTML = dpTemasCatalogo.concat(dpTemasEspeciais).map(function(t){ return '<option value="'+t+'">'; }).join('');
   }
+  var listaCanticos = document.getElementById('dp-lista-canticos-catalogo');
+  if (listaCanticos) {
+    listaCanticos.innerHTML = dpCanticosCatalogo.map(function(c){ return '<option value="'+c+'">'; }).join('');
+  }
 }
 
 // Oração final = o próprio orador, por padrão — exceto se marcado que ele
@@ -6657,6 +6721,25 @@ function dpColetarDados() {
 }
 
 // ── Colar dados do Estudo de A Sentinela (wol.jw.org) ─────────────
+// Calcula o número da semana ISO pra montar o link certo da página do wol.jw.org
+// (a página de reuniões usa .../ano/semana-do-ano, ex: .../2026/31)
+function dpNumeroSemanaISO(data) {
+  var d = new Date(Date.UTC(data.getFullYear(), data.getMonth(), data.getDate()));
+  var diaSemana = d.getUTCDay() || 7;
+  d.setUTCDate(d.getUTCDate() + 4 - diaSemana);
+  var inicioAno = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
+  return Math.ceil((((d - inicioAno) / 86400000) + 1) / 7);
+}
+
+function dpAbrirWOLSentinela() {
+  var dataRef = dpSemanaAtual ? new Date(dpSemanaAtual + 'T00:00:00') : new Date();
+  var ano = dataRef.getFullYear();
+  var semana = dpNumeroSemanaISO(dataRef);
+  var url = 'https://wol.jw.org/pt/wol/meetings/r5/lp-t/' + ano + '/' + semana;
+  window.open(url, '_blank');
+  document.getElementById('dp-colar-sentinela-box').style.display = 'block';
+}
+
 function dpMostrarColarSentinela() {
   var box = document.getElementById('dp-colar-sentinela-box');
   box.style.display = box.style.display === 'none' ? 'block' : 'none';
@@ -6727,7 +6810,7 @@ function dpProcessarSentinela() {
 }
 
 function dpSalvarSemana() {
-  if (!dpSemanaAtual) { alert('Selecione um domingo.'); return; }
+  if (!dpSemanaAtual) { alert('Selecione um sábado.'); return; }
   var dados = dpColetarDados();
   dpDados[dpSemanaAtual] = dados;
   if (db) db.ref('dp').update(dpDados);
@@ -6742,12 +6825,12 @@ function dpSalvarSemana() {
   dpSalvarConfig();
 
   dpAtualizarPublicoSemanas();
-  alert('✅ Domingo salvo!');
+  alert('✅ Sábado salvo!');
 }
 
 // ── Rodízio automático (Presidente, Leitor, Oração final) ───────
 function dpRodizioAuto() {
-  if (!dpSemanaAtual) { alert('Selecione um domingo.'); return; }
+  if (!dpSemanaAtual) { alert('Selecione um sábado.'); return; }
   var usados = [];
   function pegar(campo) {
     var todos = vmcListas[campo] && vmcListas[campo].length
@@ -6909,7 +6992,7 @@ function dpAtualizarPublicoSemanas() {
   var mesPub = selMesPub ? selMesPub.value : '';
   var datasPub = mesPub ? dpGetDatas(mesPub) : [];
   pubSel.innerHTML = datasPub.map(function(d){ return '<option value="'+d.iso+'">'+d.label+'</option>'; })
-    .join('') || '<option value="">— Nenhum domingo publicado —</option>';
+    .join('') || '<option value="">— Nenhum sábado publicado —</option>';
   if (datasPub.length) {
     var isoHoje = typeof vmcSemanaDeHoje === 'function' ? vmcSemanaDeHoje(datasPub) : datasPub[0].iso;
     if (isoHoje) pubSel.value = isoHoje;
@@ -6962,7 +7045,7 @@ function dpFecharPrograma() { document.getElementById('ov-programa-dp').classLis
 
 // ── Impressão semanal ────────────────────────────────────────────
 function dpImprimirSemana() {
-  if (!dpSemanaAtual) { alert('Selecione um domingo.'); return; }
+  if (!dpSemanaAtual) { alert('Selecione um sábado.'); return; }
   var dados = dpColetarDados();
   var d = new Date(dpSemanaAtual + 'T00:00:00');
   var dataStr = d.toLocaleDateString('pt-BR', {day:'2-digit',month:'2-digit',year:'numeric'});
@@ -7014,7 +7097,7 @@ function dpImprimirSemana() {
   else alert('Permita pop-ups para imprimir.');
 }
 
-// ── Impressão mensal (grade com todos os domingos do mês) ────────
+// ── Impressão mensal (grade com todos os sábados do mês) ────────
 // [Removido a pedido — o formato certo de designação de envio fica na aba "Enviar Oradores"]
 
 // ── Inicialização ─────────────────────────────────────────────
