@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Versão: v2026.08.33 — Discurso Público e Estudo de A Sentinela corrigido para sábado (era domingo) -->
+<!-- Versão: v2026.08.34 — Discurso Público e Estudo de A Sentinela corrigido para sábado (era domingo) -->
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
@@ -429,7 +429,7 @@ body.dark-mode .conf-badge.pendente { background: #2a2a15; color: #ca8a04; borde
     <div class="modal-cab">
       <span>
         <span class="modal-cab-titulo">👨‍💼 Área do Responsável</span>
-        <span style="font-size:10px;color:#9ca3af;font-weight:normal;margin-left:8px">v2026.08.33</span>
+        <span style="font-size:10px;color:#9ca3af;font-weight:normal;margin-left:8px">v2026.08.34</span>
       </span>
       <button class="btn-fechar" onclick="fecharPrincipal()">✕</button>
     </div>
@@ -2471,47 +2471,44 @@ function regenerarTudoDoForm(){
 }
 
 function apagarMes(chave){
-  // Proteção: só o responsável pode apagar meses
   if (!modoResponsavel) {
     pedirSenhaCallback = function() { apagarMes(chave); };
     pedirSenha();
     return;
   }
   if (!confirm('Apagar o mês ' + chave + ' da escala?')) return;
-  
-  // Remove da tela
-  var bloco = document.querySelector('[data-chavemes="'+chave+'"]');
-  if(bloco) bloco.remove();
+  var bloco=document.querySelector('[data-chavemes="'+chave+'"]');
+  if(bloco){ bloco.remove(); }
   delete mesesGerados[chave];
-  
-  // 🔥 REMOVER COMPLETAMENTE DO FIREBASE 🔥
+
   if (firebaseOk && db) {
-    // 1. Remove a chave do nó "meses"
-    db.ref('escala/estado/meses/' + chave).remove();
-    
-    // 2. Remove TODAS as designações daquele mês
-    var ano = chave.split('-')[0];
-    var mes = chave.split('-')[1];
+    // 1. Remove a "marca" do mês na lista
+    db.ref('escala/estado/meses/' + chave).remove()
+      .then(function() {
+        console.log('✅ Mês removido do Firebase:', chave);
+      })
+      .catch(function(e) {
+        console.warn('Erro ao remover do Firebase:', e);
+      });
+
+    // 2. Remove TAMBÉM as designações dia-a-dia daquele mês (senão ficam
+    // órfãs no banco e voltam a aparecer quando o app resincroniza tudo)
+    // Formato da chave: "ANO-MES" (ex: "2026-08"), igual chaveMes() gera.
+    var partesChave = chave.split('-');
+    var ano = partesChave[0];
+    var mesPad = partesChave[1];
     db.ref('escala/estado/escalaGerada').once('value', function(snap) {
       var todas = snap.val() || {};
       Object.keys(todas).forEach(function(dataISO) {
-        // dataISO formato "YYYY-MM-DD"
-        if (dataISO.startsWith(ano + '-' + mes)) {
+        if (dataISO.indexOf(ano + '-' + mesPad) === 0) {
           db.ref('escala/estado/escalaGerada/' + dataISO).remove();
         }
       });
     });
-    
-    console.log('✅ Mês ' + chave + ' removido completamente do Firebase');
   }
-  
+
   atualizarSubtitulo();
   renderPainelMeses();
-  
-  // Recarrega a página para sincronizar completamente
-  setTimeout(function() {
-    location.reload();
-  }, 500);
 }
 function renderPainelMeses() {
   var cont = document.getElementById('painel-meses-salvos');
@@ -2524,10 +2521,10 @@ function renderPainelMeses() {
   var mesesNomes = ['','Janeiro','Fevereiro','Março','Abril','Maio','Junho',
                     'Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
   cont.innerHTML = chaves.map(function(chave) {
-    // chave formato "M-YYYY"
+    // chave formato "ANO-MES" (ex: "2026-08"), gerado por chaveMes()
     var partes = chave.split('-');
-    var nomeMes = mesesNomes[parseInt(partes[0])] || chave;
-    var ano = partes[1] || '';
+    var ano = partes[0] || '';
+    var nomeMes = mesesNomes[parseInt(partes[1])] || chave;
     return '<div style="background:#f0f4ff;border:1px solid #c7d2fe;border-radius:8px;padding:8px 12px;display:flex;align-items:center;gap:10px">' +
       '<span style="font-size:13px;font-weight:bold;color:#1a4fa3">📅 ' + nomeMes + ' ' + ano + '</span>' +
       '<button onclick="apagarMes(\'' + chave + '\')" style="background:#fee2e2;color:#dc2626;border:1px solid #fca5a5;border-radius:6px;padding:3px 10px;font-size:11px;cursor:pointer;font-weight:bold">🗑️ Apagar</button>' +
@@ -2839,33 +2836,7 @@ function toggleModoTeste() {
 
 // ── PERSISTÊNCIA DE MESES NO FIREBASE ──────────────────────────────────────
 
-function apagarMes(chave){
-  if (!modoResponsavel) {
-    pedirSenhaCallback = function() { apagarMes(chave); };
-    pedirSenha();
-    return;
-  }
-  if (!confirm('Apagar o mês ' + chave + ' da escala?')) return;
-  var bloco=document.querySelector('[data-chavemes="'+chave+'"]');
-  if(bloco){ bloco.remove(); }
-  delete mesesGerados[chave];
-  
-  if (firebaseOk && db) {
-    db.ref('escala/estado/meses/' + chave).remove()
-      .then(function() {
-        console.log('✅ Mês removido do Firebase:', chave);
-      })
-      .catch(function(e) {
-        console.warn('Erro ao remover do Firebase:', e);
-      });
-  }
-  
-  atualizarSubtitulo();
-  // 🔥 REMOVA ESTA LINHA 🔥
-  // salvarMesesFirebase();  ← NÃO CHAME MAIS AQUI
-  
-  renderPainelMeses();
-}function salvarConfigFirebase() {
+function salvarConfigFirebase() {
   if (!firebaseOk || !db) return;
   var payload = {
     listas: JSON.parse(JSON.stringify(listas)),
