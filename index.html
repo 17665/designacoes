@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Versão: v2026.08.34 — Discurso Público e Estudo de A Sentinela corrigido para sábado (era domingo) -->
+<!-- Versão: v2026.08.35 — Tempo das partes fixas do VMC (Tesouros/Joias/Leitura/Estudo Bíblico) agora é editável por semana -->
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
@@ -429,7 +429,7 @@ body.dark-mode .conf-badge.pendente { background: #2a2a15; color: #ca8a04; borde
     <div class="modal-cab">
       <span>
         <span class="modal-cab-titulo">👨‍💼 Área do Responsável</span>
-        <span style="font-size:10px;color:#9ca3af;font-weight:normal;margin-left:8px">v2026.08.34</span>
+        <span style="font-size:10px;color:#9ca3af;font-weight:normal;margin-left:8px">v2026.08.35</span>
       </span>
       <button class="btn-fechar" onclick="fecharPrincipal()">✕</button>
     </div>
@@ -634,17 +634,20 @@ body.dark-mode .conf-badge.pendente { background: #2a2a15; color: #ca8a04; borde
             <div class="vmc-linha">
               <span class="vmc-label">1. Discurso de Tesouros</span>
               <select id="vmc-tesouro" class="vmc-sel"></select>
-              <input type="text" id="vmc-tesouro-tema" class="vmc-tema" placeholder="Tema... (10 min)">
+              <input type="text" id="vmc-tesouro-tempo" value="10 min" title="Tempo desta parte (editável em semanas com parte extra)" style="width:55px;padding:6px 4px;border:1px solid #d0d5dd;border-radius:6px;font-size:12px;text-align:center">
+              <input type="text" id="vmc-tesouro-tema" class="vmc-tema" placeholder="Tema...">
             </div>
             <div class="vmc-linha">
               <span class="vmc-label">2. Joias Espirituais</span>
               <select id="vmc-joias" class="vmc-sel"></select>
-              <input type="text" id="vmc-joias-tema" class="vmc-tema" placeholder="Tema... (10 min)">
+              <input type="text" id="vmc-joias-tempo" value="10 min" title="Tempo desta parte (editável em semanas com parte extra)" style="width:55px;padding:6px 4px;border:1px solid #d0d5dd;border-radius:6px;font-size:12px;text-align:center">
+              <input type="text" id="vmc-joias-tema" class="vmc-tema" placeholder="Tema...">
             </div>
             <div class="vmc-linha">
               <span class="vmc-label">3. Leitura da Bíblia</span>
               <select id="vmc-leitura" class="vmc-sel"></select>
-              <input type="text" id="vmc-leitura-tema" class="vmc-tema" placeholder="Ex: Jer. 3:14-25 (th lição 12) — 4 min">
+              <input type="text" id="vmc-leitura-tempo" value="4 min" title="Tempo desta parte (editável em semanas com parte extra)" style="width:55px;padding:6px 4px;border:1px solid #d0d5dd;border-radius:6px;font-size:12px;text-align:center">
+              <input type="text" id="vmc-leitura-tema" class="vmc-tema" placeholder="Ex: Jer. 3:14-25 (th lição 12)">
             </div>
           </div>
 
@@ -666,11 +669,12 @@ body.dark-mode .conf-badge.pendente { background: #2a2a15; color: #ca8a04; borde
             <button onclick="vmcAddParteVida()" style="background:none;border:2px dashed #6ee7b7;color:#0f6e56;padding:5px 14px;border-radius:6px;font-size:12px;font-weight:bold;cursor:pointer;margin:6px 0">+ Adicionar parte de vida cristã</button>
             <div class="vmc-linha" style="margin-top:14px;border-top:1px dashed #d0d5dd;padding-top:10px">
               <span style="font-weight:bold;color:#0f6e56;font-size:13px"><span id="vmc-estudo-titulo-num">7.</span> Estudo Bíblico de Congregação</span>
+              <input type="text" id="vmc-estudo-tempo" value="30 min" title="Tempo desta parte (editável em semanas com parte extra)" style="width:55px;padding:6px 4px;border:1px solid #d0d5dd;border-radius:6px;font-size:12px;text-align:center;margin-left:8px">
             </div>
             <div class="vmc-linha">
               <span class="vmc-label">Condutor</span>
               <select id="vmc-estudo-condutor" class="vmc-sel"></select>
-              <input type="text" id="vmc-estudo-tema" class="vmc-tema" placeholder="Material... (30 min)">
+              <input type="text" id="vmc-estudo-tema" class="vmc-tema" placeholder="Material...">
             </div>
             <div class="vmc-linha">
               <span class="vmc-label">Leitor</span>
@@ -4953,6 +4957,10 @@ function vmcCarregarSemana() {
   set('vmc-joias-tema',        vmcLimparTempo(dados.joiasTema));
   set('vmc-leitura-tema',      vmcLimparTempo(dados.leituraTema));
   set('vmc-estudo-tema',       vmcLimparTempo(dados.estudoTema));
+  set('vmc-tesouro-tempo',     dados.tesouroTempo || '10 min');
+  set('vmc-joias-tempo',       dados.joiasTempo   || '10 min');
+  set('vmc-leitura-tempo',     dados.leituraTempo || '4 min');
+  set('vmc-estudo-tempo',      dados.estudoTempo  || '30 min');
 
   function fillSel(id, listKey, val) {
     var e = document.getElementById(id);
@@ -5021,13 +5029,17 @@ function vmcColetarDados() {
     oracaoAbertura:  gv('vmc-oracao-abertura'),
     visitaSuperintendente: !!(document.getElementById('vmc-visita-superintendente') || {}).checked,
     tesouro:         gv('vmc-tesouro'),
+    tesouroTempo:    gv('vmc-tesouro-tempo') || '10 min',
     tesouroTema:     gv('vmc-tesouro-tema'),
     joias:           gv('vmc-joias'),
+    joiasTempo:      gv('vmc-joias-tempo') || '10 min',
     joiasTema:       gv('vmc-joias-tema'),
     leitura:         gv('vmc-leitura'),
+    leituraTempo:    gv('vmc-leitura-tempo') || '4 min',
     leituraTema:     gv('vmc-leitura-tema'),
     canticoMeio:     gv('vmc-cantico-meio'),
     estudoCondutor:  gv('vmc-estudo-condutor'),
+    estudoTempo:     gv('vmc-estudo-tempo') || '30 min',
     estudoTema:      gv('vmc-estudo-tema'),
     estudoLeitor:    gv('vmc-estudo-leitor'),
     canticoFim:      gv('vmc-cantico-fim'),
@@ -5243,15 +5255,15 @@ function vmcImprimirSemana() {
     ln('Presidente', dados.presidente, '', '')+
     ln('Oração de abertura', dados.oracaoAbertura, '', '')+
     secH('💎 TESOUROS DA PALAVRA DE DEUS', '#1a4fa3')+
-    ln('1. Discurso de Tesouros', dados.tesouro, dados.tesouroTema, '10 min')+
-    ln('2. Joias Espirituais', dados.joias, dados.joiasTema, '10 min')+
-    ln('3. Leitura da Bíblia', dados.leitura, dados.leituraTema, '4 min')+
+    ln('1. Discurso de Tesouros', dados.tesouro, dados.tesouroTema, dados.tesouroTempo || '10 min')+
+    ln('2. Joias Espirituais', dados.joias, dados.joiasTema, dados.joiasTempo || '10 min')+
+    ln('3. Leitura da Bíblia', dados.leitura, dados.leituraTema, dados.leituraTempo || '4 min')+
     secH('🌾 FAÇA SEU MELHOR NO MINISTÉRIO', '#b45309')+
     linhasMin+
     secH('📖 NOSSA VIDA CRISTÃ', '#0f6e56')+
     cantRow(dados.canticoMeio)+
     linhasVida+
-    subH((7 + dados.vidaPartes.length) + '. Estudo Bíblico de Congregação', dados.estudoTema, '30 min')+
+    subH((7 + dados.vidaPartes.length) + '. Estudo Bíblico de Congregação', dados.estudoTema, dados.estudoTempo || '30 min')+
     ln('Condutor', dados.estudoCondutor, '', '')+
     ln('Leitor', dados.estudoLeitor, '', '')+
     ln('Comentários finais (3 min)' + (dados.canticoFim?' | 🎵 '+dados.canticoFim+' e oração':''), dados.oracaoFim, '', '')+
@@ -5393,10 +5405,10 @@ function vmcImprimirMes() {
     if (d.canticoAbertura) r += '<div class="cantico">🎵 ' + d.canticoAbertura + '</div>';
     r += '<div class="parte-row"><span class="parte-label">Presidente</span><span class="parte-nome">' + nomeParticipante(d,'presidente') + '</span></div>';
     r += '<div class="parte-row"><span class="parte-label">Oração abertura</span><span class="parte-nome">' + nomeParticipante(d,'oracaoAbertura') + '</span></div>';
-    r += '<div class="parte-row"><span class="parte-label">1. Tesouros (10 min)</span><span class="parte-nome">' + nomeParticipante(d,'tesouro') + '</span></div>';
+    r += '<div class="parte-row"><span class="parte-label">1. Tesouros (' + (d.tesouroTempo||'10 min') + ')</span><span class="parte-nome">' + nomeParticipante(d,'tesouro') + '</span></div>';
     if (d.tesouroTema) r += '<div class="parte-tema">' + d.tesouroTema + '</div>';
-    r += '<div class="parte-row"><span class="parte-label">2. Joias Esp. (10 min)</span><span class="parte-nome">' + nomeParticipante(d,'joias') + '</span></div>';
-    r += '<div class="parte-row"><span class="parte-label">3. Leitura Bíblia (4 min)</span><span class="parte-nome">' + nomeParticipante(d,'leitura') + '</span></div>';
+    r += '<div class="parte-row"><span class="parte-label">2. Joias Esp. (' + (d.joiasTempo||'10 min') + ')</span><span class="parte-nome">' + nomeParticipante(d,'joias') + '</span></div>';
+    r += '<div class="parte-row"><span class="parte-label">3. Leitura Bíblia (' + (d.leituraTempo||'4 min') + ')</span><span class="parte-nome">' + nomeParticipante(d,'leitura') + '</span></div>';
     if (d.leituraTema) r += '<div class="parte-tema">' + d.leituraTema + '</div>';
     return r;
   }
@@ -5419,7 +5431,7 @@ function vmcImprimirMes() {
       r += '<div class="parte-empilhada"><span class="pe-titulo">' + (i+7) + '. ' + (p.titulo||'') + (p.tempo?' ('+p.tempo+')':'') + '</span><span class="pe-nome">' + (p.irmao||'—') + '</span></div>';
     });
     var numEstudo = 7 + vidaPartes.length;
-    r += '<div class="parte-empilhada" style="margin-top:2px"><span class="pe-titulo" style="color:#0f6e56;font-weight:bold">' + numEstudo + '. Estudo Bíblico de Congregação (30 min)</span></div>';
+    r += '<div class="parte-empilhada" style="margin-top:2px"><span class="pe-titulo" style="color:#0f6e56;font-weight:bold">' + numEstudo + '. Estudo Bíblico de Congregação (' + (d.estudoTempo||'30 min') + ')</span></div>';
     if (d.estudoTema) r += '<div class="parte-tema">' + d.estudoTema + '</div>';
     r += '<div class="parte-row"><span class="parte-label">Condutor</span><span class="parte-nome">' + nomeParticipante(d,'estudoCondutor') + '</span></div>';
     r += '<div class="parte-row"><span class="parte-label">Leitor</span><span class="parte-nome">' + nomeParticipante(d,'estudoLeitor') + '</span></div>';
@@ -5696,9 +5708,9 @@ function vmcRenderPublico() {
       (dados.leituraSemanal?'<div style="font-size:11px;color:#555;padding:4px 8px">Leitura: '+dados.leituraSemanal+'</div>':'')+
       linha('Presidente', dados.presidente, '')+
       linha('Oração de abertura', dados.oracaoAbertura, '')+
-      linha('1. Tesouros (10 min)', dados.tesouro, dados.tesouroTema)+
-      linha('2. Joias Espirituais (10 min)', dados.joias, dados.joiasTema)+
-      linha('3. Leitura da Bíblia (4 min)', dados.leitura, dados.leituraTema)+
+      linha('1. Tesouros (' + (dados.tesouroTempo||'10 min') + ')', dados.tesouro, dados.tesouroTema)+
+      linha('2. Joias Espirituais (' + (dados.joiasTempo||'10 min') + ')', dados.joias, dados.joiasTema)+
+      linha('3. Leitura da Bíblia (' + (dados.leituraTempo||'4 min') + ')', dados.leitura, dados.leituraTema)+
     '</div>'+
     '<div class="vmc-pub-secao">'+
       '<div class="vmc-pub-titulo escola">🌾 Faça Seu Melhor no Ministério</div>'+
@@ -5707,7 +5719,7 @@ function vmcRenderPublico() {
     '<div class="vmc-pub-secao">'+
       '<div class="vmc-pub-titulo vida">📖 Nossa Vida Cristã</div>'+
       linhasVida+
-      '<div class="vmc-pub-linha" style="font-weight:bold;color:#0f6e56">'+(7 + (dados.vidaPartes||[]).length)+'. Estudo Bíblico de Congregação'+
+      '<div class="vmc-pub-linha" style="font-weight:bold;color:#0f6e56">'+(7 + (dados.vidaPartes||[]).length)+'. Estudo Bíblico de Congregação ('+(dados.estudoTempo||'30 min')+')'+
         (dados.estudoTema ? ' <span style="font-weight:normal;font-style:italic;color:#666">— '+dados.estudoTema+'</span>' : '')+
       '</div>'+
       linha('Condutor', dados.estudoCondutor, '')+
