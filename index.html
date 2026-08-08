@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Versão: v2026.08.35 — Tempo das partes fixas do VMC (Tesouros/Joias/Leitura/Estudo Bíblico) agora é editável por semana -->
+<!-- Versão: v2026.08.29 — Estudo Bíblico de Congregação vira parte numerada própria (separada de Condutor/Leitor), com numeração automática -->
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
@@ -429,7 +429,7 @@ body.dark-mode .conf-badge.pendente { background: #2a2a15; color: #ca8a04; borde
     <div class="modal-cab">
       <span>
         <span class="modal-cab-titulo">👨‍💼 Área do Responsável</span>
-        <span style="font-size:10px;color:#9ca3af;font-weight:normal;margin-left:8px">v2026.08.35</span>
+        <span style="font-size:10px;color:#9ca3af;font-weight:normal;margin-left:8px">v2026.08.29</span>
       </span>
       <button class="btn-fechar" onclick="fecharPrincipal()">✕</button>
     </div>
@@ -634,20 +634,17 @@ body.dark-mode .conf-badge.pendente { background: #2a2a15; color: #ca8a04; borde
             <div class="vmc-linha">
               <span class="vmc-label">1. Discurso de Tesouros</span>
               <select id="vmc-tesouro" class="vmc-sel"></select>
-              <input type="text" id="vmc-tesouro-tempo" value="10 min" title="Tempo desta parte (editável em semanas com parte extra)" style="width:55px;padding:6px 4px;border:1px solid #d0d5dd;border-radius:6px;font-size:12px;text-align:center">
-              <input type="text" id="vmc-tesouro-tema" class="vmc-tema" placeholder="Tema...">
+              <input type="text" id="vmc-tesouro-tema" class="vmc-tema" placeholder="Tema... (10 min)">
             </div>
             <div class="vmc-linha">
               <span class="vmc-label">2. Joias Espirituais</span>
               <select id="vmc-joias" class="vmc-sel"></select>
-              <input type="text" id="vmc-joias-tempo" value="10 min" title="Tempo desta parte (editável em semanas com parte extra)" style="width:55px;padding:6px 4px;border:1px solid #d0d5dd;border-radius:6px;font-size:12px;text-align:center">
-              <input type="text" id="vmc-joias-tema" class="vmc-tema" placeholder="Tema...">
+              <input type="text" id="vmc-joias-tema" class="vmc-tema" placeholder="Tema... (10 min)">
             </div>
             <div class="vmc-linha">
               <span class="vmc-label">3. Leitura da Bíblia</span>
               <select id="vmc-leitura" class="vmc-sel"></select>
-              <input type="text" id="vmc-leitura-tempo" value="4 min" title="Tempo desta parte (editável em semanas com parte extra)" style="width:55px;padding:6px 4px;border:1px solid #d0d5dd;border-radius:6px;font-size:12px;text-align:center">
-              <input type="text" id="vmc-leitura-tema" class="vmc-tema" placeholder="Ex: Jer. 3:14-25 (th lição 12)">
+              <input type="text" id="vmc-leitura-tema" class="vmc-tema" placeholder="Ex: Jer. 3:14-25 (th lição 12) — 4 min">
             </div>
           </div>
 
@@ -669,12 +666,11 @@ body.dark-mode .conf-badge.pendente { background: #2a2a15; color: #ca8a04; borde
             <button onclick="vmcAddParteVida()" style="background:none;border:2px dashed #6ee7b7;color:#0f6e56;padding:5px 14px;border-radius:6px;font-size:12px;font-weight:bold;cursor:pointer;margin:6px 0">+ Adicionar parte de vida cristã</button>
             <div class="vmc-linha" style="margin-top:14px;border-top:1px dashed #d0d5dd;padding-top:10px">
               <span style="font-weight:bold;color:#0f6e56;font-size:13px"><span id="vmc-estudo-titulo-num">7.</span> Estudo Bíblico de Congregação</span>
-              <input type="text" id="vmc-estudo-tempo" value="30 min" title="Tempo desta parte (editável em semanas com parte extra)" style="width:55px;padding:6px 4px;border:1px solid #d0d5dd;border-radius:6px;font-size:12px;text-align:center;margin-left:8px">
             </div>
             <div class="vmc-linha">
               <span class="vmc-label">Condutor</span>
               <select id="vmc-estudo-condutor" class="vmc-sel"></select>
-              <input type="text" id="vmc-estudo-tema" class="vmc-tema" placeholder="Material...">
+              <input type="text" id="vmc-estudo-tema" class="vmc-tema" placeholder="Material... (30 min)">
             </div>
             <div class="vmc-linha">
               <span class="vmc-label">Leitor</span>
@@ -884,17 +880,16 @@ body.dark-mode .conf-badge.pendente { background: #2a2a15; color: #ca8a04; borde
             <option value="setembro">Setembro</option><option value="outubro">Outubro</option>
             <option value="novembro">Novembro</option><option value="dezembro">Dezembro</option>
           </select>
-          <label style="font-size:12px;font-weight:bold;color:#374151">Sábado:</label>
+          <label style="font-size:12px;font-weight:bold;color:#374151">Domingo:</label>
           <select id="dp-sel-data" onchange="dpCarregarSemana()" style="padding:6px 10px;border:1px solid #d0d5dd;border-radius:6px;font-size:13px;background:white;min-width:200px"></select>
           <button onclick="dpRodizioAuto()" style="background:#7c3aed;color:white;border:none;padding:7px 14px;border-radius:6px;font-size:12px;font-weight:bold;cursor:pointer">🎲 Rodízio automático</button>
-          <button onclick="dpSalvarSemana()" style="background:#0f6e56;color:white;border:none;padding:7px 14px;border-radius:6px;font-size:12px;font-weight:bold;cursor:pointer">💾 Salvar sábado</button>
+          <button onclick="dpSalvarSemana()" style="background:#0f6e56;color:white;border:none;padding:7px 14px;border-radius:6px;font-size:12px;font-weight:bold;cursor:pointer">💾 Salvar domingo</button>
           <button id="dp-btn-publicar" onclick="dpTogglePublicarMes()" style="background:#f59e0b;color:white;border:none;padding:7px 14px;border-radius:6px;font-size:12px;font-weight:bold;cursor:pointer">📢 Publicar mês</button>
-          <button onclick="dpImprimirSemana()" style="background:#b45309;color:white;border:none;padding:7px 14px;border-radius:6px;font-size:12px;font-weight:bold;cursor:pointer">🖨️ Imprimir sábado</button>
-          <button onclick="dpImprimirMes()" style="background:#1a4fa3;color:white;border:none;padding:7px 14px;border-radius:6px;font-size:12px;font-weight:bold;cursor:pointer">📅 Imprimir mês (quadro)</button>
+          <button onclick="dpImprimirSemana()" style="background:#b45309;color:white;border:none;padding:7px 14px;border-radius:6px;font-size:12px;font-weight:bold;cursor:pointer">🖨️ Imprimir domingo</button>
         </div>
 
         <div id="dp-vazio" style="text-align:center;padding:30px;color:#888;font-size:13px">
-          ⚠️ Nenhum sábado encontrado para este mês.
+          ⚠️ Nenhum domingo encontrado para este mês.
         </div>
 
         <div id="dp-form" style="display:none">
@@ -906,8 +901,7 @@ body.dark-mode .conf-badge.pendente { background: #2a2a15; color: #ca8a04; borde
             </div>
             <div class="vmc-linha">
               <span class="vmc-label">Cântico inicial</span>
-              <input type="text" id="dp-cantico-inicial" class="vmc-tema" list="dp-lista-canticos-catalogo" placeholder="Nº ou título do cântico...">
-              <datalist id="dp-lista-canticos-catalogo"></datalist>
+              <input type="text" id="dp-cantico-inicial" class="vmc-tema" placeholder="Nº do cântico...">
             </div>
             <div class="vmc-linha">
               <span class="vmc-label">Oração inicial</span>
@@ -936,11 +930,8 @@ body.dark-mode .conf-badge.pendente { background: #2a2a15; color: #ca8a04; borde
           <div class="vmc-secao">
             <div class="vmc-secao-titulo" style="background:#0f6e56">📖 Estudo de A Sentinela</div>
             <div style="padding:10px 12px 0">
-            <button onclick="dpAbrirWOLSentinela()"
-        style="background:#0f6e56;color:white;border:none;padding:6px 14px;border-radius:6px;font-size:12px;font-weight:bold;cursor:pointer">
-  📋 Colar programação
-</button>
-              <span style="font-size:11px;color:#888;margin-left:6px"></span>
+              <button onclick="dpMostrarColarSentinela()" style="background:#0f6e56;color:white;border:none;padding:6px 14px;border-radius:6px;font-size:12px;font-weight:bold;cursor:pointer">📋 https://www.jw.org/pt/biblioteca/musicas-canticos/cante-de-coracao/, </button>
+              <span style="font-size:11px;color:#888;margin-left:6px">Cole o texto da página "Estudo de A Sentinela" do wol.jw.org</span>
               <div id="dp-colar-sentinela-box" style="display:none;margin-top:8px">
                 <textarea id="dp-texto-colado-sentinela" rows="6" style="width:100%;padding:8px;border:1px solid #d0d5dd;border-radius:6px;font-size:12px;box-sizing:border-box" placeholder="Cole aqui o texto da página do Estudo de A Sentinela..."></textarea>
                 <div style="margin-top:6px">
@@ -952,7 +943,7 @@ body.dark-mode .conf-badge.pendente { background: #2a2a15; color: #ca8a04; borde
             </div>
             <div class="vmc-linha">
               <span class="vmc-label">Cântico do meio</span>
-              <input type="text" id="dp-cantico-meio" class="vmc-tema" list="dp-lista-canticos-catalogo" placeholder="Nº do cântico (1º da Sentinela)...">
+              <input type="text" id="dp-cantico-meio" class="vmc-tema" placeholder="Nº do cântico (1º da Sentinela)...">
             </div>
             <div class="vmc-linha">
               <span class="vmc-label">Tema do estudo</span>
@@ -976,7 +967,7 @@ body.dark-mode .conf-badge.pendente { background: #2a2a15; color: #ca8a04; borde
             <div class="vmc-secao-titulo" style="background:#374151">🎵 Encerramento</div>
             <div class="vmc-linha">
               <span class="vmc-label">Cântico final</span>
-              <input type="text" id="dp-cantico-final" class="vmc-tema" list="dp-lista-canticos-catalogo" placeholder="Nº ou título do cântico...">
+              <input type="text" id="dp-cantico-final" class="vmc-tema" placeholder="Nº do cântico...">
             </div>
             <div class="vmc-linha">
               <label style="display:flex;align-items:center;gap:6px;font-size:12px;color:#9ca3af;cursor:pointer">
@@ -1004,7 +995,7 @@ body.dark-mode .conf-badge.pendente { background: #2a2a15; color: #ca8a04; borde
         <!-- Cadastro de Oradores Visitantes -->
         <div style="margin-top:20px;border-top:2px solid #e8e8e8;padding-top:16px">
           <div style="font-size:13px;font-weight:bold;color:#1a4fa3;margin-bottom:4px">🎤 Cadastro de Oradores Visitantes</div>
-          <p style="font-size:12px;color:#5e6370;margin-bottom:10px">Presidente, Leitor e Oração final usam o mesmo cadastro de irmãos do VMC (aba VMC → funções "Presidente (Sábado)", "Leitor (A Sentinela)", "Oração final (Sábado)"). Aqui é só a lista de oradores visitantes de outras congregações.</p>
+          <p style="font-size:12px;color:#5e6370;margin-bottom:10px">Presidente, Leitor e Oração final usam o mesmo cadastro de irmãos do VMC (aba VMC → funções "Presidente (Domingo)", "Leitor (A Sentinela)", "Oração final (Domingo)"). Aqui é só a lista de oradores visitantes de outras congregações.</p>
           <div style="display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap">
             <input type="text" id="dp-novo-orador-nome" placeholder="Nome do orador..." style="flex:1;min-width:160px;padding:7px 10px;border:1px solid #d0d5dd;border-radius:6px;font-size:13px">
             <input type="text" id="dp-novo-orador-congregacao" placeholder="Congregação de origem..." style="flex:1;min-width:160px;padding:7px 10px;border:1px solid #d0d5dd;border-radius:6px;font-size:13px">
@@ -1286,11 +1277,11 @@ body.dark-mode .conf-badge.pendente { background: #2a2a15; color: #ca8a04; borde
     <div style="padding:12px 20px;background:#eff6ff;border-bottom:1px solid #bfdbfe;display:flex;gap:8px;align-items:center;flex-wrap:wrap">
       <label style="font-size:12px;font-weight:bold;color:#1e3a8a">Mês:</label>
       <select id="dp-pub-sel-mes" onchange="dpAtualizarPublicoSemanas()" style="padding:6px 10px;border:1px solid #bfdbfe;border-radius:6px;font-size:13px;background:white"></select>
-      <label style="font-size:12px;font-weight:bold;color:#1e3a8a">Sábado:</label>
+      <label style="font-size:12px;font-weight:bold;color:#1e3a8a">Domingo:</label>
       <select id="dp-pub-sel" onchange="dpRenderPublico()" style="padding:6px 10px;border:1px solid #bfdbfe;border-radius:6px;font-size:13px;background:white;min-width:200px"></select>
     </div>
     <div class="modal-body" id="dp-pub-corpo" style="padding:16px 20px">
-      <p style="text-align:center;color:#888;padding:30px 0">Selecione um sábado acima.</p>
+      <p style="text-align:center;color:#888;padding:30px 0">Selecione um domingo acima.</p>
     </div>
   </div>
 </div>
@@ -2475,44 +2466,47 @@ function regenerarTudoDoForm(){
 }
 
 function apagarMes(chave){
+  // Proteção: só o responsável pode apagar meses
   if (!modoResponsavel) {
     pedirSenhaCallback = function() { apagarMes(chave); };
     pedirSenha();
     return;
   }
   if (!confirm('Apagar o mês ' + chave + ' da escala?')) return;
-  var bloco=document.querySelector('[data-chavemes="'+chave+'"]');
-  if(bloco){ bloco.remove(); }
+  
+  // Remove da tela
+  var bloco = document.querySelector('[data-chavemes="'+chave+'"]');
+  if(bloco) bloco.remove();
   delete mesesGerados[chave];
-
+  
+  // 🔥 REMOVER COMPLETAMENTE DO FIREBASE 🔥
   if (firebaseOk && db) {
-    // 1. Remove a "marca" do mês na lista
-    db.ref('escala/estado/meses/' + chave).remove()
-      .then(function() {
-        console.log('✅ Mês removido do Firebase:', chave);
-      })
-      .catch(function(e) {
-        console.warn('Erro ao remover do Firebase:', e);
-      });
-
-    // 2. Remove TAMBÉM as designações dia-a-dia daquele mês (senão ficam
-    // órfãs no banco e voltam a aparecer quando o app resincroniza tudo)
-    // Formato da chave: "ANO-MES" (ex: "2026-08"), igual chaveMes() gera.
-    var partesChave = chave.split('-');
-    var ano = partesChave[0];
-    var mesPad = partesChave[1];
+    // 1. Remove a chave do nó "meses"
+    db.ref('escala/estado/meses/' + chave).remove();
+    
+    // 2. Remove TODAS as designações daquele mês
+    var ano = chave.split('-')[0];
+    var mes = chave.split('-')[1];
     db.ref('escala/estado/escalaGerada').once('value', function(snap) {
       var todas = snap.val() || {};
       Object.keys(todas).forEach(function(dataISO) {
-        if (dataISO.indexOf(ano + '-' + mesPad) === 0) {
+        // dataISO formato "YYYY-MM-DD"
+        if (dataISO.startsWith(ano + '-' + mes)) {
           db.ref('escala/estado/escalaGerada/' + dataISO).remove();
         }
       });
     });
+    
+    console.log('✅ Mês ' + chave + ' removido completamente do Firebase');
   }
-
+  
   atualizarSubtitulo();
   renderPainelMeses();
+  
+  // Recarrega a página para sincronizar completamente
+  setTimeout(function() {
+    location.reload();
+  }, 500);
 }
 function renderPainelMeses() {
   var cont = document.getElementById('painel-meses-salvos');
@@ -2525,10 +2519,10 @@ function renderPainelMeses() {
   var mesesNomes = ['','Janeiro','Fevereiro','Março','Abril','Maio','Junho',
                     'Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
   cont.innerHTML = chaves.map(function(chave) {
-    // chave formato "ANO-MES" (ex: "2026-08"), gerado por chaveMes()
+    // chave formato "M-YYYY"
     var partes = chave.split('-');
-    var ano = partes[0] || '';
-    var nomeMes = mesesNomes[parseInt(partes[1])] || chave;
+    var nomeMes = mesesNomes[parseInt(partes[0])] || chave;
+    var ano = partes[1] || '';
     return '<div style="background:#f0f4ff;border:1px solid #c7d2fe;border-radius:8px;padding:8px 12px;display:flex;align-items:center;gap:10px">' +
       '<span style="font-size:13px;font-weight:bold;color:#1a4fa3">📅 ' + nomeMes + ' ' + ano + '</span>' +
       '<button onclick="apagarMes(\'' + chave + '\')" style="background:#fee2e2;color:#dc2626;border:1px solid #fca5a5;border-radius:6px;padding:3px 10px;font-size:11px;cursor:pointer;font-weight:bold">🗑️ Apagar</button>' +
@@ -2840,7 +2834,33 @@ function toggleModoTeste() {
 
 // ── PERSISTÊNCIA DE MESES NO FIREBASE ──────────────────────────────────────
 
-function salvarConfigFirebase() {
+function apagarMes(chave){
+  if (!modoResponsavel) {
+    pedirSenhaCallback = function() { apagarMes(chave); };
+    pedirSenha();
+    return;
+  }
+  if (!confirm('Apagar o mês ' + chave + ' da escala?')) return;
+  var bloco=document.querySelector('[data-chavemes="'+chave+'"]');
+  if(bloco){ bloco.remove(); }
+  delete mesesGerados[chave];
+  
+  if (firebaseOk && db) {
+    db.ref('escala/estado/meses/' + chave).remove()
+      .then(function() {
+        console.log('✅ Mês removido do Firebase:', chave);
+      })
+      .catch(function(e) {
+        console.warn('Erro ao remover do Firebase:', e);
+      });
+  }
+  
+  atualizarSubtitulo();
+  // 🔥 REMOVA ESTA LINHA 🔥
+  // salvarMesesFirebase();  ← NÃO CHAME MAIS AQUI
+  
+  renderPainelMeses();
+}function salvarConfigFirebase() {
   if (!firebaseOk || !db) return;
   var payload = {
     listas: JSON.parse(JSON.stringify(listas)),
@@ -4957,10 +4977,6 @@ function vmcCarregarSemana() {
   set('vmc-joias-tema',        vmcLimparTempo(dados.joiasTema));
   set('vmc-leitura-tema',      vmcLimparTempo(dados.leituraTema));
   set('vmc-estudo-tema',       vmcLimparTempo(dados.estudoTema));
-  set('vmc-tesouro-tempo',     dados.tesouroTempo || '10 min');
-  set('vmc-joias-tempo',       dados.joiasTempo   || '10 min');
-  set('vmc-leitura-tempo',     dados.leituraTempo || '4 min');
-  set('vmc-estudo-tempo',      dados.estudoTempo  || '30 min');
 
   function fillSel(id, listKey, val) {
     var e = document.getElementById(id);
@@ -5029,17 +5045,13 @@ function vmcColetarDados() {
     oracaoAbertura:  gv('vmc-oracao-abertura'),
     visitaSuperintendente: !!(document.getElementById('vmc-visita-superintendente') || {}).checked,
     tesouro:         gv('vmc-tesouro'),
-    tesouroTempo:    gv('vmc-tesouro-tempo') || '10 min',
     tesouroTema:     gv('vmc-tesouro-tema'),
     joias:           gv('vmc-joias'),
-    joiasTempo:      gv('vmc-joias-tempo') || '10 min',
     joiasTema:       gv('vmc-joias-tema'),
     leitura:         gv('vmc-leitura'),
-    leituraTempo:    gv('vmc-leitura-tempo') || '4 min',
     leituraTema:     gv('vmc-leitura-tema'),
     canticoMeio:     gv('vmc-cantico-meio'),
     estudoCondutor:  gv('vmc-estudo-condutor'),
-    estudoTempo:     gv('vmc-estudo-tempo') || '30 min',
     estudoTema:      gv('vmc-estudo-tema'),
     estudoLeitor:    gv('vmc-estudo-leitor'),
     canticoFim:      gv('vmc-cantico-fim'),
@@ -5255,15 +5267,15 @@ function vmcImprimirSemana() {
     ln('Presidente', dados.presidente, '', '')+
     ln('Oração de abertura', dados.oracaoAbertura, '', '')+
     secH('💎 TESOUROS DA PALAVRA DE DEUS', '#1a4fa3')+
-    ln('1. Discurso de Tesouros', dados.tesouro, dados.tesouroTema, dados.tesouroTempo || '10 min')+
-    ln('2. Joias Espirituais', dados.joias, dados.joiasTema, dados.joiasTempo || '10 min')+
-    ln('3. Leitura da Bíblia', dados.leitura, dados.leituraTema, dados.leituraTempo || '4 min')+
+    ln('1. Discurso de Tesouros', dados.tesouro, dados.tesouroTema, '10 min')+
+    ln('2. Joias Espirituais', dados.joias, dados.joiasTema, '10 min')+
+    ln('3. Leitura da Bíblia', dados.leitura, dados.leituraTema, '4 min')+
     secH('🌾 FAÇA SEU MELHOR NO MINISTÉRIO', '#b45309')+
     linhasMin+
     secH('📖 NOSSA VIDA CRISTÃ', '#0f6e56')+
     cantRow(dados.canticoMeio)+
     linhasVida+
-    subH((7 + dados.vidaPartes.length) + '. Estudo Bíblico de Congregação', dados.estudoTema, dados.estudoTempo || '30 min')+
+    subH((7 + dados.vidaPartes.length) + '. Estudo Bíblico de Congregação', dados.estudoTema, '30 min')+
     ln('Condutor', dados.estudoCondutor, '', '')+
     ln('Leitor', dados.estudoLeitor, '', '')+
     ln('Comentários finais (3 min)' + (dados.canticoFim?' | 🎵 '+dados.canticoFim+' e oração':''), dados.oracaoFim, '', '')+
@@ -5405,10 +5417,10 @@ function vmcImprimirMes() {
     if (d.canticoAbertura) r += '<div class="cantico">🎵 ' + d.canticoAbertura + '</div>';
     r += '<div class="parte-row"><span class="parte-label">Presidente</span><span class="parte-nome">' + nomeParticipante(d,'presidente') + '</span></div>';
     r += '<div class="parte-row"><span class="parte-label">Oração abertura</span><span class="parte-nome">' + nomeParticipante(d,'oracaoAbertura') + '</span></div>';
-    r += '<div class="parte-row"><span class="parte-label">1. Tesouros (' + (d.tesouroTempo||'10 min') + ')</span><span class="parte-nome">' + nomeParticipante(d,'tesouro') + '</span></div>';
+    r += '<div class="parte-row"><span class="parte-label">1. Tesouros (10 min)</span><span class="parte-nome">' + nomeParticipante(d,'tesouro') + '</span></div>';
     if (d.tesouroTema) r += '<div class="parte-tema">' + d.tesouroTema + '</div>';
-    r += '<div class="parte-row"><span class="parte-label">2. Joias Esp. (' + (d.joiasTempo||'10 min') + ')</span><span class="parte-nome">' + nomeParticipante(d,'joias') + '</span></div>';
-    r += '<div class="parte-row"><span class="parte-label">3. Leitura Bíblia (' + (d.leituraTempo||'4 min') + ')</span><span class="parte-nome">' + nomeParticipante(d,'leitura') + '</span></div>';
+    r += '<div class="parte-row"><span class="parte-label">2. Joias Esp. (10 min)</span><span class="parte-nome">' + nomeParticipante(d,'joias') + '</span></div>';
+    r += '<div class="parte-row"><span class="parte-label">3. Leitura Bíblia (4 min)</span><span class="parte-nome">' + nomeParticipante(d,'leitura') + '</span></div>';
     if (d.leituraTema) r += '<div class="parte-tema">' + d.leituraTema + '</div>';
     return r;
   }
@@ -5431,7 +5443,7 @@ function vmcImprimirMes() {
       r += '<div class="parte-empilhada"><span class="pe-titulo">' + (i+7) + '. ' + (p.titulo||'') + (p.tempo?' ('+p.tempo+')':'') + '</span><span class="pe-nome">' + (p.irmao||'—') + '</span></div>';
     });
     var numEstudo = 7 + vidaPartes.length;
-    r += '<div class="parte-empilhada" style="margin-top:2px"><span class="pe-titulo" style="color:#0f6e56;font-weight:bold">' + numEstudo + '. Estudo Bíblico de Congregação (' + (d.estudoTempo||'30 min') + ')</span></div>';
+    r += '<div class="parte-empilhada" style="margin-top:2px"><span class="pe-titulo" style="color:#0f6e56;font-weight:bold">' + numEstudo + '. Estudo Bíblico de Congregação (30 min)</span></div>';
     if (d.estudoTema) r += '<div class="parte-tema">' + d.estudoTema + '</div>';
     r += '<div class="parte-row"><span class="parte-label">Condutor</span><span class="parte-nome">' + nomeParticipante(d,'estudoCondutor') + '</span></div>';
     r += '<div class="parte-row"><span class="parte-label">Leitor</span><span class="parte-nome">' + nomeParticipante(d,'estudoLeitor') + '</span></div>';
@@ -5708,9 +5720,9 @@ function vmcRenderPublico() {
       (dados.leituraSemanal?'<div style="font-size:11px;color:#555;padding:4px 8px">Leitura: '+dados.leituraSemanal+'</div>':'')+
       linha('Presidente', dados.presidente, '')+
       linha('Oração de abertura', dados.oracaoAbertura, '')+
-      linha('1. Tesouros (' + (dados.tesouroTempo||'10 min') + ')', dados.tesouro, dados.tesouroTema)+
-      linha('2. Joias Espirituais (' + (dados.joiasTempo||'10 min') + ')', dados.joias, dados.joiasTema)+
-      linha('3. Leitura da Bíblia (' + (dados.leituraTempo||'4 min') + ')', dados.leitura, dados.leituraTema)+
+      linha('1. Tesouros (10 min)', dados.tesouro, dados.tesouroTema)+
+      linha('2. Joias Espirituais (10 min)', dados.joias, dados.joiasTema)+
+      linha('3. Leitura da Bíblia (4 min)', dados.leitura, dados.leituraTema)+
     '</div>'+
     '<div class="vmc-pub-secao">'+
       '<div class="vmc-pub-titulo escola">🌾 Faça Seu Melhor no Ministério</div>'+
@@ -5719,7 +5731,7 @@ function vmcRenderPublico() {
     '<div class="vmc-pub-secao">'+
       '<div class="vmc-pub-titulo vida">📖 Nossa Vida Cristã</div>'+
       linhasVida+
-      '<div class="vmc-pub-linha" style="font-weight:bold;color:#0f6e56">'+(7 + (dados.vidaPartes||[]).length)+'. Estudo Bíblico de Congregação ('+(dados.estudoTempo||'30 min')+')'+
+      '<div class="vmc-pub-linha" style="font-weight:bold;color:#0f6e56">'+(7 + (dados.vidaPartes||[]).length)+'. Estudo Bíblico de Congregação'+
         (dados.estudoTema ? ' <span style="font-weight:normal;font-style:italic;color:#666">— '+dados.estudoTema+'</span>' : '')+
       '</div>'+
       linha('Condutor', dados.estudoCondutor, '')+
@@ -5749,9 +5761,9 @@ var vmcFuncoes = [
   { key:'ministerioIrmao', label:'Ministério (discurso)' },
   { key:'ministerioPubl',  label:'Ministério (publicador dupla)' },
   { key:'ministerioAjud',  label:'Ministério (ajudante dupla)' },
-  { key:'presidenteDominical',   label:'Presidente (Sábado)' },
+  { key:'presidenteDominical',   label:'Presidente (Domingo)' },
   { key:'leitorSentinela',       label:'Leitor (A Sentinela)' },
-  { key:'oracaoFinalDominical',  label:'Oração final (Sábado)' },
+  { key:'oracaoFinalDominical',  label:'Oração final (Domingo)' },
   { key:'oradorEnviado',         label:'Orador (enviar p/ outras congregações)' },
 ];
 
@@ -5862,65 +5874,6 @@ var dpTemasCatalogo = [
   "193. Os problemas de hoje logo serão coisa do passado", "194. Como a sabedoria de Deus nos ajuda"
 ];
 var dpTemasEspeciais = []; // temas especiais adicionados manualmente pelo responsável
-
-// ── Catálogo de cânticos "Cante de Coração para Jeová" (1-163) ──
-var dpCanticosCatalogo = [
-  "1. As qualidades de Jeová", "2. Teu nome é Jeová", "3. Jeová, minha força e esperança",
-  "4. \"Jeová é o meu Pastor\"", "5. As obras maravilhosas de Deus", "6. Os céus declaram a glória de Deus",
-  "7. Jeová, nossa força e poder", "8. Jeová é um refúgio", "9. Jeová é nosso Rei!",
-  "10. A Jeová vou agradecer!", "11. A criação dá glória a Jeová", "12. Nosso grandioso Deus, Jeová",
-  "13. Cristo, o nosso exemplo", "14. O novo Rei da Terra", "15. Louve o Filho de Jeová!",
-  "16. Jeová escolheu nosso Rei", "17. \"Eu quero!\"", "18. Obrigado pelo resgate!",
-  "19. A Ceia do Senhor", "20. Jeová nos deu o seu melhor", "21. Vou buscar primeiro o Reino",
-  "22. Que venha o Reino de Deus!", "23. Jeová começou a reinar!", "24. Venham para o monte de Jeová!",
-  "25. Os filhos ungidos de Jeová", "26. \"Se fez por meus irmãos, você fez por mim\"", "27. A vitória dos filhos de Deus",
-  "28. Quem pode ser amigo de Jeová?", "29. Que nossa vida dê honra ao teu nome!", "30. Meu Deus, meu Amigo e Pai",
-  "31. Ande com Deus", "32. Escolha o lado de Jeová!", "33. Deixe Jeová levar seus fardos",
-  "34. Andarei em integridade", "35. O que é mais importante", "36. Proteja o coração",
-  "37. Amo a Jeová de todo o coração", "38. Jeová vai te dar força", "39. Um bom nome",
-  "40. Você já decidiu?", "41. Escuta minha oração", "42. Minha oração a Jeová",
-  "43. Uma oração de agradecimento", "44. Oração de um servo aflito", "45. Os pensamentos do meu coração",
-  "46. Obrigado, Jeová!", "47. Sempre a Deus vou orar", "48. Caminhamos sempre com Jeová",
-  "49. Como alegrar a Jeová", "50. Minha oração de dedicação", "51. Dedicamos nossa vida a Jeová",
-  "52. Nossa dedicação", "53. Pronto para pregar", "54. \"Este é o caminho\"",
-  "55. Nada temam, meus amados!", "56. Faça da verdade a sua vida", "57. Pregue a todo tipo de pessoas",
-  "58. Procuramos os amigos da paz", "59. Vamos louvar a Jeová!", "60. A mensagem de vida",
-  "61. Avancem, Testemunhas!", "62. O novo cântico", "63. Somos Testemunhas de Jeová!",
-  "64. Participamos com alegria na colheita", "65. Confiantes, nós vamos continuar!", "66. Vamos declarar as boas novas",
-  "67. \"Pregue a palavra\"", "68. Plantando a semente do Reino", "69. Continue pregando!",
-  "70. Procurem os merecedores", "71. Marchamos com Jeová", "72. Pregar as verdades do Reino",
-  "73. Dá-nos coragem", "74. A canção do Reino", "75. 'Estou aqui!'",
-  "76. Um sentimento especial", "77. Luz num mundo sombrio", "78. Ensine a verdade com amor",
-  "79. Ensine-os a se manter firmes", "80. \"Provem e vejam que Jeová é bom\"", "81. A vida de um pioneiro",
-  "82. 'Deixe a luz brilhar'", "83. \"De casa em casa\"", "84. Vamos fazer nosso melhor",
-  "85. Sejam bem-vindos!", "86. As reuniões são o nosso lugar", "87. As reuniões nos encorajam",
-  "88. Os teus caminhos quero entender", "89. Escute, obedeça e seja abençoado", "90. \"Encorajando uns aos outros\"",
-  "91. Construímos com amor", "92. Um lugar que leva teu nome", "93. Abençoa nossas reuniões",
-  "94. Muito obrigado pela Bíblia", "95. A luz clareia mais e mais", "96. O livro de Deus é um tesouro",
-  "97. A Palavra de Deus nos ajuda a viver", "98. A Bíblia, um presente de Deus", "99. Muitos irmãos ao meu lado",
-  "100. Vamos ser hospitaleiros!", "101. Servimos a Jeová em união", "102. Ajude os que estão fracos",
-  "103. Os anciãos são um presente de Jeová", "104. Espírito santo — um presente de Deus", "105. \"Deus é amor\"",
-  "106. Amor — a qualidade que é sem igual", "107. Jeová — o exemplo perfeito de amor", "108. O amor leal de Jeová",
-  "109. Mostre amor de coração", "110. \"A alegria que vem de Jeová\"", "111. Nossos motivos de alegria",
-  "112. Jeová, Deus de paz", "113. A paz que vem de Deus", "114. Seja paciente",
-  "115. A paciência de Deus é salvação", "116. A força da bondade", "117. A qualidade da bondade",
-  "118. Jeová, a ti pedimos mais fé", "119. Temos que ter fé", "120. Seja humilde como Jesus",
-  "121. Precisamos ter autodomínio", "122. Vamos continuar firmes!", "123. Obedecemos a Jeová e à sua organização",
-  "124. Sempre leais", "125. \"Felizes os misericordiosos\"", "126. Sempre fortes, firmes e despertos",
-  "127. Que tipo de pessoa eu devo ser", "128. Persevere até o fim", "129. Eu vou perseverar",
-  "130. Vamos perdoar uns aos outros", "131. O que Jeová uniu", "132. Nós somos um",
-  "133. Quero ser um jovem leal", "134. Os filhos são uma herança de Deus", "135. \"Seja sábio, meu filho\"",
-  "136. Jeová o recompensará", "137. Mulheres fiéis", "138. A beleza dos cabelos brancos",
-  "139. Imagine a si mesmo no Paraíso", "140. Vida eterna, enfim!", "141. O milagre da vida",
-  "142. A esperança que nos dá coragem", "143. Continue ativo e desperto!", "144. Olhe para as bênçãos!",
-  "145. Deus prometeu um paraíso", "146. \"Estou fazendo novas todas as coisas\"", "147. A vida eterna — que bela promessa!",
-  "148. Jeová é nosso Salvador", "149. Um cântico de vitória", "150. Busquem a Deus para obter livramento",
-  "151. Ele chamará", "152. Um lugar para teu louvor", "153. Jeová, me dá coragem",
-  "154. Eterno amor", "155. Nossa alegria eterna", "156. Olhar com fé",
-  "157. Paz, enfim!", "158. 'Não vai se atrasar!'", "159. Toda a glória vou te dar",
-  "160. As boas novas sobre Jesus", "161. Fazer tua vontade é o meu prazer", "162. Preciso de ti",
-  "163. Felizes são esses olhos"
-];
 
 function vmcNormalizarLista(lista) {
   // Aceita tanto o formato antigo (array de strings) quanto o novo ({nome,familia})
@@ -6502,7 +6455,7 @@ setTimeout(reagendarAvisosAoIniciar, 1000);
 // Inicia sistema VMC
 // VMC inicia após carregar — todosIrmaos já está disponível no arquivo
 // ═══════════════════════════════════════════════════════════════
-// DISCURSO PÚBLICO / ESTUDO DE A SENTINELA (Reunião de sábado)
+// DISCURSO PÚBLICO / ESTUDO DE A SENTINELA (Reunião de domingo)
 // ═══════════════════════════════════════════════════════════════
 var dpDados = {};        // { iso: {presidente, oracaoInicial, ...} }
 var dpOradores = [];     // [{nome, congregacao, telefone}]
@@ -6521,7 +6474,7 @@ function dpDefinirMesAtual() {
   if (sel) sel.value = dpMesAtualValue();
 }
 
-// Lista de sábados do mês selecionado (independente do VMC)
+// Lista de domingos do mês selecionado (independente do VMC)
 function dpGetDatas(mesOverride) {
   var mesesNomes = ['janeiro','fevereiro','março','abril','maio','junho','julho',
                      'agosto','setembro','outubro','novembro','dezembro'];
@@ -6541,7 +6494,7 @@ function dpGetDatas(mesOverride) {
   var list = [];
   var d = new Date(primeiroDia);
   while (d <= ultimoDia) {
-    if (d.getDay() === 6) { // sábado
+    if (d.getDay() === 0) { // domingo
       var ev = typeof eventoNaSemana === 'function' ? eventoNaSemana(d) : null;
       var evCancela = ev && (ev.tipo==='congresso' || ev.tipo==='assembleia' || ev.tipo==='celebracao');
       if (!evCancela) {
@@ -6562,7 +6515,7 @@ function dpPreencherSeletores() {
   var sel = document.getElementById('dp-sel-data');
   if (sel) {
     sel.innerHTML = datas.map(function(d){ return '<option value="'+d.iso+'">'+d.label+'</option>'; })
-      .join('') || '<option value="">— Nenhum sábado —</option>';
+      .join('') || '<option value="">— Nenhum domingo —</option>';
     if (datas.length) {
       document.getElementById('dp-form').style.display = 'block';
       document.getElementById('dp-vazio').style.display = 'none';
@@ -6645,10 +6598,6 @@ function dpCarregarSemana() {
   if (listaTemas) {
     listaTemas.innerHTML = dpTemasCatalogo.concat(dpTemasEspeciais).map(function(t){ return '<option value="'+t+'">'; }).join('');
   }
-  var listaCanticos = document.getElementById('dp-lista-canticos-catalogo');
-  if (listaCanticos) {
-    listaCanticos.innerHTML = dpCanticosCatalogo.map(function(c){ return '<option value="'+c+'">'; }).join('');
-  }
 }
 
 // Oração final = o próprio orador, por padrão — exceto se marcado que ele
@@ -6705,25 +6654,6 @@ function dpColetarDados() {
 }
 
 // ── Colar dados do Estudo de A Sentinela (wol.jw.org) ─────────────
-// Calcula o número da semana ISO pra montar o link certo da página do wol.jw.org
-// (a página de reuniões usa .../ano/semana-do-ano, ex: .../2026/31)
-function dpNumeroSemanaISO(data) {
-  var d = new Date(Date.UTC(data.getFullYear(), data.getMonth(), data.getDate()));
-  var diaSemana = d.getUTCDay() || 7;
-  d.setUTCDate(d.getUTCDate() + 4 - diaSemana);
-  var inicioAno = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
-  return Math.ceil((((d - inicioAno) / 86400000) + 1) / 7);
-}
-
-function dpAbrirWOLSentinela() {
-  var dataRef = dpSemanaAtual ? new Date(dpSemanaAtual + 'T00:00:00') : new Date();
-  var ano = dataRef.getFullYear();
-  var semana = dpNumeroSemanaISO(dataRef);
-  var url = 'https://wol.jw.org/pt/wol/meetings/r5/lp-t/' + ano + '/' + semana;
-  window.open(url, '_blank');
-  document.getElementById('dp-colar-sentinela-box').style.display = 'block';
-}
-
 function dpMostrarColarSentinela() {
   var box = document.getElementById('dp-colar-sentinela-box');
   box.style.display = box.style.display === 'none' ? 'block' : 'none';
@@ -6794,7 +6724,7 @@ function dpProcessarSentinela() {
 }
 
 function dpSalvarSemana() {
-  if (!dpSemanaAtual) { alert('Selecione um sábado.'); return; }
+  if (!dpSemanaAtual) { alert('Selecione um domingo.'); return; }
   var dados = dpColetarDados();
   dpDados[dpSemanaAtual] = dados;
   if (db) db.ref('dp').update(dpDados);
@@ -6809,12 +6739,12 @@ function dpSalvarSemana() {
   dpSalvarConfig();
 
   dpAtualizarPublicoSemanas();
-  alert('✅ Sábado salvo!');
+  alert('✅ Domingo salvo!');
 }
 
 // ── Rodízio automático (Presidente, Leitor, Oração final) ───────
 function dpRodizioAuto() {
-  if (!dpSemanaAtual) { alert('Selecione um sábado.'); return; }
+  if (!dpSemanaAtual) { alert('Selecione um domingo.'); return; }
   var usados = [];
   function pegar(campo) {
     var todos = vmcListas[campo] && vmcListas[campo].length
@@ -6976,7 +6906,7 @@ function dpAtualizarPublicoSemanas() {
   var mesPub = selMesPub ? selMesPub.value : '';
   var datasPub = mesPub ? dpGetDatas(mesPub) : [];
   pubSel.innerHTML = datasPub.map(function(d){ return '<option value="'+d.iso+'">'+d.label+'</option>'; })
-    .join('') || '<option value="">— Nenhum sábado publicado —</option>';
+    .join('') || '<option value="">— Nenhum domingo publicado —</option>';
   if (datasPub.length) {
     var isoHoje = typeof vmcSemanaDeHoje === 'function' ? vmcSemanaDeHoje(datasPub) : datasPub[0].iso;
     if (isoHoje) pubSel.value = isoHoje;
@@ -7029,7 +6959,7 @@ function dpFecharPrograma() { document.getElementById('ov-programa-dp').classLis
 
 // ── Impressão semanal ────────────────────────────────────────────
 function dpImprimirSemana() {
-  if (!dpSemanaAtual) { alert('Selecione um sábado.'); return; }
+  if (!dpSemanaAtual) { alert('Selecione um domingo.'); return; }
   var dados = dpColetarDados();
   var d = new Date(dpSemanaAtual + 'T00:00:00');
   var dataStr = d.toLocaleDateString('pt-BR', {day:'2-digit',month:'2-digit',year:'numeric'});
@@ -7081,73 +7011,8 @@ function dpImprimirSemana() {
   else alert('Permita pop-ups para imprimir.');
 }
 
-// ── Impressão mensal (quadro de anúncios — grade com todos os sábados) ──
-function dpImprimirMes() {
-  var datas = dpGetDatas();
-  if (!datas.length) { alert('Nenhum sábado neste mês.'); return; }
-  var selMes = document.getElementById('dp-sel-mes');
-  var mesLbl = selMes ? selMes.options[selMes.selectedIndex].text : '';
-  var ano = new Date().getFullYear();
-
-  var css =
-    'body{font-family:Arial,sans-serif;font-size:9.5px;color:#111;margin:0;padding:10mm 10mm 8mm}' +
-    '.cabecalho{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:8px;border-bottom:2px solid #1a4fa3;padding-bottom:4px}' +
-    '.mes-titulo{font-size:15px;font-weight:bold;color:#1a4fa3;letter-spacing:.5px}' +
-    '.sub{font-size:10px;color:#555}' +
-    '.semana-card{border:1px solid #d0d5dd;border-radius:6px;margin-bottom:7px;overflow:hidden;page-break-inside:avoid}' +
-    '.semana-header{background:#1a1a2e;color:white;padding:4px 10px;font-size:10px;font-weight:bold}' +
-    '.semana-body{display:grid;grid-template-columns:1fr 1fr 1fr;gap:0}' +
-    '.col-sec{padding:5px 8px;border-right:1px solid #e8e8e8}' +
-    '.col-sec:last-child{border-right:none}' +
-    '.sec-titulo{font-size:8px;font-weight:bold;text-transform:uppercase;letter-spacing:.4px;padding:2px 5px;border-radius:3px;margin-bottom:4px;color:white;display:inline-block}' +
-    '.bg-ab{background:#374151}.bg-ds{background:#1a4fa3}.bg-se{background:#0f6e56}' +
-    '.parte-row{margin-bottom:3px;line-height:1.3}' +
-    '.parte-label{font-size:8px;color:#6b7280;display:block}' +
-    '.parte-nome{font-size:9.5px;color:#1a1a2e;font-weight:bold;display:block;word-wrap:break-word}' +
-    '.parte-tema{font-size:7.5px;color:#6b7280;font-style:italic;margin-top:-1px;margin-bottom:3px;word-wrap:break-word}' +
-    '@media print{@page{size:A4 landscape;margin:8mm}body{padding:0}button{display:none}}';
-
-  function linha(papel, nome, tema) {
-    if (!nome) return '';
-    return '<div class="parte-row"><span class="parte-label">' + papel + '</span><span class="parte-nome">' + nome + '</span></div>' +
-      (tema ? '<div class="parte-tema">' + tema + '</div>' : '');
-  }
-
-  var cards = datas.map(function(d) {
-    var dados = dpDados[d.iso] || {};
-    return '<div class="semana-card">' +
-      '<div class="semana-header">📅 ' + d.label + '</div>' +
-      '<div class="semana-body">' +
-        '<div class="col-sec"><span class="sec-titulo bg-ab">🎵 Abertura</span>' +
-          linha('Presidente', dados.presidente, '') +
-          linha('Cântico inicial', dados.canticoInicial, '') +
-        '</div>' +
-        '<div class="col-sec"><span class="sec-titulo bg-ds">🎤 Discurso Público</span>' +
-          linha('Orador', dados.orador, dados.congregacaoOrador) +
-          linha('Tema', dados.temaDiscurso, '') +
-        '</div>' +
-        '<div class="col-sec"><span class="sec-titulo bg-se">📖 A Sentinela</span>' +
-          linha('Condutor', dados.condutorSentinela, '') +
-          linha('Leitor', dados.leitorSentinela, '') +
-        '</div>' +
-      '</div>' +
-    '</div>';
-  }).join('');
-
-  var html = '<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8">' +
-    '<title>Discurso Público — ' + mesLbl + ' ' + ano + '</title><style>' + css + '</style></head><body>' +
-    '<div class="cabecalho">' +
-      '<div><div class="mes-titulo">🎤 DISCURSO PÚBLICO E A SENTINELA — ' + mesLbl.toUpperCase() + ' ' + ano + '</div>' +
-      '<div class="sub">Congregação Parque Tietê</div></div>' +
-    '</div>' +
-    cards +
-    '<script>window.onload=function(){window.print();}<\/script>' +
-    '</body></html>';
-
-  var w = window.open('', '_blank');
-  if (w) { w.document.write(html); w.document.close(); }
-  else alert('Permita pop-ups para imprimir.');
-}
+// ── Impressão mensal (grade com todos os domingos do mês) ────────
+// [Removido a pedido — o formato certo de designação de envio fica na aba "Enviar Oradores"]
 
 // ── Inicialização ─────────────────────────────────────────────
 // ═══════════════════════════════════════════════════════════════
