@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Versão: v2026.08.35 — Tempo das partes fixas do VMC (Tesouros/Joias/Leitura/Estudo Bíblico) agora é editável por semana -->
+<!-- Versão: v2026.08.36 — Roteiro de avisos do Presidente (3min/1min antes) no VMC e Discurso Público, com horário de início editável -->
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
@@ -429,7 +429,7 @@ body.dark-mode .conf-badge.pendente { background: #2a2a15; color: #ca8a04; borde
     <div class="modal-cab">
       <span>
         <span class="modal-cab-titulo">👨‍💼 Área do Responsável</span>
-        <span style="font-size:10px;color:#9ca3af;font-weight:normal;margin-left:8px">v2026.08.35</span>
+        <span style="font-size:10px;color:#9ca3af;font-weight:normal;margin-left:8px">v2026.08.36</span>
       </span>
       <button class="btn-fechar" onclick="fecharPrincipal()">✕</button>
     </div>
@@ -706,6 +706,13 @@ body.dark-mode .conf-badge.pendente { background: #2a2a15; color: #ca8a04; borde
             <button onclick="vmcAddAssistente()" style="background:#b45309;color:white;border:none;padding:7px 16px;border-radius:6px;font-size:13px;font-weight:bold;cursor:pointer">+ Adicionar</button>
           </div>
           <div id="vmc-lista-assistentes"></div>
+        </div>
+
+        <!-- Horário de início da reunião (usado no roteiro de avisos do presidente) -->
+        <div style="margin-top:20px;border-top:2px solid #e8e8e8;padding-top:16px">
+          <div style="font-size:13px;font-weight:bold;color:#374151;margin-bottom:4px">🕐 Horário de início da reunião (quarta)</div>
+          <input type="time" id="vmc-hora-inicio" value="19:30" onchange="vmcSalvarHoraInicio()" style="padding:6px 10px;border:1px solid #d0d5dd;border-radius:6px;font-size:13px">
+          <span style="font-size:11px;color:#888;margin-left:6px">Usado pra calcular os avisos do presidente (3 min e 1 min antes) na impressão semanal.</span>
         </div>
 
         <!-- Configuração das listas por parte -->
@@ -990,6 +997,13 @@ body.dark-mode .conf-badge.pendente { background: #2a2a15; color: #ca8a04; borde
               <datalist id="dp-lista-oracao-final-sugestao"></datalist>
             </div>
           </div>
+        </div>
+
+        <!-- Horário de início da reunião (usado no roteiro de avisos do presidente) -->
+        <div style="margin-top:20px;border-top:2px solid #e8e8e8;padding-top:16px">
+          <div style="font-size:13px;font-weight:bold;color:#374151;margin-bottom:4px">🕐 Horário de início da reunião (sábado)</div>
+          <input type="time" id="dp-hora-inicio" value="19:00" onchange="dpSalvarHoraInicio()" style="padding:6px 10px;border:1px solid #d0d5dd;border-radius:6px;font-size:13px">
+          <span style="font-size:11px;color:#888;margin-left:6px">Usado pra calcular os avisos do presidente (3 min e 1 min antes) na impressão semanal.</span>
         </div>
 
         <!-- Configuração: Superintendente do Estudo (condutor fixo) -->
@@ -4404,6 +4418,34 @@ var vmcListas = {
 // Meses liberados para a congregação ver na aba "📖 Programa" (chave = nome do mês em minúsculo)
 var vmcPublicados = {};
 
+// Horário de início das reuniões (editável, usado no roteiro de avisos do presidente)
+var vmcHoraInicio = '19:30'; // VMC (quarta)
+var dpHoraInicio  = '19:00'; // Discurso Público (sábado)
+
+// Subtrai N minutos de um horário "HH:MM" e devolve também em "HH:MM"
+function vmcSubtrairMinutos(horaStr, minutos) {
+  var partes = (horaStr || '19:30').split(':');
+  var h = parseInt(partes[0], 10) || 0;
+  var m = parseInt(partes[1], 10) || 0;
+  var total = h * 60 + m - minutos;
+  if (total < 0) total += 24 * 60;
+  var hh = Math.floor(total / 60);
+  var mm = total % 60;
+  return (hh < 10 ? '0' : '') + hh + ':' + (mm < 10 ? '0' : '') + mm;
+}
+
+// Monta o roteiro de avisos do presidente (3 min antes e 1 min antes)
+function vmcRoteiroPresidente(horaInicio, cantico) {
+  var h3 = vmcSubtrairMinutos(horaInicio, 3);
+  var h1 = vmcSubtrairMinutos(horaInicio, 1);
+  return {
+    hora3min: h3,
+    hora1min: h1,
+    aviso3min: 'Dar as boas-vindas e convidar os presentes a se sentarem — avisar que a reunião vai começar e pedir que desliguem ou coloquem o celular no silencioso.',
+    aviso1min: 'Anunciar o cântico' + (cantico ? ' (' + cantico + ')' : '') + '.'
+  };
+}
+
 // ── Acesso de assistentes só à aba VMC (senha própria por pessoa) ──
 var vmcAssistentes = {};   // { "Nome da pessoa": { senha: "1234", ativo: true } }
 var vmcModoAssistente = false;
@@ -5250,6 +5292,14 @@ function vmcImprimirSemana() {
     '<div class="sub">Congregação Parque Tietê &nbsp;|&nbsp; Semana: '+periodoStr+'</div>'+
     (dados.leituraSemanal ? '<div style="background:#eff6ff;border-left:3px solid #1a4fa3;padding:5px 10px;margin-bottom:10px;font-size:11px"><strong>Leitura semanal:</strong> '+dados.leituraSemanal+'</div>' : '')+
     (dados.visitaSuperintendente ? '<div style="background:#fff7ed;border:1px solid #fdba74;color:#9a3412;padding:6px 10px;margin-bottom:10px;font-size:11px;font-weight:bold">📅 Atenção: nesta semana teremos a visita do superintendente de circuito.</div>' : '')+
+    (function(){
+      var r = vmcRoteiroPresidente(vmcHoraInicio, dados.canticoAbertura);
+      return '<div style="background:#f0fdf4;border:1px solid #86efac;border-radius:6px;padding:8px 12px;margin-bottom:12px;font-size:10.5px">' +
+        '<strong style="color:#166534">🕐 Roteiro do Presidente</strong><br>' +
+        '<strong>' + r.hora3min + '</strong> — ' + r.aviso3min + '<br>' +
+        '<strong>' + r.hora1min + '</strong> — ' + r.aviso1min +
+      '</div>';
+    })()+
     '<table>'+
     cantRow(dados.canticoAbertura)+
     ln('Presidente', dados.presidente, '', '')+
@@ -6335,7 +6385,13 @@ function vmcAtualizarAjudanteCompativel(selPublicador) {
 
 // ── Salvar/carregar cadastro no Firebase ────────────────────────
 function vmcSalvarCadastro() {
-  if (db) db.ref('vmc_config').update({ cadastro: vmcCadastro, listas: vmcListas, idx: vmcIdx, publicados: vmcPublicados, assistentes: vmcAssistentes });
+  if (db) db.ref('vmc_config').update({ cadastro: vmcCadastro, listas: vmcListas, idx: vmcIdx, publicados: vmcPublicados, assistentes: vmcAssistentes, horaInicio: vmcHoraInicio });
+}
+
+function vmcSalvarHoraInicio() {
+  var campo = document.getElementById('vmc-hora-inicio');
+  vmcHoraInicio = campo ? (campo.value || '19:30') : '19:30';
+  vmcSalvarCadastro();
 }
 
 function vmcRenderConfigListas() {
@@ -6436,6 +6492,11 @@ function vmcIniciar() {
     if (cfg.idx)    Object.assign(vmcIdx,    cfg.idx);
     if (cfg.publicados) vmcPublicados = cfg.publicados;
     if (cfg.assistentes) vmcAssistentes = cfg.assistentes;
+    if (cfg.horaInicio) {
+      vmcHoraInicio = cfg.horaInicio;
+      var campoHora = document.getElementById('vmc-hora-inicio');
+      if (campoHora) campoHora.value = vmcHoraInicio;
+    }
     vmcAtualizarListasDeIrmaos();
     vmcRenderConfigListas();
     vmcRenderIrmaos();
@@ -6896,7 +6957,13 @@ function dpAtualizarCondutorFixoSelect() {
 }
 
 function dpSalvarConfig() {
-  if (db) db.ref('dp_config').update({ oradores: dpOradores, condutorFixo: dpCondutorFixo, publicados: dpPublicados, idx: dpIdx, temasEspeciais: dpTemasEspeciais });
+  if (db) db.ref('dp_config').update({ oradores: dpOradores, condutorFixo: dpCondutorFixo, publicados: dpPublicados, idx: dpIdx, temasEspeciais: dpTemasEspeciais, horaInicio: dpHoraInicio });
+}
+
+function dpSalvarHoraInicio() {
+  var campo = document.getElementById('dp-hora-inicio');
+  dpHoraInicio = campo ? (campo.value || '19:00') : '19:00';
+  dpSalvarConfig();
 }
 
 function dpAddTemaEspecial() {
@@ -7055,6 +7122,14 @@ function dpImprimirSemana() {
     '</style></head><body>'+
     '<h1>🎤 Reunião Pública — Discurso e Estudo de A Sentinela</h1>'+
     '<div style="font-size:12px;color:#555;text-transform:capitalize">'+diaSemanaStr+'</div>'+
+    (function(){
+      var r = vmcRoteiroPresidente(dpHoraInicio, dados.canticoInicial);
+      return '<div style="background:#f0fdf4;border:1px solid #86efac;border-radius:6px;padding:8px 12px;margin:10px 0;font-size:10.5px">' +
+        '<strong style="color:#166534">🕐 Roteiro do Presidente</strong><br>' +
+        '<strong>' + r.hora3min + '</strong> — ' + r.aviso3min + '<br>' +
+        '<strong>' + r.hora1min + '</strong> — ' + r.aviso1min +
+      '</div>';
+    })()+
     '<table>'+
     secH('🎵 Abertura', '#374151')+
     ln('Presidente', dados.presidente, '', '')+
@@ -7356,6 +7431,11 @@ function dpIniciar() {
     if (cfg.publicados) dpPublicados = cfg.publicados;
     if (cfg.idx) dpIdx = cfg.idx;
     if (cfg.temasEspeciais) dpTemasEspeciais = cfg.temasEspeciais;
+    if (cfg.horaInicio) {
+      dpHoraInicio = cfg.horaInicio;
+      var campoHoraDp = document.getElementById('dp-hora-inicio');
+      if (campoHoraDp) campoHoraDp.value = dpHoraInicio;
+    }
     dpRenderOradores();
     dpRenderTemasEspeciais();
     dpAtualizarCondutorFixoSelect();
