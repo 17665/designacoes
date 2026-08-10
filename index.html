@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Versão: v2026.08.36 — Roteiro de avisos do Presidente (3min/1min antes) no VMC e Discurso Público, com horário de início editável -->
+<!-- Versão: v2026.08.37 — Corrigido bug crítico: F5 repetido regenerava a escala de indicadores/microfone/áudio/vídeo do zero, trazendo de volta meses já apagados -->
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
@@ -429,7 +429,7 @@ body.dark-mode .conf-badge.pendente { background: #2a2a15; color: #ca8a04; borde
     <div class="modal-cab">
       <span>
         <span class="modal-cab-titulo">👨‍💼 Área do Responsável</span>
-        <span style="font-size:10px;color:#9ca3af;font-weight:normal;margin-left:8px">v2026.08.36</span>
+        <span style="font-size:10px;color:#9ca3af;font-weight:normal;margin-left:8px">v2026.08.37</span>
       </span>
       <button class="btn-fechar" onclick="fecharPrincipal()">✕</button>
     </div>
@@ -2868,16 +2868,19 @@ function salvarConfigFirebase() {
 }
 
 var _configHash = '';
+var _configPrimeiraVez = true; // evita "falso positivo" de mudança logo após um F5/recarregamento
 
 function ouvirConfig() {
   if (!db) return;
   db.ref('escala/config').on('value', function(snap) {
     var d = snap.val(); if (!d) return;
 
-    // Detecta se houve mudança real
+    // Detecta se houve mudança real (ignora a primeira leitura após carregar a
+    // página, porque o hash local sempre começa vazio e pareceria "mudou" à toa)
     var novoHash = JSON.stringify(d);
-    var mudou = (novoHash !== _configHash);
+    var mudou = (novoHash !== _configHash) && !_configPrimeiraVez;
     _configHash = novoHash;
+    _configPrimeiraVez = false;
 
     // Atualiza listas
     if (d.listas) {
@@ -2923,10 +2926,16 @@ function ouvirConfig() {
 
     // ── REGENERA A ESCALA para todos verem igual ──────────────
 if(mudou && Object.keys(mesesGerados).length > 0 && document.getElementById('ov-principal').classList.contains('aberto')){
-      var chavesAtivas = Object.keys(mesesGerados).sort();
-      // Busca o estado salvo para restaurar os contadores antes de regenerar
+      // Debounce: se vier uma rajada de mudanças rápidas seguidas, espera
+      // tudo se acalmar antes de regenerar (evita regenerar várias vezes seguidas).
+      clearTimeout(window._regenerarEscalaTimeout);
+      window._regenerarEscalaTimeout = setTimeout(function() {
+      // Busca o estado salvo pra restaurar contadores E pra saber quais meses
+      // realmente existem (lê do Firebase agora, não confia na memória local,
+      // que pode estar desatualizada por causa de outra aba/recarregamento).
       db.ref('escala/estado').once('value', function(snapEstado) {
         var dadosEstado = snapEstado.val() || {};
+        var chavesAtivas = Object.keys(dadosEstado.meses || {}).sort();
         contadorPulo={}; aparicoes={}; ultimoAuditorio={};
         mesesGerados={};
         idxM.v=0; idxA.v=0; idxV.v=0; idxZ.v=0; idxI.v=0; ultimoPar=-1;
@@ -2946,6 +2955,7 @@ if(mudou && Object.keys(mesesGerados).length > 0 && document.getElementById('ov-
           adicionarMeses(parseInt(p[1]), parseInt(p[0]), 1);
         });
       });
+      }, 1500);
     }
   });
 }
