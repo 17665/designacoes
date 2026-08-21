@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Versão: v2026.08.37 — Corrigido bug crítico: F5 repetido regenerava a escala de indicadores/microfone/áudio/vídeo do zero, trazendo de volta meses já apagados -->
+<!-- Versão: v2026.08.39 — Botões de WhatsApp (VMC, Discurso Público, Enviar Oradores) + sistema de temas: bloqueio automático de 4 meses, temas indisponíveis temporariamente, repertório por orador -->
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
@@ -429,7 +429,7 @@ body.dark-mode .conf-badge.pendente { background: #2a2a15; color: #ca8a04; borde
     <div class="modal-cab">
       <span>
         <span class="modal-cab-titulo">👨‍💼 Área do Responsável</span>
-        <span style="font-size:10px;color:#9ca3af;font-weight:normal;margin-left:8px">v2026.08.37</span>
+        <span style="font-size:10px;color:#9ca3af;font-weight:normal;margin-left:8px">v2026.08.39</span>
       </span>
       <button class="btn-fechar" onclick="fecharPrincipal()">✕</button>
     </div>
@@ -584,6 +584,7 @@ body.dark-mode .conf-badge.pendente { background: #2a2a15; color: #ca8a04; borde
           <button onclick="vmcSalvarSemana()" style="background:#0f6e56;color:white;border:none;padding:7px 14px;border-radius:6px;font-size:12px;font-weight:bold;cursor:pointer">💾 Salvar semana</button>
           <button id="vmc-btn-publicar" onclick="vmcTogglePublicarMes()" style="background:#f59e0b;color:white;border:none;padding:7px 14px;border-radius:6px;font-size:12px;font-weight:bold;cursor:pointer">📢 Publicar mês</button>
           <button onclick="vmcImprimirSemana()" style="background:#b45309;color:white;border:none;padding:7px 14px;border-radius:6px;font-size:12px;font-weight:bold;cursor:pointer">🖨️ Imprimir semana</button>
+          <button onclick="vmcCompartilharWhatsApp()" style="background:#25d366;color:white;border:none;padding:7px 14px;border-radius:6px;font-size:12px;font-weight:bold;cursor:pointer">📱 WhatsApp</button>
           <button onclick="vmcImprimirMes()" style="background:#7c3aed;color:white;border:none;padding:7px 14px;border-radius:6px;font-size:12px;font-weight:bold;cursor:pointer">📅 Imprimir mês</button>
           <button onclick="vmcImprimirDesignacoes()" style="background:#1a1a2e;color:#f2a922;border:none;padding:7px 14px;border-radius:6px;font-size:12px;font-weight:bold;cursor:pointer">🌾 Slips (S-89-T)</button>
         </div>
@@ -897,6 +898,7 @@ body.dark-mode .conf-badge.pendente { background: #2a2a15; color: #ca8a04; borde
           <button onclick="dpSalvarSemana()" style="background:#0f6e56;color:white;border:none;padding:7px 14px;border-radius:6px;font-size:12px;font-weight:bold;cursor:pointer">💾 Salvar sábado</button>
           <button id="dp-btn-publicar" onclick="dpTogglePublicarMes()" style="background:#f59e0b;color:white;border:none;padding:7px 14px;border-radius:6px;font-size:12px;font-weight:bold;cursor:pointer">📢 Publicar mês</button>
           <button onclick="dpImprimirSemana()" style="background:#b45309;color:white;border:none;padding:7px 14px;border-radius:6px;font-size:12px;font-weight:bold;cursor:pointer">🖨️ Imprimir sábado</button>
+          <button onclick="dpCompartilharWhatsApp()" style="background:#25d366;color:white;border:none;padding:7px 14px;border-radius:6px;font-size:12px;font-weight:bold;cursor:pointer">📱 WhatsApp</button>
           <button onclick="dpImprimirMes()" style="background:#1a4fa3;color:white;border:none;padding:7px 14px;border-radius:6px;font-size:12px;font-weight:bold;cursor:pointer">📅 Imprimir mês (quadro)</button>
         </div>
 
@@ -935,8 +937,12 @@ body.dark-mode .conf-badge.pendente { background: #2a2a15; color: #ca8a04; borde
             </div>
             <div class="vmc-linha">
               <span class="vmc-label">Tema</span>
-              <input type="text" id="dp-tema-discurso" class="vmc-tema" list="dp-lista-temas-catalogo" placeholder="Digite o número ou o título do tema...">
+              <input type="text" id="dp-tema-discurso" class="vmc-tema" list="dp-lista-temas-catalogo" placeholder="Digite o número ou o título do tema..." oninput="dpAtualizarAvisoTema()">
               <datalist id="dp-lista-temas-catalogo"></datalist>
+            </div>
+            <div class="vmc-linha">
+              <span class="vmc-label"></span>
+              <div id="dp-aviso-tema" style="font-size:11px"></div>
             </div>
           </div>
 
@@ -1038,6 +1044,19 @@ body.dark-mode .conf-badge.pendente { background: #2a2a15; color: #ca8a04; borde
           </div>
           <div id="dp-lista-temas-especiais"></div>
         </div>
+
+        <!-- Temas temporariamente indisponíveis -->
+        <div style="margin-top:20px;border-top:2px solid #e8e8e8;padding-top:16px">
+          <div style="font-size:13px;font-weight:bold;color:#dc2626;margin-bottom:4px">⛔ Temas Temporariamente Indisponíveis</div>
+          <p style="font-size:12px;color:#5e6370;margin-bottom:10px">Ex: um tema reservado pro discurso do superintendente de circuito neste ano de visita. Fica fora de uso até a data que você marcar (ou sem prazo, até você liberar manualmente).</p>
+          <div style="display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap">
+            <input type="text" id="dp-novo-indisp-tema" list="dp-lista-temas-catalogo" placeholder="Tema (número ou título)..." style="flex:1;min-width:200px;padding:7px 10px;border:1px solid #d0d5dd;border-radius:6px;font-size:13px">
+            <input type="text" id="dp-novo-indisp-motivo" placeholder="Motivo (ex: visita do superintendente)..." style="flex:1;min-width:180px;padding:7px 10px;border:1px solid #d0d5dd;border-radius:6px;font-size:13px">
+            <input type="date" id="dp-novo-indisp-ate" title="Até quando (deixe em branco se não souber)" style="padding:7px 10px;border:1px solid #d0d5dd;border-radius:6px;font-size:13px">
+            <button onclick="dpAddTemaIndisponivel()" style="background:#dc2626;color:white;border:none;padding:7px 16px;border-radius:6px;font-size:13px;font-weight:bold;cursor:pointer">+ Marcar indisponível</button>
+          </div>
+          <div id="dp-lista-temas-indisponiveis"></div>
+        </div>
       </div>
 
       <!-- ABA ENVIAR ORADORES (designações de saída pra outras congregações) -->
@@ -1092,11 +1111,13 @@ body.dark-mode .conf-badge.pendente { background: #2a2a15; color: #ca8a04; borde
             </div>
             <div class="vmc-linha">
               <span class="vmc-label">Cântico</span>
-              <input type="text" id="env-cantico" class="vmc-tema" placeholder="Nº do cântico (opcional)...">
+              <input type="text" id="env-cantico" class="vmc-tema" list="env-lista-canticos" placeholder="Nº ou título do cântico (opcional)...">
+              <datalist id="env-lista-canticos"></datalist>
             </div>
             <div class="vmc-linha">
               <span class="vmc-label">Tema</span>
-              <input type="text" id="env-tema" class="vmc-tema" placeholder='Ex: "55" — Você está fazendo um bom nome perante Deus?'>
+              <input type="text" id="env-tema" class="vmc-tema" list="env-lista-temas" placeholder='Ex: "55" — Você está fazendo um bom nome perante Deus?'>
+              <datalist id="env-lista-temas"></datalist>
             </div>
           </div>
           <button onclick="envAddDesignacao()" style="background:#0f6e56;color:white;border:none;padding:8px 18px;border-radius:6px;font-size:13px;font-weight:bold;cursor:pointer;margin-top:8px">+ Adicionar designação</button>
@@ -1106,6 +1127,13 @@ body.dark-mode .conf-badge.pendente { background: #2a2a15; color: #ca8a04; borde
         <div style="border-top:2px solid #e8e8e8;padding-top:16px">
           <div style="font-size:13px;font-weight:bold;color:#1a1a2e;margin-bottom:10px">📋 Designações de envio</div>
           <div id="env-lista-designacoes"></div>
+        </div>
+
+        <!-- Repertório de temas por orador -->
+        <div style="border-top:2px solid #e8e8e8;padding-top:16px;margin-top:20px">
+          <div style="font-size:13px;font-weight:bold;color:#1a4fa3;margin-bottom:4px">📋 Repertório de Temas por Orador</div>
+          <p style="font-size:12px;color:#5e6370;margin-bottom:10px">Guarde os temas que cada irmão está preparado pra dar, e gere uma lista pra mandar pras congregações que vão recebê-lo escolherem.</p>
+          <div id="dp-lista-repertorios"></div>
         </div>
       </div>
 
@@ -1283,6 +1311,7 @@ body.dark-mode .conf-badge.pendente { background: #2a2a15; color: #ca8a04; borde
       <select id="vmc-pub-sel-mes" onchange="vmcAtualizarPublicoSemanas()" style="padding:6px 10px;border:1px solid #bbf7d0;border-radius:6px;font-size:13px;background:white"></select>
       <label style="font-size:12px;font-weight:bold;color:#166534">Semana:</label>
       <select id="vmc-pub-sel" onchange="vmcRenderPublico()" style="padding:6px 10px;border:1px solid #bbf7d0;border-radius:6px;font-size:13px;background:white;min-width:200px"></select>
+      <button onclick="vmcImprimirSemana(document.getElementById('vmc-pub-sel').value)" style="background:#0f6e56;color:white;border:none;padding:6px 14px;border-radius:6px;font-size:12px;font-weight:bold;cursor:pointer">🖨️ Imprimir esta semana</button>
     </div>
     <div class="modal-body" id="vmc-pub-corpo" style="padding:16px 20px">
       <p style="text-align:center;color:#888;padding:30px 0">Selecione uma semana acima.</p>
@@ -1302,6 +1331,7 @@ body.dark-mode .conf-badge.pendente { background: #2a2a15; color: #ca8a04; borde
       <select id="dp-pub-sel-mes" onchange="dpAtualizarPublicoSemanas()" style="padding:6px 10px;border:1px solid #bfdbfe;border-radius:6px;font-size:13px;background:white"></select>
       <label style="font-size:12px;font-weight:bold;color:#1e3a8a">Sábado:</label>
       <select id="dp-pub-sel" onchange="dpRenderPublico()" style="padding:6px 10px;border:1px solid #bfdbfe;border-radius:6px;font-size:13px;background:white;min-width:200px"></select>
+      <button onclick="dpImprimirSemana(document.getElementById('dp-pub-sel').value)" style="background:#1a4fa3;color:white;border:none;padding:6px 14px;border-radius:6px;font-size:12px;font-weight:bold;cursor:pointer">🖨️ Imprimir este sábado</button>
     </div>
     <div class="modal-body" id="dp-pub-corpo" style="padding:16px 20px">
       <p style="text-align:center;color:#888;padding:30px 0">Selecione um sábado acima.</p>
@@ -1657,7 +1687,7 @@ function trocarAba(id,btn) {
   if(id==='aba-presencas') carregarPresencas();
   if(id==='aba-vmc' && typeof vmcPreencherSeletores === 'function') vmcPreencherSeletores();
   if(id==='aba-dp' && typeof dpPreencherSeletores === 'function') dpPreencherSeletores();
-  if(id==='aba-env' && typeof envAtualizarSelectCongregacoes === 'function') envAtualizarSelectCongregacoes();
+  if(id==='aba-env' && typeof envAtualizarSelectCongregacoes === 'function') { envAtualizarSelectCongregacoes(); dpRenderRepertorios(); }
 }
 function aplicarTudo() {
   // Aplica mudancas de irmaos/eventos sem apagar meses ja gerados
@@ -5242,14 +5272,17 @@ function vmcRodizioAuto() {
 }
 
 // ── Impressão da folha VMC ──────────────────────────────────────
-function vmcImprimirSemana() {
-  if (!vmcSemanaAtual) { alert('Selecione uma semana.'); return; }
-  var dados = vmcColetarDados();
+function vmcImprimirSemana(isoPublico) {
+  var isoAlvo = isoPublico || vmcSemanaAtual;
+  if (!isoAlvo) { alert('Selecione uma semana.'); return; }
+  var dados = isoPublico ? Object.assign({}, vmcDados[isoPublico] || {}) : vmcColetarDados();
   dados.tesouroTema = vmcLimparTempo(dados.tesouroTema);
   dados.joiasTema   = vmcLimparTempo(dados.joiasTema);
   dados.leituraTema = vmcLimparTempo(dados.leituraTema);
   dados.estudoTema  = vmcLimparTempo(dados.estudoTema);
-  var d = new Date(vmcSemanaAtual + 'T00:00:00');
+  dados.ministerioPartes = dados.ministerioPartes || [];
+  dados.vidaPartes       = dados.vidaPartes || [];
+  var d = new Date(isoAlvo + 'T00:00:00');
   var semanaStr = d.toLocaleDateString('pt-BR', {day:'2-digit',month:'long',year:'numeric'});
   // Calcula período da semana (seg-dom)
   var dia1 = d.getDate();
@@ -5411,6 +5444,30 @@ function vmcImprimirDesignacoes() {
 }
 
 // ── Impressão mensal VMC (folha A4 com todas as semanas do mês) ──
+// ── Compartilhar a semana do VMC via WhatsApp ─────────────────────
+function vmcCompartilharWhatsApp() {
+  if (!vmcSemanaAtual) { alert('Selecione uma semana.'); return; }
+  var dados = vmcColetarDados();
+  var d = new Date(vmcSemanaAtual + 'T00:00:00');
+  var dia1 = d.getDate(), dia7 = dia1 + 6;
+  var mes = d.toLocaleDateString('pt-BR',{month:'long'});
+  var ano = d.getFullYear();
+
+  var linhas = ['📖 *Vida e Ministério Cristão* — ' + dia1 + '-' + dia7 + ' de ' + mes + ' de ' + ano, ''];
+  if (dados.presidente) linhas.push('Presidente: *' + dados.presidente + '*');
+  if (dados.tesouro) linhas.push('1. Tesouros: *' + dados.tesouro + '*');
+  if (dados.joias) linhas.push('2. Joias Espirituais: *' + dados.joias + '*');
+  if (dados.leitura) linhas.push('3. Leitura da Bíblia: *' + dados.leitura + '*');
+  (dados.ministerioPartes || []).forEach(function(p, i) {
+    var nome = p.tipo === 'publicadora' ? p.publNome : p.irmaoNome;
+    if (nome) linhas.push((i+4) + '. ' + p.titulo + ': *' + nome + (p.ajudNome ? ' + ' + p.ajudNome : '') + '*');
+  });
+  if (dados.estudoCondutor) linhas.push('Condutor Estudo: *' + dados.estudoCondutor + '*');
+  if (dados.estudoLeitor) linhas.push('Leitor Estudo: *' + dados.estudoLeitor + '*');
+
+  window.open('https://wa.me/?text=' + encodeURIComponent(linhas.join('\n')), '_blank');
+}
+
 function vmcImprimirMes() {
   var datas = vmcGetDatas();
   if (!datas.length) { alert('Nenhuma semana gerada.'); return; }
@@ -5763,6 +5820,14 @@ function vmcRenderPublico() {
 
   corpo.innerHTML =
     (dados.visitaSuperintendente ? '<div style="background:#fff7ed;border:1px solid #fdba74;color:#9a3412;padding:8px 12px;border-radius:6px;margin-bottom:10px;font-size:12px;font-weight:bold">📅 Atenção: nesta semana teremos a visita do superintendente de circuito.</div>' : '')+
+    (function(){
+      var r = vmcRoteiroPresidente(vmcHoraInicio, dados.canticoAbertura);
+      return '<div style="background:#f0fdf4;border:1px solid #86efac;border-radius:6px;padding:8px 12px;margin-bottom:12px;font-size:12px">' +
+        '<strong style="color:#166534">🕐 Roteiro do Presidente</strong><br>' +
+        '<strong>' + r.hora3min + '</strong> — ' + r.aviso3min + '<br>' +
+        '<strong>' + r.hora1min + '</strong> — ' + r.aviso1min +
+      '</div>';
+    })()+
     '<div class="vmc-pub-secao">'+
       '<div class="vmc-pub-titulo tesouro">💎 Tesouros da Palavra de Deus</div>'+
       (dados.leituraSemanal?'<div style="font-size:11px;color:#555;padding:4px 8px">Leitura: '+dados.leituraSemanal+'</div>':'')+
@@ -5922,6 +5987,166 @@ var dpTemasCatalogo = [
   "193. Os problemas de hoje logo serão coisa do passado", "194. Como a sabedoria de Deus nos ajuda"
 ];
 var dpTemasEspeciais = []; // temas especiais adicionados manualmente pelo responsável
+var dpTemasIndisponiveis = []; // [{tema, motivo, ate}] — temas tirados de uso temporariamente
+var DP_LIMITE_DIAS_REPETIR_TEMA = 120; // ~4 meses
+
+// Verifica se um tema pode ser dado nesta semana: olha se já foi dado há
+// menos de 4 meses na nossa congregação, e se não está na lista de indisponíveis.
+function dpTemaDisponibilidade(temaTexto) {
+  if (!temaTexto) return { disponivel: true };
+
+  // 1) Tema marcado manualmente como indisponível (ex: reservado pro superintendente)
+  var indispon = dpTemasIndisponiveis.filter(function(t){ return t.tema === temaTexto; })[0];
+  if (indispon) {
+    var aindaVale = !indispon.ate || indispon.ate >= new Date().toISOString().slice(0,10);
+    if (aindaVale) {
+      return { disponivel: false, motivo: 'indisponivel', texto: indispon.motivo || 'Tema temporariamente fora de uso', ate: indispon.ate };
+    }
+  }
+
+  // 2) Tema já dado há menos de 4 meses nesta congregação
+  var maisRecente = null;
+  Object.keys(dpDados || {}).forEach(function(iso) {
+    var d = dpDados[iso];
+    if (d && d.temaDiscurso === temaTexto) {
+      if (!maisRecente || iso > maisRecente) maisRecente = iso;
+    }
+  });
+  if (maisRecente) {
+    var dataUso = new Date(maisRecente + 'T00:00:00');
+    var hoje = new Date(); hoje.setHours(0,0,0,0);
+    var diasPassados = Math.floor((hoje - dataUso) / 86400000);
+    if (diasPassados >= 0 && diasPassados < DP_LIMITE_DIAS_REPETIR_TEMA) {
+      var dataLivre = new Date(dataUso); dataLivre.setDate(dataLivre.getDate() + DP_LIMITE_DIAS_REPETIR_TEMA);
+      return {
+        disponivel: false, motivo: 'recente',
+        ultimaData: maisRecente, diasPassados: diasPassados,
+        dataLivre: dataLivre.toISOString().slice(0,10)
+      };
+    }
+  }
+  return { disponivel: true };
+}
+
+// Mostra o avisinho embaixo do campo Tema conforme o responsável digita/escolhe
+function dpAtualizarAvisoTema() {
+  var campo = document.getElementById('dp-tema-discurso');
+  var aviso = document.getElementById('dp-aviso-tema');
+  if (!campo || !aviso) return;
+  var disp = dpTemaDisponibilidade(campo.value.trim());
+  if (disp.disponivel) {
+    aviso.innerHTML = '';
+    return;
+  }
+  if (disp.motivo === 'indisponivel') {
+    aviso.innerHTML = '⛔ Tema fora de uso: ' + disp.texto + (disp.ate ? ' (até ' + new Date(disp.ate+'T00:00:00').toLocaleDateString('pt-BR') + ')' : '');
+    aviso.style.color = '#dc2626';
+  } else {
+    var dataLivreFmt = new Date(disp.dataLivre + 'T00:00:00').toLocaleDateString('pt-BR');
+    var dataUsoFmt = new Date(disp.ultimaData + 'T00:00:00').toLocaleDateString('pt-BR');
+    aviso.innerHTML = '⚠️ Dado há ' + disp.diasPassados + ' dias (' + dataUsoFmt + ') — libera de novo em ' + dataLivreFmt + '. Pode usar mesmo assim se precisar.';
+    aviso.style.color = '#b45309';
+  }
+}
+
+// ── Temas temporariamente indisponíveis (ex: reservados pro superintendente) ──
+function dpAddTemaIndisponivel() {
+  var inpTema = document.getElementById('dp-novo-indisp-tema');
+  var inpMotivo = document.getElementById('dp-novo-indisp-motivo');
+  var inpAte = document.getElementById('dp-novo-indisp-ate');
+  var tema = inpTema ? inpTema.value.trim() : '';
+  if (!tema) return;
+  dpTemasIndisponiveis.push({ tema: tema, motivo: inpMotivo ? inpMotivo.value.trim() : '', ate: inpAte ? inpAte.value : '' });
+  inpTema.value = ''; inpMotivo.value = ''; inpAte.value = '';
+  dpSalvarConfig();
+  dpRenderTemasIndisponiveis();
+}
+
+function dpRemoverTemaIndisponivel(tema) {
+  dpTemasIndisponiveis = dpTemasIndisponiveis.filter(function(t){ return t.tema !== tema; });
+  dpSalvarConfig();
+  dpRenderTemasIndisponiveis();
+}
+
+function dpRenderTemasIndisponiveis() {
+  var cont = document.getElementById('dp-lista-temas-indisponiveis');
+  if (!cont) return;
+  if (!dpTemasIndisponiveis.length) { cont.innerHTML = '<p style="font-size:12px;color:#aaa">Nenhum tema indisponível no momento.</p>'; return; }
+  cont.innerHTML = dpTemasIndisponiveis.map(function(t) {
+    var ateFmt = t.ate ? new Date(t.ate+'T00:00:00').toLocaleDateString('pt-BR') : 'sem prazo definido';
+    return '<div style="display:flex;align-items:center;gap:8px;background:#fef2f2;border:1px solid #fecaca;border-radius:8px;padding:8px 12px;margin-bottom:6px;flex-wrap:wrap">' +
+      '<span style="font-size:12px;flex:1;min-width:200px">⛔ ' + t.tema + '</span>' +
+      '<span style="font-size:11px;color:#991b1b">' + (t.motivo || '') + ' — até ' + ateFmt + '</span>' +
+      '<button onclick="dpRemoverTemaIndisponivel(\'' + t.tema.replace(/'/g,"\\'") + '\')" style="background:#fee2e2;color:#dc2626;border:none;border-radius:5px;padding:3px 10px;font-size:11px;cursor:pointer">✕ Liberar</button>' +
+    '</div>';
+  }).join('');
+}
+
+// ── Repertório de temas por orador (pra enviar pra congregações que recebem) ──
+function dpAddTemaRepertorio(nome) {
+  var inp = document.getElementById('dp-repertorio-novo-' + vmcSlugAssistente(nome));
+  var tema = inp ? inp.value.trim() : '';
+  if (!tema) return;
+  if (!vmcCadastro.irmaos[nome]) return;
+  var rep = vmcCadastro.irmaos[nome].repertorio || [];
+  if (rep.indexOf(tema) < 0) rep.push(tema);
+  vmcCadastro.irmaos[nome].repertorio = rep;
+  vmcSalvarCadastro();
+  dpRenderRepertorios();
+}
+
+function dpRemoverTemaRepertorio(nome, tema) {
+  if (!vmcCadastro.irmaos[nome]) return;
+  vmcCadastro.irmaos[nome].repertorio = (vmcCadastro.irmaos[nome].repertorio || []).filter(function(t){ return t !== tema; });
+  vmcSalvarCadastro();
+  dpRenderRepertorios();
+}
+
+function dpImprimirRepertorio(nome) {
+  var rep = (vmcCadastro.irmaos[nome] || {}).repertorio || [];
+  var html = '<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8">' +
+    '<title>Repertório — ' + nome + '</title><style>' +
+    'body{font-family:Arial,sans-serif;margin:0;padding:24px;color:#111}' +
+    'h1{font-size:16px;color:#1a4fa3;margin:0 0 4px}' +
+    '.sub{font-size:12px;color:#666;margin-bottom:16px}' +
+    'ul{padding-left:20px;font-size:13px;line-height:1.8}' +
+    '</style></head><body>' +
+    '<h1>🎤 Repertório de Temas — ' + nome + '</h1>' +
+    '<div class="sub">' + envNossaCongregacao + '</div>' +
+    (rep.length ? '<ul>' + rep.map(function(t){ return '<li>' + t + '</li>'; }).join('') + '</ul>' : '<p>Nenhum tema cadastrado ainda.</p>') +
+    '<script>window.onload=function(){window.print();}<\/script>' +
+    '</body></html>';
+  var w = window.open('', '_blank');
+  if (w) { w.document.write(html); w.document.close(); }
+  else alert('Permita pop-ups para imprimir.');
+}
+
+function dpRenderRepertorios() {
+  var cont = document.getElementById('dp-lista-repertorios');
+  if (!cont) return;
+  var nomes = vmcListas.oradorEnviado || [];
+  if (!nomes.length) { cont.innerHTML = '<p style="font-size:12px;color:#aaa">Nenhum irmão marcado como "Orador (enviar p/ outras congregações)" ainda.</p>'; return; }
+  cont.innerHTML = nomes.map(function(nome) {
+    var slug = vmcSlugAssistente(nome);
+    var rep = (vmcCadastro.irmaos[nome] || {}).repertorio || [];
+    var chips = rep.map(function(t) {
+      return '<span style="display:inline-flex;align-items:center;gap:4px;background:#eef2ff;border:1px solid #c7d2fe;border-radius:12px;padding:2px 8px;margin:2px;font-size:11px">' +
+        t + '<button onclick="dpRemoverTemaRepertorio(\'' + nome + '\',\'' + t.replace(/'/g,"\\'") + '\')" style="background:none;border:none;color:#dc2626;cursor:pointer;font-size:12px;padding:0">×</button>' +
+      '</span>';
+    }).join('');
+    return '<div style="background:#f9f9f9;border:1px solid #e8e8e8;border-radius:8px;padding:10px 12px;margin-bottom:8px">' +
+      '<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px;margin-bottom:6px">' +
+        '<span style="font-size:13px;font-weight:bold">🎤 ' + nome + ' <span style="font-weight:normal;color:#888">(' + rep.length + ' temas)</span></span>' +
+        '<button onclick="dpImprimirRepertorio(\'' + nome + '\')" style="background:#0f6e56;color:white;border:none;border-radius:5px;padding:3px 10px;font-size:11px;cursor:pointer">🖨️ Imprimir lista</button>' +
+      '</div>' +
+      '<div style="margin-bottom:6px">' + (chips || '<span style="font-size:11px;color:#aaa">Nenhum tema ainda</span>') + '</div>' +
+      '<div style="display:flex;gap:6px">' +
+        '<input type="text" id="dp-repertorio-novo-' + slug + '" list="dp-lista-temas-catalogo" placeholder="Adicionar tema ao repertório..." style="flex:1;padding:5px 8px;border:1px solid #d0d5dd;border-radius:5px;font-size:12px">' +
+        '<button onclick="dpAddTemaRepertorio(\'' + nome + '\')" style="background:#1a4fa3;color:white;border:none;border-radius:5px;padding:5px 12px;font-size:11px;cursor:pointer">+ Add</button>' +
+      '</div>' +
+    '</div>';
+  }).join('');
+}
 
 // ── Catálogo de cânticos "Cante de Coração para Jeová" (1-163) ──
 var dpCanticosCatalogo = [
@@ -6720,6 +6945,7 @@ function dpCarregarSemana() {
   if (listaCanticos) {
     listaCanticos.innerHTML = dpCanticosCatalogo.map(function(c){ return '<option value="'+c+'">'; }).join('');
   }
+  dpAtualizarAvisoTema();
 }
 
 // Oração final = o próprio orador, por padrão — exceto se marcado que ele
@@ -6867,6 +7093,17 @@ function dpProcessarSentinela() {
 function dpSalvarSemana() {
   if (!dpSemanaAtual) { alert('Selecione um sábado.'); return; }
   var dados = dpColetarDados();
+
+  if (dados.temaDiscurso) {
+    var disp = dpTemaDisponibilidade(dados.temaDiscurso);
+    if (!disp.disponivel) {
+      var msg = disp.motivo === 'indisponivel'
+        ? 'Esse tema está marcado como indisponível: ' + disp.texto + '. Salvar mesmo assim?'
+        : 'Esse tema foi dado há ' + disp.diasPassados + ' dias (menos de 4 meses). Salvar mesmo assim?';
+      if (!confirm(msg)) return;
+    }
+  }
+
   dpDados[dpSemanaAtual] = dados;
   if (db) db.ref('dp').update(dpDados);
 
@@ -6967,7 +7204,7 @@ function dpAtualizarCondutorFixoSelect() {
 }
 
 function dpSalvarConfig() {
-  if (db) db.ref('dp_config').update({ oradores: dpOradores, condutorFixo: dpCondutorFixo, publicados: dpPublicados, idx: dpIdx, temasEspeciais: dpTemasEspeciais, horaInicio: dpHoraInicio });
+  if (db) db.ref('dp_config').update({ oradores: dpOradores, condutorFixo: dpCondutorFixo, publicados: dpPublicados, idx: dpIdx, temasEspeciais: dpTemasEspeciais, horaInicio: dpHoraInicio, temasIndisponiveis: dpTemasIndisponiveis });
 }
 
 function dpSalvarHoraInicio() {
@@ -7075,6 +7312,14 @@ function dpRenderPublico() {
       (tema?'<div class="vmc-pub-tema">'+tema+'</div>':'')+'</div>';
   }
   corpo.innerHTML =
+    (function(){
+      var r = vmcRoteiroPresidente(dpHoraInicio, dados.canticoInicial);
+      return '<div style="background:#f0fdf4;border:1px solid #86efac;border-radius:6px;padding:8px 12px;margin-bottom:12px;font-size:12px">' +
+        '<strong style="color:#166534">🕐 Roteiro do Presidente</strong><br>' +
+        '<strong>' + r.hora3min + '</strong> — ' + r.aviso3min + '<br>' +
+        '<strong>' + r.hora1min + '</strong> — ' + r.aviso1min +
+      '</div>';
+    })()+
     '<div class="vmc-pub-secao">'+
       '<div class="vmc-pub-titulo tesouro">🎵 Abertura</div>'+
       linha('Presidente', dados.presidente, '')+
@@ -7105,10 +7350,11 @@ function dpAbrirPrograma() {
 function dpFecharPrograma() { document.getElementById('ov-programa-dp').classList.remove('aberto'); }
 
 // ── Impressão semanal ────────────────────────────────────────────
-function dpImprimirSemana() {
-  if (!dpSemanaAtual) { alert('Selecione um sábado.'); return; }
-  var dados = dpColetarDados();
-  var d = new Date(dpSemanaAtual + 'T00:00:00');
+function dpImprimirSemana(isoPublico) {
+  var isoAlvo = isoPublico || dpSemanaAtual;
+  if (!isoAlvo) { alert('Selecione um sábado.'); return; }
+  var dados = isoPublico ? Object.assign({}, dpDados[isoPublico] || {}) : dpColetarDados();
+  var d = new Date(isoAlvo + 'T00:00:00');
   var dataStr = d.toLocaleDateString('pt-BR', {day:'2-digit',month:'2-digit',year:'numeric'});
   var diaSemanaStr = d.toLocaleDateString('pt-BR', {weekday:'long', day:'2-digit', month:'long', year:'numeric'});
 
@@ -7167,6 +7413,24 @@ function dpImprimirSemana() {
 }
 
 // ── Impressão mensal (quadro de anúncios — grade com todos os sábados) ──
+// ── Compartilhar o sábado do Discurso Público via WhatsApp ────────
+function dpCompartilharWhatsApp() {
+  if (!dpSemanaAtual) { alert('Selecione um sábado.'); return; }
+  var dados = dpColetarDados();
+  var d = new Date(dpSemanaAtual + 'T00:00:00');
+  var dataStr = d.toLocaleDateString('pt-BR', {day:'2-digit',month:'long',year:'numeric'});
+
+  var linhas = ['🎤 *Discurso Público e A Sentinela* — ' + dataStr, ''];
+  if (dados.presidente) linhas.push('Presidente: *' + dados.presidente + '*');
+  if (dados.orador) linhas.push('Orador: *' + dados.orador + '*' + (dados.congregacaoOrador ? ' (' + dados.congregacaoOrador + ')' : ''));
+  if (dados.temaDiscurso) linhas.push('Tema: ' + dados.temaDiscurso);
+  if (dados.condutorSentinela) linhas.push('Condutor Sentinela: *' + dados.condutorSentinela + '*');
+  if (dados.leitorSentinela) linhas.push('Leitor Sentinela: *' + dados.leitorSentinela + '*');
+  if (dados.oracaoFinal) linhas.push('Oração final: *' + dados.oracaoFinal + '*');
+
+  window.open('https://wa.me/?text=' + encodeURIComponent(linhas.join('\n')), '_blank');
+}
+
 function dpImprimirMes() {
   var datas = dpGetDatas();
   if (!datas.length) { alert('Nenhum sábado neste mês.'); return; }
@@ -7299,6 +7563,14 @@ function envAtualizarSelectCongregacoes() {
     selOrador.innerHTML = '<option value="">— não definido —</option>' +
       lista.map(function(n){ return '<option value="'+n+'">'+n+'</option>'; }).join('');
   }
+  var listaCanticosEnv = document.getElementById('env-lista-canticos');
+  if (listaCanticosEnv) {
+    listaCanticosEnv.innerHTML = dpCanticosCatalogo.map(function(c){ return '<option value="'+c+'">'; }).join('');
+  }
+  var listaTemasEnv = document.getElementById('env-lista-temas');
+  if (listaTemasEnv) {
+    listaTemasEnv.innerHTML = dpTemasCatalogo.concat(dpTemasEspeciais).map(function(t){ return '<option value="'+t+'">'; }).join('');
+  }
 }
 
 function envAtualizarDadosCongregacao() {
@@ -7365,6 +7637,7 @@ function envRenderDesignacoes() {
         '</div>' +
         '<div style="display:flex;gap:6px">' +
           '<button onclick="envImprimirDesignacao(\'' + id + '\')" style="background:#0f6e56;color:white;border:none;border-radius:5px;padding:4px 12px;font-size:11px;font-weight:bold;cursor:pointer">🖨️ Imprimir</button>' +
+          '<button onclick="envCompartilharWhatsApp(\'' + id + '\')" style="background:#25d366;color:white;border:none;border-radius:5px;padding:4px 12px;font-size:11px;font-weight:bold;cursor:pointer">📱 WhatsApp</button>' +
           '<button onclick="envRemoverDesignacao(\'' + id + '\')" style="background:#fee2e2;color:#dc2626;border:none;border-radius:5px;padding:4px 10px;font-size:11px;cursor:pointer">✕</button>' +
         '</div>' +
       '</div>' +
@@ -7411,6 +7684,23 @@ function envImprimirDesignacao(id) {
   else alert('Permita pop-ups para imprimir.');
 }
 
+// ── Compartilhar via WhatsApp (abre já com a mensagem pronta) ──────
+function envCompartilharWhatsApp(id) {
+  var d = envDesignacoes[id];
+  if (!d) return;
+  var dataFmt = d.data ? new Date(d.data + 'T00:00:00').toLocaleDateString('pt-BR') : '';
+  var msg =
+    '📤 *Designação Discurso Público*\n' +
+    'Cong: *' + d.congNome + '*' + (d.congDiaHorario ? ' — ' + d.congDiaHorario : '') + '\n' +
+    (d.congEndereco ? 'Endereço: ' + d.congEndereco + '\n' : '') +
+    'Data: *' + dataFmt + '*\n' +
+    (d.cantico ? 'Cântico: ' + d.cantico + '\n' : '') +
+    'Cong (nossa): ' + envNossaCongregacao + '\n' +
+    'Orador: *' + d.orador + '*\n' +
+    (d.tema ? 'Tema: ' + d.tema : '');
+  window.open('https://wa.me/?text=' + encodeURIComponent(msg), '_blank');
+}
+
 function envIniciar() {
   if (!db) { envAtualizarSelectCongregacoes(); return; }
   db.ref('env_config').once('value', function(snap) {
@@ -7441,6 +7731,7 @@ function dpIniciar() {
     if (cfg.publicados) dpPublicados = cfg.publicados;
     if (cfg.idx) dpIdx = cfg.idx;
     if (cfg.temasEspeciais) dpTemasEspeciais = cfg.temasEspeciais;
+    if (cfg.temasIndisponiveis) dpTemasIndisponiveis = cfg.temasIndisponiveis;
     if (cfg.horaInicio) {
       dpHoraInicio = cfg.horaInicio;
       var campoHoraDp = document.getElementById('dp-hora-inicio');
@@ -7448,6 +7739,8 @@ function dpIniciar() {
     }
     dpRenderOradores();
     dpRenderTemasEspeciais();
+    dpRenderTemasIndisponiveis();
+    dpRenderRepertorios();
     dpAtualizarCondutorFixoSelect();
     dpAtualizarBotaoPublicar();
     dpAtualizarSeletorMesPublico();
