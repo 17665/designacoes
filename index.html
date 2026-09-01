@@ -259,217 +259,23 @@ h1 { font-size:22px; font-weight:700; color:#1a4fa3; margin-bottom:4px; }
 @media print {
   #ov-programa-vmc { display:none !important; }
 }
-
-/* =====================================================================
-   IMPRESSÃO — Escala de Designações
-   Layout: cada mês em uma folha A4, 3 colunas × 3 linhas (até 9 cards)
-   Fonte legível, hierarquia clara, cabeçalho colorido impresso
-   ===================================================================== */
 @media print {
-  @page {
-    size: A4 portrait;
-    margin: 8mm 8mm 8mm 8mm;
-  }
-
-  /* Esconde tudo que não é a escala */
-  body {
-    background: white !important;
-    padding: 0 !important;
-    margin: 0 !important;
-    font-family: Arial, Helvetica, sans-serif !important;
-    font-size: 11pt !important;
-    color: #111 !important;
-  }
-  .topo, .overlay, #painel-trocas, .firebase-config-banner,
-  .btn-imprimir, #btn-area-responsavel, #badge-responsavel,
-  .btn-apagar-mes, [class*="btn-"], .nome-clicavel::after,
-  .badge-treino-inline { display: none !important; }
-
-  /* Um mês = uma página */
-  .mes-bloco {
-    page-break-before: always;
-    break-before: page;
-    page-break-inside: avoid;
-    break-inside: avoid;
-    margin: 0 !important;
-    border: none !important;
-    border-radius: 0 !important;
-    box-shadow: none !important;
-    width: 100% !important;
-  }
-  .mes-bloco:first-child {
-    page-break-before: avoid;
-    break-before: avoid;
-  }
-
-  /* Cabeçalho do mês — azul sólido impresso */
-  .mes-cab {
-    background: #1a4fa3 !important;
-    color: white !important;
-    -webkit-print-color-adjust: exact !important;
-    print-color-adjust: exact !important;
-    padding: 6px 10px !important;
-    border-radius: 0 !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: space-between !important;
-    margin-bottom: 4px !important;
-  }
-  .mes-nome {
-    font-size: 13pt !important;
-    font-weight: 900 !important;
-    letter-spacing: .3px;
-  }
-  .mes-resp {
-    font-size: 9pt !important;
-    opacity: .85;
-  }
-
-  /* Grid 3 colunas — cabe até 9 cards por folha A4 */
-  .reunioes-grid {
-    display: grid !important;
-    grid-template-columns: repeat(3, 1fr) !important;
-    gap: 3px !important;
-    background: #b0b8cc !important;
-    -webkit-print-color-adjust: exact !important;
-    print-color-adjust: exact !important;
-  }
-
-  /* Card de reunião */
-  .card {
-    background: white !important;
-    padding: 5px 7px !important;
-    break-inside: avoid !important;
-    page-break-inside: avoid !important;
-    border-radius: 0 !important;
-    box-shadow: none !important;
-  }
-
-  /* Topo do card: badge + data + hora */
-  .card-topo {
-    display: flex !important;
-    align-items: center !important;
-    gap: 5px !important;
-    margin-bottom: 4px !important;
-    border-bottom: 1.5px solid #d0d5dd !important;
-    padding-bottom: 3px !important;
-  }
-  .card-data {
-    font-size: 10pt !important;
-    font-weight: 700 !important;
-    color: #111 !important;
-    flex: 1 !important;
-  }
-  .card-hora {
-    font-size: 9pt !important;
-    color: #444 !important;
-  }
-
-  /* Badges de dia — coloridos impressos */
-  .badge {
-    font-size: 7.5pt !important;
-    font-weight: 800 !important;
-    padding: 1px 5px !important;
-    border-radius: 4px !important;
-    -webkit-print-color-adjust: exact !important;
-    print-color-adjust: exact !important;
-  }
-  .badge-quarta {
-    background: #dbeafe !important;
-    color: #1a4fa3 !important;
-    -webkit-print-color-adjust: exact !important;
-    print-color-adjust: exact !important;
-  }
-  .badge-sabado {
-    background: #d1fae5 !important;
-    color: #0f6e56 !important;
-    -webkit-print-color-adjust: exact !important;
-    print-color-adjust: exact !important;
-  }
-  .badge-terca {
-    background: #f3e8ff !important;
-    color: #6b21a8 !important;
-    -webkit-print-color-adjust: exact !important;
-    print-color-adjust: exact !important;
-  }
-
-  /* Linhas de designação */
-  .linha {
-    display: flex !important;
-    align-items: flex-start !important;
-    padding: 2px 0 !important;
-    border-bottom: 1px dotted #ddd !important;
-    gap: 4px !important;
-  }
-  .linha:last-child { border-bottom: none !important; }
-
-  .linha-icone {
-    font-size: 9pt !important;
-    width: 14px !important;
-    flex-shrink: 0 !important;
-    margin-top: 1px !important;
-  }
-  .linha-label {
-    font-size: 8.5pt !important;
-    font-weight: 700 !important;
-    color: #444 !important;
-    min-width: 72px !important;
-    flex-shrink: 0 !important;
-  }
-  .linha-nomes {
-    font-size: 9pt !important;
-    font-weight: 600 !important;
-    color: #111 !important;
-    line-height: 1.3 !important;
-  }
-
-  /* Nomes — sem sublinhado/cor de link */
-  .nome-clicavel, .nome-troca {
-    border-bottom: none !important;
-    color: #111 !important;
-    cursor: default !important;
-    font-weight: 600 !important;
-    text-decoration: none !important;
-  }
-
-  /* Banner de visita / evento */
-  .banner-evento {
-    font-size: 8pt !important;
-    padding: 2px 5px !important;
-    border-radius: 3px !important;
-    margin-bottom: 3px !important;
-    -webkit-print-color-adjust: exact !important;
-    print-color-adjust: exact !important;
-  }
-  .banner-visita-terca {
-    background: #f3e8ff !important;
-    color: #6b21a8 !important;
-    -webkit-print-color-adjust: exact !important;
-    print-color-adjust: exact !important;
-  }
-  .banner-visita-sab {
-    background: #d1fae5 !important;
-    color: #065f46 !important;
-    -webkit-print-color-adjust: exact !important;
-    print-color-adjust: exact !important;
-  }
-
-  /* Card de evento/sem reunião */
-  .card-evento {
-    break-inside: avoid !important;
-    padding: 6px 8px !important;
-    font-size: 9pt !important;
-    border-radius: 0 !important;
-    box-shadow: none !important;
-  }
-  .ev-titulo { font-size: 9pt !important; font-weight: 700 !important; }
-  .ev-detalhe { font-size: 8pt !important; }
-
-  /* Manutencao overlay — oculto na impressão */
-  .bloqueio-manutencao, .mensagem-manutencao { display: none !important; }
-}
-
-/* Manutencao overlay — apenas para tela */
+  body { background:white; padding:0; }
+  .topo,.overlay,#painel-trocas,.firebase-config-banner { display:none !important; }
+  .mes-bloco { page-break-before:always; break-before:page; page-break-inside:avoid; break-inside:avoid; border:none; border-radius:0; margin:0; }
+  .mes-bloco:first-child { page-break-before:avoid; break-before:avoid; }
+  .mes-cab { background:#1a4fa3 !important; color:white !important; -webkit-print-color-adjust:exact; print-color-adjust:exact; padding:8px 14px; }
+  .btn-apagar-mes { display:none !important; }
+  .reunioes-grid { grid-template-columns:repeat(2,1fr); gap:1px; background:#d0d5dd; }
+  .card { background:white !important; padding:8px 10px; break-inside:avoid; }
+  .card-evento { break-inside:avoid; padding:8px 10px; }
+  .banner-visita-terca { background:#f3e8ff !important; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+  .banner-visita-sab   { background:#dcfce7 !important; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+  .badge-quarta { background:#e8f0fb !important; color:#1a4fa3 !important; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+  .badge-terca  { background:#f3e8ff !important; color:#6b21a8 !important; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+  .badge-sabado { background:#e1f5ee !important; color:#0f6e56 !important; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+  .nome-clicavel { border-bottom:none !important; color:#1a1a2e !important; cursor:default; }
+  .nome-troca    { border-bottom:none !important; color:#1a1a2e !important; cursor:default; }
 .bloqueio-manutencao::before {
   content: "";
   position: fixed;
@@ -496,6 +302,12 @@ h1 { font-size:22px; font-weight:700; color:#1a4fa3; margin-bottom:4px; }
 .mensagem-manutencao h2 { color:#f87171; margin-bottom:16px; font-size:22px; font-weight:700; letter-spacing:.3px; }
 .mensagem-manutencao p { margin:0; }
 .mensagem-manutencao small { color:#aaa; font-size:12px; }
+  .linha { padding:2px 0; }
+  .linha-label { min-width:100px; font-size:10px; }
+  .linha-nomes { font-size:10px; }
+  .card-data { font-size:12px; }
+  @page { size:A4 portrait; margin:10mm 8mm; }
+}
 /* TEMA ESCURO - PRETO SUAVE */
 body.dark-mode { background: #1a1a1a; color: #d4d4d4; }
 body.dark-mode .mes-bloco, body.dark-mode .card, body.dark-mode .modal-senha, body.dark-mode .modal-principal, body.dark-mode .modal-subst, body.dark-mode .card-evento { background: #252525; border-color: #3a3a3a; color: #d4d4d4; }
@@ -2867,13 +2679,7 @@ var db = null;
 var firebaseOk = false;
 
 // ── MODO TESTE ──────────────────────────────────────────────────────────────
-// Modo teste ativa automaticamente quando:
-// 1. A URL contém ?teste  OU
-// 2. O arquivo está sendo aberto localmente (file://)
-var MODO_TESTE = (
-  window.location.search.indexOf('teste') !== -1 ||
-  window.location.protocol === 'file:'
-);
+var MODO_TESTE = true; // Inicia sempre em modo teste — desative na Área do Responsável
 
 function _criarDbProxy() {
   var logEl = document.getElementById('teste-log');
@@ -2906,27 +2712,9 @@ function _criarDbProxy() {
           if(fn) fn();
           return fakeThen;
         },
-        once: function(ev, fn) {
-          if (window._dbReal) return window._dbReal.ref(path).once(ev, fn);
-          // Offline: lê do localStorage
-          if (fn) setTimeout(function(){
-            var cached = null;
-            try { var s = localStorage.getItem('fb_cache_' + path.replace(/\//g,'_')); if(s) cached = JSON.parse(s); } catch(e){}
-            fn({ val: function(){ return cached; } });
-          }, 0);
-          return fakeThen;
-        },
-        on: function(ev, fn) {
-          if (window._dbReal) return window._dbReal.ref(path).on(ev, fn);
-          // Offline: lê do localStorage e dispara
-          if (fn) setTimeout(function(){
-            var cached = null;
-            try { var s = localStorage.getItem('fb_cache_' + path.replace(/\//g,'_')); if(s) cached = JSON.parse(s); } catch(e){}
-            fn({ val: function(){ return cached; } });
-          }, 0);
-          return null;
-        },
-        off: function() { return window._dbReal && window._dbReal.ref(path).off(); }
+        once: function(ev, fn) { return window._dbReal ? window._dbReal.ref(path).once(ev, fn) : fakeThen; },
+        on:   function(ev, fn) { return window._dbReal && window._dbReal.ref(path).on(ev, fn); },
+        off:  function()       { return window._dbReal && window._dbReal.ref(path).off(); }
       };
     }
   };
@@ -3112,16 +2900,10 @@ function salvarConfigFirebase() {
 var _configHash = '';
 var _configPrimeiraVez = true; // evita "falso positivo" de mudança logo após um F5/recarregamento
 
-function salvarCacheLocal(path, valor) {
-  try { localStorage.setItem('fb_cache_' + path.replace(/\//g,'_'), JSON.stringify(valor)); } catch(e){}
-}
-
 function ouvirConfig() {
   if (!db) return;
   db.ref('escala/config').on('value', function(snap) {
     var d = snap.val(); if (!d) return;
-    // Salva no localStorage para uso offline/modo teste
-    if (!MODO_TESTE) salvarCacheLocal('escala/config', d);
 
     // Detecta se houve mudança real (ignora a primeira leitura após carregar a
     // página, porque o hash local sempre começa vazio e pareceria "mudou" à toa)
@@ -3212,8 +2994,6 @@ function ouvirMeses() {
   if (!db) return;
   db.ref('escala/estado').on('value', function(snap) {
     var dados = snap.val();
-    // Salva no localStorage para uso offline/modo teste
-    if (dados && !MODO_TESTE) salvarCacheLocal('escala/estado', dados);
     // Compatibilidade: tenta também o caminho antigo
     if (!dados) {
       db.ref('escala/meses').once('value', function(snapAntigo) {
@@ -3312,17 +3092,6 @@ function processarMeses(mesesSalvos, dadosEstado) {
 }
 
 function iniciarFirebase() {
-  // Modo teste local (file://) — roda 100% offline sem Firebase
-  if (MODO_TESTE && window.location.protocol === 'file:') {
-    db = _criarDbProxy();   // proxy que só simula, não grava nada
-    firebaseOk = true;      // deixa o resto do sistema funcionar
-    // Inicializa listeners que funcionam sem Firebase (leem de memória local)
-    ouvirTrocas();
-    ouvirSubstituicoes();
-    ouvirMeses();
-    ouvirConfig();
-    return;
-  }
   try {
     if (typeof firebase === 'undefined') { mostrarBannerConfigErro('SDK do Firebase nao carregou. Verifique sua conexao.'); return; }
     if (FIREBASE_CONFIG.apiKey === 'COLE_AQUI') { mostrarBannerConfig(); return; }
@@ -5547,20 +5316,20 @@ function vmcImprimirSemana(isoPublico) {
 
   var html = '<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8">'+
     '<title>VMC — '+periodoStr+'</title><style>'+
-    '@page{size:A4 portrait;margin:10mm 10mm 10mm 10mm}'+
-    'body{font-family:Arial,Helvetica,sans-serif;font-size:13px;margin:0;padding:10mm;color:#111;-webkit-print-color-adjust:exact;print-color-adjust:exact}'+
-    'h1{font-size:18px;font-weight:900;color:#1a4fa3;margin:0 0 2px;letter-spacing:.3px}'+
-    '.sub{font-size:12px;color:#555;margin-bottom:12px;font-weight:600}'+
-    'table{width:100%;border-collapse:collapse;margin-top:10px}'+
-    'td{padding:6px 8px;vertical-align:top;border-bottom:1px solid #e0e0e0}'+
-    '.col-papel{width:36%;font-weight:700;color:#374151;font-size:12px;line-height:1.4}'+
-    '.col-nome{width:30%;color:#1a4fa3;font-size:13px;font-weight:700}'+
-    '.col-tema{width:34%;color:#555;font-size:11.5px;font-style:italic}'+
-    '.sec-header td{color:white;font-weight:800;font-size:12.5px;padding:6px 8px;-webkit-print-color-adjust:exact;print-color-adjust:exact}'+
-    '.cantico-row td{background:#fef9c3;color:#78350f;font-style:italic;font-size:12px;padding:5px 8px;-webkit-print-color-adjust:exact;print-color-adjust:exact}'+
+    'body{font-family:Arial,sans-serif;font-size:11px;margin:0;padding:16px;color:#111}'+
+    'h1{font-size:14px;font-weight:bold;color:#1a4fa3;margin:0 0 2px}'+
+    '.sub{font-size:11px;color:#555;margin-bottom:14px}'+
+    'table{width:100%;border-collapse:collapse}'+
+    'td{padding:4px 6px;vertical-align:top;border-bottom:1px solid #eee}'+
+    '.col-papel{width:32%;font-weight:bold;color:#374151;font-size:10px}'+
+    '.col-nome{width:30%;color:#1a4fa3}'+
+    '.col-tema{width:38%;color:#555;font-size:10px}'+
+    '.sec-header td{color:white;font-weight:bold;font-size:11px;padding:5px 6px}'+
+    '.cantico-row td{background:#fef9c3;color:#78350f;font-style:italic;font-size:10px;padding:4px 6px}'+
     '.vazio{color:#bbb}'+
-    '.tempo{color:#888;font-size:11px}'+
-    'button{display:none}'+
+    '.tempo{color:#888}'+
+    '.leitura-row td{background:#eff6ff;font-size:10px;padding:4px 6px}'+
+    '@media print{body{padding:0}button{display:none}}'+
     '</style></head><body>'+
     '<h1>📋 Vida e Ministério Cristão</h1>'+
     '<div class="sub">Congregação Parque Tietê &nbsp;|&nbsp; Semana: '+periodoStr+'</div>'+
@@ -5721,29 +5490,28 @@ function vmcImprimirMes() {
 
   // CSS base compacto para A4
   var css =
-    '@page{size:A4 portrait;margin:8mm}' +
-    'body{font-family:Arial,Helvetica,sans-serif;font-size:11px;color:#111;margin:0;padding:8mm;-webkit-print-color-adjust:exact;print-color-adjust:exact}' +
-    '.cabecalho{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:8px;border-bottom:3px solid #1a4fa3;padding-bottom:5px}' +
-    '.mes-titulo{font-size:16px;font-weight:900;color:#1a4fa3;letter-spacing:.4px}' +
-    '.mes-sub{font-size:11px;color:#555;font-weight:600}' +
-    '.semana-card{border:1.5px solid #c0c8d8;border-radius:0;margin-bottom:6px;overflow:hidden;page-break-inside:avoid}' +
-    '.semana-header{background:#1a1a2e;color:white;padding:5px 10px;font-size:11px;font-weight:800;display:flex;justify-content:space-between;align-items:center;-webkit-print-color-adjust:exact;print-color-adjust:exact}' +
-    '.semana-leitura{font-size:9px;color:#a5b4fc;font-style:italic}' +
+    'body{font-family:Arial,sans-serif;font-size:9.5px;color:#111;margin:0;padding:10mm 10mm 8mm}' +
+    'h1{font-size:13px;font-weight:bold;color:#1a1a2e;margin:0 0 1px}' +
+    '.cabecalho{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:8px;border-bottom:2px solid #1a4fa3;padding-bottom:4px}' +
+    '.mes-titulo{font-size:15px;font-weight:bold;color:#1a4fa3;letter-spacing:.5px}' +
+    '.semana-card{border:1px solid #d0d5dd;border-radius:6px;margin-bottom:7px;overflow:hidden;page-break-inside:avoid}' +
+    '.semana-header{background:#1a1a2e;color:white;padding:4px 10px;font-size:10px;font-weight:bold;display:flex;justify-content:space-between;align-items:center}' +
+    '.semana-leitura{font-size:8.5px;color:#a5b4fc;font-style:italic}' +
     '.semana-body{display:grid;grid-template-columns:1fr 1fr 1fr;gap:0}' +
-    '.col-sec{padding:6px 8px;border-right:1px solid #dde3ee}' +
+    '.col-sec{padding:5px 8px;border-right:1px solid #e8e8e8}' +
     '.col-sec:last-child{border-right:none}' +
-    '.sec-titulo{font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.4px;padding:2px 6px;border-radius:3px;margin-bottom:5px;color:white;display:inline-block;-webkit-print-color-adjust:exact;print-color-adjust:exact}' +
+    '.sec-titulo{font-size:8px;font-weight:bold;text-transform:uppercase;letter-spacing:.4px;padding:2px 5px;border-radius:3px;margin-bottom:4px;color:white;display:inline-block}' +
     '.bg-tes{background:#1a4fa3}.bg-min{background:#b45309}.bg-vid{background:#0f6e56}' +
-    '.parte-row{display:flex;align-items:baseline;gap:4px;margin-bottom:4px;line-height:1.4}' +
-    '.parte-label{font-size:9px;color:#6b7280;min-width:88px;flex-shrink:0;font-weight:600}' +
-    '.parte-nome{font-size:10.5px;color:#1a1a2e;font-weight:800;flex:1}' +
-    '.parte-empilhada{margin-bottom:4px;line-height:1.35}' +
-    '.parte-empilhada .pe-titulo{font-size:9px;color:#555;display:block;word-wrap:break-word;font-weight:600}' +
-    '.parte-empilhada .pe-nome{font-size:10.5px;color:#1a1a2e;font-weight:800;display:block;word-wrap:break-word}' +
-    '.parte-tema{font-size:8.5px;color:#6b7280;font-style:italic;margin-left:92px;margin-top:-2px;margin-bottom:3px;word-wrap:break-word}' +
-    '.cantico{font-size:9px;color:#78350f;background:#fef9c3;padding:2px 6px;border-radius:3px;margin-bottom:4px;display:inline-block;-webkit-print-color-adjust:exact;print-color-adjust:exact}' +
-    'button{display:none}' +
-    '.semana-card{page-break-inside:avoid}';
+    '.parte-row{display:flex;align-items:baseline;gap:3px;margin-bottom:3px;line-height:1.3}' +
+    '.parte-label{font-size:8px;color:#6b7280;min-width:90px;flex-shrink:0}' +
+    '.parte-nome{font-size:9px;color:#1a1a2e;font-weight:bold;flex:1}' +
+    '.parte-empilhada{margin-bottom:3px;line-height:1.25}' +
+    '.parte-empilhada .pe-titulo{font-size:8px;color:#6b7280;display:block;word-wrap:break-word;white-space:normal}' +
+    '.parte-empilhada .pe-nome{font-size:9px;color:#1a1a2e;font-weight:bold;display:block;word-wrap:break-word;white-space:normal}' +
+    '.parte-tema{font-size:7.5px;color:#6b7280;font-style:italic;margin-left:93px;margin-top:-1px;margin-bottom:2px;word-wrap:break-word;white-space:normal}' +
+    '.cantico{font-size:7.5px;color:#78350f;background:#fef9c3;padding:1px 5px;border-radius:3px;margin-bottom:3px;display:inline-block}' +
+    '@media print{@page{size:A4 portrait;margin:8mm}body{padding:0}' +
+    '.semana-card{page-break-inside:avoid}button{display:none}}';
 
   function nomeParticipante(dados, campo) {
     return dados[campo] || '—';
@@ -7025,43 +6793,6 @@ function vmcDesignacoesDe(nome) {
 }
 
 try { iniciarFirebase(); } catch(e) { console.error('Erro iniciarFirebase:', e); }
-
-// ── Ativa banner de Modo Teste automaticamente se necessário ─────
-(function() {
-  if (!MODO_TESTE) return;
-  // Atualiza botão e badge dentro da Área do Responsável
-  var btn   = document.getElementById('btn-toggle-teste');
-  var badge = document.getElementById('teste-badge');
-  var logW  = document.getElementById('teste-log-wrap');
-  if (btn)   { btn.textContent = '⏹ Desativar Modo Teste'; btn.style.background = '#ef4444'; }
-  if (badge) { badge.style.display = 'inline-block'; }
-  if (logW)  { logW.style.display = 'block'; }
-  var logEl = document.getElementById('teste-log');
-  if (logEl) logEl.textContent = '— Modo Teste ativado automaticamente (arquivo local). Gravações bloqueadas. —
-
-';
-
-  // Mostra banner fixo no topo da página (fora da área do responsável)
-  var banner = document.createElement('div');
-  banner.id = 'banner-modo-teste-global';
-  banner.style.cssText = [
-    'position:fixed','top:0','left:0','right:0','z-index:99990',
-    'background:#f59e0b','color:#1a1a2e',
-    'padding:6px 16px','text-align:center',
-    'font-size:13px','font-weight:800',
-    'letter-spacing:.3px','box-shadow:0 2px 8px rgba(0,0,0,0.2)',
-    'display:flex','align-items:center','justify-content:center','gap:10px'
-  ].join(';');
-  banner.innerHTML =
-    '🧪 <span>MODO TESTE ATIVO</span>' +
-    '<span style="font-weight:400;font-size:12px">— Nenhuma gravação será feita no Firebase. Arquivo aberto localmente.</span>' +
-    '<button onclick="document.getElementById('banner-modo-teste-global').style.display='none'" ' +
-    'style="background:rgba(0,0,0,0.15);border:none;border-radius:6px;padding:2px 10px;cursor:pointer;font-size:12px;font-weight:700;color:#1a1a2e;margin-left:8px">✕</button>';
-  document.body.appendChild(banner);
-
-  // Empurra o conteúdo para não ficar atrás do banner
-  document.body.style.paddingTop = '34px';
-})();
 // Reagenda avisos 24h/1h para quem já tem nome salvo
 setTimeout(reagendarAvisosAoIniciar, 1000);
 // Inicia sistema VMC
@@ -7628,23 +7359,22 @@ function dpImprimirSemana(isoPublico) {
   var diaSemanaStr = d.toLocaleDateString('pt-BR', {weekday:'long', day:'2-digit', month:'long', year:'numeric'});
 
   function ln(papel, nome, tema, tempo) {
-    return '<tr><td style="padding:7px 10px;font-size:12px;color:#444;white-space:nowrap;font-weight:700;width:38%">'+papel+(tempo?' <em style="font-weight:400;color:#888">('+tempo+')</em>':'')+'</td>'+
-      '<td style="padding:7px 10px;font-size:13px;font-weight:800;color:#1a4fa3">'+(nome||'—')+
-      (tema?'<div style="font-size:11px;color:#666;font-style:italic;font-weight:400;margin-top:2px">'+tema+'</div>':'')+
+    return '<tr><td style="padding:6px 8px;font-size:11px;color:#555;white-space:nowrap">'+papel+(tempo?' ('+tempo+')':'')+'</td>'+
+      '<td style="padding:6px 8px;font-size:12px;font-weight:bold">'+(nome||'—')+
+      (tema?'<div style="font-size:10px;color:#777;font-style:italic;font-weight:normal">'+tema+'</div>':'')+
       '</td></tr>';
   }
   function secH(titulo, cor) {
-    return '<tr><td colspan="2" style="background:'+cor+';color:white;font-weight:800;font-size:13px;padding:7px 10px;-webkit-print-color-adjust:exact;print-color-adjust:exact">'+titulo+'</td></tr>';
+    return '<tr><td colspan="2" style="background:'+cor+';color:white;font-weight:bold;font-size:12px;padding:6px 10px">'+titulo+'</td></tr>';
   }
 
   var html = '<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8">'+
     '<title>Reunião Pública — '+dataStr+'</title><style>'+
-    '@page{size:A4 portrait;margin:12mm}'+
-    'body{font-family:Arial,Helvetica,sans-serif;font-size:13px;margin:0;padding:12mm;color:#111;-webkit-print-color-adjust:exact;print-color-adjust:exact}'+
-    'h1{font-size:20px;font-weight:900;color:#1a4fa3;margin:0 0 4px;letter-spacing:.3px}'+
-    'table{width:100%;border-collapse:collapse;margin-top:12px}'+
-    'td{border-bottom:1px solid #e0e0e0;padding:7px 8px;vertical-align:top}'+
-    'button{display:none}'+
+    'body{font-family:Arial,sans-serif;font-size:11px;margin:0;padding:16px;color:#111}'+
+    'h1{font-size:16px;color:#1a4fa3;margin:0 0 4px}'+
+    'table{width:100%;border-collapse:collapse;margin-top:10px}'+
+    'td{border-bottom:1px solid #eee}'+
+    '@media print{@page{size:A4 portrait;margin:12mm}}'+
     '</style></head><body>'+
     '<h1>🎤 Reunião Pública — Discurso e Estudo de A Sentinela</h1>'+
     '<div style="font-size:12px;color:#555;text-transform:capitalize">'+diaSemanaStr+'</div>'+
@@ -7709,24 +7439,22 @@ function dpImprimirMes() {
   var ano = new Date().getFullYear();
 
   var css =
-    '@page{size:A4 portrait;margin:8mm}' +
-    'body{font-family:Arial,Helvetica,sans-serif;font-size:11px;color:#111;margin:0;padding:8mm;-webkit-print-color-adjust:exact;print-color-adjust:exact}' +
-    '.cabecalho{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:8px;border-bottom:3px solid #1a4fa3;padding-bottom:5px}' +
-    '.mes-titulo{font-size:16px;font-weight:900;color:#1a4fa3;letter-spacing:.4px}' +
-    '.sub{font-size:11px;color:#555;font-weight:600}' +
-    '.semana-card{border:1.5px solid #c0c8d8;border-radius:0;margin-bottom:8px;overflow:hidden;page-break-inside:avoid}' +
-    '.semana-header{background:#1a1a2e;color:white;padding:6px 12px;font-size:12px;font-weight:800;-webkit-print-color-adjust:exact;print-color-adjust:exact}' +
+    'body{font-family:Arial,sans-serif;font-size:9.5px;color:#111;margin:0;padding:10mm 10mm 8mm}' +
+    '.cabecalho{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:8px;border-bottom:2px solid #1a4fa3;padding-bottom:4px}' +
+    '.mes-titulo{font-size:15px;font-weight:bold;color:#1a4fa3;letter-spacing:.5px}' +
+    '.sub{font-size:10px;color:#555}' +
+    '.semana-card{border:1px solid #d0d5dd;border-radius:6px;margin-bottom:7px;overflow:hidden;page-break-inside:avoid}' +
+    '.semana-header{background:#1a1a2e;color:white;padding:4px 10px;font-size:10px;font-weight:bold}' +
     '.semana-body{display:grid;grid-template-columns:1fr 1fr 1fr;gap:0}' +
-    '.col-sec{padding:7px 10px;border-right:1px solid #dde3ee}' +
+    '.col-sec{padding:5px 8px;border-right:1px solid #e8e8e8}' +
     '.col-sec:last-child{border-right:none}' +
-    '.sec-titulo{font-size:9.5px;font-weight:800;text-transform:uppercase;letter-spacing:.4px;padding:2px 7px;border-radius:3px;margin-bottom:6px;color:white;display:inline-block;-webkit-print-color-adjust:exact;print-color-adjust:exact}' +
+    '.sec-titulo{font-size:8px;font-weight:bold;text-transform:uppercase;letter-spacing:.4px;padding:2px 5px;border-radius:3px;margin-bottom:4px;color:white;display:inline-block}' +
     '.bg-ab{background:#374151}.bg-ds{background:#1a4fa3}.bg-se{background:#0f6e56}' +
-    '.parte-row{margin-bottom:5px;line-height:1.4}' +
-    '.parte-label{font-size:9.5px;color:#555;display:block;font-weight:700}' +
-    '.parte-nome{font-size:11px;color:#1a1a2e;font-weight:800;display:block;word-wrap:break-word}' +
-    '.parte-tema{font-size:9px;color:#6b7280;font-style:italic;margin-top:-2px;margin-bottom:4px;word-wrap:break-word}' +
-    'button{display:none}' +
-    '.semana-card{page-break-inside:avoid}';
+    '.parte-row{margin-bottom:3px;line-height:1.3}' +
+    '.parte-label{font-size:8px;color:#6b7280;display:block}' +
+    '.parte-nome{font-size:9.5px;color:#1a1a2e;font-weight:bold;display:block;word-wrap:break-word}' +
+    '.parte-tema{font-size:7.5px;color:#6b7280;font-style:italic;margin-top:-1px;margin-bottom:3px;word-wrap:break-word}' +
+    '@media print{@page{size:A4 landscape;margin:8mm}body{padding:0}button{display:none}}';
 
   function linha(papel, nome, tema) {
     if (!nome) return '';
