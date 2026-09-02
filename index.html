@@ -2680,7 +2680,7 @@ var db = null;
 var firebaseOk = false;
 
 // ── MODO TESTE ──────────────────────────────────────────────────────────────
-var MODO_TESTE = true; // Inicia sempre em modo teste — desative na Área do Responsável
+var MODO_TESTE = window.location.search.indexOf('teste') !== -1;
 
 function _criarDbProxy() {
   var logEl = document.getElementById('teste-log');
@@ -4985,18 +4985,7 @@ function vmcRemoverParte(btn) {
 }
 
 function vmcSelectHtml(listKey, valorSelecionado, onchangeAttr) {
-  // Usa input com datalist para permitir digitar e filtrar
   var lista = vmcListas[listKey] || [];
-  var uid = 'dl-' + listKey + '-' + Math.random().toString(36).slice(2,7);
-  // Garante que o nome atual apareça mesmo se não estiver na lista
-  var opcoes = lista.slice();
-  if (valorSelecionado && opcoes.indexOf(valorSelecionado) < 0) opcoes.unshift(valorSelecionado);
-  var onch = onchangeAttr ? ' oninput="' + onchangeAttr.replace('onchange=','').replace(/^"|"$/g,'') + '"' : '';
-  return '<input type="text" class="vmc-nome-input" list="' + uid + '" value="' + (valorSelecionado||'') + '"' + onch +
-    ' style="padding:4px 8px;border:1px solid #d0d5dd;border-radius:5px;font-size:12px;min-width:160px" placeholder="— buscar ou digitar —">' +
-    '<datalist id="' + uid + '">' +
-    opcoes.map(function(n){ return '<option value="' + n + '">'; }).join('') +
-    '</datalist>';
   return vmcSelectHtmlLista(lista, valorSelecionado, onchangeAttr, listKey);
 }
 
@@ -5160,7 +5149,6 @@ function vmcColetarDados() {
     var inputs = div.querySelectorAll('input.vmc-tema');
     var sels   = div.querySelectorAll('select');
     var tipo   = (div.querySelector('.vmc-tipo-sel') || {}).value || 'publicadora';
-    function getNome(cls) { var e = div.querySelector(cls); return e ? e.value : ''; }
     var parte = {
       titulo:    inputs[0] ? inputs[0].value : '',
       tempo:     inputs[1] ? inputs[1].value : '',
@@ -5170,15 +5158,14 @@ function vmcColetarDados() {
       irmaoNome: ''
     };
     if (tipo === 'publicadora') {
-      // Lê inputs (autocomplete) ou select (compatibilidade)
-      var pubInputs = div.querySelectorAll('.vmc-parte-publ .vmc-nome-input');
-      var pubSels   = div.querySelectorAll('.vmc-parte-publ select');
-      parte.publNome = (pubInputs[0] || pubSels[0] || {}).value || '';
-      parte.ajudNome = (pubInputs[1] || pubSels[1] || {}).value || '';
+      var pub = div.querySelector('.vmc-parte-publ select:nth-child(2)') ||
+                div.querySelector('.vmc-parte-publ select');
+      var ajud = div.querySelectorAll('.vmc-parte-publ select')[1];
+      if (pub)  parte.publNome  = pub.value;
+      if (ajud) parte.ajudNome  = ajud.value;
     } else {
-      var irmInput = div.querySelector('.vmc-parte-irmao .vmc-nome-input');
-      var irmSel   = div.querySelector('.vmc-parte-irmao select');
-      parte.irmaoNome = (irmInput || irmSel || {}).value || '';
+      var irm = div.querySelector('.vmc-parte-irmao select');
+      if (irm) parte.irmaoNome = irm.value;
     }
     dadosSemana.ministerioPartes.push(parte);
   });
