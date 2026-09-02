@@ -611,7 +611,7 @@ body.dark-mode .conf-badge.pendente { background: #2a2a15; color: #ca8a04; borde
             </div>
             <div class="vmc-linha">
               <span class="vmc-label">Cântico de abertura</span>
-              <input type="text" id="vmc-cantico-abertura" class="vmc-tema" placeholder="Nº e tema do cântico...">
+              <input type="text" id="vmc-cantico-abertura" class="vmc-tema" list="vmc-lista-canticos" placeholder="Nº ou título do cântico...">
             </div>
             <div class="vmc-linha">
               <label style="display:flex;align-items:center;gap:6px;font-size:12px;color:#9ca3af;margin-bottom:8px;cursor:pointer">
@@ -664,7 +664,7 @@ body.dark-mode .conf-badge.pendente { background: #2a2a15; color: #ca8a04; borde
             <div class="vmc-secao-titulo" style="background:#0f6e56">📖 Nossa Vida Cristã</div>
             <div class="vmc-linha">
               <span class="vmc-label">Cântico do meio</span>
-              <input type="text" id="vmc-cantico-meio" class="vmc-tema" placeholder="Nº e tema do cântico...">
+              <input type="text" id="vmc-cantico-meio" class="vmc-tema" list="vmc-lista-canticos" placeholder="Nº ou título do cântico...">
             </div>
             <div id="vmc-vida-partes"></div>
             <button onclick="vmcAddParteVida()" style="background:none;border:2px dashed #6ee7b7;color:#0f6e56;padding:5px 14px;border-radius:6px;font-size:12px;font-weight:bold;cursor:pointer;margin:6px 0">+ Adicionar parte de vida cristã</button>
@@ -683,7 +683,8 @@ body.dark-mode .conf-badge.pendente { background: #2a2a15; color: #ca8a04; borde
             </div>
             <div class="vmc-linha">
               <span class="vmc-label">Cântico de encerramento</span>
-              <input type="text" id="vmc-cantico-fim" class="vmc-tema" placeholder="Nº e tema do cântico...">
+              <input type="text" id="vmc-cantico-fim" class="vmc-tema" list="vmc-lista-canticos" placeholder="Nº ou título do cântico...">
+              <datalist id="vmc-lista-canticos"></datalist>
             </div>
             <div class="vmc-linha">
               <span class="vmc-label">Oração de encerramento</span>
@@ -3097,7 +3098,8 @@ function iniciarFirebase() {
     if (FIREBASE_CONFIG.apiKey === 'COLE_AQUI') { mostrarBannerConfig(); return; }
     if (!firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG);
     var _realDb = firebase.database();
-    if (MODO_TESTE) { window._dbReal = _realDb; db = _criarDbProxy(); } else { db = _realDb; }
+    // MODO_TESTE=true: nunca conecta ao Firebase real — usa só o proxy
+    if (MODO_TESTE) { db = _criarDbProxy(); } else { db = _realDb; }
     firebaseOk = true;
     ouvirTrocas();
     ouvirSubstituicoes();
@@ -4449,6 +4451,7 @@ var vmcListas = {
   ministerioPubl: [],  // publicadoras (irmãs) ministério
   ministerioAjud: [],  // ajudantes ministério
   ministerioIrmao:[],  // irmãos para partes de discurso no ministério
+  ministerioConsideracao:[], // irmãos para partes de consideração no ministério
   vidaCristaParte:[],  // irmãos partes vida cristã
   estudoCondutor: [],
   estudoLeitor:   [],
@@ -4611,6 +4614,7 @@ var vmcLabels = {
   tesouro:'Discurso de Tesouros', joias:'Joias Espirituais', leitura:'Leitura da Bíblia',
   ministerioPubl:'Publicadoras (ministério)', ministerioAjud:'Ajudantes (ministério)',
   ministerioIrmao:'Irmãos (discurso no ministério)',
+  ministerioConsideracao:'Irmãos (consideração no ministério)',
   vidaCristaParte:'Partes de Vida Cristã',
   estudoCondutor:'Condutor — Estudo Bíblico', estudoLeitor:'Leitor — Estudo Bíblico',
   oracaoFim:'Oração de encerramento'
@@ -4901,7 +4905,7 @@ function vmcAddParteMinist(dados, idx) {
   div.id = id;
   // Tipo de participante
   var tipoVal = dados.tipo || '';
-  var ehDiscurso = tipoVal === 'irmao' || /[Dd]iscurso|[Dd]emonstração/.test(tipoVal);
+  var ehDiscurso = tipoVal === 'irmao' || tipoVal === 'consideracao' || /[Dd]iscurso|[Dd]emonstração/.test(tipoVal);
   div.innerHTML =
     '<div style="display:flex;align-items:flex-start;gap:6px;margin-bottom:6px">' +
       '<div style="flex:1">' +
@@ -4915,8 +4919,9 @@ function vmcAddParteMinist(dados, idx) {
         '<div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">' +
           '<span class="vmc-label">Tipo:</span>' +
           '<select class="vmc-tipo-sel" onchange="vmcAtualizarTipoParte(this)" style="padding:4px 8px;border:1px solid #d0d5dd;border-radius:5px;font-size:12px">' +
-            '<option value="publicadora"' + (!ehDiscurso?' selected':'') + '>Publicador(a)(s) — dupla</option>' +
-            '<option value="irmao"'       + (ehDiscurso?' selected':'')  + '>Irmão — discurso/demonstração</option>' +
+            '<option value="publicadora"'   + (tipoVal==='publicadora'||!tipoVal?' selected':'') + '>Publicador(a)(s) — dupla</option>' +
+            '<option value="irmao"'         + (tipoVal==='irmao'?' selected':'')                 + '>Irmão — discurso/demonstração</option>' +
+            '<option value="consideracao"'  + (tipoVal==='consideracao'?' selected':'')          + '>Consideração — irmão</option>' +
           '</select>' +
         '</div>' +
         '<div class="vmc-parte-publ" style="display:' + (!ehDiscurso?'flex':'none') + ';gap:6px;align-items:center;flex-wrap:wrap;margin-top:4px">' +
@@ -4924,7 +4929,7 @@ function vmcAddParteMinist(dados, idx) {
           '<span class="vmc-label">Ajudante</span>'    + vmcSelectHtmlLista(vmcAjudantesCompativeis(dados.publNome || ''), dados.ajudNome || '') +
         '</div>' +
         '<div class="vmc-parte-irmao" style="display:' + (ehDiscurso?'flex':'none') + ';gap:6px;align-items:center;flex-wrap:wrap;margin-top:4px">' +
-          '<span class="vmc-label">Irmão</span>' + vmcSelectHtml('ministerioIrmao', dados.irmaoNome || '') +
+          '<span class="vmc-label">' + (tipoVal==='consideracao'?'Irmão (consideração)':'Irmão') + '</span>' + vmcSelectHtml(tipoVal==='consideracao'?'ministerioConsideracao':'ministerioIrmao', dados.irmaoNome || '') +
         '</div>' +
       '</div>' +
     '</div>';
@@ -4935,8 +4940,12 @@ function vmcAtualizarTipoParte(sel) {
   var div = sel.closest('.vmc-minist-parte');
   if (!div) return;
   var isPub = sel.value === 'publicadora';
+  var isConsid = sel.value === 'consideracao';
   div.querySelector('.vmc-parte-publ').style.display  = isPub ? 'flex' : 'none';
-  div.querySelector('.vmc-parte-irmao').style.display = isPub ? 'none' : 'flex';
+  div.querySelector('.vmc-parte-irmao').style.display = (!isPub) ? 'flex' : 'none';
+  // Atualiza label do campo irmão conforme tipo
+  var labelIrmao = div.querySelector('.vmc-parte-irmao .vmc-label');
+  if (labelIrmao) labelIrmao.textContent = isConsid ? 'Irmão (consideração)' : 'Irmão';
 }
 
 // ── Partes dinâmicas de Vida Cristã ────────────────────────────
@@ -4976,7 +4985,18 @@ function vmcRemoverParte(btn) {
 }
 
 function vmcSelectHtml(listKey, valorSelecionado, onchangeAttr) {
+  // Usa input com datalist para permitir digitar e filtrar
   var lista = vmcListas[listKey] || [];
+  var uid = 'dl-' + listKey + '-' + Math.random().toString(36).slice(2,7);
+  // Garante que o nome atual apareça mesmo se não estiver na lista
+  var opcoes = lista.slice();
+  if (valorSelecionado && opcoes.indexOf(valorSelecionado) < 0) opcoes.unshift(valorSelecionado);
+  var onch = onchangeAttr ? ' oninput="' + onchangeAttr.replace('onchange=','').replace(/^"|"$/g,'') + '"' : '';
+  return '<input type="text" class="vmc-nome-input" list="' + uid + '" value="' + (valorSelecionado||'') + '"' + onch +
+    ' style="padding:4px 8px;border:1px solid #d0d5dd;border-radius:5px;font-size:12px;min-width:160px" placeholder="— buscar ou digitar —">' +
+    '<datalist id="' + uid + '">' +
+    opcoes.map(function(n){ return '<option value="' + n + '">'; }).join('') +
+    '</datalist>';
   return vmcSelectHtmlLista(lista, valorSelecionado, onchangeAttr, listKey);
 }
 
@@ -5024,6 +5044,11 @@ function vmcLimparTempo(txt) {
 function vmcCarregarSemana() {
   var sel = document.getElementById('vmc-sel-data');
   if (!sel) return;
+  // Salva a semana atual antes de trocar para não perder dados já preenchidos
+  if (vmcSemanaAtual && vmcSemanaAtual !== sel.value) {
+    var dadosAtuais = vmcColetarDados();
+    if (dadosAtuais) vmcDados[vmcSemanaAtual] = dadosAtuais;
+  }
   vmcSemanaAtual = sel.value;
   var dados = vmcDados[vmcSemanaAtual] || {};
   var d = new Date(vmcSemanaAtual + 'T00:00:00');
@@ -5135,6 +5160,7 @@ function vmcColetarDados() {
     var inputs = div.querySelectorAll('input.vmc-tema');
     var sels   = div.querySelectorAll('select');
     var tipo   = (div.querySelector('.vmc-tipo-sel') || {}).value || 'publicadora';
+    function getNome(cls) { var e = div.querySelector(cls); return e ? e.value : ''; }
     var parte = {
       titulo:    inputs[0] ? inputs[0].value : '',
       tempo:     inputs[1] ? inputs[1].value : '',
@@ -5144,14 +5170,15 @@ function vmcColetarDados() {
       irmaoNome: ''
     };
     if (tipo === 'publicadora') {
-      var pub = div.querySelector('.vmc-parte-publ select:nth-child(2)') ||
-                div.querySelector('.vmc-parte-publ select');
-      var ajud = div.querySelectorAll('.vmc-parte-publ select')[1];
-      if (pub)  parte.publNome  = pub.value;
-      if (ajud) parte.ajudNome  = ajud.value;
+      // Lê inputs (autocomplete) ou select (compatibilidade)
+      var pubInputs = div.querySelectorAll('.vmc-parte-publ .vmc-nome-input');
+      var pubSels   = div.querySelectorAll('.vmc-parte-publ select');
+      parte.publNome = (pubInputs[0] || pubSels[0] || {}).value || '';
+      parte.ajudNome = (pubInputs[1] || pubSels[1] || {}).value || '';
     } else {
-      var irm = div.querySelector('.vmc-parte-irmao select');
-      if (irm) parte.irmaoNome = irm.value;
+      var irmInput = div.querySelector('.vmc-parte-irmao .vmc-nome-input');
+      var irmSel   = div.querySelector('.vmc-parte-irmao select');
+      parte.irmaoNome = (irmInput || irmSel || {}).value || '';
     }
     dadosSemana.ministerioPartes.push(parte);
   });
@@ -5872,6 +5899,7 @@ var vmcFuncoes = [
   { key:'estudoCondutor',  label:'Condutor Estudo' },
   { key:'estudoLeitor',    label:'Leitor Estudo' },
   { key:'ministerioIrmao', label:'Ministério (discurso)' },
+  { key:'ministerioConsideracao', label:'Ministério (consideração)' },
   { key:'ministerioPubl',  label:'Ministério (publicador dupla)' },
   { key:'ministerioAjud',  label:'Ministério (ajudante dupla)' },
   { key:'presidenteDominical',   label:'Presidente (Sábado)' },
@@ -6944,6 +6972,11 @@ function dpCarregarSemana() {
   var listaCanticos = document.getElementById('dp-lista-canticos-catalogo');
   if (listaCanticos) {
     listaCanticos.innerHTML = dpCanticosCatalogo.map(function(c){ return '<option value="'+c+'">'; }).join('');
+  }
+  // Popula também o datalist dos cânticos do VMC com o mesmo catálogo
+  var vmcListaCanticos = document.getElementById('vmc-lista-canticos');
+  if (vmcListaCanticos) {
+    vmcListaCanticos.innerHTML = dpCanticosCatalogo.map(function(c){ return '<option value="'+c+'">'; }).join('');
   }
   dpAtualizarAvisoTema();
 }
