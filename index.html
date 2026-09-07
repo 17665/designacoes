@@ -377,6 +377,7 @@ body.dark-mode .conf-badge.pendente { background: #2a2a15; color: #ca8a04; borde
     <a href="manual-usuario.html" target="_blank" style="background:#7c3aed;color:white;border:none;padding:9px 18px;border-radius:8px;font-size:14px;font-weight:bold;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:6px">📘 Manual do Irmão</a>
     <button onclick="abrirProgramaVMC()" style="background:#0f6e56;color:white;border:none;padding:9px 18px;border-radius:8px;font-size:14px;font-weight:bold;cursor:pointer">📖 Programa</button>
     <button onclick="dpAbrirPrograma()" style="background:#1a4fa3;color:white;border:none;padding:9px 18px;border-radius:8px;font-size:14px;font-weight:bold;cursor:pointer">🎤 Reunião Pública</button>
+    <button onclick="abrirHistoricoOradores()" style="background:#0f766e;color:white;border:none;padding:9px 18px;border-radius:8px;font-size:14px;font-weight:bold;cursor:pointer">📋 Meu Histórico</button>
     <button id="btn-minha-escala" onclick="abrirMinhaEscala()" style="background:#7c3aed;color:white;border:none;padding:9px 18px;border-radius:8px;font-size:14px;font-weight:bold;cursor:pointer">👤 Minha Escala</button>
     <button id="btn-notif" onclick="pedirPermissaoNotificacao()" style="display:none;background:#0f6e56;color:white;border:none;padding:9px 14px;border-radius:8px;font-size:14px;cursor:pointer" title="Ativar notificações">🔔</button>
     <button id="btn-instalar-pwa" onclick="instalarPWA()" style="display:none;background:#f59e0b;color:white;border:none;padding:9px 14px;border-radius:8px;font-size:13px;font-weight:bold;cursor:pointer">📱 Instalar App</button>
@@ -385,6 +386,67 @@ body.dark-mode .conf-badge.pendente { background: #2a2a15; color: #ca8a04; borde
     <button onclick="pedirIdentidade(() => location.reload())" style="background:#f59e0b;color:white;border:none;padding:9px 18px;border-radius:8px;font-size:14px;font-weight:bold;cursor:pointer">
         🔑 Trocar
     </button>
+  </div>
+</div>
+
+<!-- OVERLAY HISTÓRICO ORADORES -->
+<div class="overlay" id="ov-historico-orador">
+  <div class="modal-senha" style="max-width:520px;width:95vw">
+    <div class="modal-senha-cab" style="background:#0f766e">📋 Histórico de Discursos</div>
+    <div class="modal-senha-body">
+
+      <!-- TELA 1: escolha do orador -->
+      <div id="hist-tela-escolha">
+        <p style="font-size:14px;color:#5e6370;margin-bottom:14px">Selecione seu nome para acessar seu histórico:</p>
+        <select id="hist-sel-orador" style="width:100%;padding:9px 12px;border:1.5px solid #d0d5dd;border-radius:8px;font-size:14px;margin-bottom:12px">
+          <option value="">— Selecione seu nome —</option>
+        </select>
+        <div style="display:flex;gap:8px">
+          <button onclick="fecharHistoricoOrador()" style="flex:1;padding:9px;border:1.5px solid #d0d5dd;border-radius:8px;background:white;font-size:14px;cursor:pointer">Cancelar</button>
+          <button onclick="histProximoPasso()" style="flex:1;padding:9px;background:#0f766e;color:white;border:none;border-radius:8px;font-size:14px;font-weight:bold;cursor:pointer">Continuar →</button>
+        </div>
+        <div style="margin-top:12px;border-top:1px solid #eee;padding-top:10px">
+          <button onclick="histAcessoResponsavel()" style="background:none;border:none;color:#1a4fa3;font-size:12px;cursor:pointer;text-decoration:underline">🔐 Acesso do Responsável (ver todos)</button>
+        </div>
+      </div>
+
+      <!-- TELA 2: senha -->
+      <div id="hist-tela-senha" style="display:none">
+        <p style="font-size:14px;margin-bottom:4px">Olá, <strong id="hist-nome-exibir"></strong>!</p>
+        <p id="hist-msg-senha" style="font-size:13px;color:#5e6370;margin-bottom:12px">Digite sua senha de acesso:</p>
+        <input type="password" id="hist-campo-senha" placeholder="••••••••"
+          style="width:100%;padding:9px 12px;border:1.5px solid #d0d5dd;border-radius:8px;font-size:15px;letter-spacing:3px;margin-bottom:8px"
+          onkeydown="if(event.key==='Enter') histConfirmarSenha()">
+        <div id="hist-erro-senha" style="color:#dc2626;font-size:12px;margin-bottom:8px;display:none"></div>
+        <div style="display:flex;gap:8px">
+          <button onclick="histVoltarEscolha()" style="flex:1;padding:9px;border:1.5px solid #d0d5dd;border-radius:8px;background:white;font-size:14px;cursor:pointer">← Voltar</button>
+          <button onclick="histConfirmarSenha()" style="flex:1;padding:9px;background:#0f766e;color:white;border:none;border-radius:8px;font-size:14px;font-weight:bold;cursor:pointer">Entrar →</button>
+        </div>
+      </div>
+
+      <!-- TELA 3: histórico -->
+      <div id="hist-tela-conteudo" style="display:none">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:8px">
+          <div>
+            <div style="font-size:15px;font-weight:bold" id="hist-titulo-nome"></div>
+            <div style="font-size:12px;color:#888" id="hist-subtitulo"></div>
+          </div>
+          <div style="display:flex;gap:6px">
+            <button onclick="histImprimir()" style="background:#0f6e56;color:white;border:none;border-radius:6px;padding:6px 12px;font-size:12px;cursor:pointer">🖨️ Imprimir</button>
+            <button onclick="fecharHistoricoOrador()" style="background:#ef4444;color:white;border:none;border-radius:6px;padding:6px 12px;font-size:12px;cursor:pointer">Fechar</button>
+          </div>
+        </div>
+        <div id="hist-lista-temas" style="max-height:340px;overflow-y:auto;margin-bottom:12px"></div>
+        <div id="hist-add-tema-wrap" style="display:flex;gap:6px">
+          <input type="text" id="hist-novo-tema" list="dp-lista-temas-disponiveis"
+            placeholder="Adicionar tema ao seu histórico..."
+            style="flex:1;padding:7px 10px;border:1.5px solid #d0d5dd;border-radius:8px;font-size:13px">
+          <button onclick="histAdicionarTema()" style="background:#0f766e;color:white;border:none;border-radius:8px;padding:7px 14px;font-size:13px;font-weight:bold;cursor:pointer">+ Add</button>
+        </div>
+        <p style="font-size:11px;color:#aaa;margin-top:6px">Você pode adicionar temas. Para remover, peça ao responsável.</p>
+      </div>
+
+    </div>
   </div>
 </div>
 
@@ -1476,6 +1538,236 @@ function pedirSenha() {
   document.getElementById('ov-senha').classList.add('aberto');
   setTimeout(function(){ document.getElementById('campo-senha').focus(); },100);
 }
+
+// ═══════════════════════════════════════════════════════════
+// HISTÓRICO DE DISCURSOS — Acesso individual por orador
+// ═══════════════════════════════════════════════════════════
+var histOradorAtual = null; // nome do orador logado
+var histModoResponsavel = false;
+
+function abrirHistoricoOradores() {
+  // Popular select com oradores cadastrados
+  var sel = document.getElementById('hist-sel-orador');
+  var nomes = vmcListas.oradorEnviado || [];
+  sel.innerHTML = '<option value="">— Selecione seu nome —</option>' +
+    nomes.map(function(n){ return '<option value="'+n+'">'+n+'</option>'; }).join('');
+  // Mostrar tela de escolha
+  histMostrarTela('escolha');
+  document.getElementById('ov-historico-orador').classList.add('aberto');
+}
+
+function fecharHistoricoOrador() {
+  document.getElementById('ov-historico-orador').classList.remove('aberto');
+  histOradorAtual = null;
+  histModoResponsavel = false;
+  document.getElementById('hist-campo-senha').value = '';
+  document.getElementById('hist-erro-senha').style.display = 'none';
+}
+
+function histMostrarTela(tela) {
+  ['escolha','senha','conteudo'].forEach(function(t) {
+    document.getElementById('hist-tela-'+t).style.display = tela===t ? 'block' : 'none';
+  });
+}
+
+function histProximoPasso() {
+  var nome = document.getElementById('hist-sel-orador').value;
+  if (!nome) { alert('Selecione seu nome.'); return; }
+  histOradorAtual = nome;
+  histModoResponsavel = false;
+  document.getElementById('hist-nome-exibir').textContent = nome;
+  // Verifica se já tem senha definida
+  var irmao = vmcCadastro.irmaos[nome] || {};
+  var temSenha = !!irmao.senhaHistorico;
+  document.getElementById('hist-msg-senha').textContent = temSenha
+    ? 'Digite sua senha de acesso:'
+    : 'Primeiro acesso! Defina uma senha para proteger seu histórico:';
+  document.getElementById('hist-campo-senha').value = '';
+  document.getElementById('hist-erro-senha').style.display = 'none';
+  histMostrarTela('senha');
+  setTimeout(function(){ document.getElementById('hist-campo-senha').focus(); }, 100);
+}
+
+function histVoltarEscolha() {
+  histMostrarTela('escolha');
+  histOradorAtual = null;
+}
+
+function histConfirmarSenha() {
+  var senha = document.getElementById('hist-campo-senha').value;
+  if (!senha || senha.length < 4) {
+    histMostrarErro('A senha deve ter pelo menos 4 caracteres.');
+    return;
+  }
+  if (histModoResponsavel) {
+    // Acesso do responsável — usa a senha master
+    if (senha !== SENHA) { histMostrarErro('Senha do responsável incorreta.'); return; }
+    histAbrirConteudoResponsavel();
+    return;
+  }
+  var nome = histOradorAtual;
+  var irmao = vmcCadastro.irmaos[nome] || {};
+  if (!irmao.senhaHistorico) {
+    // Primeiro acesso — define a senha
+    vmcCadastro.irmaos[nome].senhaHistorico = senha;
+    vmcSalvarCadastro();
+    histAbrirConteudo(nome);
+  } else if (irmao.senhaHistorico === senha) {
+    histAbrirConteudo(nome);
+  } else {
+    histMostrarErro('Senha incorreta. Se esqueceu, peça ao responsável.');
+  }
+}
+
+function histMostrarErro(msg) {
+  var el = document.getElementById('hist-erro-senha');
+  el.textContent = msg;
+  el.style.display = 'block';
+}
+
+function histAbrirConteudo(nome) {
+  document.getElementById('hist-titulo-nome').textContent = '📋 ' + nome;
+  document.getElementById('hist-subtitulo').textContent = 'Seu repertório de temas';
+  document.getElementById('hist-add-tema-wrap').style.display = 'flex';
+  histRenderLista(nome);
+  histMostrarTela('conteudo');
+}
+
+function histAbrirConteudoResponsavel() {
+  document.getElementById('hist-titulo-nome').textContent = '🔐 Acesso do Responsável';
+  document.getElementById('hist-subtitulo').textContent = 'Histórico de todos os oradores';
+  document.getElementById('hist-add-tema-wrap').style.display = 'none';
+  histRenderListaTodos();
+  histMostrarTela('conteudo');
+}
+
+function histRenderLista(nome) {
+  var cont = document.getElementById('hist-lista-temas');
+  var rep  = dpGetRepertorio(nome);
+  if (!rep.length) {
+    cont.innerHTML = '<p style="font-size:13px;color:#aaa;text-align:center;padding:20px">Nenhum tema no histórico ainda.</p>';
+    return;
+  }
+  cont.innerHTML = rep.map(function(t) {
+    var disp = dpTemaEstaDisponivel(t.tema);
+    var num  = parseInt((t.tema||'').trim());
+    var descont = !isNaN(num) && dpTemasDescontinuados.indexOf(num) >= 0;
+    var dataFmt = t.ultimaData ? new Date(t.ultimaData+'T00:00:00').toLocaleDateString('pt-BR') : '—';
+    var bg = descont ? '#f3f4f6' : disp ? '#f0fdf4' : '#fefce8';
+    var cor = descont ? '#9ca3af' : disp ? '#166534' : '#92400e';
+    var status = descont ? '🚫 Descontinuado' : disp ? '✅ Disponível' : '⚠️ Temporariamente indisponível';
+    return '<div style="display:flex;align-items:center;gap:10px;background:'+bg+';border-radius:8px;padding:8px 12px;margin-bottom:5px">' +
+      '<div style="flex:1">' +
+        '<div style="font-size:13px;font-weight:600;color:'+cor+'">' + t.tema + '</div>' +
+        '<div style="font-size:11px;color:#888">Última designação: ' + dataFmt + ' &nbsp;|&nbsp; ' + status + '</div>' +
+      '</div>' +
+    '</div>';
+  }).join('');
+}
+
+function histRenderListaTodos() {
+  var cont = document.getElementById('hist-lista-temas');
+  var nomes = vmcListas.oradorEnviado || [];
+  if (!nomes.length) {
+    cont.innerHTML = '<p style="font-size:13px;color:#aaa">Nenhum orador cadastrado.</p>';
+    return;
+  }
+  cont.innerHTML = nomes.map(function(nome) {
+    var rep = dpGetRepertorio(nome);
+    var linhas = rep.map(function(t) {
+      var disp = dpTemaEstaDisponivel(t.tema);
+      var dataFmt = t.ultimaData ? new Date(t.ultimaData+'T00:00:00').toLocaleDateString('pt-BR') : '—';
+      var cor = disp ? '#166534' : '#92400e';
+      return '<div style="font-size:12px;padding:4px 8px;border-bottom:1px solid #f0f0f0;color:'+cor+'">' +
+        t.tema + ' <span style="color:#888;font-size:11px">('+dataFmt+')</span>' +
+        (!disp ? ' ⚠️' : '') + '</div>';
+    }).join('');
+    return '<div style="margin-bottom:12px">' +
+      '<div style="font-size:13px;font-weight:bold;background:#0f766e;color:white;padding:5px 10px;border-radius:6px 6px 0 0">🎤 ' + nome +
+        ' <span style="font-weight:normal;font-size:11px">('+rep.length+' temas)</span></div>' +
+      '<div style="border:1px solid #e0e0e0;border-top:none;border-radius:0 0 6px 6px">' +
+        (linhas || '<div style="font-size:12px;color:#aaa;padding:8px">Nenhum tema ainda</div>') +
+      '</div></div>';
+  }).join('');
+}
+
+function histAdicionarTema() {
+  var inp = document.getElementById('hist-novo-tema');
+  var tema = inp ? inp.value.trim() : '';
+  if (!tema) return;
+  if (!histOradorAtual) return;
+  // Verifica se é descontinuado
+  var num = parseInt(tema.trim());
+  if (!isNaN(num) && dpTemasDescontinuados.indexOf(num) >= 0) {
+    alert('Este esboço (' + num + ') foi descontinuado e não pode ser adicionado.');
+    return;
+  }
+  // Verifica se está temporariamente indisponível
+  if (!dpTemaEstaDisponivel(tema)) {
+    alert('Este tema está temporariamente indisponível e não pode ser adicionado agora.');
+    return;
+  }
+  dpAtualizarHistoricoOrador(histOradorAtual, tema, '');
+  if (inp) inp.value = '';
+  histRenderLista(histOradorAtual);
+}
+
+function histRedefinirSenha(nome) {
+  if (!confirm('Redefinir a senha de acesso ao histórico de ' + nome + '?\nEle precisará definir uma nova senha no próximo acesso.')) return;
+  if (vmcCadastro.irmaos[nome]) {
+    delete vmcCadastro.irmaos[nome].senhaHistorico;
+    vmcSalvarCadastro();
+    alert('Senha de ' + nome + ' redefinida. Ele poderá definir uma nova senha no próximo acesso.');
+  }
+}
+
+function histAcessoResponsavel() {
+  histOradorAtual = '__responsavel__';
+  histModoResponsavel = true;
+  document.getElementById('hist-nome-exibir').textContent = 'Responsável';
+  document.getElementById('hist-msg-senha').textContent = 'Digite a senha do responsável:';
+  document.getElementById('hist-campo-senha').value = '';
+  document.getElementById('hist-erro-senha').style.display = 'none';
+  histMostrarTela('senha');
+  setTimeout(function(){ document.getElementById('hist-campo-senha').focus(); }, 100);
+}
+
+function histImprimir() {
+  var nome = histOradorAtual;
+  var isTodos = histModoResponsavel;
+  var titulo = isTodos ? 'Histórico Geral — Todos os Oradores' : 'Histórico de Discursos — ' + nome;
+  var nomes  = isTodos ? (vmcListas.oradorEnviado || []) : [nome];
+
+  var linhasTabela = nomes.map(function(n) {
+    var rep = dpGetRepertorio(n);
+    if (!rep.length) return '';
+    var cab = isTodos ? '<tr><td colspan="3" style="background:#0f766e;color:white;font-weight:bold;padding:5px 8px">🎤 '+n+'</td></tr>' : '';
+    return cab + rep.map(function(t) {
+      var disp = dpTemaEstaDisponivel(t.tema);
+      var dataFmt = t.ultimaData ? new Date(t.ultimaData+'T00:00:00').toLocaleDateString('pt-BR') : '—';
+      return '<tr><td>'+t.tema+'</td><td>'+dataFmt+'</td><td style="color:'+(disp?'#166534':'#92400e')+'">'+
+        (disp?'✅ Disponível':'⚠️ Indisponível')+'</td></tr>';
+    }).join('');
+  }).join('');
+
+  var html = '<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><title>'+titulo+'</title><style>' +
+    '@page{size:A4;margin:12mm}body{font-family:Arial,sans-serif;font-size:12px;color:#111}' +
+    'h1{font-size:15px;color:#0f766e;margin:0 0 4px}' +
+    '.sub{font-size:11px;color:#666;margin-bottom:14px}' +
+    'table{width:100%;border-collapse:collapse}' +
+    'th{background:#0f766e;color:white;padding:6px 8px;text-align:left;font-size:11px}' +
+    'td{padding:5px 8px;border-bottom:1px solid #eee}' +
+    '</style></head><body>' +
+    '<h1>📋 '+titulo+'</h1>' +
+    '<div class="sub">'+envNossaCongregacao+' — '+new Date().toLocaleDateString('pt-BR')+'</div>' +
+    '<table><tr><th>Tema</th><th>Última designação</th><th>Status</th></tr>' +
+    linhasTabela + '</table>' +
+    '<script>window.onload=function(){window.print();}<\/script></body></html>';
+  var w = window.open('', '_blank');
+  if (w) { w.document.write(html); w.document.close(); }
+  else alert('Permita pop-ups para imprimir.');
+}
+
 function fecharSenha() {
   pedirSenhaCallback = null;
   document.getElementById('ov-senha').classList.remove('aberto');
@@ -6237,6 +6529,7 @@ function dpRenderRepertorios() {
       '<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px;margin-bottom:6px">' +
         '<span style="font-size:13px;font-weight:bold">\uD83C\uDFA4 ' + nome + ' <span style="font-weight:normal;color:#888">(' + rep.length + ' temas)</span></span>' +
         '<button onclick="dpImprimirRepertorio(\'' + nome.replace(/'/g,"\\'") + '\')" style="background:#0f6e56;color:white;border:none;border-radius:5px;padding:3px 10px;font-size:11px;cursor:pointer">\uD83D\uDDA8\uFE0F Imprimir</button>' +
+        '<button onclick="histRedefinirSenha(\'' + nome.replace(/'/g,"\\'") + '\')" style="background:#b45309;color:white;border:none;border-radius:5px;padding:3px 10px;font-size:11px;cursor:pointer">🔑 Redefinir senha</button>' +
       '</div>' +
       '<div style="margin-bottom:8px">' + (chips || '<span style="font-size:11px;color:#aaa">Nenhum tema ainda</span>') + '</div>' +
       '<div style="display:flex;gap:6px">' +
