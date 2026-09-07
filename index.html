@@ -6130,40 +6130,77 @@ function dpRenderTemasIndisponiveis() {
   }).join('');
 }
 
-// ── Repertório de temas por orador (pra enviar pra congregações que recebem) ──
-function dpAddTemaRepertorio(nome) {
-  var inp = document.getElementById('dp-repertorio-novo-' + vmcSlugAssistente(nome));
-  var tema = inp ? inp.value.trim() : '';
-  if (!tema) return;
+// ── Repertório/Histórico automático de temas por orador ─────────────────────
+// Estrutura: repertorio = [{tema, ultimaData}]
+
+function dpGetRepertorio(nome) {
+  var rep = (vmcCadastro.irmaos[nome] || {}).repertorio || [];
+  return rep.map(function(t) {
+    return (typeof t === 'string') ? { tema: t, ultimaData: '' } : t;
+  });
+}
+
+function dpSetRepertorio(nome, rep) {
   if (!vmcCadastro.irmaos[nome]) return;
-  var rep = vmcCadastro.irmaos[nome].repertorio || [];
-  if (rep.indexOf(tema) < 0) rep.push(tema);
   vmcCadastro.irmaos[nome].repertorio = rep;
+}
+
+// Chamado automaticamente ao salvar designação
+function dpAtualizarHistoricoOrador(nome, tema, dataISO) {
+  if (!nome || !tema || !vmcCadastro.irmaos[nome]) return;
+  var rep = dpGetRepertorio(nome);
+  var idx = -1;
+  rep.forEach(function(t,i){ if(t.tema===tema) idx=i; });
+  if (idx >= 0) {
+    if (dataISO) rep[idx].ultimaData = dataISO;
+  } else {
+    rep.push({ tema: tema, ultimaData: dataISO || '' });
+  }
+  dpSetRepertorio(nome, rep);
   vmcSalvarCadastro();
   dpRenderRepertorios();
 }
 
+function dpAddTemaRepertorio(nome) {
+  var inp = document.getElementById('dp-repertorio-novo-' + vmcSlugAssistente(nome));
+  var tema = inp ? inp.value.trim() : '';
+  if (!tema) return;
+  dpAtualizarHistoricoOrador(nome, tema, '');
+  if (inp) inp.value = '';
+}
+
 function dpRemoverTemaRepertorio(nome, tema) {
   if (!vmcCadastro.irmaos[nome]) return;
-  vmcCadastro.irmaos[nome].repertorio = (vmcCadastro.irmaos[nome].repertorio || []).filter(function(t){ return t !== tema; });
+  var rep = dpGetRepertorio(nome).filter(function(t){ return t.tema !== tema; });
+  dpSetRepertorio(nome, rep);
   vmcSalvarCadastro();
   dpRenderRepertorios();
 }
 
 function dpImprimirRepertorio(nome) {
-  var rep = (vmcCadastro.irmaos[nome] || {}).repertorio || [];
+  var rep = dpGetRepertorio(nome);
   var html = '<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8">' +
     '<title>Repertório — ' + nome + '</title><style>' +
     'body{font-family:Arial,sans-serif;margin:0;padding:24px;color:#111}' +
     'h1{font-size:16px;color:#1a4fa3;margin:0 0 4px}' +
     '.sub{font-size:12px;color:#666;margin-bottom:16px}' +
-    'ul{padding-left:20px;font-size:13px;line-height:1.8}' +
+    'table{width:100%;border-collapse:collapse;font-size:12px}' +
+    'th{background:#1a4fa3;color:white;padding:6px 10px;text-align:left}' +
+    'td{padding:5px 10px;border-bottom:1px solid #eee}' +
+    '.indisp{color:#b45309;font-style:italic}' +
     '</style></head><body>' +
-    '<h1>🎤 Repertório de Temas — ' + nome + '</h1>' +
-    '<div class="sub">' + envNossaCongregacao + '</div>' +
-    (rep.length ? '<ul>' + rep.map(function(t){ return '<li>' + t + '</li>'; }).join('') + '</ul>' : '<p>Nenhum tema cadastrado ainda.</p>') +
-    '<script>window.onload=function(){window.print();}<\/script>' +
-    '</body></html>';
+    '<h1>\uD83C\uDFA4 Repertório — ' + nome + '</h1>' +
+    '<div class="sub">' + envNossaCongregacao + ' — ' + new Date().toLocaleDateString('pt-BR') + '</div>' +
+    (rep.length
+      ? '<table><tr><th>Tema</th><th>Última designação</th><th>Status</th></tr>' +
+        rep.map(function(t){
+          var disp = dpTemaEstaDisponivel(t.tema);
+          var dataFmt = t.ultimaData ? new Date(t.ultimaData+'T00:00:00').toLocaleDateString('pt-BR') : '—';
+          return '<tr><td>' + t.tema + '</td><td>' + dataFmt + '</td>' +
+            '<td class="' + (disp?'':'indisp') + '">' + (disp ? 'Disponível' : 'Indisponível') + '</td></tr>';
+        }).join('') + '</table>'
+      : '<p>Nenhum tema ainda.</p>') +
+    '<script>window.onload=function(){window.print();}<\/script></body></html>';
   var w = window.open('', '_blank');
   if (w) { w.document.write(html); w.document.close(); }
   else alert('Permita pop-ups para imprimir.');
@@ -6173,28 +6210,44 @@ function dpRenderRepertorios() {
   var cont = document.getElementById('dp-lista-repertorios');
   if (!cont) return;
   var nomes = vmcListas.oradorEnviado || [];
-  if (!nomes.length) { cont.innerHTML = '<p style="font-size:12px;color:#aaa">Nenhum irmão marcado como "Orador (enviar p/ outras congregações)" ainda.</p>'; return; }
+  if (!nomes.length) {
+    cont.innerHTML = '<p style="font-size:12px;color:#aaa">Nenhum irmão marcado como "Orador (enviar p/ outras congregações)" ainda.</p>';
+    return;
+  }
   cont.innerHTML = nomes.map(function(nome) {
     var slug = vmcSlugAssistente(nome);
-    var rep = (vmcCadastro.irmaos[nome] || {}).repertorio || [];
+    var rep  = dpGetRepertorio(nome);
     var chips = rep.map(function(t) {
-      return '<span style="display:inline-flex;align-items:center;gap:4px;background:#eef2ff;border:1px solid #c7d2fe;border-radius:12px;padding:2px 8px;margin:2px;font-size:11px">' +
-        t + '<button onclick="dpRemoverTemaRepertorio(\'' + nome + '\',\'' + t.replace(/'/g,"\\'") + '\')" style="background:none;border:none;color:#dc2626;cursor:pointer;font-size:12px;padding:0">×</button>' +
-      '</span>';
+      var disp = dpTemaEstaDisponivel(t.tema);
+      var num  = parseInt((t.tema||'').trim());
+      var descont = !isNaN(num) && dpTemasDescontinuados.indexOf(num) >= 0;
+      if (descont) return ''; // oculta descontinuados
+      var dataFmt = t.ultimaData ? new Date(t.ultimaData+'T00:00:00').toLocaleDateString('pt-BR') : null;
+      var bg = disp ? '#eef2ff' : '#fef9c3';
+      var border = disp ? '#c7d2fe' : '#fcd34d';
+      var cor = disp ? '#1e3a8a' : '#92400e';
+      return '<div style="display:inline-flex;align-items:center;gap:4px;background:' + bg + ';border:1px solid ' + border +
+        ';border-radius:8px;padding:3px 8px;margin:2px;font-size:11px;color:' + cor + '">' +
+        t.tema + (dataFmt ? ' <em style="font-size:10px;opacity:.7">(' + dataFmt + ')</em>' : '') +
+        (!disp ? ' \u26A0\uFE0F' : '') +
+        '<button onclick="dpRemoverTemaRepertorio(\'' + nome.replace(/'/g,"\\'") + '\',\'' + t.tema.replace(/'/g,"\\'") + '\')" ' +
+        'style="background:none;border:none;color:#dc2626;cursor:pointer;font-size:12px;padding:0 0 0 2px">×</button></div>';
     }).join('');
     return '<div style="background:#f9f9f9;border:1px solid #e8e8e8;border-radius:8px;padding:10px 12px;margin-bottom:8px">' +
       '<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px;margin-bottom:6px">' +
-        '<span style="font-size:13px;font-weight:bold">🎤 ' + nome + ' <span style="font-weight:normal;color:#888">(' + rep.length + ' temas)</span></span>' +
-        '<button onclick="dpImprimirRepertorio(\'' + nome + '\')" style="background:#0f6e56;color:white;border:none;border-radius:5px;padding:3px 10px;font-size:11px;cursor:pointer">🖨️ Imprimir lista</button>' +
+        '<span style="font-size:13px;font-weight:bold">\uD83C\uDFA4 ' + nome + ' <span style="font-weight:normal;color:#888">(' + rep.length + ' temas)</span></span>' +
+        '<button onclick="dpImprimirRepertorio(\'' + nome.replace(/'/g,"\\'") + '\')" style="background:#0f6e56;color:white;border:none;border-radius:5px;padding:3px 10px;font-size:11px;cursor:pointer">\uD83D\uDDA8\uFE0F Imprimir</button>' +
       '</div>' +
-      '<div style="margin-bottom:6px">' + (chips || '<span style="font-size:11px;color:#aaa">Nenhum tema ainda</span>') + '</div>' +
+      '<div style="margin-bottom:8px">' + (chips || '<span style="font-size:11px;color:#aaa">Nenhum tema ainda</span>') + '</div>' +
       '<div style="display:flex;gap:6px">' +
-        '<input type="text" id="dp-repertorio-novo-' + slug + '" list="dp-lista-temas-disponiveis" placeholder="Adicionar tema ao repertório..." style="flex:1;padding:5px 8px;border:1px solid #d0d5dd;border-radius:5px;font-size:12px">' +
-        '<button onclick="dpAddTemaRepertorio(\'' + nome + '\')" style="background:#1a4fa3;color:white;border:none;border-radius:5px;padding:5px 12px;font-size:11px;cursor:pointer">+ Add</button>' +
+        '<input type="text" id="dp-repertorio-novo-' + slug + '" list="dp-lista-temas-disponiveis" placeholder="Adicionar tema manualmente..." style="flex:1;padding:5px 8px;border:1px solid #d0d5dd;border-radius:5px;font-size:12px">' +
+        '<button onclick="dpAddTemaRepertorio(\'' + nome.replace(/'/g,"\\'") + '\')" style="background:#1a4fa3;color:white;border:none;border-radius:5px;padding:5px 12px;font-size:11px;cursor:pointer">+ Add</button>' +
       '</div>' +
+      '<p style="font-size:10px;color:#aaa;margin-top:4px">Fundo azul = disponível &nbsp;|&nbsp; \u26A0\uFE0F amarelo = temporariamente indisponível &nbsp;|&nbsp; Descontinuados ocultos automaticamente</p>' +
     '</div>';
   }).join('');
 }
+
 
 // ── Catálogo de cânticos "Cante de Coração para Jeová" (1-163) ──
 var dpCanticosCatalogo = [
@@ -7634,7 +7687,9 @@ function envAtualizarSelectCongregacoes() {
   }
   var listaTemasEnv = document.getElementById('env-lista-temas');
   if (listaTemasEnv) {
-    listaTemasEnv.innerHTML = dpTemasCatalogo.concat(dpTemasEspeciais).map(function(t){ return '<option value="'+t+'">'; }).join('');
+    listaTemasEnv.innerHTML = dpTemasCatalogo.concat(dpTemasEspeciais)
+      .filter(function(t){ return dpTemaEstaDisponivel(t); })
+      .map(function(t){ return '<option value="'+t+'">'; }).join('');
   }
 }
 
@@ -7666,6 +7721,9 @@ function envAddDesignacao() {
   };
   envSalvarConfig();
   envRenderDesignacoes();
+
+  // Atualiza histórico automático do orador com o tema designado
+  if (orador && tema) dpAtualizarHistoricoOrador(orador, tema, data);
 
   // Limpa o formulário
   document.getElementById('env-sel-congregacao').value = '';
