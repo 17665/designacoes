@@ -1038,7 +1038,7 @@ body.dark-mode .conf-badge.pendente { background: #2a2a15; color: #ca8a04; borde
         <!-- Temas especiais (fora dos 194 padrão) -->
         <div style="margin-top:20px;border-top:2px solid #e8e8e8;padding-top:16px">
           <div style="font-size:13px;font-weight:bold;color:#7c3aed;margin-bottom:4px">⭐ Temas Especiais</div>
-          <p style="font-size:12px;color:#5e6370;margin-bottom:10px">Além dos 194 esboços padrão, adicione aqui temas especiais (ex: de assembleia, visita do superintendente).</p>
+          <p style="font-size:12px;color:#5e6370;margin-bottom:10px">Adicione aqui esboços que não estão nos 194 padrão — ex: temas de assembleia, visita do superintendente, ou <strong>esboços com números reutilizados</strong> (ex: "84. Novo título do esboço"). Estes sempre aparecem na lista, mesmo que o número fosse de um esboço descontinuado.</p>
           <div style="display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap">
             <input type="text" id="dp-novo-tema-especial" placeholder='Ex: "E-1" — Tema especial da assembleia' style="flex:1;min-width:220px;padding:7px 10px;border:1px solid #d0d5dd;border-radius:6px;font-size:13px">
             <button onclick="dpAddTemaEspecial()" style="background:#7c3aed;color:white;border:none;padding:7px 16px;border-radius:6px;font-size:13px;font-weight:bold;cursor:pointer">+ Adicionar</button>
@@ -6003,6 +6003,27 @@ var dpTemasCatalogo = [
 ];
 var dpTemasEspeciais = []; // temas especiais adicionados manualmente pelo responsável
 var dpTemasIndisponiveis = []; // [{tema, motivo, ate}] — temas tirados de uso temporariamente
+
+// Esboços oficialmente descontinuados — nunca aparecem na listagem
+var dpTemasDescontinuados = [84, 85, 87, 92, 94, 97, 105, 106, 109, 117, 119, 120, 124, 126, 139, 141, 144, 145, 148, 149, 151, 154, 155, 157, 158, 163, 164, 165, 167, 168];
+
+function dpTemaEstaDisponivel(temaTexto) {
+  // Temas especiais adicionados manualmente sempre estão disponíveis
+  if (dpTemasEspeciais.indexOf(temaTexto) >= 0) return true;
+  // Verifica se é descontinuado pelo número no início do texto
+  var num = parseInt((temaTexto || '').toString().trim());
+  if (!isNaN(num) && dpTemasDescontinuados.indexOf(num) >= 0) return false;
+  // Verifica se está na lista de indisponíveis temporários
+  var hoje = new Date().toISOString().slice(0,10);
+  var indisp = dpTemasIndisponiveis.filter(function(t) {
+    var temaNum = parseInt((t.tema || '').toString().trim());
+    var mesmoTema = t.tema === temaTexto || (!isNaN(num) && temaNum === num);
+    if (!mesmoTema) return false;
+    if (!t.ate) return true;
+    return hoje <= t.ate;
+  })[0];
+  return !indisp;
+}
 var DP_LIMITE_DIAS_REPETIR_TEMA = 120; // ~4 meses
 
 // Verifica se um tema pode ser dado nesta semana: olha se já foi dado há
@@ -6011,7 +6032,19 @@ function dpTemaDisponibilidade(temaTexto) {
   if (!temaTexto) return { disponivel: true };
 
   // 1) Tema marcado manualmente como indisponível (ex: reservado pro superintendente)
-  var indispon = dpTemasIndisponiveis.filter(function(t){ return t.tema === temaTexto; })[0];
+  // Verifica descontinuados
+  var numTema = parseInt((temaTexto || '').toString().trim());
+  if (!isNaN(numTema) && dpTemasDescontinuados.indexOf(numTema) >= 0) {
+    return { disponivel: false, motivo: 'descontinuado', texto: 'Esboço descontinuado — não deve ser usado', ate: '' };
+  }
+  var hoje2 = new Date().toISOString().slice(0,10);
+  var indispon = dpTemasIndisponiveis.filter(function(t){
+    var tNum = parseInt((t.tema||'').toString().trim());
+    var mesmo = t.tema === temaTexto || (!isNaN(numTema) && tNum === numTema);
+    if (!mesmo) return false;
+    if (!t.ate) return true;
+    return hoje2 <= t.ate;
+  })[0];
   if (indispon) {
     var aindaVale = !indispon.ate || indispon.ate >= new Date().toISOString().slice(0,10);
     if (aindaVale) {
@@ -6156,7 +6189,7 @@ function dpRenderRepertorios() {
       '</div>' +
       '<div style="margin-bottom:6px">' + (chips || '<span style="font-size:11px;color:#aaa">Nenhum tema ainda</span>') + '</div>' +
       '<div style="display:flex;gap:6px">' +
-        '<input type="text" id="dp-repertorio-novo-' + slug + '" list="dp-lista-temas-catalogo" placeholder="Adicionar tema ao repertório..." style="flex:1;padding:5px 8px;border:1px solid #d0d5dd;border-radius:5px;font-size:12px">' +
+        '<input type="text" id="dp-repertorio-novo-' + slug + '" list="dp-lista-temas-disponiveis" placeholder="Adicionar tema ao repertório..." style="flex:1;padding:5px 8px;border:1px solid #d0d5dd;border-radius:5px;font-size:12px">' +
         '<button onclick="dpAddTemaRepertorio(\'' + nome + '\')" style="background:#1a4fa3;color:white;border:none;border-radius:5px;padding:5px 12px;font-size:11px;cursor:pointer">+ Add</button>' +
       '</div>' +
     '</div>';
@@ -6954,7 +6987,9 @@ function dpCarregarSemana() {
 
   var listaTemas = document.getElementById('dp-lista-temas-catalogo');
   if (listaTemas) {
-    listaTemas.innerHTML = dpTemasCatalogo.concat(dpTemasEspeciais).map(function(t){ return '<option value="'+t+'">'; }).join('');
+    listaTemas.innerHTML = dpTemasCatalogo.concat(dpTemasEspeciais)
+      .filter(function(t){ return dpTemaEstaDisponivel(t); })
+      .map(function(t){ return '<option value="'+t+'">'; }).join('');
   }
   var listaCanticos = document.getElementById('dp-lista-canticos-catalogo');
   if (listaCanticos) {
@@ -6965,6 +7000,16 @@ function dpCarregarSemana() {
   if (vmcListaCanticos) {
     vmcListaCanticos.innerHTML = dpCanticosCatalogo.map(function(c){ return '<option value="'+c+'">'; }).join('');
   }
+  // Datalist filtrado (sem descontinuados e sem indisponíveis) para repertório de oradores
+  var listaDisp = document.getElementById('dp-lista-temas-disponiveis');
+  if (!listaDisp) {
+    listaDisp = document.createElement('datalist');
+    listaDisp.id = 'dp-lista-temas-disponiveis';
+    document.body.appendChild(listaDisp);
+  }
+  listaDisp.innerHTML = dpTemasCatalogo.concat(dpTemasEspeciais)
+    .filter(function(t){ return dpTemaEstaDisponivel(t); })
+    .map(function(t){ return '<option value="'+t+'">'; }).join('');
   dpAtualizarAvisoTema();
 }
 
