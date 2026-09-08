@@ -2379,24 +2379,50 @@ function gerarReunioes(mes,ano){
 }
 
 // Rodízio simples respeitando ausentes e treinamento
+// Registro de quantas reuniões atrás cada irmão foi designado por setor
+// Chave: nome+'|'+setor  Valor: número de reuniões desde a última designação
+var ultimaDesignacaoSetor = {};
+
 function rodizioSetor(fila, idx, usados, setor, dataISO) {
   var c;
   var ordem = fila.slice();
   if (!ordem.length) return '';
   var start = idx.v % ordem.length;
-  // Loop com dryRun=true — não consome contador ao verificar
+  // Intervalo mínimo: metade da lista (evita repetir rápido demais)
+  var intervaloMin = Math.max(2, Math.floor(ordem.length / 2));
+
+  // Passa 1: respeita treino E intervalo mínimo
   for(var t=0; t<ordem.length*3; t++){
     var i=(start+t) % ordem.length;
     c = ordem[i];
     if(usados.indexOf(c)>=0) continue;
-    if(deveSerPulado(c, setor, dataISO, true)) continue; // dryRun
-    // Escolhido — agora consome o contador (dryRun=false)
+    if(deveSerPulado(c, setor, dataISO, true)) continue;
+    var chaveUlt = c+'|'+setor;
+    var reunioesDesde = ultimaDesignacaoSetor[chaveUlt] !== undefined ? ultimaDesignacaoSetor[chaveUlt] : 999;
+    if(reunioesDesde < intervaloMin) continue; // ainda muito recente
     deveSerPulado(c, setor, dataISO, false);
     idx.v = i+1;
     usados.push(c);
+    ultimaDesignacaoSetor[chaveUlt] = 0;
+    // Incrementa contador dos outros
+    ordem.forEach(function(n){
+      if(n!==c){ var k=n+'|'+setor; if(ultimaDesignacaoSetor[k]!==undefined) ultimaDesignacaoSetor[k]++; }
+    });
     return c;
   }
-  // fallback sem filtro de treino
+  // Passa 2: só respeita treino (ignora intervalo — lista pequena demais)
+  for(var t=0; t<ordem.length*3; t++){
+    var i=(start+t) % ordem.length;
+    c = ordem[i];
+    if(usados.indexOf(c)>=0) continue;
+    if(deveSerPulado(c, setor, dataISO, true)) continue;
+    deveSerPulado(c, setor, dataISO, false);
+    idx.v = i+1;
+    usados.push(c);
+    var k2=c+'|'+setor; ultimaDesignacaoSetor[k2]=0;
+    return c;
+  }
+  // Passa 3: fallback sem filtros
   for(var t=0; t<ordem.length*2; t++){
     var i=(start+t) % ordem.length;
     c=ordem[i];
@@ -2447,19 +2473,38 @@ function escolherIndicadores(usados) {
   var escolhidos = [];
   var start = idxI.v;
   var lastIdx = start;
+  var intervaloMin = Math.max(2, Math.floor(fila.length / 2));
 
+  // Passa 1: respeita treino E intervalo mínimo
   for (var t = 0; t < fila.length * 3 && escolhidos.length < 2; t++) {
     var i = (start + t) % fila.length;
     var nome = fila[i];
     if (usados.indexOf(nome) >= 0) continue;
-    if (deveSerPulado(nome, 'indicador', null, true)) continue; // dryRun
+    if (deveSerPulado(nome, 'indicador', null, true)) continue;
     if (escolhidos.indexOf(nome) >= 0) continue;
-    // Escolhido — consome contador
+    var chaveI = nome+'|indicador';
+    var desde = ultimaDesignacaoSetor[chaveI] !== undefined ? ultimaDesignacaoSetor[chaveI] : 999;
+    if (desde < intervaloMin) continue;
     deveSerPulado(nome, 'indicador', null, false);
     escolhidos.push(nome);
     usados.push(nome);
-    lastIdx = i; // guarda posição real do último escolhido
+    ultimaDesignacaoSetor[chaveI] = 0;
+    lastIdx = i;
   }
+  // Passa 2: só respeita treino (sem intervalo)
+  for (var t = 0; t < fila.length * 3 && escolhidos.length < 2; t++) {
+    var i = (start + t) % fila.length;
+    var nome = fila[i];
+    if (usados.indexOf(nome) >= 0) continue;
+    if (deveSerPulado(nome, 'indicador', null, true)) continue;
+    if (escolhidos.indexOf(nome) >= 0) continue;
+    deveSerPulado(nome, 'indicador', null, false);
+    escolhidos.push(nome);
+    usados.push(nome);
+    var k=nome+'|indicador'; ultimaDesignacaoSetor[k]=0;
+    lastIdx = i;
+  }
+  // Passa 3: fallback sem filtros
   for (var t = 0; t < fila.length * 2 && escolhidos.length < 2; t++) {
     var i = (start + t) % fila.length;
     var nome = fila[i];
@@ -2469,6 +2514,14 @@ function escolherIndicadores(usados) {
       lastIdx = i;
     }
   }
+
+  // Incrementa contador dos não escolhidos
+  fila.forEach(function(n){
+    if(escolhidos.indexOf(n)<0){
+      var k=n+'|indicador';
+      if(ultimaDesignacaoSetor[k]!==undefined) ultimaDesignacaoSetor[k]++;
+    }
+  });
 
   // Avança para depois do último escolhido
   idxI.v = (lastIdx + 1) % fila.length;
@@ -2912,7 +2965,8 @@ function salvarMesesFirebase() {
     idxM: idxM.v, idxA: idxA.v, idxV: idxV.v, idxZ: idxZ.v, idxI: idxI.v,
     ultimoPar: ultimoPar,
     substituicoes: substituicoes,
-    escalaGerada: escalaGeradaOriginal   // nomes ORIGINAIS do rodízio, imutáveis
+    escalaGerada: escalaGerada,
+    ultimaDesignacaoSetor: ultimaDesignacaoSetorOriginal   // nomes ORIGINAIS do rodízio, imutáveis
   };
   db.ref('escala/estado').set(payload).catch(function(e){
     console.warn('Erro ao salvar estado:', e);
@@ -3272,11 +3326,25 @@ if(mudou && Object.keys(mesesGerados).length > 0 && document.getElementById('ov-
         if (dadosEstado.idxZ !== undefined) idxZ.v = dadosEstado.idxZ;
         if (dadosEstado.idxI !== undefined) idxI.v = dadosEstado.idxI;
         if (dadosEstado.ultimoPar !== undefined) ultimoPar = dadosEstado.ultimoPar;
+        // Restaura escalaGerada antes de renderizar
+        if (dadosEstado.escalaGerada) Object.assign(escalaGerada, dadosEstado.escalaGerada);
+        if (dadosEstado.substituicoes) Object.assign(substituicoes, dadosEstado.substituicoes);
         document.getElementById('lista').innerHTML='';
+        var temEscala = dadosEstado.escalaGerada && Object.keys(dadosEstado.escalaGerada).length > 0;
         chavesAtivas.forEach(function(chave){
           var p=chave.split('-');
-          adicionarMeses(parseInt(p[1]), parseInt(p[0]), 1);
+          var m=parseInt(p[1]), a=parseInt(p[0]);
+          mesesGerados[chave]=true;
+          if (temEscala) {
+            // USA a escala já salva — não roda rodízio de novo
+            renderMesSalvo(m, a, dadosEstado.escalaGerada, dadosEstado.substituicoes||{});
+          } else {
+            adicionarMeses(m, a, 1);
+          }
         });
+        // Reaplica substituições na tela
+        aplicarSubstituicoesNaTela();
+        atualizarSubtitulo();
       });
       }, 1500);
     }
@@ -3326,6 +3394,7 @@ function ouvirMeses() {
       Object.assign(substituicoes, subst);
       // Também tenta do payload direto (compatibilidade)
       if (dados.substituicoes) Object.assign(substituicoes, dados.substituicoes);
+    if (dados.ultimaDesignacaoSetor) Object.assign(ultimaDesignacaoSetor, dados.ultimaDesignacaoSetor);
       processarMeses(mesesSalvos, dados);
     });
   });
