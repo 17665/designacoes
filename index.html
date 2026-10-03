@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Versão: v2026.08.39 — Botões de WhatsApp (VMC, Discurso Público, Enviar Oradores) + sistema de temas: bloqueio automático de 4 meses, temas indisponíveis temporariamente, repertório por orador -->
+<!-- Versão: v2026.09.03 — Botões de WhatsApp (VMC, Discurso Público, Enviar Oradores) + sistema de temas: bloqueio automático de 4 meses, temas indisponíveis temporariamente, repertório por orador -->
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
@@ -491,7 +491,7 @@ body.dark-mode .conf-badge.pendente { background: #2a2a15; color: #ca8a04; borde
     <div class="modal-cab">
       <span>
         <span class="modal-cab-titulo">👨‍💼 Área do Responsável</span>
-        <span style="font-size:10px;color:#9ca3af;font-weight:normal;margin-left:8px">v2026.08.39</span>
+        <span style="font-size:10px;color:#9ca3af;font-weight:normal;margin-left:8px">v2026.09.03</span>
       </span>
       <button class="btn-fechar" onclick="fecharPrincipal()">✕</button>
     </div>
@@ -1064,6 +1064,19 @@ body.dark-mode .conf-badge.pendente { background: #2a2a15; color: #ca8a04; borde
               <span class="vmc-label">Oração final</span>
               <input type="text" id="dp-oracao-final" class="vmc-tema" list="dp-lista-oracao-final-sugestao" placeholder="Normalmente o próprio orador...">
               <datalist id="dp-lista-oracao-final-sugestao"></datalist>
+            </div>
+          </div>
+
+          <!-- DISCURSO DE ENCERRAMENTO DA VISITA — aparece só quando é semana de visita -->
+          <div class="vmc-secao" id="dp-secao-encerramento-visita" style="display:none;border:2px solid #7c3aed">
+            <div class="vmc-secao-titulo" style="background:#5b21b6">⭐ Discurso de Encerramento da Visita (30 min)</div>
+            <div class="vmc-linha">
+              <span class="vmc-label">Orador</span>
+              <span style="font-size:12px;color:#7c3aed;font-weight:bold" id="dp-enc-orador-label">Superintendente de Circuito</span>
+            </div>
+            <div class="vmc-linha">
+              <span class="vmc-label">Tema</span>
+              <input type="text" id="dp-enc-tema" class="vmc-tema" list="dp-lista-temas-disponiveis" placeholder="Tema do discurso de encerramento...">
             </div>
           </div>
         </div>
@@ -3203,6 +3216,20 @@ function verificarModoReparo() {
   });
 }
 // ────────────────────────────────────────────────────────────────
+
+// Ativa visual do modo teste (botão vermelho, badge, log)
+function ativarVisualModoTeste() {
+  var btn   = document.getElementById('btn-toggle-teste');
+  var badge = document.getElementById('teste-badge');
+  var logW  = document.getElementById('teste-log-wrap');
+  if (btn)   { btn.textContent = '⏹ Desativar Modo Teste'; btn.style.background = '#ef4444'; }
+  if (badge) { badge.style.display = 'inline-block'; }
+  if (logW)  { logW.style.display = 'block'; }
+  var logEl = document.getElementById('teste-log');
+  if (logEl) logEl.textContent = '— Modo Teste ativado (arquivo local). Gravações bloqueadas. —
+
+';
+}
 
 function toggleModoTeste() {
   var btn   = document.getElementById('btn-toggle-teste');
@@ -7256,6 +7283,10 @@ function vmcDesignacoesDe(nome) {
 }
 
 try { iniciarFirebase(); } catch(e) { console.error('Erro iniciarFirebase:', e); }
+// Se abriu localmente, ativa visual do modo teste para o responsável saber
+if (window.location.protocol === 'file:') {
+  setTimeout(ativarVisualModoTeste, 500);
+}
 // Reagenda avisos 24h/1h para quem já tem nome salvo
 setTimeout(reagendarAvisosAoIniciar, 1000);
 // Inicia sistema VMC
@@ -7353,6 +7384,19 @@ function dpFillSel(id, listKey, val) {
     lista.map(function(n){ return '<option value="'+n+'"'+(val===n?' selected':'')+'>'+n+'</option>'; }).join('');
 }
 
+function dpEhSemanaVisita(isoData) {
+  if (!isoData) return false;
+  // Verifica se existe um evento do tipo 'muda-dia' ou visita nesta semana
+  var data = new Date(isoData + 'T12:00:00');
+  for (var i = 0; i < 7; i++) {
+    var d = new Date(data); d.setDate(data.getDate() + i);
+    var iso = d.toISOString().slice(0,10);
+    var ev = eventoNaSemana(d);
+    if (ev && (ev.tipo === 'muda-dia' || ev.tipo === 'visita')) return true;
+  }
+  return false;
+}
+
 function dpCarregarSemana() {
   var sel = document.getElementById('dp-sel-data');
   dpSemanaAtual = sel ? sel.value : dpSemanaAtual;
@@ -7394,6 +7438,19 @@ function dpCarregarSemana() {
 
   document.getElementById('dp-congregacao-orador').value = dados.congregacaoOrador || '';
   document.getElementById('dp-tema-discurso').value      = dados.temaDiscurso || '';
+
+  // Discurso encerramento visita — mostra só se for semana de visita
+  var secEncVisita = document.getElementById('dp-secao-encerramento-visita');
+  var isVisita = dpEhSemanaVisita(dpSemanaAtual);
+  if (secEncVisita) secEncVisita.style.display = isVisita ? 'block' : 'none';
+  if (isVisita) {
+    document.getElementById('dp-enc-tema').value = dados.encTemaVisita || '';
+    // Atualiza label com nome do superintendente se disponível
+    var labelOrador = document.getElementById('dp-enc-orador-label');
+    if (labelOrador && dados.orador) {
+      labelOrador.textContent = dados.orador + ' (Superintendente de Circuito)';
+    }
+  }
   document.getElementById('dp-cantico-inicial').value    = dados.canticoInicial || '';
   document.getElementById('dp-cantico-meio').value       = dados.canticoMeio || '';
   document.getElementById('dp-cantico-final').value      = dados.canticoFinal || '';
@@ -7477,7 +7534,8 @@ function dpColetarDados() {
     oracaoFinal:        gv('dp-oracao-final'),
     oradorNaoFica:      gc('dp-orador-nao-fica'),
     temaEstudo:         gv('dp-tema-estudo'),
-    textoBaseEstudo:    gv('dp-texto-base-estudo')
+    textoBaseEstudo:    gv('dp-texto-base-estudo'),
+    encTemaVisita:      gv('dp-enc-tema')
   };
 }
 
@@ -7819,6 +7877,7 @@ function dpRenderPublico() {
       linha('Leitor', dados.leitorSentinela, '')+
       linha('Cântico final', dados.canticoFinal, '')+
       linha('Oração final', dados.oracaoFinal, '')+
+      (dados.encTemaVisita ? '<tr><td colspan="2" style="padding:8px;background:#f3e8ff;border-radius:6px;margin-top:8px"><strong style="color:#5b21b6">⭐ Discurso de Encerramento da Visita (30 min)</strong><br>Orador: '+(dados.orador||'Superintendente')+'<br>Tema: '+dados.encTemaVisita+'</td></tr>' : '')+
     '</div>';
 }
 
@@ -7882,6 +7941,7 @@ function dpImprimirSemana(isoPublico) {
     secH('🎵 Encerramento', '#374151')+
     ln('Cântico final', dados.canticoFinal, '', '')+
     ln('Oração final', dados.oracaoFinal, '', '')+
+    (dados.encTemaVisita ? '<tr><td colspan="2" style="background:#f3e8ff;padding:4px 8px;font-size:9px"><strong style="color:#5b21b6">⭐ Encerramento visita:</strong> '+dados.encTemaVisita+'</td></tr>' : '')+
     '</table>'+
     '<div style="margin-top:20px;font-size:9px;color:#aaa;text-align:right">Gerado em '+new Date().toLocaleDateString('pt-BR')+'</div>'+
     '<script>window.onload=function(){window.print();}<\/script>'+
@@ -7907,6 +7967,12 @@ function dpCompartilharWhatsApp() {
   if (dados.condutorSentinela) linhas.push('Condutor Sentinela: *' + dados.condutorSentinela + '*');
   if (dados.leitorSentinela) linhas.push('Leitor Sentinela: *' + dados.leitorSentinela + '*');
   if (dados.oracaoFinal) linhas.push('Oração final: *' + dados.oracaoFinal + '*');
+  if (dados.encTemaVisita) {
+    linhas.push('');
+    linhas.push('⭐ *Discurso de Encerramento da Visita (30 min)*');
+    linhas.push('Orador: *' + (dados.orador||'Superintendente de Circuito') + '*');
+    linhas.push('Tema: *' + dados.encTemaVisita + '*');
+  }
 
   window.open('https://wa.me/?text=' + encodeURIComponent(linhas.join('\n')), '_blank');
 }
