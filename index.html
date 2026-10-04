@@ -1935,10 +1935,11 @@ function sairModoResponsavel() {
     backup.forEach(function(chave) {
       var p = chave.split('-');
       var a = parseInt(p[0]), m = parseInt(p[1]);
-      mesesGerados[chave] = true;
       if (dados.escalaGerada && Object.keys(dados.escalaGerada).length > 0) {
+        mesesGerados[chave] = true;
         renderMesSalvo(m, a, dados.escalaGerada, dados.substituicoes || substituicoes);
       } else {
+        // não marcar antes: adicionarMeses ignora meses já marcados e a lista ficaria vazia
         adicionarMeses(m, a, 1);
       }
     });
@@ -2977,7 +2978,7 @@ function salvarMesesFirebase() {
     ultimoPar: ultimoPar,
     substituicoes: substituicoes,
     escalaGerada: escalaGerada,
-    ultimaDesignacaoSetor: ultimaDesignacaoSetorOriginal   // nomes ORIGINAIS do rodízio, imutáveis
+    ultimaDesignacaoSetor: ultimaDesignacaoSetor   // contadores do rodízio
   };
   db.ref('escala/estado').set(payload).catch(function(e){
     console.warn('Erro ao salvar estado:', e);
