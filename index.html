@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Versão: v2026.10.05 — Treinamento de segurança vence em 12 meses (Plano S-288, item 19) e bloqueia o indicador após vencer. Anterior: v2026.09.04 — bloqueio de indicadores sem treinamento. v2026.09.03 — Botões de WhatsApp (VMC, Discurso Público, Enviar Oradores) + sistema de temas: bloqueio automático de 4 meses, temas indisponíveis temporariamente, repertório por orador -->
+<!-- Versão: v2026.10.06 — Botões de indicadores (atualizar/regenerar) só mexem de hoje em diante; reuniões passadas ficam intactas. Anterior: v2026.10.05 — Treinamento de segurança vence em 12 meses (Plano S-288, item 19) e bloqueia o indicador após vencer. Anterior: v2026.09.04 — bloqueio de indicadores sem treinamento. v2026.09.03 — Botões de WhatsApp (VMC, Discurso Público, Enviar Oradores) + sistema de temas: bloqueio automático de 4 meses, temas indisponíveis temporariamente, repertório por orador -->
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
@@ -491,7 +491,7 @@ body.dark-mode .conf-badge.pendente { background: #2a2a15; color: #ca8a04; borde
     <div class="modal-cab">
       <span>
         <span class="modal-cab-titulo">👨‍💼 Área do Responsável</span>
-        <span style="font-size:10px;color:#9ca3af;font-weight:normal;margin-left:8px">v2026.10.05</span>
+        <span style="font-size:10px;color:#9ca3af;font-weight:normal;margin-left:8px">v2026.10.06</span>
       </span>
       <button class="btn-fechar" onclick="fecharPrincipal()">✕</button>
     </div>
@@ -8598,7 +8598,7 @@ function testarNotificacao() {
 
 // ===================== ATUALIZAR SÓ INDICADORES =====================
 function atualizarIndicadoresDasFolhas() {
-  if (!confirm('Isso vai atualizar SOMENTE os indicadores de todas as reuniões já geradas. Continuar?')) return;
+  if (!confirm('Isso vai atualizar SOMENTE os indicadores das reuniões de HOJE EM DIANTE. As reuniões que já passaram não serão alteradas. Continuar?')) return;
 
   ultimoAuditorio = {};
   var fila = listas.indicador.slice();
@@ -8606,9 +8606,11 @@ function atualizarIndicadoresDasFolhas() {
   var atualizados = 0;
   var idxFila = 0;
 
+  var hojeCorte = hojeISO();
   chaves.forEach(function(dataISO) {
     var des = escalaGerada[dataISO];
     if (!des) return;
+    if (dataISO < hojeCorte) return; // reunião passada: não mexe
 
     var usados = [];
     if (des.palco1) usados.push(des.palco1);
@@ -8663,7 +8665,7 @@ function atualizarIndicadoresDasFolhas() {
 }
 // ===================== REGENERAR RODÍZIO DE INDICADORES =====================
 function regenerarRodizioIndicadores() {
-  if (!confirm('Isso vai gerar um NOVO rodízio para todos os indicadores. Continuar?')) return;
+  if (!confirm('Isso vai gerar um NOVO rodízio de indicadores para as reuniões de HOJE EM DIANTE. As reuniões que já passaram não serão alteradas. Continuar?')) return;
 
   ultimoAuditorio = {};
   idxI.v = 0;
@@ -8671,9 +8673,11 @@ function regenerarRodizioIndicadores() {
   var chaves = Object.keys(escalaGerada).sort();
   var atualizados = 0;
 
+  var hojeCorte = hojeISO();
   chaves.forEach(function(dataISO) {
     var des = escalaGerada[dataISO];
     if (!des) return;
+    if (dataISO < hojeCorte) return; // reunião passada: não mexe
 
     var usados = [];
     if (des.palco1) usados.push(des.palco1);
