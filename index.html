@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Versão: v2026.09.03 — Botões de WhatsApp (VMC, Discurso Público, Enviar Oradores) + sistema de temas: bloqueio automático de 4 meses, temas indisponíveis temporariamente, repertório por orador -->
+<!-- Versão: v2026.08.39 — Botões de WhatsApp (VMC, Discurso Público, Enviar Oradores) + sistema de temas: bloqueio automático de 4 meses, temas indisponíveis temporariamente, repertório por orador -->
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
@@ -491,7 +491,7 @@ body.dark-mode .conf-badge.pendente { background: #2a2a15; color: #ca8a04; borde
     <div class="modal-cab">
       <span>
         <span class="modal-cab-titulo">👨‍💼 Área do Responsável</span>
-        <span style="font-size:10px;color:#9ca3af;font-weight:normal;margin-left:8px">v2026.09.03</span>
+        <span style="font-size:10px;color:#9ca3af;font-weight:normal;margin-left:8px">v2026.08.39</span>
       </span>
       <button class="btn-fechar" onclick="fecharPrincipal()">✕</button>
     </div>
@@ -1768,17 +1768,6 @@ function histImprimir() {
   else alert('Permita pop-ups para imprimir.');
 }
 
-function ativarVisualModoTeste() {
-  var btn   = document.getElementById('btn-toggle-teste');
-  var badge = document.getElementById('teste-badge');
-  var logW  = document.getElementById('teste-log-wrap');
-  if (btn)   { btn.textContent = '⏹ Desativar Modo Teste'; btn.style.background = '#ef4444'; }
-  if (badge) { badge.style.display = 'inline-block'; }
-  if (logW)  { logW.style.display = 'block'; }
-  var logEl = document.getElementById('teste-log');
-  if (logEl) logEl.textContent = '— Modo Teste ativado (arquivo local). Gravações bloqueadas. —\n';
-}
-
 function fecharSenha() {
   pedirSenhaCallback = null;
   document.getElementById('ov-senha').classList.remove('aberto');
@@ -3037,7 +3026,7 @@ var db = null;
 var firebaseOk = false;
 
 // ── MODO TESTE ──────────────────────────────────────────────────────────────
-var MODO_TESTE = window.location.search.indexOf('teste') !== -1 || window.location.protocol === 'file:';
+var MODO_TESTE = window.location.search.indexOf('teste') !== -1;
 
 function _criarDbProxy() {
   var logEl = document.getElementById('teste-log');
@@ -3070,17 +3059,9 @@ function _criarDbProxy() {
           if(fn) fn();
           return fakeThen;
         },
-        once: function(ev, fn) {
-          if (window._dbReal) return window._dbReal.ref(path).once(ev, fn);
-          if (fn) setTimeout(function(){ fn({ val: function(){ return null; } }); }, 0);
-          return fakeThen;
-        },
-        on: function(ev, fn) {
-          if (window._dbReal) return window._dbReal.ref(path).on(ev, fn);
-          if (fn) setTimeout(function(){ fn({ val: function(){ return null; } }); }, 0);
-          return null;
-        },
-        off: function() { if(window._dbReal) window._dbReal.ref(path).off(); }
+        once: function(ev, fn) { return window._dbReal ? window._dbReal.ref(path).once(ev, fn) : fakeThen; },
+        on:   function(ev, fn) { return window._dbReal && window._dbReal.ref(path).on(ev, fn); },
+        off:  function()       { return window._dbReal && window._dbReal.ref(path).off(); }
       };
     }
   };
@@ -3269,23 +3250,7 @@ var _configPrimeiraVez = true; // evita "falso positivo" de mudança logo após 
 function ouvirConfig() {
   if (!db) return;
   db.ref('escala/config').on('value', function(snap) {
-    var d = snap.val();
-    if (!d) {
-      // Offline/sem dados — reconstrói todosIrmaos das listas hardcoded
-      if (MODO_TESTE && window.location.protocol === 'file:') {
-        var todos = [];
-        ['microfone','indicador','audio','video','zoom'].forEach(function(s){
-          (listas[s]||[]).forEach(function(n){ if(todos.indexOf(n)<0) todos.push(n); });
-        });
-        (listas.palcoPares||[]).forEach(function(p){
-          if(p[0] && todos.indexOf(p[0])<0) todos.push(p[0]);
-          if(p[1] && todos.indexOf(p[1])<0) todos.push(p[1]);
-        });
-        todosIrmaos.length = 0;
-        todos.forEach(function(n){ todosIrmaos.push(n); });
-      }
-      return;
-    }
+    var d = snap.val(); if (!d) return;
 
     // Detecta se houve mudança real (ignora a primeira leitura após carregar a
     // página, porque o hash local sempre começa vazio e pareceria "mudou" à toa)
@@ -3390,8 +3355,6 @@ function ouvirMeses() {
   if (!db) return;
   db.ref('escala/estado').on('value', function(snap) {
     var dados = snap.val();
-    // Offline sem dados — inicia limpo (pronto para gerar meses de teste)
-    if (!dados && MODO_TESTE && window.location.protocol === 'file:') return;
     // Compatibilidade: tenta também o caminho antigo
     if (!dados) {
       db.ref('escala/meses').once('value', function(snapAntigo) {
@@ -3491,25 +3454,13 @@ function processarMeses(mesesSalvos, dadosEstado) {
 }
 
 function iniciarFirebase() {
-  // Arquivo local — pula SDK, usa proxy e dados hardcoded
-  if (window.location.protocol === 'file:') {
-    db = _criarDbProxy();
-    firebaseOk = true;
-    // Inicializa com dados hardcoded do código (listas, config)
-    ouvirConfig();
-    ouvirMeses();
-    ouvirTrocas();
-    ouvirSubstituicoes();
-    // Ativa visual do modo teste
-    setTimeout(ativarVisualModoTeste, 600);
-    return;
-  }
   try {
     if (typeof firebase === 'undefined') { mostrarBannerConfigErro('SDK do Firebase nao carregou. Verifique sua conexao.'); return; }
     if (FIREBASE_CONFIG.apiKey === 'COLE_AQUI') { mostrarBannerConfig(); return; }
     if (!firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG);
     var _realDb = firebase.database();
-    if (MODO_TESTE) { window._dbReal = _realDb; db = _criarDbProxy(); } else { db = _realDb; }
+    // MODO_TESTE=true: nunca conecta ao Firebase real — usa só o proxy
+    if (MODO_TESTE) { db = _criarDbProxy(); } else { db = _realDb; }
     firebaseOk = true;
     ouvirTrocas();
     ouvirSubstituicoes();
