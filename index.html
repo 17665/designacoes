@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Versão: v2026.09.03 — Botões de WhatsApp (VMC, Discurso Público, Enviar Oradores) + sistema de temas: bloqueio automático de 4 meses, temas indisponíveis temporariamente, repertório por orador -->
+<!-- Versão: v2026.10.05 — Treinamento de segurança vence em 12 meses (Plano S-288, item 19) e bloqueia o indicador após vencer. Anterior: v2026.09.04 — bloqueio de indicadores sem treinamento. v2026.09.03 — Botões de WhatsApp (VMC, Discurso Público, Enviar Oradores) + sistema de temas: bloqueio automático de 4 meses, temas indisponíveis temporariamente, repertório por orador -->
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
@@ -491,7 +491,7 @@ body.dark-mode .conf-badge.pendente { background: #2a2a15; color: #ca8a04; borde
     <div class="modal-cab">
       <span>
         <span class="modal-cab-titulo">👨‍💼 Área do Responsável</span>
-        <span style="font-size:10px;color:#9ca3af;font-weight:normal;margin-left:8px">v2026.09.03</span>
+        <span style="font-size:10px;color:#9ca3af;font-weight:normal;margin-left:8px">v2026.10.05</span>
       </span>
       <button class="btn-fechar" onclick="fecharPrincipal()">✕</button>
     </div>
@@ -2049,6 +2049,62 @@ var treinamento = {
   "Pedro Macumbi": { palco:true, microfone:false, indicador:false, audio:false, video:false, zoom:false, nivel:1, dataInicio:"" }
 };
 // Contador de vezes que cada irmão foi pulado no setor de treino
+// ===================== TREINAMENTO DE SEGURANÇA (Plano S-288) =====================
+// treinoSeguranca[nome] = { status:'pendente'|'concluido', data:'AAAA-MM-DD' }
+// Quem está 'pendente' NÃO é designado como indicador. Quem não tem registro continua liberado.
+var treinoSeguranca = {};
+function hojeISO() {
+  var h = new Date();
+  return h.getFullYear()+'-'+String(h.getMonth()+1).padStart(2,'0')+'-'+String(h.getDate()).padStart(2,'0');
+}
+// Validade do treinamento: 12 meses (Plano S-288, item 19: treinamento uma vez por ano)
+function validadeTreino(dataISO) {
+  var p = (dataISO||'').split('-'); if (p.length !== 3) return '';
+  var d = new Date(parseInt(p[0],10)+1, parseInt(p[1],10)-1, parseInt(p[2],10));
+  return toISO(d);
+}
+function fmtBR(iso) { var p=(iso||'').split('-'); return p.length===3 ? p[2]+'/'+p[1]+'/'+p[0] : ''; }
+function diasAte(iso) {
+  var a=hojeISO().split('-'), b=iso.split('-');
+  return Math.round((new Date(+b[0],+b[1]-1,+b[2]) - new Date(+a[0],+a[1]-1,+a[2])) / 86400000);
+}
+// dataISO = data da reunião (se não informada, usa hoje).
+// Bloqueado = pendente OU treinamento vencido na data da reunião.
+function indicadorBloqueado(nome, dataISO) {
+  var t = treinoSeguranca[nome];
+  if (!t) return false;
+  if (t.status === 'pendente') return true;
+  if (t.status === 'concluido' && t.data) {
+    var venc = validadeTreino(t.data);
+    var ref = dataISO || hojeISO();
+    if (venc && ref > venc) return true;
+  }
+  return false;
+}
+function marcarTreinoSeguranca(nome) {
+  var d = prompt('Data em que ' + nome + ' assistiu à reunião de treinamento de segurança (AAAA-MM-DD):', hojeISO());
+  if (d === null) return;
+  d = d.trim();
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(d)) { alert('Data inválida. Use o formato AAAA-MM-DD.'); return; }
+  treinoSeguranca[nome] = { status: 'concluido', data: d };
+  renderGerenciarIrmaos(); salvarConfigFirebase();
+}
+function bloquearIndicadorSeguranca(nome) {
+  var n = designacoesIndicadorFuturas(nome);
+  var aviso = n > 0 ? '\n\nAtenção: ele já está em ' + n + ' reunião(ões) futura(s) na escala gerada. Troque-o pela Substituição manual.' : '';
+  if (!confirm('Bloquear ' + nome + ' como indicador até assistir ao treinamento?' + aviso)) return;
+  treinoSeguranca[nome] = { status: 'pendente', data: '' };
+  renderGerenciarIrmaos(); salvarConfigFirebase();
+}
+function designacoesIndicadorFuturas(nome) {
+  var hoje = hojeISO(), n = 0;
+  Object.keys(escalaGerada || {}).forEach(function(d){
+    if (d < hoje) return;
+    var x = escalaGerada[d] || {};
+    if (x.indAud === nome || x.indPat === nome) n++;
+  });
+  return n;
+}
 var contadorPulo = {}; // contadorPulo[nome+setor] = n° de reuniões desde última aparição
 
 var eventos = [
@@ -2206,7 +2262,30 @@ function renderGerenciarIrmaos() {
           '<button onclick="adicionarPar()">+ Adicionar par</button></div>';
     } else {
       var chips=listas[dept.key].map(function(n,i){
-        return '<span class="irmao-chip">'+n+'<button onclick="removerIrmao(\''+dept.key+'\','+i+')">&#10005;</button></span>';
+        var extra='';
+        if(dept.key==='indicador'){
+          var ts=treinoSeguranca[n];
+          var estilo='font-size:10px;border-radius:8px;padding:1px 6px;border:1px solid ';
+          if(ts && ts.status==='pendente'){
+            extra=' <span style="'+estilo+'#fca5a5;background:#fee2e2;color:#b91c1c">&#128274; sem treinamento</span>'+
+              '<button title="Marcar que assistiu ao treinamento" style="color:#15803d;font-weight:bold" onclick="marcarTreinoSeguranca(\''+n+'\')">&#9989; liberar</button>';
+          } else if(ts && ts.status==='concluido'){
+            var venc=validadeTreino(ts.data), dias=venc?diasAte(venc):9999;
+            if(dias<0){
+              extra=' <span style="'+estilo+'#fca5a5;background:#fee2e2;color:#b91c1c">&#128274; treinamento vencido em '+fmtBR(venc)+'</span>'+
+                '<button title="Registrar novo treinamento" style="color:#15803d;font-weight:bold" onclick="marcarTreinoSeguranca(\''+n+'\')">&#128260; renovar</button>';
+            } else if(dias<=60){
+              extra=' <span style="'+estilo+'#fcd34d;background:#fef3c7;color:#92400e">&#9888;&#65039; vence em '+dias+' dia(s) ('+fmtBR(venc)+')</span>'+
+                '<button title="Registrar novo treinamento" onclick="marcarTreinoSeguranca(\''+n+'\')">&#128260;</button>';
+            } else {
+              extra=' <span style="'+estilo+'#86efac;background:#dcfce7;color:#166534">&#9989; treinado '+fmtBR(ts.data)+' &middot; vale até '+fmtBR(venc)+'</span>'+
+                '<button title="Bloquear de novo" onclick="bloquearIndicadorSeguranca(\''+n+'\')">&#128274;</button>';
+            }
+          } else {
+            extra='<button title="Bloquear até assistir ao treinamento" onclick="bloquearIndicadorSeguranca(\''+n+'\')">&#128274;</button>';
+          }
+        }
+        return '<span class="irmao-chip">'+n+extra+'<button onclick="removerIrmao(\''+dept.key+'\','+i+')">&#10005;</button></span>';
       }).join('');
       var livreMic=(dept.key==='microfone'||dept.key==='indicador');
       var addRow;
@@ -2221,7 +2300,8 @@ function renderGerenciarIrmaos() {
           '<select id="novo-'+dept.key+'">'+opts+'</select>'+
           '<button onclick="adicionarIrmaoSelect(\''+dept.key+'\')">+ Adicionar</button></div>';
       }
-      sec.innerHTML='<h3>'+dept.label+'</h3><div class="chips-wrap">'+chips+'</div>'+addRow;
+      var notaInd = dept.key==='indicador' ? '<p style="font-size:11px;color:#6b7280;margin:0 0 8px;line-height:1.5">&#128737; Plano de Segurança (S-288): só quem assistiu à reunião de treinamento pode ser designado. O treinamento vale <strong>12 meses</strong>; depois disso o irmão volta a ficar bloqueado até renovar. Novos indicadores entram <strong>bloqueados</strong> até você clicar em &quot;liberar&quot;. Irmãos sem registro continuam liberados.</p>' : '';
+      sec.innerHTML='<h3>'+dept.label+'</h3>'+notaInd+'<div class="chips-wrap">'+chips+'</div>'+addRow;
     }
     c.appendChild(sec);
   });
@@ -2230,6 +2310,7 @@ function removerIrmao(dept,idx){ listas[dept].splice(idx,1); renderGerenciarIrma
 function removerPar(idx){ listas.palcoPares.splice(idx,1); renderGerenciarIrmaos(); salvarConfigFirebase(); }
 function adicionarIrmaoLivre(dept){
   var inp=document.getElementById('novo-'+dept); var nome=inp.value.trim(); if(!nome) return;
+  if(dept==='indicador' && listas[dept].indexOf(nome)<0 && !treinoSeguranca[nome]) treinoSeguranca[nome]={status:'pendente',data:''};
   if(listas[dept].indexOf(nome)<0) listas[dept].push(nome);
     if(todosIrmaos.indexOf(nome)<0) todosIrmaos.push(nome);
   if(!dataEntradaIrmaos[nome]) {
@@ -2240,6 +2321,7 @@ function adicionarIrmaoLivre(dept){
 }
 function adicionarIrmaoSelect(dept){
   var sel=document.getElementById('novo-'+dept); var nome=sel.value; if(!nome) return;
+    if(dept==='indicador' && listas[dept].indexOf(nome)<0 && !treinoSeguranca[nome]) treinoSeguranca[nome]={status:'pendente',data:''};
     if(listas[dept].indexOf(nome)<0) listas[dept].push(nome);
   if(!dataEntradaIrmaos[nome]) {
     var hoje = new Date();
@@ -2317,7 +2399,8 @@ function abrirSubst(chave,setor,dataLabel,nomeAtual,el){
   document.getElementById('subst-setor').textContent=setor;
   document.getElementById('subst-atual').textContent=nomeAtual;
   var sel=document.getElementById('subst-select');
-  sel.innerHTML=todosIrmaos.filter(function(n){return n!==nomeAtual;})
+  var ehInd = (setor==='Ind-Aud'||setor==='Ind-Pat'||setor==='Indicador'||setor==='Indicadores');
+  sel.innerHTML=todosIrmaos.filter(function(n){return n!==nomeAtual && !(ehInd && indicadorBloqueado(n));})
     .map(function(n){return'<option value="'+n+'">'+n+'</option>';}).join('');
   document.getElementById('ov-subst').classList.add('aberto');
 }
@@ -2480,7 +2563,7 @@ var idxM={v:0},idxA={v:0},idxV={v:0},idxZ={v:0},idxI={v:0};
 var trocasCache = {};
 var trocaAtual = null;
 
-function escolherIndicadores(usados) {
+function escolherIndicadores(usados, dataISO) {
   var fila = listas.indicador;
   var escolhidos = [];
   var start = idxI.v;
@@ -2492,6 +2575,7 @@ function escolherIndicadores(usados) {
     var i = (start + t) % fila.length;
     var nome = fila[i];
     if (usados.indexOf(nome) >= 0) continue;
+    if (indicadorBloqueado(nome, dataISO)) continue;
     if (deveSerPulado(nome, 'indicador', null, true)) continue;
     if (escolhidos.indexOf(nome) >= 0) continue;
     var chaveI = nome+'|indicador';
@@ -2508,6 +2592,7 @@ function escolherIndicadores(usados) {
     var i = (start + t) % fila.length;
     var nome = fila[i];
     if (usados.indexOf(nome) >= 0) continue;
+    if (indicadorBloqueado(nome, dataISO)) continue;
     if (deveSerPulado(nome, 'indicador', null, true)) continue;
     if (escolhidos.indexOf(nome) >= 0) continue;
     deveSerPulado(nome, 'indicador', null, false);
@@ -2520,7 +2605,7 @@ function escolherIndicadores(usados) {
   for (var t = 0; t < fila.length * 2 && escolhidos.length < 2; t++) {
     var i = (start + t) % fila.length;
     var nome = fila[i];
-    if (usados.indexOf(nome) < 0 && escolhidos.indexOf(nome) < 0) {
+    if (usados.indexOf(nome) < 0 && escolhidos.indexOf(nome) < 0 && !indicadorBloqueado(nome, dataISO)) {
       escolhidos.push(nome);
       usados.push(nome);
       lastIdx = i;
@@ -2636,7 +2721,7 @@ function renderMesSalvo(mes, ano, escSalva, substs) {
       var audEnv  = rodizioSetor(listas.audio, idxA, usadosEnv, 'audio', dataISO);
       var vidEnv  = rodizioSetor(listas.video, idxV, usadosEnv, 'video', dataISO);
       var zmEnv   = rodizioSetor(listas.zoom,  idxZ, usadosEnv, 'zoom',  dataISO);
-      var indEnv  = escolherIndicadores(usadosEnv);
+      var indEnv  = escolherIndicadores(usadosEnv, dataISO);
       saved = {
         palco1: comboEnv[0], palco2: comboEnv[1],
         mic1: mic1Env, mic2: mic2Env,
@@ -2790,7 +2875,7 @@ function gerarMes(mes,ano){
     var audio=rodizioSetor(listas.audio,idxA,usados,'audio',dataISO);
     var video=rodizioSetor(listas.video,idxV,usados,'video',dataISO);
     var zoom=rodizioSetor(listas.zoom,idxZ,usados,'zoom',dataISO);
-    var ind=escolherIndicadores(usados);
+    var ind=escolherIndicadores(usados, dataISO);
 
     function ns(n,s){ return nomeSpan(n,dataISO+'|'+s+'|'+n,s,dataLabel); }
 
@@ -3256,6 +3341,7 @@ function salvarConfigFirebase() {
   var payload = {
     listas: JSON.parse(JSON.stringify(listas)),
     treinamento: JSON.parse(JSON.stringify(treinamento)),
+    treinoSeguranca: JSON.parse(JSON.stringify(treinoSeguranca)),
     eventos: JSON.parse(JSON.stringify(eventos)),
     dataEntradaIrmaos: JSON.parse(JSON.stringify(dataEntradaIrmaos)),
     irmaosEspectadores: JSON.parse(JSON.stringify(irmaosEspectadores))
@@ -3305,6 +3391,11 @@ function ouvirConfig() {
       if(d.treinamento) {
         Object.keys(d.treinamento).forEach(function(k){ treinamento[k]=d.treinamento[k]; });
       }
+    }
+    // Atualiza treinamento de segurança (bloqueio de indicadores)
+    if (d.treinoSeguranca !== undefined) {
+      Object.keys(treinoSeguranca).forEach(function(k){ delete treinoSeguranca[k]; });
+      if (d.treinoSeguranca) Object.keys(d.treinoSeguranca).forEach(function(k){ treinoSeguranca[k]=d.treinoSeguranca[k]; });
     }
     // Atualiza eventos
     if (d.eventos !== undefined) {
@@ -3598,7 +3689,9 @@ function irmaosDoSetor(setor) {
     });
     return nomes;
   }
-  return listas[chaveSetor] || [];
+  var lst = listas[chaveSetor] || [];
+  if (chaveSetor === 'indicador') lst = lst.filter(function(n){ return !indicadorBloqueado(n); });
+  return lst;
 }
 
 function abrirTroca(chave, setor, dataLabel, nomeAtual) {
@@ -8532,11 +8625,12 @@ function atualizarIndicadoresDasFolhas() {
       var nome = fila[idx];
       if (usados.indexOf(nome) >= 0) continue;
       if (escolhidos.indexOf(nome) >= 0) continue;
+      if (indicadorBloqueado(nome, dataISO)) continue;
       escolhidos.push(nome);
     }
     idxFila = (idxFila + 2) % fila.length;
 
-    var a = escolhidos[0] || fila[0], b = escolhidos[1] || fila[1];
+    var a = escolhidos[0] || '', b = escolhidos[1] || '';
     var aud = a, pat = b;
     if (ultimoAuditorio[a] === true) { aud = b; pat = a; }
 
@@ -8590,7 +8684,7 @@ function regenerarRodizioIndicadores() {
     if (des.video) usados.push(des.video);
     if (des.zoom) usados.push(des.zoom);
 
-    var novosInd = escolherIndicadores(usados);
+    var novosInd = escolherIndicadores(usados, dataISO);
     
     if (des.indAud !== novosInd.aud || des.indPat !== novosInd.pat) {
       des.indAud = novosInd.aud;
