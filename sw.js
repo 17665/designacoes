@@ -1,16 +1,23 @@
 // Service Worker — Designações Cong. Parque Tietê
-const CACHE = 'designacoes-v1';
+// IMPORTANTE: a cada atualização do index.html, troque VERSAO abaixo pela mesma versão
+// (ex.: 'v2026.10.07'). Isso faz os celulares descartarem o cache antigo.
+const VERSAO = 'v2026.10.07';
+const CACHE = 'designacoes-' + VERSAO;
+
+// Guardados na instalação para o app abrir mesmo sem internet
 const STATIC = [
   './',
   './index.html',
-  'https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js',
-  'https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js'
+  'https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js',
+  'https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js'
 ];
 
 self.addEventListener('install', function(e) {
   e.waitUntil(
     caches.open(CACHE).then(function(cache) {
-      return cache.addAll(STATIC).catch(function() {});
+      return Promise.all(STATIC.map(function(url) {
+        return cache.add(url).catch(function() {});
+      }));
     })
   );
   self.skipWaiting();
@@ -25,31 +32,67 @@ self.addEventListener('activate', function(e) {
   self.clients.claim();
 });
 
+function ehHtml(req, url) {
+  if (req.mode === 'navigate') return true;
+  var p = url.pathname;
+  return p.endsWith('/') || p.endsWith('.html');
+}
+
 self.addEventListener('fetch', function(e) {
-  // Firebase: sempre network-first
-  if (e.request.url.includes('firebase') || e.request.url.includes('googleapis')) {
+  var req = e.request;
+  if (req.method !== 'GET') return;
+  var url = new URL(req.url);
+
+  if (url.hostname.indexOf('firebaseio.com') >= 0 || url.hostname.indexOf('googleapis.com') >= 0) return;
+
+  if (url.hostname === 'www.gstatic.com') {
     e.respondWith(
-      fetch(e.request).catch(function() {
-        return caches.match(e.request);
+      caches.match(req).then(function(cached) {
+        return cached || fetch(req).then(function(resp) {
+          if (resp && (resp.status === 200 || resp.type === 'opaque')) {
+            var copia = resp.clone();
+            caches.open(CACHE).then(function(c){ c.put(req, copia); });
+          }
+          return resp;
+        });
       })
     );
     return;
   }
-  // Demais: cache-first com fallback para network
-  e.respondWith(
-    caches.match(e.request).then(function(cached) {
-      var network = fetch(e.request).then(function(resp) {
-        if (resp && resp.status === 200) {
-          caches.open(CACHE).then(function(cache){ cache.put(e.request, resp.clone()); });
+
+  if (url.origin !== self.location.origin) return;
+
+  if (ehHtml(req, url)) {
+    e.respondWith(
+      fetch(new Request(req.url, { cache: 'no-store', credentials: 'same-origin' })).then(function(resp) {
+        if (resp && resp.status === 200 && !url.search) {
+          var copia = resp.clone();
+          caches.open(CACHE).then(function(c){ c.put(req.mode === 'navigate' ? req : req.url, copia); });
         }
         return resp;
-      });
-      return cached || network;
+      }).catch(function() {
+        return caches.match(req).then(function(c) {
+          return c || caches.match('./index.html') || caches.match('./');
+        });
+      })
+    );
+    return;
+  }
+
+  e.respondWith(
+    caches.match(req).then(function(cached) {
+      var rede = fetch(req).then(function(resp) {
+        if (resp && resp.status === 200) {
+          var copia = resp.clone();
+          caches.open(CACHE).then(function(c){ c.put(req, copia); });
+        }
+        return resp;
+      }).catch(function() { return cached; });
+      return cached || rede;
     })
   );
 });
 
-// Push notifications
 self.addEventListener('push', function(e) {
   var data = {};
   try { data = e.data.json(); } catch(err) { data = { title: 'Designações', body: e.data ? e.data.text() : '' }; }
