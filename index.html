@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Versão: v2026.10.06 — Botões de indicadores (atualizar/regenerar) só mexem de hoje em diante; reuniões passadas ficam intactas. Anterior: v2026.10.05 — Treinamento de segurança vence em 12 meses (Plano S-288, item 19) e bloqueia o indicador após vencer. Anterior: v2026.09.04 — bloqueio de indicadores sem treinamento. v2026.09.03 — Botões de WhatsApp (VMC, Discurso Público, Enviar Oradores) + sistema de temas: bloqueio automático de 4 meses, temas indisponíveis temporariamente, repertório por orador -->
+<!-- Versão: v2026.10.07 — Botões de indicadores (atualizar/regenerar) só mexem de hoje em diante; reuniões passadas ficam intactas. Anterior: v2026.10.05 — Treinamento de segurança vence em 12 meses (Plano S-288, item 19) e bloqueia o indicador após vencer. Anterior: v2026.09.04 — bloqueio de indicadores sem treinamento. v2026.09.03 — Botões de WhatsApp (VMC, Discurso Público, Enviar Oradores) + sistema de temas: bloqueio automático de 4 meses, temas indisponíveis temporariamente, repertório por orador -->
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
@@ -491,7 +491,7 @@ body.dark-mode .conf-badge.pendente { background: #2a2a15; color: #ca8a04; borde
     <div class="modal-cab">
       <span>
         <span class="modal-cab-titulo">👨‍💼 Área do Responsável</span>
-        <span style="font-size:10px;color:#9ca3af;font-weight:normal;margin-left:8px">v2026.10.06</span>
+        <span style="font-size:10px;color:#9ca3af;font-weight:normal;margin-left:8px">v2026.10.07</span>
       </span>
       <button class="btn-fechar" onclick="fecharPrincipal()">✕</button>
     </div>
@@ -7399,6 +7399,40 @@ function vmcDesignacoesDe(nome) {
 }
 
 try { iniciarFirebase(); } catch(e) { console.error('Erro iniciarFirebase:', e); }
+
+// ── Releitura ao voltar ao app ────────────────────────────────────────
+// Quando o celular desbloqueia ou o app volta do segundo plano,
+// força reconexão com o Firebase para mostrar dados atualizados
+document.addEventListener('visibilitychange', function() {
+  if (document.visibilityState === 'visible' && firebaseOk && db) {
+    ouvirMeses();
+    ouvirConfig();
+  }
+});
+// Quando o celular reconecta à internet
+window.addEventListener('online', function() {
+  if (firebaseOk && db) {
+    ouvirMeses();
+    ouvirConfig();
+  }
+});
+
+// ── Aviso de nova versão (Service Worker) ────────────────────────────
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.addEventListener('controllerchange', function() {
+    // Novo SW ativado — mostra aviso para o usuário atualizar
+    var banner = document.createElement('div');
+    banner.style.cssText = 'position:fixed;bottom:0;left:0;right:0;background:#1a4fa3;color:white;' +
+      'padding:14px 20px;text-align:center;font-size:14px;font-weight:bold;z-index:99999;' +
+      'display:flex;align-items:center;justify-content:center;gap:12px;box-shadow:0 -2px 8px rgba(0,0,0,0.3)';
+    banner.innerHTML = '🔄 Nova versão disponível!' +
+      '<button onclick="location.reload()" style="background:white;color:#1a4fa3;border:none;' +
+      'padding:6px 16px;border-radius:6px;font-size:13px;font-weight:bold;cursor:pointer">Atualizar agora</button>' +
+      '<button onclick="this.parentElement.remove()" style="background:rgba(255,255,255,0.2);color:white;' +
+      'border:none;padding:6px 12px;border-radius:6px;font-size:13px;cursor:pointer">Depois</button>';
+    document.body.appendChild(banner);
+  });
+}
 // Reagenda avisos 24h/1h para quem já tem nome salvo
 setTimeout(reagendarAvisosAoIniciar, 1000);
 // Inicia sistema VMC
