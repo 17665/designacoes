@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Versão: v2026.10.09 — Liberar/bloquear por treinamento em TODAS as designações (palco, microfone, áudio, vídeo, zoom, indicador). Anterior: v2026.10.08 — Palco: tirar ou trocar um irmão só (sem apagar as duplas à mão). Anterior: v2026.10.07 — Releitura ao voltar ao app, aviso de nova versão e sw.js com rede primeiro. Anterior: v2026.10.06 — Botões de indicadores (atualizar/regenerar) só mexem de hoje em diante; reuniões passadas ficam intactas. Anterior: v2026.10.05 — Treinamento de segurança vence em 12 meses (Plano S-288, item 19) e bloqueia o indicador após vencer. Anterior: v2026.09.04 — bloqueio de indicadores sem treinamento. v2026.09.03 — Botões de WhatsApp (VMC, Discurso Público, Enviar Oradores) + sistema de temas: bloqueio automático de 4 meses, temas indisponíveis temporariamente, repertório por orador -->
+<!-- Versão: v2026.10.10 — Palco passa a ser UM irmão por reunião (em vez de dupla). Anterior: v2026.10.09 — Liberar/bloquear por treinamento em TODAS as designações (palco, microfone, áudio, vídeo, zoom, indicador). Anterior: v2026.10.08 — Palco: tirar ou trocar um irmão só (sem apagar as duplas à mão). Anterior: v2026.10.07 — Releitura ao voltar ao app, aviso de nova versão e sw.js com rede primeiro. Anterior: v2026.10.06 — Botões de indicadores (atualizar/regenerar) só mexem de hoje em diante; reuniões passadas ficam intactas. Anterior: v2026.10.05 — Treinamento de segurança vence em 12 meses (Plano S-288, item 19) e bloqueia o indicador após vencer. Anterior: v2026.09.04 — bloqueio de indicadores sem treinamento. v2026.09.03 — Botões de WhatsApp (VMC, Discurso Público, Enviar Oradores) + sistema de temas: bloqueio automático de 4 meses, temas indisponíveis temporariamente, repertório por orador -->
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
@@ -491,7 +491,7 @@ body.dark-mode .conf-badge.pendente { background: #2a2a15; color: #ca8a04; borde
     <div class="modal-cab">
       <span>
         <span class="modal-cab-titulo">👨‍💼 Área do Responsável</span>
-        <span style="font-size:10px;color:#9ca3af;font-weight:normal;margin-left:8px">v2026.10.09</span>
+        <span style="font-size:10px;color:#9ca3af;font-weight:normal;margin-left:8px">v2026.10.10</span>
       </span>
       <button class="btn-fechar" onclick="fecharPrincipal()">✕</button>
     </div>
@@ -2033,6 +2033,23 @@ var listas = {
   zoom:  ["Caio Andrade","Felipe Santos","Daniel Fernandes","Rodrigo Albuquerque"]
 };
 
+// Palco individual: listas.palco = [nome, ...]. As duplas antigas (listas.palcoPares) continuam
+// guardadas no Firebase (nada é apagado); delas só se aproveitam os nomes.
+function migrarPalcoIndividual(dl) {
+  if (dl && dl.palcoIndividual === true) {
+    listas.palco = Array.isArray(dl.palco) ? dl.palco.slice() : [];
+    listas.palcoIndividual = true;
+    return;
+  }
+  var nomes = (dl && Array.isArray(dl.palco)) ? dl.palco.slice() : [];
+  (listas.palcoPares || []).forEach(function(par) {
+    [par[0], par[1]].forEach(function(n){ if (n && nomes.indexOf(n) < 0) nomes.push(n); });
+  });
+  listas.palco = nomes;
+  listas.palcoIndividual = true;
+}
+migrarPalcoIndividual(null);
+
 var todosIrmaos = [
   "Eriton Oliveira","Daniel Fernandes","Ivo Julião","Pedro Macumbi",
   "Endrik Araújo","Renan Carvalho","Carlos Silva","Jucelino Alves",
@@ -2280,7 +2297,7 @@ function deveSerPuladoCheck(nome, setor, dataISO) {
 
 // ===================== GERENCIAR IRMÃOS =====================
 var deptConfig = [
-  { key:'palcoPares', label:'&#127963; Palco (Pares)',      tipo:'pares' },
+  { key:'palco',      label:'&#127963; Palco',               tipo:'lista' },
   { key:'microfone',  label:'&#127908; Microfone Volante',  tipo:'lista' },
   { key:'indicador',  label:'&#128101; Indicadores',        tipo:'lista' },
   { key:'audio',      label:'&#127911; Áudio',              tipo:'lista' },
@@ -2342,7 +2359,12 @@ function renderGerenciarIrmaos() {
     c.appendChild(sec);
   });
 }
-function removerIrmao(dept,idx){ listas[dept].splice(idx,1); renderGerenciarIrmaos(); salvarConfigFirebase(); }
+function removerIrmao(dept,idx){
+  var nome = listas[dept][idx];
+  var fut = designacoesFuturasSetor(dept, nome);
+  if (fut > 0 && !confirm('Remover ' + nome + ' desta lista?\n\nEle já está em ' + fut + ' reunião(ões) futura(s) da escala gerada. Elas não mudam sozinhas — troque-o pela substituição manual.')) return;
+  listas[dept].splice(idx,1); renderGerenciarIrmaos(); salvarConfigFirebase();
+}
 function removerPar(idx){ listas.palcoPares.splice(idx,1); renderGerenciarIrmaos(); salvarConfigFirebase(); }
 // Quantas reuniões de hoje em diante já têm este irmão no palco
 function palcoDesignacoesFuturas(nome) {
@@ -2627,36 +2649,26 @@ function rodizioSetor(fila, idx, usados, setor, dataISO) {
 }
 
 // Rodízio de pares do palco — sem repetir consecutivo, respeitando treino
-var ultimoPar=-1;
+var ultimoPar=-1; // agora = posição do último irmão do Palco na lista listas.palco
+// Palco: UM irmão por reunião. Devolve [nome,''] (o 2º fica vazio para manter compatibilidade
+// com reuniões antigas, que tinham dupla).
 function proximoPar(ausentes, dataISO){
-  var pares=listas.palcoPares, n=pares.length;
+  var lista=listas.palco||[], n=lista.length;
+  if(n<1) return ['',''];
   for(var t=0; t<n*3; t++){
     var idx=(ultimoPar+1+t) % n;
-    var par=pares[idx];
-    if(ausentes.indexOf(par[0])>=0||ausentes.indexOf(par[1])>=0) continue;
-    if(idx===ultimoPar) continue;
-    if(bloqueadoSetor(par[0],'palco',dataISO)||bloqueadoSetor(par[1],'palco',dataISO)) continue; // sem treinamento / vencido
-    // verifica treinamento com dryRun=true (sem efeito colateral no loop)
-    var skip0=deveSerPulado(par[0],'palco',dataISO,true);
-    var skip1=deveSerPulado(par[1],'palco',dataISO,true);
-    if(skip0||skip1) continue;
-    // Escolhido — consome o contador de ambos
-    deveSerPulado(par[0],'palco',dataISO,false);
-    deveSerPulado(par[1],'palco',dataISO,false);
-    ultimoPar=idx; return par;
+    var nome=lista[idx];
+    if(ausentes.indexOf(nome)>=0) continue;
+    if(idx===ultimoPar && n>1) continue;
+    if(bloqueadoSetor(nome,'palco',dataISO)) continue; // sem treinamento / vencido
+    if(deveSerPulado(nome,'palco',dataISO,true)) continue;
+    deveSerPulado(nome,'palco',dataISO,false); // escolhido: consome o contador
+    ultimoPar=idx; return [nome,''];
   }
-  // fallback sem filtro de treino
-  for(var t=0; t<n*2; t++){
-    var idx=(ultimoPar+1+t)%n; var par=pares[idx];
-    if(ausentes.indexOf(par[0])<0&&ausentes.indexOf(par[1])<0&&idx!==ultimoPar
-       &&!bloqueadoSetor(par[0],'palco',dataISO)&&!bloqueadoSetor(par[1],'palco',dataISO)){
-      ultimoPar=idx; return par;
-    }
-  }
-  // último recurso: qualquer dupla liberada (mesmo repetindo); se não houver, deixa vazio
-  for(var t=0; t<n; t++){
-    var j=(ultimoPar+1+t)%n; var pj=pares[j];
-    if(!bloqueadoSetor(pj[0],'palco',dataISO)&&!bloqueadoSetor(pj[1],'palco',dataISO)){ ultimoPar=j; return pj; }
+  // fallback sem filtro de intervalo (mas NUNCA bloqueado)
+  for(var t2=0; t2<n*2; t2++){
+    var j=(ultimoPar+1+t2)%n; var nj=lista[j];
+    if(ausentes.indexOf(nj)<0 && !bloqueadoSetor(nj,'palco',dataISO)){ ultimoPar=j; return [nj,'']; }
   }
   return ['',''];
 }
@@ -2822,7 +2834,7 @@ function renderMesSalvo(mes, ano, escSalva, substs) {
       var ausEnv = (ev && ev.ausentes) ? ev.ausentes.slice() : [];
       var usadosEnv = ausEnv.slice();
       var comboEnv = proximoPar(ausEnv, dataISO);
-      usadosEnv.push(comboEnv[0], comboEnv[1]);
+      if(comboEnv[0]) usadosEnv.push(comboEnv[0]);
       var mic1Env = rodizioSetor(listas.microfone, idxM, usadosEnv, 'microfone', dataISO);
       var mic2Env = rodizioSetor(listas.microfone, idxM, usadosEnv, 'microfone', dataISO);
       var audEnv  = rodizioSetor(listas.audio, idxA, usadosEnv, 'audio', dataISO);
@@ -2898,7 +2910,7 @@ function renderMesSalvo(mes, ano, escSalva, substs) {
         '<span class="card-data">'+fmtData(dataReal)+'</span>'+
         '<span class="card-hora">'+fmtHora(dataReal)+'</span>'+
       '</div>'+
-      linhaH('&#127963;','Palco',        ns(p1,'Palco-Coord')+' &amp; '+ns(p2,'Palco-Ajud'))+
+      linhaH('&#127963;','Palco',        ns(p1,'Palco-Coord')+(p2?' &amp; '+ns(p2,'Palco-Ajud'):''))+
       linhaH('&#127908;','Mic. Volante', ns(m1,'Mic1')+' &amp; '+ns(m2,'Mic2'))+
       linhaH('&#127911;','Áudio',        ns(aud,'Audio'))+
       linhaH('&#127909;','Vídeo',        ns(vid,'Video'))+
@@ -2975,7 +2987,7 @@ function gerarMes(mes,ano){
     var ausentes=(ev&&ev.ausentes)?ev.ausentes.slice():[];
     var usados=ausentes.slice();
     var combo=proximoPar(ausentes,dataISO);
-    usados.push(combo[0],combo[1]);
+    if(combo[0]) usados.push(combo[0]);
 
     var mic1=rodizioSetor(listas.microfone,idxM,usados,'microfone',dataISO);
     var mic2=rodizioSetor(listas.microfone,idxM,usados,'microfone',dataISO);
@@ -3002,7 +3014,7 @@ function gerarMes(mes,ano){
         '<span class="card-data">'+fmtData(dataReal)+'</span>'+
         '<span class="card-hora">'+fmtHora(dataReal)+'</span>'+
       '</div>'+
-      linhaH('&#127963;','Palco',        ns(combo[0],'Palco-Coord')+' &amp; '+ns(combo[1],'Palco-Ajud'))+
+      linhaH('&#127963;','Palco',        ns(combo[0],'Palco-Coord')+(combo[1]?' &amp; '+ns(combo[1],'Palco-Ajud'):''))+
       linhaH('&#127908;','Mic. Volante', ns(mic1,'Mic1')+' &amp; '+ns(mic2,'Mic2'))+
       linhaH('&#127911;','Áudio',        ns(audio,'Audio'))+
       linhaH('&#127909;','Vídeo',        ns(video,'Video'))+
@@ -3468,7 +3480,7 @@ function ouvirConfig() {
       // Offline/sem dados — reconstrói todosIrmaos das listas hardcoded
       if (MODO_TESTE && window.location.protocol === 'file:') {
         var todos = [];
-        ['microfone','indicador','audio','video','zoom'].forEach(function(s){
+        ['palco','microfone','indicador','audio','video','zoom'].forEach(function(s){
           (listas[s]||[]).forEach(function(n){ if(todos.indexOf(n)<0) todos.push(n); });
         });
         (listas.palcoPares||[]).forEach(function(p){
@@ -3491,6 +3503,7 @@ function ouvirConfig() {
     // Atualiza listas
     if (d.listas) {
       Object.keys(d.listas).forEach(function(k){ listas[k]=d.listas[k]; });
+      migrarPalcoIndividual(d.listas);
     }
     // Atualiza treinamento
     if (d.treinamento !== undefined) {
@@ -3524,7 +3537,7 @@ function ouvirConfig() {
     }
     // Reconstroi todosIrmaos
     var todos=[];
-    ['microfone','indicador','audio','video','zoom'].forEach(function(s){
+    ['palco','microfone','indicador','audio','video','zoom'].forEach(function(s){
       (listas[s]||[]).forEach(function(n){ if(todos.indexOf(n)<0) todos.push(n); });
     });
     (listas.palcoPares||[]).forEach(function(p){
@@ -3784,7 +3797,7 @@ function confirmarIdentidade() {
 function irmaosDoSetor(setor) {
   // Normaliza setor para chave de lista
   var mapa = {
-    'Palco-Coord': 'palcoPares', 'Palco': 'palcoPares',
+    'Palco-Coord': 'palco', 'Palco-Ajud': 'palco', 'Palco': 'palco',
     'Mic. Volante': 'microfone', 'Microfone': 'microfone',
     'Indicadores': 'indicador', 'Indicador': 'indicador',
     'Áudio': 'audio', 'Audio': 'audio',
@@ -4172,7 +4185,7 @@ setInterval(renderPainelTrocas, 60000);
 
 // ===================== PWA — SERVICE WORKER + ATUALIZAÇÃO =====================
 // Mantenha igual à versão mostrada na Área do Responsável e à VERSAO do sw.js
-window.APP_VERSAO = 'v2026.10.09';
+window.APP_VERSAO = 'v2026.10.10';
 
 function mostrarBannerNovaVersao() {
   if (document.getElementById('banner-nova-versao')) return;
@@ -4606,7 +4619,7 @@ function trocarNomeMinhaEscala() {
         dataISO: dataISO,
         dataObj: dataObj,
         data: dataObj.toLocaleDateString('pt-BR',{weekday:'long',day:'2-digit',month:'2-digit',year:'numeric'}),
-        setor: setorLabelsLocal[campo],
+        setor: (campo==='palco1' && !des.palco2) ? 'Palco' : setorLabelsLocal[campo],
         campo: campo,
         setorNome: setorNome,
         parceiros: parceiros,
