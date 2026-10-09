@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Versão: v2026.10.07 — Botões de indicadores (atualizar/regenerar) só mexem de hoje em diante; reuniões passadas ficam intactas. Anterior: v2026.10.05 — Treinamento de segurança vence em 12 meses (Plano S-288, item 19) e bloqueia o indicador após vencer. Anterior: v2026.09.04 — bloqueio de indicadores sem treinamento. v2026.09.03 — Botões de WhatsApp (VMC, Discurso Público, Enviar Oradores) + sistema de temas: bloqueio automático de 4 meses, temas indisponíveis temporariamente, repertório por orador -->
+<!-- Versão: v2026.10.09 — Liberar/bloquear por treinamento em TODAS as designações (palco, microfone, áudio, vídeo, zoom, indicador). Anterior: v2026.10.08 — Palco: tirar ou trocar um irmão só (sem apagar as duplas à mão). Anterior: v2026.10.07 — Releitura ao voltar ao app, aviso de nova versão e sw.js com rede primeiro. Anterior: v2026.10.06 — Botões de indicadores (atualizar/regenerar) só mexem de hoje em diante; reuniões passadas ficam intactas. Anterior: v2026.10.05 — Treinamento de segurança vence em 12 meses (Plano S-288, item 19) e bloqueia o indicador após vencer. Anterior: v2026.09.04 — bloqueio de indicadores sem treinamento. v2026.09.03 — Botões de WhatsApp (VMC, Discurso Público, Enviar Oradores) + sistema de temas: bloqueio automático de 4 meses, temas indisponíveis temporariamente, repertório por orador -->
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
@@ -491,7 +491,7 @@ body.dark-mode .conf-badge.pendente { background: #2a2a15; color: #ca8a04; borde
     <div class="modal-cab">
       <span>
         <span class="modal-cab-titulo">👨‍💼 Área do Responsável</span>
-        <span style="font-size:10px;color:#9ca3af;font-weight:normal;margin-left:8px">v2026.10.07</span>
+        <span style="font-size:10px;color:#9ca3af;font-weight:normal;margin-left:8px">v2026.10.09</span>
       </span>
       <button class="btn-fechar" onclick="fecharPrincipal()">✕</button>
     </div>
@@ -2049,10 +2049,22 @@ var treinamento = {
   "Pedro Macumbi": { palco:true, microfone:false, indicador:false, audio:false, video:false, zoom:false, nivel:1, dataInicio:"" }
 };
 // Contador de vezes que cada irmão foi pulado no setor de treino
-// ===================== TREINAMENTO DE SEGURANÇA (Plano S-288) =====================
-// treinoSeguranca[nome] = { status:'pendente'|'concluido', data:'AAAA-MM-DD' }
-// Quem está 'pendente' NÃO é designado como indicador. Quem não tem registro continua liberado.
-var treinoSeguranca = {};
+// ===================== LIBERAÇÃO POR TREINAMENTO (todas as designações) =====================
+// treinoSeguranca[setor][nome] = { status:'pendente'|'concluido', data:'AAAA-MM-DD' }
+// Setores: palco, microfone, indicador, audio, video, zoom.
+// 'pendente' ou treinamento vencido (12 meses) = NÃO é designado. Sem registro = liberado.
+var ROTULO_LIBERACAO = { palco:'Palco', microfone:'Microfone', indicador:'Indicador', audio:'Áudio', video:'Vídeo', zoom:'Zoom' };
+var MAPA_ROTULO_SETOR = {
+  'Palco-Coord':'palco','Palco-Ajud':'palco','Palco':'palco','palcoPares':'palco',
+  'Mic1':'microfone','Mic2':'microfone','Microfone':'microfone','Mic. Volante':'microfone',
+  'Audio':'audio','Áudio':'audio','Video':'video','Vídeo':'video',
+  'Zoom':'zoom','Ind-Aud':'indicador','Ind-Pat':'indicador','Indicador':'indicador','Indicadores':'indicador'
+};
+var CAMPOS_ESCALA_SETOR = { palco:['palco1','palco2'], microfone:['mic1','mic2'], indicador:['indAud','indPat'], audio:['audio'], video:['video'], zoom:['zoom'] };
+var treinoSeguranca = { palco:{}, microfone:{}, indicador:{}, audio:{}, video:{}, zoom:{} };
+function chaveSetorTreino(rotulo) { return MAPA_ROTULO_SETOR[rotulo] || String(rotulo||'').toLowerCase(); }
+function registroTreino(setor, nome) { return (treinoSeguranca[setor] || {})[nome]; }
+function setRegistroTreino(setor, nome, reg) { if (!treinoSeguranca[setor]) treinoSeguranca[setor] = {}; treinoSeguranca[setor][nome] = reg; }
 function hojeISO() {
   var h = new Date();
   return h.getFullYear()+'-'+String(h.getMonth()+1).padStart(2,'0')+'-'+String(h.getDate()).padStart(2,'0');
@@ -2070,8 +2082,8 @@ function diasAte(iso) {
 }
 // dataISO = data da reunião (se não informada, usa hoje).
 // Bloqueado = pendente OU treinamento vencido na data da reunião.
-function indicadorBloqueado(nome, dataISO) {
-  var t = treinoSeguranca[nome];
+function bloqueadoSetor(nome, setor, dataISO) {
+  var t = registroTreino(setor, nome);
   if (!t) return false;
   if (t.status === 'pendente') return true;
   if (t.status === 'concluido' && t.data) {
@@ -2081,29 +2093,59 @@ function indicadorBloqueado(nome, dataISO) {
   }
   return false;
 }
-function marcarTreinoSeguranca(nome) {
-  var d = prompt('Data em que ' + nome + ' assistiu à reunião de treinamento de segurança (AAAA-MM-DD):', hojeISO());
+function indicadorBloqueado(nome, dataISO) { return bloqueadoSetor(nome, 'indicador', dataISO); }
+// Irmão novo numa designação entra bloqueado (se ainda não tem registro nela)
+function novoIrmaoPendente(setor, nome) {
+  if (!registroTreino(setor, nome)) setRegistroTreino(setor, nome, { status:'pendente', data:'' });
+}
+function marcarTreinoSetor(setor, nome) {
+  var d = prompt('Data em que ' + nome + ' assistiu à reunião de treinamento de ' + (ROTULO_LIBERACAO[setor]||setor) + ' (AAAA-MM-DD):', hojeISO());
   if (d === null) return;
   d = d.trim();
   if (!/^\d{4}-\d{2}-\d{2}$/.test(d)) { alert('Data inválida. Use o formato AAAA-MM-DD.'); return; }
-  treinoSeguranca[nome] = { status: 'concluido', data: d };
+  setRegistroTreino(setor, nome, { status: 'concluido', data: d });
   renderGerenciarIrmaos(); salvarConfigFirebase();
 }
-function bloquearIndicadorSeguranca(nome) {
-  var n = designacoesIndicadorFuturas(nome);
+function bloquearSetor(setor, nome) {
+  var n = designacoesFuturasSetor(setor, nome);
   var aviso = n > 0 ? '\n\nAtenção: ele já está em ' + n + ' reunião(ões) futura(s) na escala gerada. Troque-o pela Substituição manual.' : '';
-  if (!confirm('Bloquear ' + nome + ' como indicador até assistir ao treinamento?' + aviso)) return;
-  treinoSeguranca[nome] = { status: 'pendente', data: '' };
+  if (!confirm('Bloquear ' + nome + ' em ' + (ROTULO_LIBERACAO[setor]||setor) + ' até assistir ao treinamento?' + aviso)) return;
+  setRegistroTreino(setor, nome, { status: 'pendente', data: '' });
   renderGerenciarIrmaos(); salvarConfigFirebase();
 }
-function designacoesIndicadorFuturas(nome) {
-  var hoje = hojeISO(), n = 0;
-  Object.keys(escalaGerada || {}).forEach(function(d){
+// Quantas reuniões de hoje em diante já têm este irmão nesta designação
+function designacoesFuturasSetor(setor, nome) {
+  var hoje = hojeISO(), n = 0, campos = CAMPOS_ESCALA_SETOR[setor] || [];
+  Object.keys(escalaGerada || {}).forEach(function(d) {
     if (d < hoje) return;
     var x = escalaGerada[d] || {};
-    if (x.indAud === nome || x.indPat === nome) n++;
+    if (campos.some(function(c){ return x[c] === nome; })) n++;
   });
   return n;
+}
+// Selo + botões ao lado do nome (usado em todas as designações)
+function badgeLiberacaoHtml(setor, n) {
+  var ts = registroTreino(setor, n);
+  var estilo = 'font-size:10px;border-radius:8px;padding:1px 6px;border:1px solid ';
+  var q = "'" + n + "'", st = "'" + setor + "'";
+  if (ts && ts.status === 'pendente') {
+    return ' <span style="'+estilo+'#fca5a5;background:#fee2e2;color:#b91c1c">&#128274; sem treinamento</span>'+
+      '<button title="Marcar que assistiu ao treinamento" style="color:#15803d;font-weight:bold" onclick="marcarTreinoSetor('+st+','+q+')">&#9989; liberar</button>';
+  }
+  if (ts && ts.status === 'concluido') {
+    var venc = validadeTreino(ts.data), dias = venc ? diasAte(venc) : 9999;
+    if (dias < 0) {
+      return ' <span style="'+estilo+'#fca5a5;background:#fee2e2;color:#b91c1c">&#128274; treinamento vencido em '+fmtBR(venc)+'</span>'+
+        '<button title="Registrar novo treinamento" style="color:#15803d;font-weight:bold" onclick="marcarTreinoSetor('+st+','+q+')">&#128260; renovar</button>';
+    }
+    if (dias <= 60) {
+      return ' <span style="'+estilo+'#fcd34d;background:#fef3c7;color:#92400e">&#9888;&#65039; vence em '+dias+' dia(s) ('+fmtBR(venc)+')</span>'+
+        '<button title="Registrar novo treinamento" onclick="marcarTreinoSetor('+st+','+q+')">&#128260;</button>';
+    }
+    return ' <span style="'+estilo+'#86efac;background:#dcfce7;color:#166534">&#9989; treinado '+fmtBR(ts.data)+' &middot; vale até '+fmtBR(venc)+'</span>'+
+      '<button title="Bloquear de novo" onclick="bloquearSetor('+st+','+q+')">&#128274;</button>';
+  }
+  return '<button title="Bloquear até assistir ao treinamento" onclick="bloquearSetor('+st+','+q+')">&#128274;</button>';
 }
 var contadorPulo = {}; // contadorPulo[nome+setor] = n° de reuniões desde última aparição
 
@@ -2255,36 +2297,30 @@ function renderGerenciarIrmaos() {
           '<button onclick="removerPar('+i+')" title="Remover">&#10005;</button></span>';
       }).join('');
       var optsA=todosIrmaos.map(function(n){return'<option value="'+n+'">'+n+'</option>';}).join('');
+      var nomesPalco=[]; listas.palcoPares.forEach(function(p){ p.forEach(function(n){ if(nomesPalco.indexOf(n)<0) nomesPalco.push(n); }); });
+      var chipsIrm=nomesPalco.map(function(n){
+        return '<span class="irmao-chip">'+n+badgeLiberacaoHtml('palco', n)+'<button onclick="tirarIrmaoDoPalco(\''+n+'\')" title="Tirar este irmão do Palco (remove todas as duplas dele)">&#10005;</button></span>';
+      }).join('');
+      var optsAtual=nomesPalco.map(function(n){return'<option value="'+n+'">'+n+'</option>';}).join('');
+      var blocoIrm='<div style="margin-top:12px;padding-top:10px;border-top:1px dashed #d1d5db">'+
+        '<div style="font-size:12px;font-weight:bold;color:#374151;margin-bottom:6px">&#128100; Irmãos no Palco — libere ou bloqueie cada um; o &#10005; tira o irmão de todas as duplas</div>'+
+        '<p style="font-size:11px;color:#6b7280;margin:0 0 8px;line-height:1.5">&#128737; Só quem assistiu à reunião de treinamento pode ser designado no <strong>Palco</strong>. Vale <strong>12 meses</strong>. Uma dupla só entra no rodízio se os <strong>dois</strong> irmãos estiverem liberados. Irmãos novos entram bloqueados.</p>'+
+        '<div class="chips-wrap">'+chipsIrm+'</div>'+
+        '<div style="font-size:12px;font-weight:bold;color:#374151;margin:10px 0 6px">&#128257; Trocar um irmão por outro nas duplas</div>'+
+        '<div class="add-row" style="flex-wrap:wrap;gap:6px">'+
+          '<select id="troca-palco-de" style="flex:1;min-width:120px"><option value="">Sai...</option>'+optsAtual+'</select>'+
+          '<select id="troca-palco-para" style="flex:1;min-width:120px"><option value="">Entra...</option>'+optsA+'</select>'+
+          '<button onclick="trocarIrmaoDoPalco()">Trocar</button></div>'+
+        '<p style="font-size:11px;color:#6b7280;margin:6px 0 0;line-height:1.5">Os meses já gerados não mudam sozinhos. Para tirar o irmão de reuniões que já estão na escala, use a substituição manual.</p>'+
+      '</div>';
       sec.innerHTML='<h3>'+dept.label+'</h3><div class="chips-wrap">'+chips+'</div>'+
         '<div class="add-row" style="flex-wrap:wrap;gap:6px">'+
           '<select id="par-a" style="flex:1;min-width:120px"><option value="">Irmão 1...</option>'+optsA+'</select>'+
           '<select id="par-b" style="flex:1;min-width:120px"><option value="">Irmão 2...</option>'+optsA+'</select>'+
-          '<button onclick="adicionarPar()">+ Adicionar par</button></div>';
+          '<button onclick="adicionarPar()">+ Adicionar par</button></div>'+blocoIrm;
     } else {
       var chips=listas[dept.key].map(function(n,i){
-        var extra='';
-        if(dept.key==='indicador'){
-          var ts=treinoSeguranca[n];
-          var estilo='font-size:10px;border-radius:8px;padding:1px 6px;border:1px solid ';
-          if(ts && ts.status==='pendente'){
-            extra=' <span style="'+estilo+'#fca5a5;background:#fee2e2;color:#b91c1c">&#128274; sem treinamento</span>'+
-              '<button title="Marcar que assistiu ao treinamento" style="color:#15803d;font-weight:bold" onclick="marcarTreinoSeguranca(\''+n+'\')">&#9989; liberar</button>';
-          } else if(ts && ts.status==='concluido'){
-            var venc=validadeTreino(ts.data), dias=venc?diasAte(venc):9999;
-            if(dias<0){
-              extra=' <span style="'+estilo+'#fca5a5;background:#fee2e2;color:#b91c1c">&#128274; treinamento vencido em '+fmtBR(venc)+'</span>'+
-                '<button title="Registrar novo treinamento" style="color:#15803d;font-weight:bold" onclick="marcarTreinoSeguranca(\''+n+'\')">&#128260; renovar</button>';
-            } else if(dias<=60){
-              extra=' <span style="'+estilo+'#fcd34d;background:#fef3c7;color:#92400e">&#9888;&#65039; vence em '+dias+' dia(s) ('+fmtBR(venc)+')</span>'+
-                '<button title="Registrar novo treinamento" onclick="marcarTreinoSeguranca(\''+n+'\')">&#128260;</button>';
-            } else {
-              extra=' <span style="'+estilo+'#86efac;background:#dcfce7;color:#166534">&#9989; treinado '+fmtBR(ts.data)+' &middot; vale até '+fmtBR(venc)+'</span>'+
-                '<button title="Bloquear de novo" onclick="bloquearIndicadorSeguranca(\''+n+'\')">&#128274;</button>';
-            }
-          } else {
-            extra='<button title="Bloquear até assistir ao treinamento" onclick="bloquearIndicadorSeguranca(\''+n+'\')">&#128274;</button>';
-          }
-        }
+        var extra=badgeLiberacaoHtml(dept.key, n);
         return '<span class="irmao-chip">'+n+extra+'<button onclick="removerIrmao(\''+dept.key+'\','+i+')">&#10005;</button></span>';
       }).join('');
       var livreMic=(dept.key==='microfone'||dept.key==='indicador');
@@ -2300,7 +2336,7 @@ function renderGerenciarIrmaos() {
           '<select id="novo-'+dept.key+'">'+opts+'</select>'+
           '<button onclick="adicionarIrmaoSelect(\''+dept.key+'\')">+ Adicionar</button></div>';
       }
-      var notaInd = dept.key==='indicador' ? '<p style="font-size:11px;color:#6b7280;margin:0 0 8px;line-height:1.5">&#128737; Plano de Segurança (S-288): só quem assistiu à reunião de treinamento pode ser designado. O treinamento vale <strong>12 meses</strong>; depois disso o irmão volta a ficar bloqueado até renovar. Novos indicadores entram <strong>bloqueados</strong> até você clicar em &quot;liberar&quot;. Irmãos sem registro continuam liberados.</p>' : '';
+      var notaInd = '<p style="font-size:11px;color:#6b7280;margin:0 0 8px;line-height:1.5">&#128737; Só quem assistiu à reunião de treinamento pode ser designado em <strong>'+(ROTULO_LIBERACAO[dept.key]||dept.key)+'</strong>. O treinamento vale <strong>12 meses</strong>; depois disso o irmão volta a ficar bloqueado até renovar. Irmãos novos entram <strong>bloqueados</strong> até você clicar em &quot;liberar&quot;. Irmãos sem registro continuam liberados.</p>';
       sec.innerHTML='<h3>'+dept.label+'</h3>'+notaInd+'<div class="chips-wrap">'+chips+'</div>'+addRow;
     }
     c.appendChild(sec);
@@ -2308,9 +2344,64 @@ function renderGerenciarIrmaos() {
 }
 function removerIrmao(dept,idx){ listas[dept].splice(idx,1); renderGerenciarIrmaos(); salvarConfigFirebase(); }
 function removerPar(idx){ listas.palcoPares.splice(idx,1); renderGerenciarIrmaos(); salvarConfigFirebase(); }
+// Quantas reuniões de hoje em diante já têm este irmão no palco
+function palcoDesignacoesFuturas(nome) {
+  var hoje = hojeISO(), n = 0;
+  Object.keys(escalaGerada || {}).forEach(function(d) {
+    if (d < hoje) return;
+    var x = escalaGerada[d] || {};
+    if (x.palco1 === nome || x.palco2 === nome) n++;
+  });
+  return n;
+}
+// Tira UM irmão do Palco: remove todas as duplas em que ele aparece
+function tirarIrmaoDoPalco(nome) {
+  var restantes = listas.palcoPares.filter(function(p){ return p[0] !== nome && p[1] !== nome; });
+  var removidas = listas.palcoPares.length - restantes.length;
+  if (removidas === 0) { alert(nome + ' não está em nenhuma dupla do Palco.'); return; }
+  if (restantes.length < 1) { alert('Não dá para tirar ' + nome + ': não sobraria nenhuma dupla no Palco. Adicione outras duplas antes.'); return; }
+  var fut = palcoDesignacoesFuturas(nome);
+  var msg = 'Tirar ' + nome + ' do Palco?\n\nSerão removidas ' + removidas + ' dupla(s) com ele. Sobram ' + restantes.length + ' dupla(s).';
+  if (fut > 0) msg += '\n\nAtenção: ele já está no Palco em ' + fut + ' reunião(ões) futura(s) da escala gerada. Troque-o pela substituição manual.';
+  if (!confirm(msg)) return;
+  listas.palcoPares.length = 0;
+  restantes.forEach(function(p){ listas.palcoPares.push(p); });
+  renderGerenciarIrmaos(); salvarConfigFirebase();
+}
+// Troca UM irmão por outro em todas as duplas do Palco
+function trocarIrmaoDoPalco() {
+  var de = document.getElementById('troca-palco-de').value;
+  var para = document.getElementById('troca-palco-para').value;
+  if (!de || !para) { alert('Escolha quem sai e quem entra.'); return; }
+  if (de === para) { alert('Escolha dois irmãos diferentes.'); return; }
+  var paraJaNoPalco = listas.palcoPares.some(function(p){ return p[0]===para || p[1]===para; });
+  var novas = [];
+  var trocadas = 0;
+  listas.palcoPares.forEach(function(p) {
+    var a = p[0] === de ? para : p[0];
+    var b = p[1] === de ? para : p[1];
+    if (a !== p[0] || b !== p[1]) trocadas++;
+    if (a === b) return; // dupla com o mesmo irmão duas vezes não vale
+    var existe = novas.some(function(q){ return (q[0]===a && q[1]===b) || (q[0]===b && q[1]===a); });
+    if (!existe) novas.push([a, b]);
+  });
+  if (trocadas === 0) { alert(de + ' não está em nenhuma dupla do Palco.'); return; }
+  if (novas.length < 1) { alert('Não sobraria nenhuma dupla no Palco.'); return; }
+  var fut = palcoDesignacoesFuturas(de);
+  var msg = 'Trocar ' + de + ' por ' + para + ' em ' + trocadas + ' dupla(s) do Palco?';
+  if (fut > 0) msg += '\n\nAtenção: ' + de + ' já está no Palco em ' + fut + ' reunião(ões) futura(s) da escala gerada. Troque-o pela substituição manual.';
+  if (!confirm(msg)) return;
+  listas.palcoPares.length = 0;
+  novas.forEach(function(p){ listas.palcoPares.push(p); });
+  var hoje = hojeISO();
+  if (!paraJaNoPalco) novoIrmaoPendente('palco', para);
+  if (!dataEntradaIrmaos[para]) dataEntradaIrmaos[para] = hoje;
+  if (todosIrmaos.indexOf(para) < 0) todosIrmaos.push(para);
+  renderGerenciarIrmaos(); salvarConfigFirebase();
+}
 function adicionarIrmaoLivre(dept){
   var inp=document.getElementById('novo-'+dept); var nome=inp.value.trim(); if(!nome) return;
-  if(dept==='indicador' && listas[dept].indexOf(nome)<0 && !treinoSeguranca[nome]) treinoSeguranca[nome]={status:'pendente',data:''};
+  if(listas[dept].indexOf(nome)<0) novoIrmaoPendente(dept, nome);
   if(listas[dept].indexOf(nome)<0) listas[dept].push(nome);
     if(todosIrmaos.indexOf(nome)<0) todosIrmaos.push(nome);
   if(!dataEntradaIrmaos[nome]) {
@@ -2321,7 +2412,7 @@ function adicionarIrmaoLivre(dept){
 }
 function adicionarIrmaoSelect(dept){
   var sel=document.getElementById('novo-'+dept); var nome=sel.value; if(!nome) return;
-    if(dept==='indicador' && listas[dept].indexOf(nome)<0 && !treinoSeguranca[nome]) treinoSeguranca[nome]={status:'pendente',data:''};
+    if(listas[dept].indexOf(nome)<0) novoIrmaoPendente(dept, nome);
     if(listas[dept].indexOf(nome)<0) listas[dept].push(nome);
   if(!dataEntradaIrmaos[nome]) {
     var hoje = new Date();
@@ -2335,6 +2426,10 @@ function adicionarPar(){
   if(!a||!b||a===b) return;
   var existe=listas.palcoPares.some(function(p){return(p[0]===a&&p[1]===b)||(p[0]===b&&p[1]===a);});
     if(!existe) {
+    [a,b].forEach(function(n){
+      var jaNoPalco = listas.palcoPares.some(function(p){ return p[0]===n || p[1]===n; });
+      if (!jaNoPalco) novoIrmaoPendente('palco', n);
+    });
     listas.palcoPares.push([a,b]);
     var hoje = new Date();
     var dh = hoje.getFullYear()+'-'+String(hoje.getMonth()+1).padStart(2,'0')+'-'+String(hoje.getDate()).padStart(2,'0');
@@ -2399,8 +2494,8 @@ function abrirSubst(chave,setor,dataLabel,nomeAtual,el){
   document.getElementById('subst-setor').textContent=setor;
   document.getElementById('subst-atual').textContent=nomeAtual;
   var sel=document.getElementById('subst-select');
-  var ehInd = (setor==='Ind-Aud'||setor==='Ind-Pat'||setor==='Indicador'||setor==='Indicadores');
-  sel.innerHTML=todosIrmaos.filter(function(n){return n!==nomeAtual && !(ehInd && indicadorBloqueado(n));})
+  var setorLib = chaveSetorTreino(setor);
+  sel.innerHTML=todosIrmaos.filter(function(n){return n!==nomeAtual && !bloqueadoSetor(n, setorLib);})
     .map(function(n){return'<option value="'+n+'">'+n+'</option>';}).join('');
   document.getElementById('ov-subst').classList.add('aberto');
 }
@@ -2491,6 +2586,7 @@ function rodizioSetor(fila, idx, usados, setor, dataISO) {
     var i=(start+t) % ordem.length;
     c = ordem[i];
     if(usados.indexOf(c)>=0) continue;
+    if(bloqueadoSetor(c, setor, dataISO)) continue; // sem treinamento / vencido
     if(deveSerPulado(c, setor, dataISO, true)) continue;
     var chaveUlt = c+'|'+setor;
     var reunioesDesde = ultimaDesignacaoSetor[chaveUlt] !== undefined ? ultimaDesignacaoSetor[chaveUlt] : 999;
@@ -2510,6 +2606,7 @@ function rodizioSetor(fila, idx, usados, setor, dataISO) {
     var i=(start+t) % ordem.length;
     c = ordem[i];
     if(usados.indexOf(c)>=0) continue;
+    if(bloqueadoSetor(c, setor, dataISO)) continue; // sem treinamento / vencido
     if(deveSerPulado(c, setor, dataISO, true)) continue;
     deveSerPulado(c, setor, dataISO, false);
     idx.v = i+1;
@@ -2517,13 +2614,16 @@ function rodizioSetor(fila, idx, usados, setor, dataISO) {
     var k2=c+'|'+setor; ultimaDesignacaoSetor[k2]=0;
     return c;
   }
-  // Passa 3: fallback sem filtros
+  // Passa 3: fallback sem filtros de treino/intervalo (mas NUNCA designa irmão bloqueado)
   for(var t=0; t<ordem.length*2; t++){
     var i=(start+t) % ordem.length;
     c=ordem[i];
-    if(usados.indexOf(c)<0){ idx.v=i+1; usados.push(c); return c; }
+    if(usados.indexOf(c)<0 && !bloqueadoSetor(c, setor, dataISO)){ idx.v=i+1; usados.push(c); return c; }
   }
-  idx.v++; usados.push(ordem[start]); return ordem[start];
+  idx.v++;
+  var ultimoRecurso = ordem[start];
+  if(bloqueadoSetor(ultimoRecurso, setor, dataISO)) return '';
+  usados.push(ultimoRecurso); return ultimoRecurso;
 }
 
 // Rodízio de pares do palco — sem repetir consecutivo, respeitando treino
@@ -2535,6 +2635,7 @@ function proximoPar(ausentes, dataISO){
     var par=pares[idx];
     if(ausentes.indexOf(par[0])>=0||ausentes.indexOf(par[1])>=0) continue;
     if(idx===ultimoPar) continue;
+    if(bloqueadoSetor(par[0],'palco',dataISO)||bloqueadoSetor(par[1],'palco',dataISO)) continue; // sem treinamento / vencido
     // verifica treinamento com dryRun=true (sem efeito colateral no loop)
     var skip0=deveSerPulado(par[0],'palco',dataISO,true);
     var skip1=deveSerPulado(par[1],'palco',dataISO,true);
@@ -2547,11 +2648,17 @@ function proximoPar(ausentes, dataISO){
   // fallback sem filtro de treino
   for(var t=0; t<n*2; t++){
     var idx=(ultimoPar+1+t)%n; var par=pares[idx];
-    if(ausentes.indexOf(par[0])<0&&ausentes.indexOf(par[1])<0&&idx!==ultimoPar){
+    if(ausentes.indexOf(par[0])<0&&ausentes.indexOf(par[1])<0&&idx!==ultimoPar
+       &&!bloqueadoSetor(par[0],'palco',dataISO)&&!bloqueadoSetor(par[1],'palco',dataISO)){
       ultimoPar=idx; return par;
     }
   }
-  ultimoPar=(ultimoPar+1)%n; return pares[ultimoPar];
+  // último recurso: qualquer dupla liberada (mesmo repetindo); se não houver, deixa vazio
+  for(var t=0; t<n; t++){
+    var j=(ultimoPar+1+t)%n; var pj=pares[j];
+    if(!bloqueadoSetor(pj[0],'palco',dataISO)&&!bloqueadoSetor(pj[1],'palco',dataISO)){ ultimoPar=j; return pj; }
+  }
+  return ['',''];
 }
 
 // Indicadores com alternância auditório/pátio
@@ -3341,7 +3448,7 @@ function salvarConfigFirebase() {
   var payload = {
     listas: JSON.parse(JSON.stringify(listas)),
     treinamento: JSON.parse(JSON.stringify(treinamento)),
-    treinoSeguranca: JSON.parse(JSON.stringify(treinoSeguranca)),
+    treinoSetores: JSON.parse(JSON.stringify(treinoSeguranca)),
     eventos: JSON.parse(JSON.stringify(eventos)),
     dataEntradaIrmaos: JSON.parse(JSON.stringify(dataEntradaIrmaos)),
     irmaosEspectadores: JSON.parse(JSON.stringify(irmaosEspectadores))
@@ -3392,10 +3499,15 @@ function ouvirConfig() {
         Object.keys(d.treinamento).forEach(function(k){ treinamento[k]=d.treinamento[k]; });
       }
     }
-    // Atualiza treinamento de segurança (bloqueio de indicadores)
-    if (d.treinoSeguranca !== undefined) {
-      Object.keys(treinoSeguranca).forEach(function(k){ delete treinoSeguranca[k]; });
-      if (d.treinoSeguranca) Object.keys(d.treinoSeguranca).forEach(function(k){ treinoSeguranca[k]=d.treinoSeguranca[k]; });
+    // Atualiza liberação por treinamento (todas as designações)
+    if (d.treinoSetores !== undefined || d.treinoSeguranca !== undefined) {
+      Object.keys(ROTULO_LIBERACAO).forEach(function(k){ treinoSeguranca[k] = {}; });
+      if (d.treinoSetores) {
+        Object.keys(d.treinoSetores).forEach(function(setor){ treinoSeguranca[setor] = d.treinoSetores[setor] || {}; });
+      } else if (d.treinoSeguranca) {
+        // formato antigo (v2026.09.04 a v2026.10.08): era só dos indicadores
+        treinoSeguranca.indicador = d.treinoSeguranca;
+      }
     }
     // Atualiza eventos
     if (d.eventos !== undefined) {
@@ -3687,10 +3799,10 @@ function irmaosDoSetor(setor) {
       if(nomes.indexOf(p[0])<0) nomes.push(p[0]);
       if(nomes.indexOf(p[1])<0) nomes.push(p[1]);
     });
-    return nomes;
+    return nomes.filter(function(n){ return !bloqueadoSetor(n, 'palco'); });
   }
   var lst = listas[chaveSetor] || [];
-  if (chaveSetor === 'indicador') lst = lst.filter(function(n){ return !indicadorBloqueado(n); });
+  lst = lst.filter(function(n){ return !bloqueadoSetor(n, chaveSetor); });
   return lst;
 }
 
@@ -4058,11 +4170,70 @@ function apagarTodasTrocas() {
 // Atualiza contagem regressiva a cada minuto
 setInterval(renderPainelTrocas, 60000);
 
-// ===================== PWA — SERVICE WORKER =====================
+// ===================== PWA — SERVICE WORKER + ATUALIZAÇÃO =====================
+// Mantenha igual à versão mostrada na Área do Responsável e à VERSAO do sw.js
+window.APP_VERSAO = 'v2026.10.09';
+
+function mostrarBannerNovaVersao() {
+  if (document.getElementById('banner-nova-versao')) return;
+  var d = document.createElement('div');
+  d.id = 'banner-nova-versao';
+  d.style.cssText = 'position:fixed;left:12px;right:12px;bottom:14px;z-index:99990;background:#1a4fa3;color:#fff;padding:12px 16px;border-radius:12px;font:bold 14px Arial,sans-serif;text-align:center;box-shadow:0 6px 20px rgba(0,0,0,.35);cursor:pointer';
+  d.innerHTML = '&#128260; Nova versão disponível — toque aqui para atualizar';
+  d.onclick = function() { location.reload(); };
+  document.body.appendChild(d);
+}
+
+// Compara a versão desta página com a que está no servidor
+function verificarNovaVersao() {
+  if (window.location.protocol === 'file:') return;
+  fetch(window.location.pathname + '?v=' + Date.now(), { cache: 'no-store' })
+    .then(function(r) { return r.ok ? r.text() : ''; })
+    .then(function(t) {
+      var m = t.match(/window\.APP_VERSAO = '([^']+)'/);
+      if (m && m[1] !== window.APP_VERSAO) mostrarBannerNovaVersao();
+    })
+    .catch(function() {});
+}
+
+// Ao voltar ao app (celular desbloqueado, internet voltou): reconecta o Firebase,
+// relê os dados e confere se existe versão nova
+var _ultimoOculto = 0, _ultimaRetomada = 0;
+function retomarApp() {
+  var agora = Date.now();
+  if (agora - _ultimaRetomada < 10000) return;
+  _ultimaRetomada = agora;
+  try {
+    if (window.location.protocol !== 'file:' && typeof firebase !== 'undefined' && firebase.apps && firebase.apps.length) {
+      var fdb = firebase.database();
+      fdb.goOffline();
+      fdb.goOnline();
+    }
+  } catch (e) { console.warn('Erro ao reconectar:', e); }
+  verificarNovaVersao();
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.getRegistration().then(function(r) { if (r) r.update(); }).catch(function() {});
+  }
+}
+document.addEventListener('visibilitychange', function() {
+  if (document.hidden) { _ultimoOculto = Date.now(); return; }
+  if (_ultimoOculto && Date.now() - _ultimoOculto > 15000) retomarApp();
+});
+window.addEventListener('online', retomarApp);
+window.addEventListener('pageshow', function(e) { if (e.persisted) retomarApp(); });
+// Confere também de tempos em tempos enquanto o app fica aberto
+setInterval(function() { if (!document.hidden) verificarNovaVersao(); }, 15 * 60 * 1000);
+
 if ('serviceWorker' in navigator) {
+  var _jaTinhaSW = !!navigator.serviceWorker.controller;
+  navigator.serviceWorker.addEventListener('controllerchange', function() {
+    // Só avisa quando é uma troca de versão (não na primeira instalação)
+    if (_jaTinhaSW) mostrarBannerNovaVersao();
+  });
   window.addEventListener('load', function() {
     navigator.serviceWorker.register('sw.js').then(function(reg) {
       console.log('SW registrado:', reg.scope);
+      setTimeout(verificarNovaVersao, 4000);
     }).catch(function(e) { console.warn('SW falhou:', e); });
   });
 }
@@ -7399,40 +7570,6 @@ function vmcDesignacoesDe(nome) {
 }
 
 try { iniciarFirebase(); } catch(e) { console.error('Erro iniciarFirebase:', e); }
-
-// ── Releitura ao voltar ao app ────────────────────────────────────────
-// Quando o celular desbloqueia ou o app volta do segundo plano,
-// força reconexão com o Firebase para mostrar dados atualizados
-document.addEventListener('visibilitychange', function() {
-  if (document.visibilityState === 'visible' && firebaseOk && db) {
-    ouvirMeses();
-    ouvirConfig();
-  }
-});
-// Quando o celular reconecta à internet
-window.addEventListener('online', function() {
-  if (firebaseOk && db) {
-    ouvirMeses();
-    ouvirConfig();
-  }
-});
-
-// ── Aviso de nova versão (Service Worker) ────────────────────────────
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.addEventListener('controllerchange', function() {
-    // Novo SW ativado — mostra aviso para o usuário atualizar
-    var banner = document.createElement('div');
-    banner.style.cssText = 'position:fixed;bottom:0;left:0;right:0;background:#1a4fa3;color:white;' +
-      'padding:14px 20px;text-align:center;font-size:14px;font-weight:bold;z-index:99999;' +
-      'display:flex;align-items:center;justify-content:center;gap:12px;box-shadow:0 -2px 8px rgba(0,0,0,0.3)';
-    banner.innerHTML = '🔄 Nova versão disponível!' +
-      '<button onclick="location.reload()" style="background:white;color:#1a4fa3;border:none;' +
-      'padding:6px 16px;border-radius:6px;font-size:13px;font-weight:bold;cursor:pointer">Atualizar agora</button>' +
-      '<button onclick="this.parentElement.remove()" style="background:rgba(255,255,255,0.2);color:white;' +
-      'border:none;padding:6px 12px;border-radius:6px;font-size:13px;cursor:pointer">Depois</button>';
-    document.body.appendChild(banner);
-  });
-}
 // Reagenda avisos 24h/1h para quem já tem nome salvo
 setTimeout(reagendarAvisosAoIniciar, 1000);
 // Inicia sistema VMC
