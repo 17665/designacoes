@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Versão: v2026.10.10 — Palco passa a ser UM irmão por reunião (em vez de dupla). Anterior: v2026.10.09 — Liberar/bloquear por treinamento em TODAS as designações (palco, microfone, áudio, vídeo, zoom, indicador). Anterior: v2026.10.08 — Palco: tirar ou trocar um irmão só (sem apagar as duplas à mão). Anterior: v2026.10.07 — Releitura ao voltar ao app, aviso de nova versão e sw.js com rede primeiro. Anterior: v2026.10.06 — Botões de indicadores (atualizar/regenerar) só mexem de hoje em diante; reuniões passadas ficam intactas. Anterior: v2026.10.05 — Treinamento de segurança vence em 12 meses (Plano S-288, item 19) e bloqueia o indicador após vencer. Anterior: v2026.09.04 — bloqueio de indicadores sem treinamento. v2026.09.03 — Botões de WhatsApp (VMC, Discurso Público, Enviar Oradores) + sistema de temas: bloqueio automático de 4 meses, temas indisponíveis temporariamente, repertório por orador -->
+<!-- Versão: v2026.10.11 — Plano de Segurança S-288 com trava de leitura reforçada (rolagem + tempo mínimo + perguntas). Anterior: v2026.10.10 — Palco passa a ser UM irmão por reunião (em vez de dupla). Anterior: v2026.10.09 — Liberar/bloquear por treinamento em TODAS as designações (palco, microfone, áudio, vídeo, zoom, indicador). Anterior: v2026.10.08 — Palco: tirar ou trocar um irmão só (sem apagar as duplas à mão). Anterior: v2026.10.07 — Releitura ao voltar ao app, aviso de nova versão e sw.js com rede primeiro. Anterior: v2026.10.06 — Botões de indicadores (atualizar/regenerar) só mexem de hoje em diante; reuniões passadas ficam intactas. Anterior: v2026.10.05 — Treinamento de segurança vence em 12 meses (Plano S-288, item 19) e bloqueia o indicador após vencer. Anterior: v2026.09.04 — bloqueio de indicadores sem treinamento. v2026.09.03 — Botões de WhatsApp (VMC, Discurso Público, Enviar Oradores) + sistema de temas: bloqueio automático de 4 meses, temas indisponíveis temporariamente, repertório por orador -->
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
@@ -450,6 +450,109 @@ body.dark-mode .conf-badge.pendente { background: #2a2a15; color: #ca8a04; borde
   </div>
 </div>
 
+<!-- OVERLAY PLANO DE SEGURANÇA -->
+<div class="overlay" id="ov-plano-seguranca" style="z-index:99995">
+  <div class="modal-principal" style="max-width:680px">
+    <div class="modal-cab" style="background:#991b1b">
+      <span class="modal-cab-titulo" style="color:white">🛡️ Plano de Segurança — S-288</span>
+      <button class="btn-fechar" onclick="fecharPlanoSeguranca()" style="color:white">✕</button>
+    </div>
+
+    <!-- Aviso de prazo -->
+    <div id="plano-aviso-prazo" style="display:none;background:#fef9c3;border-bottom:2px solid #fcd34d;padding:10px 16px;font-size:13px;color:#92400e;font-weight:bold;text-align:center"></div>
+
+    <!-- Documento para leitura -->
+    <div id="plano-documento" style="height:55vh;overflow-y:auto;padding:20px 24px;font-size:13.5px;line-height:1.8;color:#1a1a2e;background:#fafafa" onscroll="planoVerificarScroll(this)">
+
+      <div style="text-align:center;margin-bottom:20px">
+        <div style="font-size:11px;color:#888;margin-bottom:4px">S-288 · Ano de Serviço 2027</div>
+        <h2 style="font-size:17px;font-weight:900;color:#991b1b;margin:0 0 4px">Plano de Segurança do Salão do Reino</h2>
+        <div style="font-size:12px;color:#888">Congregação Parque Tietê · Atualizado em 04/10/2026</div>
+      </div>
+
+      <h3 style="font-size:13px;font-weight:800;background:#991b1b;color:white;padding:5px 10px;border-radius:5px;margin:16px 0 8px">MEDIDAS GERAIS DE SEGURANÇA</h3>
+      <p><strong>1.</strong> Os portões do Salão do Reino permanecerão sempre fechados. O primeiro irmão que abrir o local poderá destrancar os portões e portas para uso interno e também permitir a entrada de irmãos e irmãs que chegarem antes, desde que sejam pessoas conhecidas ou acompanhadas por alguém da congregação, e não apresentem sinais de comportamento suspeito. A responsabilidade formal passa a ser do indicador da entrada a partir de 30 minutos antes da reunião.</p>
+      <p><strong>2.</strong> O corpo de anciãos determina quem se qualifica para ter a chave do Salão do Reino. Os que não se qualificarem mais deverão entregá-la imediatamente ao secretário. A cada seis meses, o secretário vai revisar a lista.</p>
+      <p><strong>3.</strong> Uma vez por ano, os irmãos Luiz Claudio Oliveira e Manoel Martins vão entrar em contato com a delegacia de polícia local para manter um bom relacionamento.</p>
+      <p><strong>4-8.</strong> Outras medidas incluem: sistema de câmeras de vigilância; portões de segurança no estacionamento; iluminação externa adequada; rondas periódicas pelos responsáveis.</p>
+
+      <h3 style="font-size:13px;font-weight:800;background:#991b1b;color:white;padding:5px 10px;border-radius:5px;margin:16px 0 8px">DESIGNAÇÕES DE INDICADOR</h3>
+      <p><strong>9.</strong> Para cada reunião congregacional, serão designados pelo menos um indicador da entrada e um indicador do auditório. Todos os que já foram treinados devem estar atentos e prontos para agir.</p>
+      <p><strong>10. Indicador da entrada</strong> — A designação começa 30 minutos antes de cada reunião e termina depois que todos os presentes tiverem deixado o local. Responsabilidades: monitorar a entrada; manter portões trancados; inspecionar o estacionamento 30 min após início e 15 min antes do término; trancar portões após oração final; monitorar câmeras; dar ajuda aos presentes; auxiliar na evacuação.</p>
+      <p><strong>11. Indicador do auditório</strong> — Mesma duração. Responsabilidades: dar instruções em emergências; monitorar auditório, palco e temperatura; cuidar de situações que atrapalham; manter discrição e silêncio.</p>
+      <p><strong>Coordenação:</strong> Durante as reuniões, ambos os indicadores permanecem dentro do Salão do Reino, em comunicação constante. Nunca os dois podem se ausentar ao mesmo tempo.</p>
+
+      <h3 style="font-size:13px;font-weight:800;background:#b45309;color:white;padding:5px 10px;border-radius:5px;margin:16px 0 8px">SITUAÇÕES QUE ATRAPALHAM A REUNIÃO</h3>
+      <p><strong>12. Pessoas que causam problemas:</strong> Ignorar problemas menores. Se persistir, pelo menos dois indicadores tentarão falar com a pessoa fora do auditório. Se não cooperar, será convidada a se retirar. Se recusar, a polícia será acionada.</p>
+      <p><strong>13. Alarmes de incêndio:</strong> O indicador do auditório investiga. Se confirmado perigo, orienta todos a sair pela saída mais próxima.</p>
+      <p><strong>14. Emergências médicas:</strong> Dois indicadores vão ao local. Serviços de emergência são acionados. O indicador da entrada garante caminho livre para os profissionais.</p>
+
+      <h3 style="font-size:13px;font-weight:800;background:#7f1d1d;color:white;padding:5px 10px;border-radius:5px;margin:16px 0 8px">SITUAÇÕES DE SÉRIO RISCO DE SEGURANÇA</h3>
+      <p><strong>15. Pessoas violentas:</strong> (1) Ligar para a polícia imediatamente. (2) Impedir a entrada no Salão. (3) Manter calma e orientar todos. (4) Se entrar, vários irmãos imobilizam até a polícia chegar. (5) Direcionar para rota de fuga. (6) Se não puder sair, orientar a se esconder.</p>
+      <p><strong>16. Ameaças de bomba:</strong> O indicador do auditório pede evacuação imediata e contata a polícia. Ninguém deve entrar até a polícia confirmar que é seguro.</p>
+      <p><strong>17. Conflitos civis/emergências:</strong> Os anciãos determinam se é necessário se abrigar no local. Todas as entradas e janelas devem ser protegidas.</p>
+
+      <h3 style="font-size:13px;font-weight:800;background:#374151;color:white;padding:5px 10px;border-radius:5px;margin:16px 0 8px">PLANO DE EVACUAÇÃO</h3>
+      <p><strong>18.</strong> Os indicadores conhecem todas as rotas de fuga e direcionam todos para as saídas. Verificação final do auditório, banheiros e hall. Garantir que todos fiquem reunidos em local seguro. O indicador do auditório é o principal contato com os profissionais de emergência.</p>
+
+      <h3 style="font-size:13px;font-weight:800;background:#374151;color:white;padding:5px 10px;border-radius:5px;margin:16px 0 8px">TREINAMENTO</h3>
+      <p><strong>19.</strong> Todos os indicadores devem se familiarizar com este plano. Uma vez por ano, uma reunião de treinamento será realizada com todos os anciãos e indicadores usando os esboços S-289.</p>
+
+      <h3 style="font-size:13px;font-weight:800;background:#374151;color:white;padding:5px 10px;border-radius:5px;margin:16px 0 8px">AVALIAÇÃO DE RISCO</h3>
+      <p><strong>20.</strong> Uma vez por ano, dois anciãos revisarão este plano e farão uma ronda na propriedade para confirmar que o plano atende às necessidades.</p>
+      <p><strong>21.</strong> Todo incidente de segurança deve ser avaliado usando o Relatório de Incidente de Risco (TO-5).</p>
+
+      <div style="margin-top:24px;padding:14px;background:#f0fdf4;border-radius:8px;border:1.5px solid #86efac">
+        <div style="font-size:12px;font-weight:800;color:#166534;margin-bottom:6px">✅ Acordo — Ano de Serviço 2027</div>
+        <div style="font-size:12px;color:#166534;line-height:1.6">
+          <strong>Congregação Parque Tietê:</strong> Eriton Oliveira (Sec.), Ivo Julião (SS), Luiz Claudio Oliveira, Márcio Motta, Francisco Valério<br>
+          <strong>Congregação Sul:</strong> Alessandro C. Victoria, Carlos A. S. Júnior (Sec.), Guilherme Teixeira (SS), Sergio F. Felipe
+        </div>
+      </div>
+
+      <!-- Marcador de fim do documento -->
+      <div id="plano-fim" style="height:1px;margin-top:20px"></div>
+    </div>
+
+        <!-- Perguntas de verificação (aparecem depois de ler) -->
+    <div id="plano-quiz" style="display:none;height:55vh;overflow-y:auto;padding:18px 22px;background:#fff">
+      <div style="font-size:14px;font-weight:800;color:#991b1b;margin-bottom:4px">❓ Perguntas de verificação</div>
+      <div style="font-size:12px;color:#6b7280;margin-bottom:12px;line-height:1.5">Responda corretamente <strong>todas</strong> para poder confirmar a leitura. As perguntas mudam a cada tentativa.</div>
+      <div id="plano-quiz-lista"></div>
+      <div id="plano-quiz-resultado" style="font-size:13px;margin:10px 0;font-weight:bold;line-height:1.5"></div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button onclick="planoMostrarTexto()" style="flex:1;background:#f3f4f6;color:#374151;border:1px solid #d1d5db;padding:10px;border-radius:8px;font-size:13px;font-weight:bold;cursor:pointer">← Reler o texto</button>
+        <button id="plano-quiz-enviar" onclick="planoConferirQuiz()" style="flex:1;background:#1d4ed8;color:white;border:none;padding:10px;border-radius:8px;font-size:13px;font-weight:bold;cursor:pointer">Conferir respostas</button>
+      </div>
+    </div>
+
+    <!-- Progresso + requisitos de leitura -->
+    <div style="background:#f4f4f2;padding:8px 16px;border-top:1px solid #e0e0e0">
+      <div style="display:flex;align-items:center;gap:10px">
+        <div style="flex:1;background:#e0e0e0;border-radius:4px;height:6px;overflow:hidden">
+          <div id="plano-progresso-bar" style="height:100%;background:#991b1b;width:0%;transition:width .3s;border-radius:4px"></div>
+        </div>
+        <span id="plano-progresso-txt" style="font-size:11px;color:#888;white-space:nowrap">Role para ler...</span>
+      </div>
+      <div id="plano-checklist" style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px"></div>
+    </div>
+
+    <!-- Rodapé com botão de confirmação -->
+    <div style="padding:14px 20px;background:white;border-top:1px solid #e0e0e0">
+      <div id="plano-status-leitura" style="font-size:12px;color:#888;margin-bottom:10px;text-align:center"></div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button id="plano-btn-confirmar" onclick="planoConfirmarLeitura()" disabled
+          style="flex:2;background:#ccc;color:white;border:none;padding:12px;border-radius:8px;font-size:14px;font-weight:bold;cursor:not-allowed">
+          📖 Leia o documento até o final para confirmar
+        </button>
+        <button id="plano-btn-assinar" onclick="planoAssinar()" style="display:none;flex:1;background:#991b1b;color:white;border:none;padding:12px;border-radius:8px;font-size:14px;font-weight:bold;cursor:pointer">
+          ✍️ Assinar
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- OVERLAY SENHA -->
 <div class="overlay" id="ov-senha">
   <div class="modal-senha">
@@ -491,7 +594,7 @@ body.dark-mode .conf-badge.pendente { background: #2a2a15; color: #ca8a04; borde
     <div class="modal-cab">
       <span>
         <span class="modal-cab-titulo">👨‍💼 Área do Responsável</span>
-        <span style="font-size:10px;color:#9ca3af;font-weight:normal;margin-left:8px">v2026.10.10</span>
+        <span style="font-size:10px;color:#9ca3af;font-weight:normal;margin-left:8px">v2026.10.11</span>
       </span>
       <button class="btn-fechar" onclick="fecharPrincipal()">✕</button>
     </div>
@@ -533,6 +636,17 @@ body.dark-mode .conf-badge.pendente { background: #2a2a15; color: #ca8a04; borde
           <p style="font-size:11px;color:#888;margin:4px 0 8px">Aparecem na lista mas NÃO entram nas designações.</p>
           <button onclick="adicionarEspectador()" style="background:#f59e0b;color:white;border:none;padding:6px 14px;border-radius:6px;font-size:12px;font-weight:bold;cursor:pointer">+ Adicionar espectador</button>
           <div id="lista-espectadores" style="margin-top:8px;display:flex;flex-wrap:wrap;gap:6px"></div>
+        </div>
+
+        <!-- PAINEL PLANO DE SEGURANÇA -->
+        <div style="margin-top:20px;background:#fff5f5;border:1.5px solid #fca5a5;border-radius:10px;padding:14px 16px">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+            <div style="font-size:13px;font-weight:800;color:#991b1b">🛡️ Plano de Segurança S-288 — Ano de Serviço 2027</div>
+            <button onclick="renderPlanoSegurancaAdmin()" style="background:#991b1b;color:white;border:none;padding:5px 12px;border-radius:6px;font-size:12px;cursor:pointer">🔄 Atualizar</button>
+          </div>
+          <div id="plano-admin-status">
+            <div style="font-size:12px;color:#888;text-align:center;padding:10px">Clique em Atualizar para ver o status de leitura dos indicadores.</div>
+          </div>
         </div>
       </div>
 
@@ -1323,6 +1437,13 @@ body.dark-mode .conf-badge.pendente { background: #2a2a15; color: #ca8a04; borde
           ✏️ Trocar nome
         </button>
       </div>
+      <!-- Botão Plano de Segurança — aparece só para indicadores -->
+      <div id="plano-btn-wrap" style="display:none;padding:8px 20px;background:#fff5f5;border-bottom:1px solid #fecaca">
+        <button onclick="abrirPlanoSeguranca(meuNome)"
+          style="width:100%;background:#991b1b;color:white;border:none;padding:9px 16px;border-radius:8px;font-size:13px;font-weight:bold;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px">
+          🛡️ Plano de Segurança S-288 — <span id="plano-btn-status">Clique para ler</span>
+        </button>
+      </div>
     </div>
     <div class="modal-body" id="conteudo-minha-escala" style="padding:16px 20px">
       <p style="text-align:center;color:#888;font-size:14px;padding:30px 0">Selecione seu nome para ver suas designações.</p>
@@ -1777,6 +1898,512 @@ function ativarVisualModoTeste() {
   if (logW)  { logW.style.display = 'block'; }
   var logEl = document.getElementById('teste-log');
   if (logEl) logEl.textContent = '— Modo Teste ativado (arquivo local). Gravações bloqueadas. —\n';
+}
+
+// ═══════════════════════════════════════════════════════════
+// PLANO DE SEGURANÇA S-288
+// Trava de leitura em 3 etapas (todas obrigatórias):
+//   1) rolar o texto até o fim
+//   2) tempo mínimo de leitura (calculado pelo tamanho do texto; só conta com a tela
+//      aberta, visível e com atividade do leitor)
+//   3) perguntas de verificação sorteadas (acertar TODAS)
+// ═══════════════════════════════════════════════════════════
+var PLANO_ANCIAOS_ASSINANTES = ['Eriton Oliveira', 'Ivo Julião', 'Luiz Claudio Oliveira', 'Márcio Motta', 'Francisco Valério', 'Alessandro C. Victoria', 'Carlos A. S. Júnior', 'Guilherme Teixeira', 'Sergio F. Felipe'];
+var PLANO_ANO_SERVICO = 2027; // Atualizar quando publicar novo plano (e revisar as perguntas abaixo)
+var PLANO_PRAZO_DIAS_MES_SEGUINTE = true; // até fim do mês seguinte
+
+// ---- Ajustes da trava de leitura ----
+var PLANO_PPM = 150;             // palavras por minuto (leitura atenta de documento técnico)
+var PLANO_TEMPO_MIN_PISO = 180;  // nunca menos que 3 minutos
+var PLANO_OCIOSO_SEG = 120;      // sem tocar/rolar por este tempo, o relógio pausa
+var PLANO_QTD_PERGUNTAS = 4;     // quantas perguntas por tentativa
+var PLANO_ESPERA_ERRO_SEG = 20;  // espera antes de nova tentativa após errar
+
+// Perguntas: 'o' = opções, a PRIMEIRA é a correta (as opções são embaralhadas na tela).
+// 'ref' = onde reler (mostrado quando o irmão erra, sem revelar a resposta).
+var PLANO_PERGUNTAS = [
+  { p: 'Quando começa a designação do indicador da entrada?', ref: 'item 10',
+    o: ['30 minutos antes de cada reunião', 'Quando a reunião começa', '1 hora antes da reunião', 'Depois da oração inicial'] },
+  { p: 'Quem determina quem se qualifica para ter a chave do Salão do Reino?', ref: 'item 2',
+    o: ['O corpo de anciãos', 'Qualquer irmão batizado', 'O indicador da entrada', 'O responsável pelo som'] },
+  { p: 'De quanto em quanto tempo o secretário revisa a lista de quem tem a chave?', ref: 'item 2',
+    o: ['A cada seis meses', 'Todo mês', 'Uma vez por ano', 'A cada dois anos'] },
+  { p: 'Se soar um alarme de incêndio, quem investiga primeiro?', ref: 'item 13',
+    o: ['O indicador do auditório', 'O indicador da entrada', 'O presidente da reunião', 'O secretário'] },
+  { p: 'Quantos indicadores vão ao local numa emergência médica?', ref: 'item 14',
+    o: ['Dois', 'Um', 'Três', 'Todos os indicadores'] },
+  { p: 'Quem garante o caminho livre para os profissionais numa emergência médica?', ref: 'item 14',
+    o: ['O indicador da entrada', 'O indicador do auditório', 'O presidente da reunião', 'Qualquer irmão que estiver perto'] },
+  { p: 'Durante as reuniões, os dois indicadores podem se ausentar ao mesmo tempo?', ref: 'Coordenação',
+    o: ['Nunca; sempre deve haver um dentro do Salão', 'Sim, se for por poucos minutos', 'Sim, durante os cânticos', 'Sim, se as câmeras estiverem ligadas'] },
+  { p: 'Com que frequência é realizada a reunião de treinamento dos indicadores?', ref: 'item 19',
+    o: ['Uma vez por ano', 'Todo mês', 'A cada três meses', 'Só quando houver um incidente'] },
+  { p: 'Se um problema persistir, pelo menos quantos indicadores tentam falar com a pessoa fora do auditório?', ref: 'item 12',
+    o: ['Dois', 'Um', 'Quatro', 'Nenhum; chama-se a polícia direto'] },
+  { p: 'Numa ameaça de bomba, quem pede a evacuação imediata e contata a polícia?', ref: 'item 16',
+    o: ['O indicador do auditório', 'O indicador da entrada', 'O secretário', 'O coordenador do corpo de anciãos'] },
+  { p: 'Qual formulário deve ser usado para avaliar todo incidente de segurança?', ref: 'item 21',
+    o: ['Relatório de Incidente de Risco (TO-5)', 'Formulário S-288', 'Esboço S-289', 'Registro de Presença (S-3)'] },
+  { p: 'Quem é o principal contato com os profissionais de emergência na evacuação?', ref: 'item 18',
+    o: ['O indicador do auditório', 'O indicador da entrada', 'O presidente da reunião', 'O irmão mais antigo presente'] }
+];
+
+var planoScrollCompleto = false;
+var planoNomeAtual = '';
+var planoSegundosLidos = 0;      // tempo de leitura contado (só com a tela ativa)
+var planoTempoMin = 0;           // tempo mínimo exigido (segundos)
+var planoTimer = null;
+var planoUltimaAtividade = 0;
+var planoModo = 'texto';         // 'texto' ou 'quiz'
+var planoQuizOk = false;         // acertou todas as perguntas
+var planoJaConfirmado = false;   // já confirmou neste ano de serviço (Firebase)
+var planoTentativas = 0;
+var planoEsperaAte = 0;
+var planoPerguntasAtuais = [];
+
+// Verifica se é o período de renovação (setembro ou março)
+function planoVerificarPeriodoRenovacao() {
+  var mes = new Date().getMonth() + 1; // 1-12
+  return mes === 9 || mes === 3;
+}
+
+// Chave do Firebase para leitura/assinatura (mesmo caminho de sempre: não perde confirmações antigas)
+function planoChaveFirebase(nome, anoServico) {
+  return 'plano_seguranca/' + anoServico + '/' + nome.replace(/[^a-zA-Z0-9]/g, '_');
+}
+
+function planoFmtTempo(seg) {
+  seg = Math.max(0, Math.round(seg));
+  var m = Math.floor(seg / 60), s = seg % 60;
+  return m + ':' + (s < 10 ? '0' : '') + s;
+}
+
+// Tempo mínimo = palavras do documento ÷ velocidade de leitura (arredondado para cima, de 10 em 10 s)
+function planoCalcularTempoMin() {
+  var el = document.getElementById('plano-documento');
+  var palavras = ((el && (el.innerText || el.textContent)) || '').split(/\s+/).filter(Boolean).length;
+  var seg = Math.round(palavras / PLANO_PPM * 60);
+  seg = Math.ceil(seg / 10) * 10;
+  return Math.max(PLANO_TEMPO_MIN_PISO, seg);
+}
+
+function planoChaveSessao(tipo) { return 'plano_' + tipo + '_' + PLANO_ANO_SERVICO + '_' + planoNomeAtual; }
+function planoSalvarSessao() {
+  try {
+    sessionStorage.setItem(planoChaveSessao('seg'), String(planoSegundosLidos));
+    sessionStorage.setItem(planoChaveSessao('ok'), planoQuizOk ? '1' : '0');
+    sessionStorage.setItem(planoChaveSessao('tent'), String(planoTentativas));
+  } catch (e) {}
+}
+function planoRestaurarSessao() {
+  planoSegundosLidos = 0; planoQuizOk = false; planoTentativas = 0;
+  try {
+    planoSegundosLidos = parseInt(sessionStorage.getItem(planoChaveSessao('seg')) || '0', 10) || 0;
+    planoQuizOk = sessionStorage.getItem(planoChaveSessao('ok')) === '1';
+    planoTentativas = parseInt(sessionStorage.getItem(planoChaveSessao('tent')) || '0', 10) || 0;
+  } catch (e) {}
+}
+
+function planoRegistrarAtividade() { planoUltimaAtividade = Date.now(); }
+
+// Relógio de leitura: 1 tick por segundo. Só conta quando o texto está na tela,
+// a página está visível e o leitor mexeu/rolou/tocou nos últimos PLANO_OCIOSO_SEG segundos.
+function planoTick() {
+  var ov = document.getElementById('ov-plano-seguranca');
+  if (!ov || !ov.classList.contains('aberto')) return;
+  if (planoJaConfirmado || planoModo !== 'texto') return;
+  var visivel = document.visibilityState !== 'hidden';
+  var ativo = (Date.now() - planoUltimaAtividade) <= PLANO_OCIOSO_SEG * 1000;
+  if (visivel && ativo && planoSegundosLidos < planoTempoMin) {
+    planoSegundosLidos++;
+    if (planoSegundosLidos % 5 === 0) planoSalvarSessao();
+  }
+  planoAtualizarEstado(!ativo || !visivel);
+}
+
+function planoChip(ok, txt) {
+  return '<span style="font-size:11px;border-radius:10px;padding:3px 9px;border:1px solid ' + (ok ? '#86efac' : '#d1d5db') +
+    ';background:' + (ok ? '#dcfce7' : '#f9fafb') + ';color:' + (ok ? '#166534' : '#6b7280') + ';font-weight:' + (ok ? 'bold' : 'normal') + '">' +
+    (ok ? '✅ ' : '⬜ ') + txt + '</span>';
+}
+
+// Atualiza os 3 requisitos e o botão principal
+function planoAtualizarEstado(pausado) {
+  var tempoOk = planoSegundosLidos >= planoTempoMin;
+  var leituraOk = planoScrollCompleto && tempoOk;
+  var chk = document.getElementById('plano-checklist');
+  if (chk) {
+    if (planoJaConfirmado) {
+      chk.innerHTML = planoChip(true, 'Leitura já confirmada neste ano de serviço');
+    } else {
+      chk.innerHTML =
+        planoChip(planoScrollCompleto, 'Rolar até o fim') +
+        planoChip(tempoOk, '⏱️ Leitura ' + planoFmtTempo(Math.min(planoSegundosLidos, planoTempoMin)) + ' / ' + planoFmtTempo(planoTempoMin)) +
+        planoChip(planoQuizOk, 'Perguntas de verificação');
+    }
+  }
+  var txt = document.getElementById('plano-progresso-txt');
+  if (txt && !planoJaConfirmado && planoModo === 'texto' && pausado && !tempoOk) {
+    txt.textContent = '⏸️ Relógio pausado — role ou toque na tela';
+  } else if (txt && planoModo === 'texto') {
+    var el = document.getElementById('plano-documento');
+    var den = el ? (el.scrollHeight - el.clientHeight) : 0;
+    var pct = den > 0 ? Math.min(100, Math.round((el.scrollTop / den) * 100)) : (planoScrollCompleto ? 100 : 0);
+    txt.textContent = pct + '% lido';
+  }
+  var btn = document.getElementById('plano-btn-confirmar');
+  if (!btn) return;
+  if (planoJaConfirmado) {
+    btn.disabled = true; btn.style.background = '#166534'; btn.style.cursor = 'default';
+    btn.textContent = '✅ Leitura já confirmada';
+  } else if (planoQuizOk) {
+    btn.disabled = false; btn.style.background = '#166534'; btn.style.cursor = 'pointer';
+    btn.textContent = '✅ Confirmar que li o plano de segurança';
+  } else if (leituraOk) {
+    btn.disabled = false; btn.style.background = '#1d4ed8'; btn.style.cursor = 'pointer';
+    btn.textContent = '❓ Responder as perguntas de verificação';
+  } else {
+    var falta = [];
+    if (!planoScrollCompleto) falta.push('role até o fim');
+    if (!tempoOk) falta.push('faltam ' + planoFmtTempo(planoTempoMin - planoSegundosLidos) + ' de leitura');
+    btn.disabled = true; btn.style.background = '#ccc'; btn.style.cursor = 'not-allowed';
+    btn.textContent = '📖 Leia com atenção: ' + falta.join(' e ');
+  }
+}
+
+// Abre o plano para um indicador específico
+function abrirPlanoSeguranca(nome) {
+  var novoNome = nome || meuNome;
+  if (!novoNome) return;
+  if (novoNome !== planoNomeAtual) {
+    planoNomeAtual = novoNome;
+    planoJaConfirmado = false;
+    planoEsperaAte = 0;
+    planoRestaurarSessao();
+  }
+  planoTempoMin = planoCalcularTempoMin();
+  planoScrollCompleto = planoQuizOk; // quem já passou nas perguntas não precisa rolar de novo
+  planoModo = 'texto';
+  planoRegistrarAtividade();
+
+  document.getElementById('plano-progresso-bar').style.width = planoScrollCompleto ? '100%' : '0%';
+  document.getElementById('plano-progresso-txt').textContent = 'Role para ler...';
+  document.getElementById('plano-documento').style.display = 'block';
+  document.getElementById('plano-quiz').style.display = 'none';
+  document.getElementById('plano-documento').scrollTop = 0;
+
+  // Mostra botão assinar só para anciãos
+  var isAnciao = PLANO_ANCIAOS_ASSINANTES.indexOf(planoNomeAtual) >= 0;
+  var bAss = document.getElementById('plano-btn-assinar');
+  bAss.style.display = isAnciao ? 'inline-block' : 'none';
+  bAss.disabled = false; bAss.textContent = '✍️ Assinar';
+
+  planoAtualizarEstado(false);
+
+  // Verifica status atual no Firebase
+  var nomeConsulta = planoNomeAtual;
+  if (firebaseOk && db) {
+    db.ref(planoChaveFirebase(planoNomeAtual, PLANO_ANO_SERVICO)).once('value', function(snap) {
+      if (nomeConsulta !== planoNomeAtual) return;
+      var dados = snap.val() || {};
+      var statusEl = document.getElementById('plano-status-leitura');
+      var avisoEl  = document.getElementById('plano-aviso-prazo');
+
+      if (dados.confirmadoEm) {
+        planoJaConfirmado = true;
+        var dt = new Date(dados.confirmadoEm).toLocaleDateString('pt-BR');
+        statusEl.innerHTML = '✅ <strong>Você confirmou a leitura em ' + dt + '</strong>' +
+          (dados.assinadoEm ? ' · ✍️ Assinado em ' + new Date(dados.assinadoEm).toLocaleDateString('pt-BR') : '');
+        statusEl.style.color = '#166534';
+        avisoEl.style.display = 'none';
+      } else {
+        planoJaConfirmado = false;
+        // Calcula prazo
+        var hoje = new Date();
+        var proximoMes = new Date(hoje.getFullYear(), hoje.getMonth() + 1 + 1, 0); // fim do mês seguinte
+        var diasRestantes = Math.ceil((proximoMes - hoje) / (1000*60*60*24));
+        statusEl.textContent = '⚠️ Você ainda não confirmou a leitura deste plano.';
+        statusEl.style.color = '#b45309';
+        avisoEl.style.display = 'block';
+        avisoEl.textContent = '⏰ Prazo: até ' + proximoMes.toLocaleDateString('pt-BR') +
+          ' (' + diasRestantes + ' dias). Após o prazo, sua designação como indicador será bloqueada.';
+      }
+      planoAtualizarEstado(false);
+    });
+  }
+
+  document.getElementById('ov-plano-seguranca').classList.add('aberto');
+  if (planoTimer) clearInterval(planoTimer);
+  planoTimer = setInterval(planoTick, 1000);
+}
+
+function fecharPlanoSeguranca() {
+  planoSalvarSessao();
+  if (planoTimer) { clearInterval(planoTimer); planoTimer = null; }
+  document.getElementById('ov-plano-seguranca').classList.remove('aberto');
+}
+
+// Detecta scroll até o fim do documento
+function planoVerificarScroll(el) {
+  planoRegistrarAtividade();
+  var den = el.scrollHeight - el.clientHeight;
+  var pct = den > 0 ? Math.min(100, Math.round((el.scrollTop / den) * 100)) : 100;
+  document.getElementById('plano-progresso-bar').style.width = pct + '%';
+  document.getElementById('plano-progresso-txt').textContent = pct + '% lido';
+  if (pct >= 95 && !planoScrollCompleto) planoScrollCompleto = true;
+  planoAtualizarEstado(false);
+}
+
+// Qualquer toque/mouse/tecla no plano conta como "estou aqui lendo"
+['touchstart', 'mousemove', 'keydown', 'click'].forEach(function(ev) {
+  var ov = document.getElementById('ov-plano-seguranca');
+  if (ov) ov.addEventListener(ev, planoRegistrarAtividade, { passive: true });
+});
+
+// ── Perguntas de verificação ─────────────────────────────────
+function planoEmbaralhar(arr) {
+  var a = arr.slice();
+  for (var i = a.length - 1; i > 0; i--) {
+    var j = Math.floor(Math.random() * (i + 1));
+    var t = a[i]; a[i] = a[j]; a[j] = t;
+  }
+  return a;
+}
+
+function planoMostrarTexto() {
+  planoModo = 'texto';
+  planoRegistrarAtividade();
+  document.getElementById('plano-quiz').style.display = 'none';
+  document.getElementById('plano-documento').style.display = 'block';
+  planoAtualizarEstado(false);
+}
+
+function planoAbrirQuiz() {
+  var falta = Math.ceil((planoEsperaAte - Date.now()) / 1000);
+  if (falta > 0) {
+    alert('Aguarde ' + falta + 's para tentar de novo. Aproveite para reler o texto com calma.');
+    return;
+  }
+  planoModo = 'quiz';
+  var sorteadas = planoEmbaralhar(PLANO_PERGUNTAS).slice(0, PLANO_QTD_PERGUNTAS);
+  planoPerguntasAtuais = sorteadas.map(function(q) {
+    return { p: q.p, ref: q.ref, correta: q.o[0], opcoes: planoEmbaralhar(q.o) };
+  });
+  var html = planoPerguntasAtuais.map(function(q, i) {
+    return '<div id="plano-q' + i + '" style="margin-bottom:14px;padding:10px 12px;border:1.5px solid #e5e7eb;border-radius:10px">' +
+      '<div style="font-size:13px;font-weight:bold;color:#1a1a2e;margin-bottom:6px">' + (i + 1) + '. ' + q.p + '</div>' +
+      q.opcoes.map(function(o, k) {
+        return '<label style="display:block;padding:7px 10px;margin:4px 0;border:1px solid #e5e7eb;border-radius:8px;font-size:13px;cursor:pointer;background:#fafafa">' +
+          '<input type="radio" name="plq' + i + '" value="' + k + '" style="margin-right:8px">' + o + '</label>';
+      }).join('') + '</div>';
+  }).join('');
+  document.getElementById('plano-quiz-lista').innerHTML = html;
+  document.getElementById('plano-quiz-resultado').textContent = '';
+  var env = document.getElementById('plano-quiz-enviar');
+  env.textContent = 'Conferir respostas'; env.onclick = planoConferirQuiz;
+  document.getElementById('plano-documento').style.display = 'none';
+  var qz = document.getElementById('plano-quiz');
+  qz.style.display = 'block'; qz.scrollTop = 0;
+  planoRegistrarAtividade();
+  planoAtualizarEstado(false);
+}
+
+function planoConferirQuiz() {
+  var respostas = [];
+  for (var i = 0; i < planoPerguntasAtuais.length; i++) {
+    var marcado = document.querySelector('input[name="plq' + i + '"]:checked');
+    if (!marcado) { alert('Responda todas as perguntas antes de conferir.'); return; }
+    respostas.push(planoPerguntasAtuais[i].opcoes[parseInt(marcado.value, 10)]);
+  }
+  planoTentativas++;
+  var erradas = [];
+  planoPerguntasAtuais.forEach(function(q, i) {
+    var certa = respostas[i] === q.correta;
+    var box = document.getElementById('plano-q' + i);
+    if (box) box.style.borderColor = certa ? '#86efac' : '#fca5a5';
+    if (!certa) erradas.push(q.ref);
+  });
+  var res = document.getElementById('plano-quiz-resultado');
+  if (erradas.length === 0) {
+    planoQuizOk = true;
+    planoSalvarSessao();
+    res.style.color = '#166534';
+    res.textContent = '✅ Todas corretas! Volte ao texto e confirme a leitura.';
+    var env = document.getElementById('plano-quiz-enviar');
+    env.textContent = 'Continuar'; env.onclick = planoMostrarTexto;
+    planoAtualizarEstado(false);
+  } else {
+    var acertos = planoPerguntasAtuais.length - erradas.length;
+    planoEsperaAte = Date.now() + PLANO_ESPERA_ERRO_SEG * 1000;
+    planoSalvarSessao();
+    res.style.color = '#b91c1c';
+    res.textContent = '❌ Você acertou ' + acertos + ' de ' + planoPerguntasAtuais.length + '. Releia: ' +
+      erradas.filter(function(v, k) { return erradas.indexOf(v) === k; }).join(', ') +
+      '. Depois tente de novo (as perguntas mudam).';
+    var env2 = document.getElementById('plano-quiz-enviar');
+    env2.textContent = 'Tentar de novo'; env2.onclick = planoAbrirQuiz;
+  }
+}
+
+function planoConfirmarLeitura() {
+  if (planoJaConfirmado) return;
+  var tempoOk = planoSegundosLidos >= planoTempoMin;
+  if (!planoScrollCompleto || !tempoOk) return;
+  if (!planoQuizOk) { planoAbrirQuiz(); return; }
+  if (!confirm('Você confirma que leu e compreendeu o Plano de Segurança S-288?')) return;
+
+  if (!firebaseOk || !db) {
+    alert('Sem conexão. Tente novamente.');
+    return;
+  }
+
+  var dados = {
+    nome: planoNomeAtual,
+    confirmadoEm: new Date().toISOString(),
+    anoServico: PLANO_ANO_SERVICO,
+    tempoLeituraSeg: planoSegundosLidos,
+    tentativasPerguntas: planoTentativas
+  };
+
+  db.ref(planoChaveFirebase(planoNomeAtual, PLANO_ANO_SERVICO)).update(dados, function(err) {
+    if (err) { alert('Erro: ' + err.message); return; }
+    planoJaConfirmado = true;
+    var statusEl = document.getElementById('plano-status-leitura');
+    statusEl.innerHTML = '✅ <strong>Leitura confirmada! Obrigado, ' + planoNomeAtual + '.</strong>';
+    statusEl.style.color = '#166534';
+    document.getElementById('plano-aviso-prazo').style.display = 'none';
+    planoAtualizarEstado(false);
+    var btnStatus = document.getElementById('plano-btn-status');
+    if (btnStatus) btnStatus.textContent = '✅ Leitura confirmada';
+  });
+}
+
+function planoAssinar() {
+  if (!planoJaConfirmado && !planoQuizOk) {
+    alert('Conclua a leitura antes de assinar: role até o fim, cumpra o tempo mínimo e acerte as perguntas de verificação.');
+    return;
+  }
+  if (!planoJaConfirmado && !(planoScrollCompleto && planoSegundosLidos >= planoTempoMin)) {
+    alert('Conclua a leitura antes de assinar.');
+    return;
+  }
+  if (!confirm('Você confirma sua ASSINATURA digital no Plano de Segurança S-288?\n\nIsso equivale à assinatura física do documento.')) return;
+
+  if (!firebaseOk || !db) { alert('Sem conexão.'); return; }
+
+  var agora = new Date().toISOString();
+  var dados = { nome: planoNomeAtual, assinadoEm: agora, anoServico: PLANO_ANO_SERVICO };
+  if (!planoJaConfirmado) {
+    dados.confirmadoEm = agora;
+    dados.tempoLeituraSeg = planoSegundosLidos;
+    dados.tentativasPerguntas = planoTentativas;
+  }
+
+  db.ref(planoChaveFirebase(planoNomeAtual, PLANO_ANO_SERVICO)).update(dados, function(err) {
+    if (err) { alert('Erro: ' + err.message); return; }
+    planoJaConfirmado = true;
+    var statusEl = document.getElementById('plano-status-leitura');
+    statusEl.innerHTML = '✅ <strong>Assinado digitalmente! Obrigado, ' + planoNomeAtual + '.</strong>';
+    statusEl.style.color = '#166534';
+    document.getElementById('plano-aviso-prazo').style.display = 'none';
+    document.getElementById('plano-btn-assinar').textContent = '✍️ Assinado';
+    document.getElementById('plano-btn-assinar').disabled = true;
+    planoAtualizarEstado(false);
+  });
+}
+
+// Verifica se indicador tem leitura pendente e bloqueia se prazo venceu
+function planoVerificarBloqueio(nome, callback) {
+  if (!firebaseOk || !db) { callback(false); return; }
+  if (listas.indicador.indexOf(nome) < 0) { callback(false); return; }
+
+  db.ref(planoChaveFirebase(nome, PLANO_ANO_SERVICO)).once('value', function(snap) {
+    var dados = snap.val() || {};
+    if (dados.confirmadoEm) { callback(false); return; }
+
+    // Verifica se prazo venceu (após fim do mês seguinte à publicação)
+    var hoje = new Date();
+    // Plano publicado em outubro 2026, prazo até fim de novembro 2026
+    var prazoVencimento = new Date(2026, 10, 30); // 30/nov/2026
+    if (hoje > prazoVencimento) {
+      callback(true); // bloqueado
+    } else {
+      callback(false); // ainda no prazo
+    }
+  });
+}
+
+// Mostra/esconde o botão do plano na "Minha escala" (só para indicadores)
+function planoAtualizarBotaoMeuNome(nome) {
+  var btnPlanoWrap = document.getElementById('plano-btn-wrap');
+  var btnPlanoStatus = document.getElementById('plano-btn-status');
+  if (btnPlanoWrap && listas.indicador && listas.indicador.indexOf(nome) >= 0) {
+    btnPlanoWrap.style.display = 'block';
+    if (firebaseOk && db) {
+      db.ref(planoChaveFirebase(nome, PLANO_ANO_SERVICO)).once('value', function(snap) {
+        var d = snap.val() || {};
+        if (btnPlanoStatus) btnPlanoStatus.textContent = d.confirmadoEm ? '✅ Leitura confirmada' : '⏳ Leitura pendente!';
+      });
+    }
+  } else if (btnPlanoWrap) {
+    btnPlanoWrap.style.display = 'none';
+  }
+}
+
+// Painel de status na Área do Responsável
+function renderPlanoSegurancaAdmin() {
+  if (!firebaseOk || !db) return;
+  var cont = document.getElementById('plano-admin-status');
+  if (!cont) return;
+
+  cont.innerHTML = '<div style="font-size:13px;color:#888;text-align:center;padding:10px">Carregando...</div>';
+
+  db.ref('plano_seguranca/' + PLANO_ANO_SERVICO).once('value', function(snap) {
+    var dados = snap.val() || {};
+    var indicadores = listas.indicador || [];
+    var total = indicadores.length;
+    var leram = 0;
+    var assinaram = 0;
+
+    var linhas = indicadores.map(function(nome) {
+      var chave = nome.replace(/[^a-zA-Z0-9]/g, '_');
+      var d = dados[chave] || {};
+      var confirmado = !!d.confirmadoEm;
+      var assinado = !!d.assinadoEm;
+      var isAnciao = PLANO_ANCIAOS_ASSINANTES.indexOf(nome) >= 0;
+      if (confirmado) leram++;
+      if (assinado) assinaram++;
+
+      var dtConfirm = confirmado ? new Date(d.confirmadoEm).toLocaleDateString('pt-BR') : '—';
+      var dtAssina  = assinado  ? new Date(d.assinadoEm).toLocaleDateString('pt-BR')  : '—';
+      var detalhe = (confirmado && d.tempoLeituraSeg)
+        ? '<div style="font-size:10px;color:#6b7280">⏱️ ' + planoFmtTempo(d.tempoLeituraSeg) + ' · ' + (d.tentativasPerguntas || 1) + ' tentativa(s) nas perguntas</div>' : '';
+
+      return '<tr>' +
+        '<td style="padding:6px 10px;font-size:12px">' + nome + (isAnciao ? ' <span style="font-size:10px;background:#fef3c7;color:#92400e;border-radius:4px;padding:1px 5px">Ancião</span>' : '') + '</td>' +
+        '<td style="padding:6px 10px;text-align:center;font-size:12px">' + (confirmado ? '✅ ' + dtConfirm + detalhe : '<span style="color:#dc2626">⏳ Pendente</span>') + '</td>' +
+        '<td style="padding:6px 10px;text-align:center;font-size:12px">' + (isAnciao ? (assinado ? '✍️ ' + dtAssina : '<span style="color:#dc2626">⏳ Pendente</span>') : '—') + '</td>' +
+      '</tr>';
+    }).join('');
+
+    cont.innerHTML =
+      '<div style="display:flex;gap:12px;margin-bottom:12px;flex-wrap:wrap">' +
+        '<div style="flex:1;background:#f0fdf4;border-radius:8px;padding:10px;text-align:center">' +
+          '<div style="font-size:22px;font-weight:900;color:#166534">' + leram + '/' + total + '</div>' +
+          '<div style="font-size:11px;color:#166534">Confirmaram leitura</div>' +
+        '</div>' +
+        '<div style="flex:1;background:#fef9c3;border-radius:8px;padding:10px;text-align:center">' +
+          '<div style="font-size:22px;font-weight:900;color:#92400e">' + assinaram + '/' + PLANO_ANCIAOS_ASSINANTES.length + '</div>' +
+          '<div style="font-size:11px;color:#92400e">Anciãos assinaram</div>' +
+        '</div>' +
+      '</div>' +
+      '<table style="width:100%;border-collapse:collapse;font-size:12px">' +
+        '<tr style="background:#f4f4f2"><th style="padding:6px 10px;text-align:left">Indicador</th>' +
+        '<th style="padding:6px 10px">Confirmou Leitura</th>' +
+        '<th style="padding:6px 10px">Assinou</th></tr>' +
+        linhas +
+      '</table>';
+  });
 }
 
 function fecharSenha() {
@@ -4185,7 +4812,7 @@ setInterval(renderPainelTrocas, 60000);
 
 // ===================== PWA — SERVICE WORKER + ATUALIZAÇÃO =====================
 // Mantenha igual à versão mostrada na Área do Responsável e à VERSAO do sw.js
-window.APP_VERSAO = 'v2026.10.10';
+window.APP_VERSAO = 'v2026.10.11';
 
 function mostrarBannerNovaVersao() {
   if (document.getElementById('banner-nova-versao')) return;
@@ -4554,6 +5181,7 @@ function trocarNomeMinhaEscala() {
             _renderMinhaEscalaComConf(nome, cont);
           }
           document.getElementById('btn-trocar-nome').style.display = 'inline-block';
+          planoAtualizarBotaoMeuNome(nome);
           alert('Nome trocado! Agora você é ' + nome);
         } else {
           alert('Você está registrado como ' + nomeSalvo + '.\nClique em "✏️ Trocar nome" para solicitar.');
@@ -4580,6 +5208,7 @@ function trocarNomeMinhaEscala() {
     _renderMinhaEscalaComConf(nome, cont);
   }
   document.getElementById('btn-trocar-nome').style.display = 'inline-block';
+  planoAtualizarBotaoMeuNome(nome); // botão do Plano de Segurança (só para indicadores)
 }function buscarDesignacoesDe(nome) {
   var resultado = [];
   if (!escalaGerada || !nome) return resultado;
