@@ -1,7 +1,7 @@
 // Service Worker — Designações Cong. Parque Tietê
 // IMPORTANTE: a cada atualização do index.html, troque VERSAO abaixo pela mesma versão
 // (ex.: 'v2026.10.07'). Isso faz os celulares descartarem o cache antigo.
-const VERSAO = 'v2026.10.11';
+const VERSAO = 'v2026.10.13';
 const CACHE = 'designacoes-' + VERSAO;
 
 // Guardados na instalação para o app abrir mesmo sem internet
