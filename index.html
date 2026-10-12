@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Versão: v2026.10.13 — Plano de Segurança COMPLETO (21 itens) + novo ano de serviço/plano novo pelo responsável. Anterior: v2026.10.12 — Plano de Segurança: prazo bloqueia indicador que não leu + avisos ao responsável. Anterior: v2026.10.11 — Plano de Segurança S-288 com trava de leitura reforçada (rolagem + tempo mínimo + perguntas). Anterior: v2026.10.10 — Palco passa a ser UM irmão por reunião (em vez de dupla). Anterior: v2026.10.09 — Liberar/bloquear por treinamento em TODAS as designações (palco, microfone, áudio, vídeo, zoom, indicador). Anterior: v2026.10.08 — Palco: tirar ou trocar um irmão só (sem apagar as duplas à mão). Anterior: v2026.10.07 — Releitura ao voltar ao app, aviso de nova versão e sw.js com rede primeiro. Anterior: v2026.10.06 — Botões de indicadores (atualizar/regenerar) só mexem de hoje em diante; reuniões passadas ficam intactas. Anterior: v2026.10.05 — Treinamento de segurança vence em 12 meses (Plano S-288, item 19) e bloqueia o indicador após vencer. Anterior: v2026.09.04 — bloqueio de indicadores sem treinamento. v2026.09.03 — Botões de WhatsApp (VMC, Discurso Público, Enviar Oradores) + sistema de temas: bloqueio automático de 4 meses, temas indisponíveis temporariamente, repertório por orador -->
+<!-- Versão: v2026.10.14 — Cadastro blindado: liberados/bloqueados em nó separado, gravação sem apagar campos desconhecidos, backups diários com restauração. Anterior: v2026.10.13 — Plano de Segurança COMPLETO (21 itens) + novo ano de serviço/plano novo pelo responsável. Anterior: v2026.10.12 — Plano de Segurança: prazo bloqueia indicador que não leu + avisos ao responsável. Anterior: v2026.10.11 — Plano de Segurança S-288 com trava de leitura reforçada (rolagem + tempo mínimo + perguntas). Anterior: v2026.10.10 — Palco passa a ser UM irmão por reunião (em vez de dupla). Anterior: v2026.10.09 — Liberar/bloquear por treinamento em TODAS as designações (palco, microfone, áudio, vídeo, zoom, indicador). Anterior: v2026.10.08 — Palco: tirar ou trocar um irmão só (sem apagar as duplas à mão). Anterior: v2026.10.07 — Releitura ao voltar ao app, aviso de nova versão e sw.js com rede primeiro. Anterior: v2026.10.06 — Botões de indicadores (atualizar/regenerar) só mexem de hoje em diante; reuniões passadas ficam intactas. Anterior: v2026.10.05 — Treinamento de segurança vence em 12 meses (Plano S-288, item 19) e bloqueia o indicador após vencer. Anterior: v2026.09.04 — bloqueio de indicadores sem treinamento. v2026.09.03 — Botões de WhatsApp (VMC, Discurso Público, Enviar Oradores) + sistema de temas: bloqueio automático de 4 meses, temas indisponíveis temporariamente, repertório por orador -->
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
@@ -547,7 +547,7 @@ body.dark-mode .conf-badge.pendente { background: #2a2a15; color: #ca8a04; borde
     <div class="modal-cab">
       <span>
         <span class="modal-cab-titulo">👨‍💼 Área do Responsável</span>
-        <span style="font-size:10px;color:#9ca3af;font-weight:normal;margin-left:8px">v2026.10.13</span>
+        <span style="font-size:10px;color:#9ca3af;font-weight:normal;margin-left:8px">v2026.10.14</span>
       </span>
       <button class="btn-fechar" onclick="fecharPrincipal()">✕</button>
     </div>
@@ -622,6 +622,16 @@ body.dark-mode .conf-badge.pendente { background: #2a2a15; color: #ca8a04; borde
           <div id="plano-admin-status">
             <div style="font-size:12px;color:#888;text-align:center;padding:10px">Clique em Atualizar para ver o status de leitura dos indicadores.</div>
           </div>
+        </div>
+
+        <!-- BACKUPS DO CADASTRO -->
+        <div id="backup-cadastro-box" style="margin-top:20px;background:#f0fdf4;border:1.5px solid #86efac;border-radius:10px;padding:14px 16px">
+          <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:6px;flex-wrap:wrap">
+            <div style="font-size:13px;font-weight:800;color:#166534">🗂️ Backups do cadastro</div>
+            <button onclick="fazerBackupAgora()" style="background:#166534;color:white;border:none;padding:6px 12px;border-radius:6px;font-size:12px;cursor:pointer">💾 Fazer backup agora</button>
+          </div>
+          <div style="font-size:11px;color:#4b5563;line-height:1.5;margin-bottom:8px">Guarda os irmãos de cada lista (Palco, Zoom, Microfone...) e quem está liberado ou bloqueado. Um backup é criado sozinho no 1º acesso do dia como responsável, e ficam os últimos 20. Faça um backup manual antes de trocar a versão do app.</div>
+          <div id="backup-cadastro-lista"></div>
         </div>
       </div>
 
@@ -2998,6 +3008,7 @@ var modoResponsavel = false;
 function ativarModoResponsavel() {
   modoResponsavel = true;
   setTimeout(planoAtualizarAvisoResponsavel, 400); // avisa quem está bloqueado / vai ser bloqueado pelo Plano de Segurança
+  setTimeout(backupAutomaticoDoDia, 2500); // guarda o cadastro do dia, antes de qualquer alteração
   document.getElementById('badge-responsavel').style.display = 'flex';
   document.getElementById('btn-area-responsavel').style.display = 'none';
   document.body.classList.add('modo-responsavel-ativo');
@@ -3143,7 +3154,7 @@ function trocarAba(id,btn) {
   else document.querySelectorAll('.aba-btn').forEach(function(el){
     if((el.getAttribute('onclick')||'').indexOf(id)>=0) el.classList.add('ativa');
   });
-  if(id==='aba-irmaos') { renderGerenciarIrmaos(); renderPlanoSegurancaAdmin(); }
+  if(id==='aba-irmaos') { renderGerenciarIrmaos(); renderPlanoSegurancaAdmin(); renderBackupsCadastro(); }
   if(id==='aba-treino') renderTreino();
   if(id==='aba-trocas') renderGerenciarTrocas();
   if(id==='aba-config') carregarPerguntaAtual();
@@ -4617,18 +4628,146 @@ function toggleModoTeste() {
 
 // ── PERSISTÊNCIA DE MESES NO FIREBASE ──────────────────────────────────────
 
+// ── Gravação do cadastro ─────────────────────────────────────────────────
+// Antes (até v2026.10.13) o app gravava TUDO com .set() em escala/config: uma versão antiga da
+// página, que não conhece campos novos, apagava esses campos ao salvar. Agora:
+//   • grava só os campos que conhece, um a um (.update com caminhos) — o resto fica intacto;
+//   • liberados/bloqueados ficam em escala/liberacoes (fora de escala/config);
+//   • não grava enquanto os dados do Firebase não tiverem carregado;
+//   • guarda um backup do dia antes da primeira alteração.
+var _configCarregada = false, _liberacoesCarregadas = false;
+var _liberacoesRemotas = null;      // conteúdo de escala/liberacoes (null = ainda não existe)
+var _liberacoesJaExistiu = false;   // depois que o espaço novo existe, o formato antigo não serve mais de reserva
+var _treinoFallbackConfig = null;   // liberações no formato antigo, dentro de escala/config
+var _ultimoRemotoConfig = null;     // última cópia de escala/config vista no Firebase
+var _backupFeitoEm = '';
+
+function copiaJSON(v) { return v === undefined ? null : JSON.parse(JSON.stringify(v)); }
+
+function montarCadastroAtual() {
+  return {
+    config: {
+      listas: copiaJSON(listas),
+      treinamento: copiaJSON(treinamento),
+      eventos: copiaJSON(eventos),
+      dataEntradaIrmaos: copiaJSON(dataEntradaIrmaos),
+      irmaosEspectadores: copiaJSON(irmaosEspectadores)
+    },
+    liberacoes: copiaJSON(treinoSeguranca)
+  };
+}
+
+function aplicarLiberacoes() {
+  var fonte = _liberacoesRemotas || (_liberacoesJaExistiu ? null : _treinoFallbackConfig);
+  if (!fonte) return;
+  Object.keys(ROTULO_LIBERACAO).forEach(function(k){ treinoSeguranca[k] = {}; });
+  Object.keys(fonte).forEach(function(setor){ treinoSeguranca[setor] = fonte[setor] || {}; });
+}
+
+function ouvirLiberacoes() {
+  if (!db) return;
+  db.ref('escala/liberacoes').on('value', function(snap) {
+    _liberacoesRemotas = snap.val();
+    if (_liberacoesRemotas) _liberacoesJaExistiu = true;
+    _liberacoesCarregadas = true;
+    aplicarLiberacoes();
+    var ov = document.getElementById('ov-principal');
+    if (ov && ov.classList.contains('aberto')) renderGerenciarIrmaos();
+  });
+}
+
 function salvarConfigFirebase() {
   if (!firebaseOk || !db) return;
-  var payload = {
-    listas: JSON.parse(JSON.stringify(listas)),
-    treinamento: JSON.parse(JSON.stringify(treinamento)),
-    treinoSetores: JSON.parse(JSON.stringify(treinoSeguranca)),
-    eventos: JSON.parse(JSON.stringify(eventos)),
-    dataEntradaIrmaos: JSON.parse(JSON.stringify(dataEntradaIrmaos)),
-    irmaosEspectadores: JSON.parse(JSON.stringify(irmaosEspectadores))
-  };
-  db.ref('escala/config').set(payload)
-    .catch(function(e){ console.warn('Erro ao salvar config:', e); });
+  if (!_configCarregada || !_liberacoesCarregadas) {
+    console.warn('Gravação adiada: os dados do Firebase ainda não carregaram.');
+    if (modoResponsavel) alert('Os dados ainda estão carregando. Espere uns segundos e repita a alteração (nada foi apagado).');
+    return;
+  }
+  backupAutomaticoDoDia(); // guarda o estado de ANTES desta alteração (1x por dia)
+  var cad = montarCadastroAtual();
+  var upd = {};
+  Object.keys(cad.config.listas).forEach(function(k){ upd['listas/' + k] = cad.config.listas[k]; });
+  ['treinamento','eventos','dataEntradaIrmaos','irmaosEspectadores'].forEach(function(k){ upd[k] = cad.config[k]; });
+  db.ref('escala/config').update(upd).catch(function(e){ console.warn('Erro ao salvar config:', e); });
+  var lib = {};
+  Object.keys(ROTULO_LIBERACAO).forEach(function(k){ lib[k] = (cad.liberacoes[k] && Object.keys(cad.liberacoes[k]).length) ? cad.liberacoes[k] : null; });
+  db.ref('escala/liberacoes').update(lib).catch(function(e){ console.warn('Erro ao salvar liberações:', e); });
+}
+
+// ── Backups do cadastro ──
+function backupAutomaticoDoDia() {
+  var chave = hojeISO();
+  if (!firebaseOk || !db || _backupFeitoEm === chave) return;
+  var cfg = _ultimoRemotoConfig, lib = _liberacoesRemotas;
+  if (!cfg && !lib) return;
+  _backupFeitoEm = chave;
+  var ref = db.ref('escala/backups/' + chave);
+  ref.once('value', function(snap) {
+    if (snap.val()) return; // o backup do dia já existe: o primeiro do dia é o que vale
+    ref.set({ criadoEm: new Date().toISOString(), versaoApp: window.APP_VERSAO || '', origem: 'automático', config: copiaJSON(cfg), liberacoes: copiaJSON(lib) });
+    podarBackups();
+  });
+}
+function podarBackups() {
+  db.ref('escala/backups').once('value', function(snap) {
+    var v = snap.val() || {}, chaves = Object.keys(v).sort();
+    chaves.slice(0, Math.max(0, chaves.length - 20)).forEach(function(k){ db.ref('escala/backups/' + k).remove(); });
+  });
+}
+function fazerBackupAgora() {
+  if (!modoResponsavel) { alert('Só o responsável pode fazer isso.'); return; }
+  if (!firebaseOk || !db) { alert('Sem conexão.'); return; }
+  var h = new Date(), p = function(n){ return String(n).padStart(2, '0'); };
+  var chave = hojeISO() + '_' + p(h.getHours()) + p(h.getMinutes()) + '_manual';
+  var cad = montarCadastroAtual();
+  db.ref('escala/backups/' + chave).set({ criadoEm: h.toISOString(), versaoApp: window.APP_VERSAO || '', origem: 'manual', config: cad.config, liberacoes: cad.liberacoes }, function(err) {
+    if (err) { alert('Erro: ' + err.message); return; }
+    podarBackups();
+    renderBackupsCadastro();
+    alert('✅ Backup feito (' + chave + ').');
+  });
+}
+function contarBackup(b) {
+  var nomes = {}, L = (b.config && b.config.listas) || {};
+  ['palco','microfone','indicador','audio','video','zoom'].forEach(function(k){ planoListaDoFirebase(L[k]).forEach(function(n){ nomes[n] = 1; }); });
+  var lib = b.liberacoes || (b.config && b.config.treinoSetores) || {}, regs = 0;
+  Object.keys(lib).forEach(function(st){ regs += Object.keys(lib[st] || {}).length; });
+  return { irmaos: Object.keys(nomes).length, liberacoes: regs };
+}
+function renderBackupsCadastro() {
+  var el = document.getElementById('backup-cadastro-lista');
+  if (!el || !firebaseOk || !db) return;
+  el.innerHTML = '<div style="font-size:12px;color:#888">Carregando...</div>';
+  db.ref('escala/backups').once('value', function(snap) {
+    var v = snap.val() || {}, chaves = Object.keys(v).sort().reverse();
+    if (!chaves.length) { el.innerHTML = '<div style="font-size:12px;color:#6b7280">Ainda não há backups. O primeiro é criado quando você entra como responsável.</div>'; return; }
+    el.innerHTML = chaves.map(function(k) {
+      var b = v[k] || {}, c = contarBackup(b);
+      var dt = b.criadoEm ? new Date(b.criadoEm).toLocaleString('pt-BR') : k;
+      return '<div style="display:flex;justify-content:space-between;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid #e5e7eb;font-size:12px">' +
+        '<div><strong>' + dt + '</strong> · ' + (b.origem || '') + '<div style="color:#6b7280">' + c.irmaos + ' irmãos nas listas · ' + c.liberacoes + ' registros de liberado/bloqueado</div></div>' +
+        '<button onclick="restaurarBackupCadastro(\'' + k + '\')" style="background:#1d4ed8;color:#fff;border:none;border-radius:6px;padding:6px 10px;font-size:12px;cursor:pointer;white-space:nowrap">Restaurar</button></div>';
+    }).join('');
+  });
+}
+function restaurarBackupCadastro(chave) {
+  if (!modoResponsavel) { alert('Só o responsável pode fazer isso.'); return; }
+  if (!firebaseOk || !db) { alert('Sem conexão.'); return; }
+  db.ref('escala/backups/' + chave).once('value', function(snap) {
+    var b = snap.val();
+    if (!b || !b.config) { alert('Backup não encontrado ou vazio.'); return; }
+    var c = contarBackup(b);
+    if (!confirm('Restaurar o cadastro de ' + (b.criadoEm ? new Date(b.criadoEm).toLocaleString('pt-BR') : chave) + '?\n\n' + c.irmaos + ' irmãos nas listas e ' + c.liberacoes + ' registros de liberado/bloqueado.\n\nO cadastro atual será guardado num backup antes (dá para voltar).')) return;
+    var h = new Date(), p = function(n){ return String(n).padStart(2, '0'); };
+    var cad = montarCadastroAtual();
+    db.ref('escala/backups/' + hojeISO() + '_' + p(h.getHours()) + p(h.getMinutes()) + '_antes-de-restaurar').set({
+      criadoEm: h.toISOString(), versaoApp: window.APP_VERSAO || '', origem: 'antes de restaurar', config: cad.config, liberacoes: cad.liberacoes
+    });
+    db.ref('escala/config').set(b.config);
+    var lib = b.liberacoes || b.config.treinoSetores || null;
+    if (lib) db.ref('escala/liberacoes').set(lib);
+    setTimeout(function(){ renderBackupsCadastro(); alert('✅ Cadastro restaurado.'); }, 600);
+  });
 }
 
 var _configHash = '';
@@ -4638,6 +4777,8 @@ function ouvirConfig() {
   if (!db) return;
   db.ref('escala/config').on('value', function(snap) {
     var d = snap.val();
+    _configCarregada = true;
+    _ultimoRemotoConfig = copiaJSON(d);
     if (!d) {
       // Offline/sem dados — reconstrói todosIrmaos das listas hardcoded
       if (MODO_TESTE && window.location.protocol === 'file:') {
@@ -4674,16 +4815,10 @@ function ouvirConfig() {
         Object.keys(d.treinamento).forEach(function(k){ treinamento[k]=d.treinamento[k]; });
       }
     }
-    // Atualiza liberação por treinamento (todas as designações)
-    if (d.treinoSetores !== undefined || d.treinoSeguranca !== undefined) {
-      Object.keys(ROTULO_LIBERACAO).forEach(function(k){ treinoSeguranca[k] = {}; });
-      if (d.treinoSetores) {
-        Object.keys(d.treinoSetores).forEach(function(setor){ treinoSeguranca[setor] = d.treinoSetores[setor] || {}; });
-      } else if (d.treinoSeguranca) {
-        // formato antigo (v2026.09.04 a v2026.10.08): era só dos indicadores
-        treinoSeguranca.indicador = d.treinoSeguranca;
-      }
-    }
+    // Liberados/bloqueados: o lugar novo é escala/liberacoes; o que estiver aqui (formato antigo) só serve de reserva
+    if (d.treinoSetores !== undefined) _treinoFallbackConfig = d.treinoSetores;
+    else if (d.treinoSeguranca !== undefined) _treinoFallbackConfig = { indicador: d.treinoSeguranca };
+    aplicarLiberacoes();
     // Atualiza eventos
     if (d.eventos !== undefined) {
       eventos.length=0;
@@ -4876,6 +5011,7 @@ function iniciarFirebase() {
     firebaseOk = true;
     // Inicializa com dados hardcoded do código (listas, config)
     ouvirConfig();
+    ouvirLiberacoes();
     planoIniciarOuvinte();
     ouvirMeses();
     ouvirTrocas();
@@ -4895,6 +5031,7 @@ function iniciarFirebase() {
     ouvirSubstituicoes();
     ouvirMeses();
     ouvirConfig();
+    ouvirLiberacoes();
     planoIniciarOuvinte();
     carregarSenhaFirebase();
     ouvirAvisosAusencia();
@@ -5349,7 +5486,7 @@ setInterval(renderPainelTrocas, 60000);
 
 // ===================== PWA — SERVICE WORKER + ATUALIZAÇÃO =====================
 // Mantenha igual à versão mostrada na Área do Responsável e à VERSAO do sw.js
-window.APP_VERSAO = 'v2026.10.13';
+window.APP_VERSAO = 'v2026.10.14';
 
 function mostrarBannerNovaVersao() {
   if (document.getElementById('banner-nova-versao')) return;
