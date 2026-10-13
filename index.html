@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Versão: v2026.10.15 — Microfone/Indicadores: escolher entre irmãos já cadastrados; restaurar backup NÃO regenera mais a escala; backups podem ser apagados. Anterior: v2026.10.14 — Cadastro blindado: liberados/bloqueados em nó separado, gravação sem apagar campos desconhecidos, backups diários com restauração. Anterior: v2026.10.13 — Plano de Segurança COMPLETO (21 itens) + novo ano de serviço/plano novo pelo responsável. Anterior: v2026.10.12 — Plano de Segurança: prazo bloqueia indicador que não leu + avisos ao responsável. Anterior: v2026.10.11 — Plano de Segurança S-288 com trava de leitura reforçada (rolagem + tempo mínimo + perguntas). Anterior: v2026.10.10 — Palco passa a ser UM irmão por reunião (em vez de dupla). Anterior: v2026.10.09 — Liberar/bloquear por treinamento em TODAS as designações (palco, microfone, áudio, vídeo, zoom, indicador). Anterior: v2026.10.08 — Palco: tirar ou trocar um irmão só (sem apagar as duplas à mão). Anterior: v2026.10.07 — Releitura ao voltar ao app, aviso de nova versão e sw.js com rede primeiro. Anterior: v2026.10.06 — Botões de indicadores (atualizar/regenerar) só mexem de hoje em diante; reuniões passadas ficam intactas. Anterior: v2026.10.05 — Treinamento de segurança vence em 12 meses (Plano S-288, item 19) e bloqueia o indicador após vencer. Anterior: v2026.09.04 — bloqueio de indicadores sem treinamento. v2026.09.03 — Botões de WhatsApp (VMC, Discurso Público, Enviar Oradores) + sistema de temas: bloqueio automático de 4 meses, temas indisponíveis temporariamente, repertório por orador -->
+<!-- Versão: v2026.10.16 — Aplicar/entrar/sair do modo responsável NÃO refazem mais a escala (só redesenham a salva); celulares redesenham quando um evento muda; modo teste com faixa visível; reparo protegido; gravação da escala não apaga substituições. Anterior: v2026.10.15 — Microfone/Indicadores: escolher entre irmãos já cadastrados; restaurar backup NÃO regenera mais a escala; backups podem ser apagados. Anterior: v2026.10.14 — Cadastro blindado: liberados/bloqueados em nó separado, gravação sem apagar campos desconhecidos, backups diários com restauração. Anterior: v2026.10.13 — Plano de Segurança COMPLETO (21 itens) + novo ano de serviço/plano novo pelo responsável. Anterior: v2026.10.12 — Plano de Segurança: prazo bloqueia indicador que não leu + avisos ao responsável. Anterior: v2026.10.11 — Plano de Segurança S-288 com trava de leitura reforçada (rolagem + tempo mínimo + perguntas). Anterior: v2026.10.10 — Palco passa a ser UM irmão por reunião (em vez de dupla). Anterior: v2026.10.09 — Liberar/bloquear por treinamento em TODAS as designações (palco, microfone, áudio, vídeo, zoom, indicador). Anterior: v2026.10.08 — Palco: tirar ou trocar um irmão só (sem apagar as duplas à mão). Anterior: v2026.10.07 — Releitura ao voltar ao app, aviso de nova versão e sw.js com rede primeiro. Anterior: v2026.10.06 — Botões de indicadores (atualizar/regenerar) só mexem de hoje em diante; reuniões passadas ficam intactas. Anterior: v2026.10.05 — Treinamento de segurança vence em 12 meses (Plano S-288, item 19) e bloqueia o indicador após vencer. Anterior: v2026.09.04 — bloqueio de indicadores sem treinamento. v2026.09.03 — Botões de WhatsApp (VMC, Discurso Público, Enviar Oradores) + sistema de temas: bloqueio automático de 4 meses, temas indisponíveis temporariamente, repertório por orador -->
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
@@ -547,7 +547,7 @@ body.dark-mode .conf-badge.pendente { background: #2a2a15; color: #ca8a04; borde
     <div class="modal-cab">
       <span>
         <span class="modal-cab-titulo">👨‍💼 Área do Responsável</span>
-        <span style="font-size:10px;color:#9ca3af;font-weight:normal;margin-left:8px">v2026.10.15</span>
+        <span style="font-size:10px;color:#9ca3af;font-weight:normal;margin-left:8px">v2026.10.16</span>
       </span>
       <button class="btn-fechar" onclick="fecharPrincipal()">✕</button>
     </div>
@@ -1882,7 +1882,26 @@ function ativarVisualModoTeste() {
   if (badge) { badge.style.display = 'inline-block'; }
   if (logW)  { logW.style.display = 'block'; }
   var logEl = document.getElementById('teste-log');
-  if (logEl) logEl.textContent = '— Modo Teste ativado (arquivo local). Gravações bloqueadas. —\n';
+  if (logEl && !logEl.textContent) logEl.textContent = '— Modo Teste ativado' + (window.location.protocol === 'file:' ? ' (arquivo local)' : '') + '. Gravações bloqueadas. —\n';
+  mostrarBannerTeste();
+}
+
+// Faixa fixa e bem visível enquanto o Modo Teste estiver ligado (nada é gravado)
+function mostrarBannerTeste() {
+  var b = document.getElementById('banner-teste');
+  if (!MODO_TESTE) { if (b) b.remove(); return; }
+  if (!document.body) return;
+  if (!b) { b = document.createElement('div'); b.id = 'banner-teste'; document.body.appendChild(b); }
+  b.style.cssText = 'position:fixed;left:0;right:0;bottom:0;z-index:99996;background:#f59e0b;color:#1a1a2e;padding:10px 14px;font:bold 13px Arial,sans-serif;text-align:center;cursor:pointer';
+  b.textContent = '🧪 MODO TESTE — nada está sendo salvo. Toque para sair';
+  b.onclick = function() {
+    if (location.protocol === 'file:') { alert('Abra o app pelo endereço do site, não pelo arquivo baixado.'); return; }
+    if (location.search.indexOf('teste') !== -1) {
+      var u = new URL(location.href); u.searchParams.delete('teste'); location.href = u.toString();
+    } else {
+      toggleModoTeste();
+    }
+  };
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -3015,46 +3034,8 @@ function ativarModoResponsavel() {
   // Responsável sempre vê a lista, mesmo com modo reparo ativo
   var lista = document.getElementById('lista');
   if (lista) lista.style.display = '';
-  // Re-renderiza para mostrar badges de treino
-  var chaves = Object.keys(mesesGerados).sort();
-  if (chaves.length > 0) {
-    var backup = chaves.slice();
-    var restaurarEGerar = function(dadosEstado) {
-      // NÃO zera substituicoes — são permanentes
-      contadorPulo = {}; aparicoes = {}; ultimoAuditorio = {};
-      mesesGerados = {};
-      idxM.v=0; idxA.v=0; idxV.v=0; idxZ.v=0; idxI.v=0; ultimoPar=-1;
-      if (dadosEstado && dadosEstado.contadorPulo) Object.assign(contadorPulo, dadosEstado.contadorPulo);
-      if (dadosEstado && dadosEstado.aparicoes)    Object.assign(aparicoes, dadosEstado.aparicoes);
-      if (dadosEstado && dadosEstado.idxM !== undefined) idxM.v = dadosEstado.idxM;
-      if (dadosEstado && dadosEstado.idxA !== undefined) idxA.v = dadosEstado.idxA;
-      if (dadosEstado && dadosEstado.idxV !== undefined) idxV.v = dadosEstado.idxV;
-      if (dadosEstado && dadosEstado.idxZ !== undefined) idxZ.v = dadosEstado.idxZ;
-      if (dadosEstado && dadosEstado.idxI !== undefined) idxI.v = dadosEstado.idxI;
-      if (dadosEstado && dadosEstado.ultimoPar !== undefined) ultimoPar = dadosEstado.ultimoPar;
-      // Carrega substituições do Firebase antes de renderizar
-      if (dadosEstado && dadosEstado.substituicoes) Object.assign(substituicoes, dadosEstado.substituicoes);
-      // Restaura escalaGeradaOriginal e escalaGerada do Firebase ANTES de renderizar
-      // Nunca reseta escalaGeradaOriginal aqui — os nomes originais são imutáveis
-      if (dadosEstado && dadosEstado.escalaGerada && Object.keys(dadosEstado.escalaGerada).length > 0) {
-        escalaGerada = {};
-        escalaGeradaOriginal = {};
-        Object.assign(escalaGerada, dadosEstado.escalaGerada);
-        Object.assign(escalaGeradaOriginal, dadosEstado.escalaGerada);
-      }
-      document.getElementById('lista').innerHTML = '';
-      backup.forEach(function(chave){
-        var p = chave.split('-');
-        adicionarMeses(parseInt(p[1]), parseInt(p[0]), 1);
-      });
-      aplicarSubstituicoesNaTela();
-    };
-    if (firebaseOk && db) {
-      db.ref('escala/estado').once('value', function(snap){ restaurarEGerar(snap.val()); });
-    } else {
-      restaurarEGerar(null);
-    }
-  }
+  // Redesenha só para mostrar os badges de treino — usa a escala já salva, sem refazer nada
+  redesenharEscalaLocal(false);
 }
 
 function abrirSubstituicaoManual() {
@@ -3084,52 +3065,16 @@ function sairModoResponsavel() {
   document.getElementById('badge-responsavel').style.display = 'none';
   document.getElementById('btn-area-responsavel').style.display = '';
   document.body.classList.remove('modo-responsavel-ativo');
-  // Re-renderiza escala sem badges de treino — carrega do Firebase para preservar substituições
-  var chaves = Object.keys(mesesGerados).sort();
-  var backup = chaves.slice();
-  contadorPulo = {}; aparicoes = {}; ultimoAuditorio = {};
-  mesesGerados = {};
-  idxM.v=0; idxA.v=0; idxV.v=0; idxZ.v=0; idxI.v=0; ultimoPar=-1;
-  document.getElementById('lista').innerHTML = '';
-  var finalizarSaida = function(dados) {
-    dados = dados || {};
-    if (dados.escalaGerada && Object.keys(dados.escalaGerada).length > 0) {
-      escalaGerada = {};
-      Object.assign(escalaGerada, dados.escalaGerada);
-    }
-    if (dados.substituicoes) {
-      substituicoes = {};
-      Object.assign(substituicoes, dados.substituicoes);
-    }
-    backup.forEach(function(chave) {
-      var p = chave.split('-');
-      var a = parseInt(p[0]), m = parseInt(p[1]);
-      if (dados.escalaGerada && Object.keys(dados.escalaGerada).length > 0) {
-        mesesGerados[chave] = true;
-        renderMesSalvo(m, a, dados.escalaGerada, dados.substituicoes || substituicoes);
-      } else {
-        // não marcar antes: adicionarMeses ignora meses já marcados e a lista ficaria vazia
-        adicionarMeses(m, a, 1);
-      }
-    });
-    var lista = document.getElementById('lista');
-    var blocos = Array.from(lista.querySelectorAll('.mes-bloco'));
-    blocos.sort(function(a,b){ return (a.dataset.chavemes||'').localeCompare(b.dataset.chavemes||''); });
-    blocos.forEach(function(b){ lista.appendChild(b); });
-    aplicarSubstituicoesNaTela();
-    // Re-verifica modo reparo: esconde lista apenas para quem NÃO é o responsável desta sessão
-    if (firebaseOk && db) {
-      db.ref('escala/modoReparo').once('value', function(snap) {
-        var d = snap.val();
-        var eResponsavelDaSessao = sessionStorage.getItem('reparo_acesso') === 'ok';
-        if (d && d.ativo && lista && !eResponsavelDaSessao) lista.style.display = 'none';
-      });
-    }
-  };
+  // Redesenha sem os badges de treino — usa a escala já salva, sem refazer nada
+  redesenharEscalaLocal(false);
+  var lista = document.getElementById('lista');
+  // Re-verifica modo reparo: esconde lista apenas para quem NÃO é o responsável desta sessão
   if (firebaseOk && db) {
-    db.ref('escala/estado').once('value', function(snap) { finalizarSaida(snap.val()); });
-  } else {
-    finalizarSaida(null);
+    db.ref('escala/modoReparo').once('value', function(snap) {
+      var d = snap.val();
+      var eResponsavelDaSessao = sessionStorage.getItem('reparo_acesso') === 'ok';
+      if (d && d.ativo && lista && !eResponsavelDaSessao) lista.style.display = 'none';
+    });
   }
 }
 function abrirPrincipal(abaId) {
@@ -3164,21 +3109,16 @@ function trocarAba(id,btn) {
   if(id==='aba-env' && typeof envAtualizarSelectCongregacoes === 'function') { envAtualizarSelectCongregacoes(); dpRenderRepertorios(); }
 }
 function aplicarTudo() {
-  // Aplica mudancas de irmaos/eventos sem apagar meses ja gerados
+  // "Aplicar e atualizar escala": só fecha o painel e redesenha a escala JÁ SALVA com o cadastro/eventos atuais.
+  // NÃO roda o rodízio de novo, NÃO zera contadores e NÃO apaga as substituições.
   fecharPrincipal();
-  // Re-renderiza os meses existentes preservando a lista
-  var chaves = Object.keys(mesesGerados).sort();
-  if(chaves.length === 0){ gerarEscalaAtual(); return; }
-  substituicoes={}; contadorPulo={}; aparicoes={}; ultimoAuditorio={};
-  idxM.v=0;idxA.v=0;idxV.v=0;idxZ.v=0;idxI.v=0;ultimoPar=-1;
-  var backup = Object.keys(mesesGerados);
-  mesesGerados = {};
-  document.getElementById('lista').innerHTML='';
-  backup.forEach(function(chave){
-    var parts = chave.split('-');
-    var a = parseInt(parts[0]), m = parseInt(parts[1]);
-    adicionarMeses(m, a, 1);
-  });
+  if (firebaseOk && !_estadoCarregado) {
+    alert('Os dados ainda estão carregando. Espere uns segundos e toque em Aplicar de novo (nada foi alterado).');
+    return;
+  }
+  var chaves = Object.keys(mesesGerados);
+  if (chaves.length === 0) { gerarEscalaAtual(); return; }   // primeira vez: ainda não existe escala
+  redesenharEscalaLocal(true);
 }
 
 // ===================== DADOS =====================
@@ -4263,6 +4203,8 @@ function regenerarTudoDoForm(){
   mesesGerados={};
   document.getElementById('lista').innerHTML='';
   idxM.v=0;idxA.v=0;idxV.v=0;idxZ.v=0;idxI.v=0;ultimoPar=-1;
+  escalaGerada={}; escalaGeradaOriginal={};
+  if (firebaseOk && db) db.ref('escala/estado/substituicoes').remove();
   adicionarMeses(mes,ano,qtd);
   salvarMesesFirebase();
 }
@@ -4359,19 +4301,25 @@ function adicionarMeses(mesInicio, ano, qtd) {
   salvarMesesFirebase();
 }
 
+var _estadoCarregado = false; // vira true quando o Firebase respondeu com o estado salvo
 function salvarMesesFirebase() {
   if (!firebaseOk || !db) return;
+  if (!_estadoCarregado) {
+    console.warn('Gravação da escala adiada: o estado do Firebase ainda não carregou.');
+    return;
+  }
+  // update (e não set): grava só estes campos. As substituições NÃO entram aqui — têm caminho próprio
+  // (escala/estado/substituicoes) e uma tela desatualizada não pode apagá-las.
   var payload = {
     meses: mesesGerados,
     contadorPulo: contadorPulo,
     aparicoes: aparicoes,
     idxM: idxM.v, idxA: idxA.v, idxV: idxV.v, idxZ: idxZ.v, idxI: idxI.v,
     ultimoPar: ultimoPar,
-    substituicoes: substituicoes,
     escalaGerada: escalaGerada,
     ultimaDesignacaoSetor: ultimaDesignacaoSetor   // contadores do rodízio
   };
-  db.ref('escala/estado').set(payload).catch(function(e){
+  db.ref('escala/estado').update(payload).catch(function(e){
     console.warn('Erro ao salvar estado:', e);
   });
 }
@@ -4551,6 +4499,10 @@ function removerBloqueioManutencao() {
 }
 
 function toggleModoReparo() {
+  if (MODO_TESTE) {
+    alert('O Modo Teste está ligado: nada é gravado, então o Reparo não chegaria aos outros celulares. Desligue o Modo Teste primeiro.');
+    return;
+  }
   var btn    = document.getElementById('btn-toggle-reparo');
   var badge  = document.getElementById('reparo-badge');
   var prev   = document.getElementById('reparo-preview');
@@ -4566,7 +4518,7 @@ function toggleModoReparo() {
     if (badge) badge.style.display = 'inline-block';
     if (btn)   { btn.textContent = '⏹ Desativar Modo Reparo'; btn.style.background = '#374151'; }
     if (prev)  { prev.style.display = 'block'; document.getElementById('reparo-preview-texto').textContent = msg; }
-    if (firebaseOk && db) db.ref('escala/modoReparo').set({ ativo: true, msg: msg });
+    if (firebaseOk && db) db.ref('escala/modoReparo').set({ ativo: true, msg: msg }).catch(function(e){ alert('Não foi possível ativar o Modo Reparo para os outros: ' + e.message); });
   } else {
     banner.style.display = 'none';
     document.body.style.paddingTop = '';
@@ -4628,6 +4580,7 @@ function toggleModoTeste() {
     badge.style.display = 'inline-block';
     logW.style.display = 'block';
     document.getElementById('teste-log').textContent = '— Modo Teste ativado. Gravações bloqueadas. —\n\n';
+    mostrarBannerTeste();
   } else {
     MODO_TESTE = false;
     if (window._dbReal) db = window._dbReal;
@@ -4636,6 +4589,7 @@ function toggleModoTeste() {
     btn.style.background = '#f59e0b';
     badge.style.display = 'none';
     logW.style.display = 'none';
+    mostrarBannerTeste();
   }
 }
 // ───────────────────────────────────────────────────────────────────────────
@@ -4894,35 +4848,12 @@ function ouvirConfig() {
       renderEventos(); renderTreino(); renderGerenciarIrmaos();        renderEspectadores();
     }
 
-    // ── REGENERA A ESCALA para todos verem igual ──────────────
-if(mudou && Date.now() > (window._ignorarRegeneracaoAte || 0) && Object.keys(mesesGerados).length > 0 && document.getElementById('ov-principal').classList.contains('aberto')){
-      // Debounce: se vier uma rajada de mudanças rápidas seguidas, espera
-      // tudo se acalmar antes de regenerar (evita regenerar várias vezes seguidas).
+    // ── REDESENHA A ESCALA para todos verem igual ─────────────
+    // Em QUALQUER aparelho (não só com o painel aberto) e também quando a config chega depois
+    // da escala. Só redesenha a escala já salva: nunca roda rodízio nem zera contadores.
+    if (Object.keys(mesesGerados).length > 0 && JSON.stringify(eventos) !== _hashEventosRender) {
       clearTimeout(window._regenerarEscalaTimeout);
-      window._regenerarEscalaTimeout = setTimeout(function() {
-      // Busca o estado salvo pra restaurar contadores E pra saber quais meses
-      // realmente existem (lê do Firebase agora, não confia na memória local,
-      // que pode estar desatualizada por causa de outra aba/recarregamento).
-      db.ref('escala/estado').once('value', function(snapEstado) {
-        var dadosEstado = snapEstado.val() || {};
-        var chavesAtivas = Object.keys(dadosEstado.meses || {}).sort();
-        var temEscala = dadosEstado.escalaGerada && Object.keys(dadosEstado.escalaGerada).length > 0;
-        // Só redesenha a escala JÁ SALVA (para refletir eventos/listas). Nunca roda o rodízio
-        // de novo e nunca zera contadores: sem escala salva, não faz nada.
-        if (!temEscala || !chavesAtivas.length) return;
-        if (dadosEstado.substituicoes) Object.assign(substituicoes, dadosEstado.substituicoes);
-        mesesGerados = {};
-        document.getElementById('lista').innerHTML = '';
-        chavesAtivas.forEach(function(chave){
-          var p = chave.split('-');
-          var m = parseInt(p[1]), a = parseInt(p[0]);
-          mesesGerados[chave] = true;
-          renderMesSalvo(m, a, dadosEstado.escalaGerada, dadosEstado.substituicoes || substituicoes);
-        });
-        aplicarSubstituicoesNaTela();
-        atualizarSubtitulo();
-      });
-      }, 1500);
+      window._regenerarEscalaTimeout = setTimeout(function() { redesenharEscalaLocal(false); }, 300);
     }
   });
 }
@@ -4931,6 +4862,7 @@ function ouvirMeses() {
   if (!db) return;
   db.ref('escala/estado').on('value', function(snap) {
     var dados = snap.val();
+    _estadoCarregado = true;
     // Offline sem dados — inicia limpo (pronto para gerar meses de teste)
     if (!dados && MODO_TESTE && window.location.protocol === 'file:') return;
     // Compatibilidade: tenta também o caminho antigo
@@ -4997,9 +4929,11 @@ function processarMeses(mesesSalvos, dadosEstado) {
   var temEscalaGerada = dadosEstado && dadosEstado.escalaGerada && Object.keys(dadosEstado.escalaGerada).length > 0;
 
   // Restaura escalaGeradaOriginal do Firebase (nomes imutáveis do rodízio)
+  // e repovoa escalaGerada (antes ela ficava VAZIA após carregar, e "Aplicar" refazia a escala do zero)
   if (temEscalaGerada) {
     escalaGeradaOriginal = {};
     Object.assign(escalaGeradaOriginal, dadosEstado.escalaGerada);
+    Object.assign(escalaGerada, dadosEstado.escalaGerada);
   }
 
   chavesSalvas.forEach(function(chave){
@@ -5029,6 +4963,35 @@ function processarMeses(mesesSalvos, dadosEstado) {
   if (typeof vmcPreencherSeletores === 'function') vmcPreencherSeletores();
   // Atualiza painel de meses salvos
   if (typeof renderPainelMeses === 'function') renderPainelMeses();
+  // Guarda com quais eventos esta tela foi desenhada (para redesenhar se a config mudar)
+  _hashEventosRender = JSON.stringify(eventos);
+}
+
+// Redesenha a escala JÁ SALVA (sem rodar rodízio, sem zerar contadores, sem apagar substituições)
+var _hashEventosRender = '';
+function redesenharEscalaLocal(salvarSeNovo) {
+  var chaves = Object.keys(mesesGerados).sort();
+  var lista = document.getElementById('lista');
+  if (!chaves.length || !lista) return;
+  var antes = Object.keys(escalaGerada).length;
+  mesesGerados = {};
+  lista.innerHTML = '';
+  chaves.forEach(function(c) {
+    var p = c.split('-');
+    var a = parseInt(p[0]), m = parseInt(p[1]);
+    if (isNaN(a) || isNaN(m)) return;
+    mesesGerados[c] = true;
+    renderMesSalvo(m, a, escalaGerada, substituicoes);
+  });
+  var blocos = [].slice.call(lista.querySelectorAll('.mes-bloco'));
+  blocos.sort(function(a, b) { return (a.dataset.chavemes || '').localeCompare(b.dataset.chavemes || ''); });
+  blocos.forEach(function(b) { lista.appendChild(b); });
+  aplicarSubstituicoesNaTela();
+  atualizarSubtitulo();
+  if (typeof renderPainelMeses === 'function') renderPainelMeses();
+  _hashEventosRender = JSON.stringify(eventos);
+  // Só grava se uma data nova (antes sem escala) acabou de ser preenchida, e só quem é responsável
+  if (salvarSeNovo && Object.keys(escalaGerada).length !== antes) salvarMesesFirebase();
 }
 
 function iniciarFirebase() {
@@ -5052,7 +5015,7 @@ function iniciarFirebase() {
     if (FIREBASE_CONFIG.apiKey === 'COLE_AQUI') { mostrarBannerConfig(); return; }
     if (!firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG);
     var _realDb = firebase.database();
-    if (MODO_TESTE) { window._dbReal = _realDb; db = _criarDbProxy(); } else { db = _realDb; }
+    if (MODO_TESTE) { window._dbReal = _realDb; db = _criarDbProxy(); setTimeout(ativarVisualModoTeste, 600); } else { db = _realDb; }
     firebaseOk = true;
     ouvirTrocas();
     ouvirSubstituicoes();
@@ -5270,12 +5233,15 @@ function aplicarTrocaNaEscala(troca) {
   }
   var chaveB = dataISO + '|' + setor + '|' + nomeOrigB;
 
+  var jaAplicada = (substituicoes[chaveA] === nomeB && substituicoes[chaveB] === nomeA);
   substituicoes[chaveA] = nomeB;
   substituicoes[chaveB] = nomeA;
 
-  // Persiste no Firebase para que todos vejam após recarregar
-  if (firebaseOk && db) {
-    db.ref('escala/estado/substituicoes').set(substituicoes).catch(function(e){
+  // Persiste no Firebase só as DUAS chaves da troca (nunca o conjunto inteiro: uma tela que
+  // ainda não carregou as substituições apagaria todas as outras) e só se ainda não estava gravada
+  if (firebaseOk && db && !jaAplicada) {
+    var par = {}; par[chaveA] = nomeB; par[chaveB] = nomeA;
+    db.ref('escala/estado/substituicoes').update(par).catch(function(e){
       console.warn('Erro ao salvar troca aceita:', e);
     });
   }
@@ -5513,7 +5479,7 @@ setInterval(renderPainelTrocas, 60000);
 
 // ===================== PWA — SERVICE WORKER + ATUALIZAÇÃO =====================
 // Mantenha igual à versão mostrada na Área do Responsável e à VERSAO do sw.js
-window.APP_VERSAO = 'v2026.10.15';
+window.APP_VERSAO = 'v2026.10.16';
 
 function mostrarBannerNovaVersao() {
   if (document.getElementById('banner-nova-versao')) return;
@@ -10219,10 +10185,10 @@ function regenerarRodizioIndicadores() {
       idxM: idxM.v, idxA: idxA.v, idxV: idxV.v, idxZ: idxZ.v, idxI: idxI.v,
       ultimoPar: ultimoPar,
       ultimoAuditorio: ultimoAuditorio,
-      substituicoes: substituicoes,
+      ultimaDesignacaoSetor: ultimaDesignacaoSetor,
       escalaGerada: escalaGeradaOriginal  // sempre salva os nomes ORIGINAIS do rodízio
     };
-    db.ref('escala/estado').set(payload).then(function() {
+    db.ref('escala/estado').update(payload).then(function() {
       alert('✅ ' + atualizados + ' reuniões tiveram os indicadores renovados!');
       location.reload();
     });
@@ -10329,37 +10295,6 @@ function notificarSeDesignado(nome, designacoes) {
 
 // Chamar no carregamento
 window.addEventListener('load', initBotaoNotificacao);
-
-// Aplica as substituições salvas na tela
-function aplicarSubstituicoesNaTela() {
-  console.log('🔄 Aplicando substituições na tela...');
-  
-  Object.keys(substituicoes).forEach(function(chave) {
-    var novo = substituicoes[chave];
-    
-    // Busca spans do modo responsável
-    var spans = document.querySelectorAll('.nome-clicavel[data-chave="' + chave + '"]');
-    
-     // Busca spans do modo normal (troca)
-  var spansTroca = document.querySelectorAll('.nome-troca');
-  spansTroca.forEach(function(s) {
-    var oc = s.getAttribute('onclick') || '';
-    if (oc.indexOf("'" + chave + "'") >= 0) {
-      if (!spans.length) spans = [s];
-      else spans = Array.from(spans).concat(s);
-    }
-  });
-  
-  // Aplica a substituição em cada span encontrado
-  Array.from(spans).forEach(function(span) {
-    if(span.textContent !== novo) {
-      span.textContent = novo;
-    }
-  });
-});
-
-console.log('✅ Substituições aplicadas:', Object.keys(substituicoes).length);
-}
 
 // ===================== BACKUP AUTOMÁTICO =====================
 (function iniciarBackupAutomatico() {
