@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Versão: v2026.10.14 — Cadastro blindado: liberados/bloqueados em nó separado, gravação sem apagar campos desconhecidos, backups diários com restauração. Anterior: v2026.10.13 — Plano de Segurança COMPLETO (21 itens) + novo ano de serviço/plano novo pelo responsável. Anterior: v2026.10.12 — Plano de Segurança: prazo bloqueia indicador que não leu + avisos ao responsável. Anterior: v2026.10.11 — Plano de Segurança S-288 com trava de leitura reforçada (rolagem + tempo mínimo + perguntas). Anterior: v2026.10.10 — Palco passa a ser UM irmão por reunião (em vez de dupla). Anterior: v2026.10.09 — Liberar/bloquear por treinamento em TODAS as designações (palco, microfone, áudio, vídeo, zoom, indicador). Anterior: v2026.10.08 — Palco: tirar ou trocar um irmão só (sem apagar as duplas à mão). Anterior: v2026.10.07 — Releitura ao voltar ao app, aviso de nova versão e sw.js com rede primeiro. Anterior: v2026.10.06 — Botões de indicadores (atualizar/regenerar) só mexem de hoje em diante; reuniões passadas ficam intactas. Anterior: v2026.10.05 — Treinamento de segurança vence em 12 meses (Plano S-288, item 19) e bloqueia o indicador após vencer. Anterior: v2026.09.04 — bloqueio de indicadores sem treinamento. v2026.09.03 — Botões de WhatsApp (VMC, Discurso Público, Enviar Oradores) + sistema de temas: bloqueio automático de 4 meses, temas indisponíveis temporariamente, repertório por orador -->
+<!-- Versão: v2026.10.15 — Microfone/Indicadores: escolher entre irmãos já cadastrados; restaurar backup NÃO regenera mais a escala; backups podem ser apagados. Anterior: v2026.10.14 — Cadastro blindado: liberados/bloqueados em nó separado, gravação sem apagar campos desconhecidos, backups diários com restauração. Anterior: v2026.10.13 — Plano de Segurança COMPLETO (21 itens) + novo ano de serviço/plano novo pelo responsável. Anterior: v2026.10.12 — Plano de Segurança: prazo bloqueia indicador que não leu + avisos ao responsável. Anterior: v2026.10.11 — Plano de Segurança S-288 com trava de leitura reforçada (rolagem + tempo mínimo + perguntas). Anterior: v2026.10.10 — Palco passa a ser UM irmão por reunião (em vez de dupla). Anterior: v2026.10.09 — Liberar/bloquear por treinamento em TODAS as designações (palco, microfone, áudio, vídeo, zoom, indicador). Anterior: v2026.10.08 — Palco: tirar ou trocar um irmão só (sem apagar as duplas à mão). Anterior: v2026.10.07 — Releitura ao voltar ao app, aviso de nova versão e sw.js com rede primeiro. Anterior: v2026.10.06 — Botões de indicadores (atualizar/regenerar) só mexem de hoje em diante; reuniões passadas ficam intactas. Anterior: v2026.10.05 — Treinamento de segurança vence em 12 meses (Plano S-288, item 19) e bloqueia o indicador após vencer. Anterior: v2026.09.04 — bloqueio de indicadores sem treinamento. v2026.09.03 — Botões de WhatsApp (VMC, Discurso Público, Enviar Oradores) + sistema de temas: bloqueio automático de 4 meses, temas indisponíveis temporariamente, repertório por orador -->
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
@@ -547,7 +547,7 @@ body.dark-mode .conf-badge.pendente { background: #2a2a15; color: #ca8a04; borde
     <div class="modal-cab">
       <span>
         <span class="modal-cab-titulo">👨‍💼 Área do Responsável</span>
-        <span style="font-size:10px;color:#9ca3af;font-weight:normal;margin-left:8px">v2026.10.14</span>
+        <span style="font-size:10px;color:#9ca3af;font-weight:normal;margin-left:8px">v2026.10.15</span>
       </span>
       <button class="btn-fechar" onclick="fecharPrincipal()">✕</button>
     </div>
@@ -3516,9 +3516,14 @@ function renderGerenciarIrmaos() {
       var livreMic=(dept.key==='microfone'||dept.key==='indicador');
       var addRow;
       if(livreMic){
-        addRow='<div class="add-row">'+
-          '<input type="text" id="novo-'+dept.key+'" placeholder="Nome do irmão...">'+
-          '<button onclick="adicionarIrmaoLivre(\''+dept.key+'\')">+ Adicionar</button></div>';
+        var dispLm=todosIrmaos.filter(function(n){return listas[dept.key].indexOf(n)<0;}).sort(function(a,b){return a.localeCompare(b,'pt-BR');});
+        var optsLm='<option value="">— escolher entre os já cadastrados —</option>'+dispLm.map(function(n){return'<option value="'+escHtml(n)+'">'+escHtml(n)+'</option>';}).join('');
+        addRow='<div class="add-row" style="margin-bottom:6px">'+
+          '<select id="sel-'+dept.key+'">'+optsLm+'</select>'+
+          '<button onclick="adicionarIrmaoDeCadastrados(\''+dept.key+'\')">+ Adicionar</button></div>'+
+          '<div class="add-row">'+
+          '<input type="text" id="novo-'+dept.key+'" placeholder="ou digite um nome novo...">'+
+          '<button onclick="adicionarIrmaoLivre(\''+dept.key+'\')">+ Novo</button></div>';
       } else {
         var disp=todosIrmaos.filter(function(n){return listas[dept.key].indexOf(n)<0;});
         var opts='<option value="">— selecionar irmão —</option>'+disp.map(function(n){return'<option value="'+n+'">'+n+'</option>';}).join('');
@@ -3604,6 +3609,15 @@ function adicionarIrmaoLivre(dept){
     dataEntradaIrmaos[nome] = hoje.getFullYear()+'-'+String(hoje.getMonth()+1).padStart(2,'0')+'-'+String(hoje.getDate()).padStart(2,'0');
   }
   inp.value=''; renderGerenciarIrmaos(); salvarConfigFirebase();
+}
+function adicionarIrmaoDeCadastrados(dept){
+  var sel=document.getElementById('sel-'+dept); var nome=sel?sel.value:''; if(!nome) return;
+  if(listas[dept].indexOf(nome)>=0) return;
+  novoIrmaoPendente(dept, nome);
+  listas[dept].push(nome);
+  if(todosIrmaos.indexOf(nome)<0) todosIrmaos.push(nome);
+  if(!dataEntradaIrmaos[nome]) dataEntradaIrmaos[nome]=hojeISO();
+  renderGerenciarIrmaos(); salvarConfigFirebase();
 }
 function adicionarIrmaoSelect(dept){
   var sel=document.getElementById('novo-'+dept); var nome=sel.value; if(!nome) return;
@@ -4741,13 +4755,39 @@ function renderBackupsCadastro() {
   db.ref('escala/backups').once('value', function(snap) {
     var v = snap.val() || {}, chaves = Object.keys(v).sort().reverse();
     if (!chaves.length) { el.innerHTML = '<div style="font-size:12px;color:#6b7280">Ainda não há backups. O primeiro é criado quando você entra como responsável.</div>'; return; }
-    el.innerHTML = chaves.map(function(k) {
+    el.innerHTML = '<div style="margin-bottom:6px"><button onclick="apagarBackupsAntigos(5)" style="background:#fef3c7;color:#92400e;border:1px solid #fcd34d;border-radius:6px;padding:5px 10px;font-size:12px;cursor:pointer">&#128465; Apagar antigos (manter os 5 mais recentes)</button></div>' + chaves.map(function(k) {
       var b = v[k] || {}, c = contarBackup(b);
       var dt = b.criadoEm ? new Date(b.criadoEm).toLocaleString('pt-BR') : k;
       return '<div style="display:flex;justify-content:space-between;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid #e5e7eb;font-size:12px">' +
         '<div><strong>' + dt + '</strong> · ' + (b.origem || '') + '<div style="color:#6b7280">' + c.irmaos + ' irmãos nas listas · ' + c.liberacoes + ' registros de liberado/bloqueado</div></div>' +
-        '<button onclick="restaurarBackupCadastro(\'' + k + '\')" style="background:#1d4ed8;color:#fff;border:none;border-radius:6px;padding:6px 10px;font-size:12px;cursor:pointer;white-space:nowrap">Restaurar</button></div>';
+        '<div style="display:flex;gap:6px"><button onclick="restaurarBackupCadastro(\'' + k + '\')" style="background:#1d4ed8;color:#fff;border:none;border-radius:6px;padding:6px 10px;font-size:12px;cursor:pointer;white-space:nowrap">Restaurar</button>' +
+        '<button onclick="apagarBackupCadastro(\'' + k + '\')" title="Apagar este backup" style="background:#fee2e2;color:#b91c1c;border:1px solid #fca5a5;border-radius:6px;padding:6px 10px;font-size:12px;cursor:pointer">&#128465;</button></div></div>';
     }).join('');
+  });
+}
+function apagarBackupCadastro(chave) {
+  if (!modoResponsavel) { alert('Só o responsável pode fazer isso.'); return; }
+  if (!firebaseOk || !db) { alert('Sem conexão.'); return; }
+  if (!confirm('Apagar o backup ' + chave + '?\n\nIsso não pode ser desfeito. A escala e o cadastro atuais NÃO são alterados.')) return;
+  db.ref('escala/backups/' + chave).remove(function(err) {
+    if (err) { alert('Erro: ' + err.message); return; }
+    renderBackupsCadastro();
+  });
+}
+function apagarBackupsAntigos(manter) {
+  if (!modoResponsavel) { alert('Só o responsável pode fazer isso.'); return; }
+  if (!firebaseOk || !db) { alert('Sem conexão.'); return; }
+  db.ref('escala/backups').once('value', function(snap) {
+    var chaves = Object.keys(snap.val() || {}).sort();
+    var apagar = chaves.slice(0, Math.max(0, chaves.length - manter));
+    if (!apagar.length) { alert('Não há backups antigos para apagar (você tem ' + chaves.length + ').'); return; }
+    if (!confirm('Apagar ' + apagar.length + ' backup(s) antigo(s) e manter os ' + manter + ' mais recentes?\n\nIsso não pode ser desfeito. A escala e o cadastro atuais NÃO são alterados.')) return;
+    var upd = {};
+    apagar.forEach(function(k){ upd['escala/backups/' + k] = null; });
+    db.ref().update(upd, function(err) {
+      if (err) { alert('Erro: ' + err.message); return; }
+      renderBackupsCadastro();
+    });
   });
 }
 function restaurarBackupCadastro(chave) {
@@ -4763,10 +4803,14 @@ function restaurarBackupCadastro(chave) {
     db.ref('escala/backups/' + hojeISO() + '_' + p(h.getHours()) + p(h.getMinutes()) + '_antes-de-restaurar').set({
       criadoEm: h.toISOString(), versaoApp: window.APP_VERSAO || '', origem: 'antes de restaurar', config: cad.config, liberacoes: cad.liberacoes
     });
+    // A restauração mexe SÓ no cadastro (escala/config e escala/liberacoes). A escala gerada
+    // (escala/estado) não é tocada, e o ouvinte de config não pode regenerá-la por causa disso.
+    window._ignorarRegeneracaoAte = Date.now() + 15000;
+    clearTimeout(window._regenerarEscalaTimeout);
     db.ref('escala/config').set(b.config);
     var lib = b.liberacoes || b.config.treinoSetores || null;
     if (lib) db.ref('escala/liberacoes').set(lib);
-    setTimeout(function(){ renderBackupsCadastro(); alert('✅ Cadastro restaurado.'); }, 600);
+    setTimeout(function(){ renderBackupsCadastro(); alert('✅ Cadastro restaurado. A escala já gerada (designações) não foi alterada.'); }, 600);
   });
 }
 
@@ -4851,7 +4895,7 @@ function ouvirConfig() {
     }
 
     // ── REGENERA A ESCALA para todos verem igual ──────────────
-if(mudou && Object.keys(mesesGerados).length > 0 && document.getElementById('ov-principal').classList.contains('aberto')){
+if(mudou && Date.now() > (window._ignorarRegeneracaoAte || 0) && Object.keys(mesesGerados).length > 0 && document.getElementById('ov-principal').classList.contains('aberto')){
       // Debounce: se vier uma rajada de mudanças rápidas seguidas, espera
       // tudo se acalmar antes de regenerar (evita regenerar várias vezes seguidas).
       clearTimeout(window._regenerarEscalaTimeout);
@@ -4862,36 +4906,19 @@ if(mudou && Object.keys(mesesGerados).length > 0 && document.getElementById('ov-
       db.ref('escala/estado').once('value', function(snapEstado) {
         var dadosEstado = snapEstado.val() || {};
         var chavesAtivas = Object.keys(dadosEstado.meses || {}).sort();
-        contadorPulo={}; aparicoes={}; ultimoAuditorio={};
-        mesesGerados={};
-        idxM.v=0; idxA.v=0; idxV.v=0; idxZ.v=0; idxI.v=0; ultimoPar=-1;
-        // Restaura estado do rodízio
-        if (dadosEstado.contadorPulo) Object.assign(contadorPulo, dadosEstado.contadorPulo);
-        if (dadosEstado.aparicoes)    Object.assign(aparicoes, dadosEstado.aparicoes);
-        if (dadosEstado.substituicoes) Object.assign(substituicoes, dadosEstado.substituicoes);
-        if (dadosEstado.idxM !== undefined) idxM.v = dadosEstado.idxM;
-        if (dadosEstado.idxA !== undefined) idxA.v = dadosEstado.idxA;
-        if (dadosEstado.idxV !== undefined) idxV.v = dadosEstado.idxV;
-        if (dadosEstado.idxZ !== undefined) idxZ.v = dadosEstado.idxZ;
-        if (dadosEstado.idxI !== undefined) idxI.v = dadosEstado.idxI;
-        if (dadosEstado.ultimoPar !== undefined) ultimoPar = dadosEstado.ultimoPar;
-        // Restaura escalaGerada antes de renderizar
-        if (dadosEstado.escalaGerada) Object.assign(escalaGerada, dadosEstado.escalaGerada);
-        if (dadosEstado.substituicoes) Object.assign(substituicoes, dadosEstado.substituicoes);
-        document.getElementById('lista').innerHTML='';
         var temEscala = dadosEstado.escalaGerada && Object.keys(dadosEstado.escalaGerada).length > 0;
+        // Só redesenha a escala JÁ SALVA (para refletir eventos/listas). Nunca roda o rodízio
+        // de novo e nunca zera contadores: sem escala salva, não faz nada.
+        if (!temEscala || !chavesAtivas.length) return;
+        if (dadosEstado.substituicoes) Object.assign(substituicoes, dadosEstado.substituicoes);
+        mesesGerados = {};
+        document.getElementById('lista').innerHTML = '';
         chavesAtivas.forEach(function(chave){
-          var p=chave.split('-');
-          var m=parseInt(p[1]), a=parseInt(p[0]);
-          mesesGerados[chave]=true;
-          if (temEscala) {
-            // USA a escala já salva — não roda rodízio de novo
-            renderMesSalvo(m, a, dadosEstado.escalaGerada, dadosEstado.substituicoes||{});
-          } else {
-            adicionarMeses(m, a, 1);
-          }
+          var p = chave.split('-');
+          var m = parseInt(p[1]), a = parseInt(p[0]);
+          mesesGerados[chave] = true;
+          renderMesSalvo(m, a, dadosEstado.escalaGerada, dadosEstado.substituicoes || substituicoes);
         });
-        // Reaplica substituições na tela
         aplicarSubstituicoesNaTela();
         atualizarSubtitulo();
       });
@@ -5486,7 +5513,7 @@ setInterval(renderPainelTrocas, 60000);
 
 // ===================== PWA — SERVICE WORKER + ATUALIZAÇÃO =====================
 // Mantenha igual à versão mostrada na Área do Responsável e à VERSAO do sw.js
-window.APP_VERSAO = 'v2026.10.14';
+window.APP_VERSAO = 'v2026.10.15';
 
 function mostrarBannerNovaVersao() {
   if (document.getElementById('banner-nova-versao')) return;
