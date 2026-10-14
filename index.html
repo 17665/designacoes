@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Versão: v2026.10.16 — Aplicar/entrar/sair do modo responsável NÃO refazem mais a escala (só redesenham a salva); celulares redesenham quando um evento muda; modo teste com faixa visível; reparo protegido; gravação da escala não apaga substituições. Anterior: v2026.10.15 — Microfone/Indicadores: escolher entre irmãos já cadastrados; restaurar backup NÃO regenera mais a escala; backups podem ser apagados. Anterior: v2026.10.14 — Cadastro blindado: liberados/bloqueados em nó separado, gravação sem apagar campos desconhecidos, backups diários com restauração. Anterior: v2026.10.13 — Plano de Segurança COMPLETO (21 itens) + novo ano de serviço/plano novo pelo responsável. Anterior: v2026.10.12 — Plano de Segurança: prazo bloqueia indicador que não leu + avisos ao responsável. Anterior: v2026.10.11 — Plano de Segurança S-288 com trava de leitura reforçada (rolagem + tempo mínimo + perguntas). Anterior: v2026.10.10 — Palco passa a ser UM irmão por reunião (em vez de dupla). Anterior: v2026.10.09 — Liberar/bloquear por treinamento em TODAS as designações (palco, microfone, áudio, vídeo, zoom, indicador). Anterior: v2026.10.08 — Palco: tirar ou trocar um irmão só (sem apagar as duplas à mão). Anterior: v2026.10.07 — Releitura ao voltar ao app, aviso de nova versão e sw.js com rede primeiro. Anterior: v2026.10.06 — Botões de indicadores (atualizar/regenerar) só mexem de hoje em diante; reuniões passadas ficam intactas. Anterior: v2026.10.05 — Treinamento de segurança vence em 12 meses (Plano S-288, item 19) e bloqueia o indicador após vencer. Anterior: v2026.09.04 — bloqueio de indicadores sem treinamento. v2026.09.03 — Botões de WhatsApp (VMC, Discurso Público, Enviar Oradores) + sistema de temas: bloqueio automático de 4 meses, temas indisponíveis temporariamente, repertório por orador -->
+<!-- Versão: v2026.10.17 — Minha Escala mostra o slip S-89-T (verde) para Leitura e Ministério, inclusive para irmãs e ajudantes; só semanas de meses publicados; data da reunião = quarta; lista de nomes inclui o cadastro do VMC. Anterior: v2026.10.16 — Aplicar/entrar/sair do modo responsável NÃO refazem mais a escala (só redesenham a salva); celulares redesenham quando um evento muda; modo teste com faixa visível; reparo protegido; gravação da escala não apaga substituições. Anterior: v2026.10.15 — Microfone/Indicadores: escolher entre irmãos já cadastrados; restaurar backup NÃO regenera mais a escala; backups podem ser apagados. Anterior: v2026.10.14 — Cadastro blindado: liberados/bloqueados em nó separado, gravação sem apagar campos desconhecidos, backups diários com restauração. Anterior: v2026.10.13 — Plano de Segurança COMPLETO (21 itens) + novo ano de serviço/plano novo pelo responsável. Anterior: v2026.10.12 — Plano de Segurança: prazo bloqueia indicador que não leu + avisos ao responsável. Anterior: v2026.10.11 — Plano de Segurança S-288 com trava de leitura reforçada (rolagem + tempo mínimo + perguntas). Anterior: v2026.10.10 — Palco passa a ser UM irmão por reunião (em vez de dupla). Anterior: v2026.10.09 — Liberar/bloquear por treinamento em TODAS as designações (palco, microfone, áudio, vídeo, zoom, indicador). Anterior: v2026.10.08 — Palco: tirar ou trocar um irmão só (sem apagar as duplas à mão). Anterior: v2026.10.07 — Releitura ao voltar ao app, aviso de nova versão e sw.js com rede primeiro. Anterior: v2026.10.06 — Botões de indicadores (atualizar/regenerar) só mexem de hoje em diante; reuniões passadas ficam intactas. Anterior: v2026.10.05 — Treinamento de segurança vence em 12 meses (Plano S-288, item 19) e bloqueia o indicador após vencer. Anterior: v2026.09.04 — bloqueio de indicadores sem treinamento. v2026.09.03 — Botões de WhatsApp (VMC, Discurso Público, Enviar Oradores) + sistema de temas: bloqueio automático de 4 meses, temas indisponíveis temporariamente, repertório por orador -->
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
@@ -547,7 +547,7 @@ body.dark-mode .conf-badge.pendente { background: #2a2a15; color: #ca8a04; borde
     <div class="modal-cab">
       <span>
         <span class="modal-cab-titulo">👨‍💼 Área do Responsável</span>
-        <span style="font-size:10px;color:#9ca3af;font-weight:normal;margin-left:8px">v2026.10.16</span>
+        <span style="font-size:10px;color:#9ca3af;font-weight:normal;margin-left:8px">v2026.10.17</span>
       </span>
       <button class="btn-fechar" onclick="fecharPrincipal()">✕</button>
     </div>
@@ -5059,11 +5059,22 @@ function mostrarBannerConfigErro(msg) {
 // ===================== IDENTIDADE LOCAL =====================
 var meuNome = localStorage.getItem('designacoes_nome') || '';
 
+// Nomes que podem ser escolhidos na identificação: irmãos das equipes + todos os cadastrados no VMC
+// (irmãs publicadoras/ajudantes entram sozinhas conforme o responsável as cadastra)
+function nomesParaIdentidade() {
+  var nomes = todosIrmaos.slice();
+  if (typeof vmcTodosNomesCadastrados === 'function') {
+    try { vmcTodosNomesCadastrados().forEach(function(n){ if (n && nomes.indexOf(n) < 0) nomes.push(n); }); } catch(e) {}
+  }
+  return nomes.sort(function(a, b){ return a.localeCompare(b, 'pt-BR'); });
+}
+
 function pedirIdentidade(callback) {
   if (meuNome) { callback(meuNome); return; }
   var sel = document.getElementById('sel-identidade');
   sel.innerHTML = '<option value="">-- selecione seu nome --</option>' +
-    todosIrmaos.map(function(n){ return '<option value="'+n+'">'+n+'</option>'; }).join('');
+    nomesParaIdentidade().map(function(n){ return '<option value="'+escHtml(n)+'">'+escHtml(n)+'</option>'; }).join('') +
+    '<option value="" disabled>Não achou seu nome? Fale com o responsável.</option>';
   identidadeCallback = callback;
   document.getElementById('ov-identidade').classList.add('aberto');
 }
@@ -5479,7 +5490,7 @@ setInterval(renderPainelTrocas, 60000);
 
 // ===================== PWA — SERVICE WORKER + ATUALIZAÇÃO =====================
 // Mantenha igual à versão mostrada na Área do Responsável e à VERSAO do sw.js
-window.APP_VERSAO = 'v2026.10.16';
+window.APP_VERSAO = 'v2026.10.17';
 
 function mostrarBannerNovaVersao() {
   if (document.getElementById('banner-nova-versao')) return;
@@ -5800,7 +5811,8 @@ function abrirMinhaEscala() {
   // Popula select de nomes
   var sel = document.getElementById('sel-minha-escala-nome');
   sel.innerHTML = '<option value="">— selecione seu nome —</option>' +
-    todosIrmaos.map(function(n){ return '<option value="'+n+'"'+(n===meuNome?' selected':'')+'>'+n+'</option>'; }).join('');
+    nomesParaIdentidade().map(function(n){ return '<option value="'+escHtml(n)+'"'+(n===meuNome?' selected':'')+'>'+escHtml(n)+'</option>'; }).join('') +
+    '<option value="" disabled>Não achou seu nome? Fale com o responsável.</option>';
   document.getElementById('ov-minha-escala').classList.add('aberto');
   atualizarBotaoNotif();
 
@@ -5991,6 +6003,16 @@ function _renderMinhaEscalaComConf(nome, cont) {
         }
       }
       
+      if (d.slip) {
+        html += '<div style="margin-bottom:14px;border-radius:12px;overflow:hidden;border:1px solid #5DCAA5">' +
+          slipVerdeHtml(d.slip) +
+          '<div style="background:#fff;padding:10px 14px;border-top:1px solid #9FE1CB">' +
+            (d.parceiros.length ? '<div class="minha-parceiros">'+escHtml(d.parceiros.join(' '))+'</div>' : '') +
+            '<span class="'+badgeCls+'">'+badgeTxt+'</span>' +
+            '<div style="margin-top:8px">'+btns+'</div>' +
+          '</div></div>';
+        return;
+      }
       var cabBg = d.isVMC ? '#0f6e56' : '#7c3aed';
       var icone = d.isVMC ? '📖' : '📌';
       html += '<div class="minha-card">' +
@@ -8837,45 +8859,73 @@ function fecharProgramaVMC() { document.getElementById('ov-programa-vmc').classL
 // Integração com Minha Escala
 function vmcDesignacoesDe(nome) {
   var resultado = [];
+  if (!nome) return resultado;
   var hoje = new Date(); hoje.setHours(0,0,0,0);
+  var mesesNomes = ['janeiro','fevereiro','março','abril','maio','junho','julho',
+                    'agosto','setembro','outubro','novembro','dezembro'];
   Object.keys(vmcDados).sort().forEach(function(iso) {
     var d = vmcDados[iso];
-    var dataObj = new Date(iso + 'T00:00:00');
-    if (dataObj < hoje) return;
+    if (!d) return;
+    var seg = new Date(iso + 'T00:00:00');           // a chave da semana é a segunda-feira
+    if (isNaN(seg.getTime())) return;
+    // Só mostra para a congregação o que o responsável já PUBLICOU (o mês é o da segunda-feira,
+    // igual ao programa público). O responsável vê tudo.
+    if (!modoResponsavel && !vmcPublicados[mesesNomes[seg.getMonth()]]) return;
+    var qua = new Date(seg); qua.setDate(seg.getDate() + 2);   // dia da reunião (quarta)
+    if (qua < hoje) return;
+    var dataLonga = qua.toLocaleDateString('pt-BR',{weekday:'long',day:'2-digit',month:'2-digit',year:'numeric'});
+    var dataCurta = qua.toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit',year:'numeric'});
+
+    function add(setor, campo, parceiros, slip) {
+      resultado.push({
+        dataISO: iso, dataObj: qua, data: dataLonga,
+        setor: setor, campo: campo, setorNome: 'VMC',
+        parceiros: parceiros || [], passada: false, isVMC: true, slip: slip || null
+      });
+    }
+
     var campos = ['presidente','oracaoAbertura','tesouro','joias','leitura','estudoCondutor','estudoLeitor','oracaoFim'];
     campos.forEach(function(campo) {
-      if (d[campo] === nome) {
-        resultado.push({
-          dataISO: iso, dataObj: dataObj,
-          data: dataObj.toLocaleDateString('pt-BR',{weekday:'long',day:'2-digit',month:'2-digit',year:'numeric'}),
-          setor: vmcLabels[campo] || campo,
-          campo: 'vmc_'+campo, setorNome:'VMC', parceiros:[], passada:false, isVMC:true
-        });
-      }
+      if (d[campo] !== nome) return;
+      var slip = (campo === 'leitura') ? { numero: '3. Leitura da Bíblia', nome: nome, ajudante: '', data: dataCurta } : null;
+      add(vmcLabels[campo] || campo, 'vmc_' + campo, [], slip);
     });
-    // Partes dinâmicas
-    (d.ministerioPartes||[]).forEach(function(p, i){
-      if (p.publNome===nome || p.ajudNome===nome || p.irmaoNome===nome) {
-        resultado.push({
-          dataISO:iso, dataObj:dataObj,
-          data:dataObj.toLocaleDateString('pt-BR',{weekday:'long',day:'2-digit',month:'2-digit',year:'numeric'}),
-          setor:'Ministério — '+p.titulo,
-          campo:'vmc_minist_'+i, setorNome:'VMC', parceiros:[], passada:false, isVMC:true
-        });
-      }
+
+    // Faça Seu Melhor no Ministério: o titular e o ajudante recebem a designação (slip S-89-T)
+    (d.ministerioPartes || []).forEach(function(p, i) {
+      var ehPubl = (p.tipo === 'publicadora');
+      var titular = ehPubl ? (p.publNome || '') : (p.irmaoNome || '');
+      var ajud = ehPubl ? (p.ajudNome || '') : '';
+      if (titular !== nome && ajud !== nome) return;
+      var parceiros = [];
+      if (titular === nome && ajud) parceiros.push('com ' + ajud);
+      if (ajud === nome && titular) parceiros.push('com ' + titular);
+      add('Ministério — ' + (p.titulo || '') + (ajud === nome ? ' (ajudante)' : ''), 'vmc_minist_' + i, parceiros,
+          { numero: (i + 4) + '. ' + (p.titulo || ''), nome: titular, ajudante: ajud, data: dataCurta });
     });
-    (d.vidaPartes||[]).forEach(function(p, i){
-      if (p.irmao===nome) {
-        resultado.push({
-          dataISO:iso, dataObj:dataObj,
-          data:dataObj.toLocaleDateString('pt-BR',{weekday:'long',day:'2-digit',month:'2-digit',year:'numeric'}),
-          setor:'Vida Cristã — '+p.titulo,
-          campo:'vmc_vida_'+i, setorNome:'VMC', parceiros:[], passada:false, isVMC:true
-        });
-      }
+
+    (d.vidaPartes || []).forEach(function(p, i) {
+      if (p.irmao === nome) add('Vida Cristã — ' + p.titulo, 'vmc_vida_' + i, [], null);
     });
   });
   return resultado;
+}
+
+// Cartão de designação no modelo S-89-T (verde do VMC), para a tela do irmão/irmã
+function slipVerdeHtml(s) {
+  var v = 'font-weight:bold;color:#085041';
+  return '<div style="background:#0F6E56;color:#E1F5EE;padding:10px 14px;display:flex;align-items:center;gap:10px">' +
+      '<span style="background:#f2a922;border-radius:4px;width:28px;height:28px;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0">&#127806;</span>' +
+      '<div style="font-size:12px;line-height:1.35;font-weight:bold">DESIGNAÇÃO PARA A REUNIÃO<br>NOSSA VIDA E MINISTÉRIO CRISTÃO</div>' +
+    '</div>' +
+    '<div style="background:#E1F5EE;color:#04342C;padding:10px 14px;font-size:13px;line-height:1.9">' +
+      '<div>Nome: <span style="'+v+'">'+escHtml(s.nome)+'</span></div>' +
+      '<div>Ajudante: <span style="'+v+'">'+escHtml(s.ajudante)+'</span></div>' +
+      '<div>Data: <span style="'+v+'">'+escHtml(s.data)+'</span></div>' +
+      '<div>Número da parte: <span style="'+v+'">'+escHtml(s.numero)+'</span></div>' +
+      '<div style="font-size:10.5px;line-height:1.4;color:#085041;margin-top:6px">A lição e a fonte de matéria estão na <em>Apostila da Reunião Vida e Ministério</em>. Veja as instruções na S-38.</div>' +
+      '<div style="font-size:9px;color:#0F6E56;margin-top:4px">S-89-T &nbsp; 11/23</div>' +
+    '</div>';
 }
 
 try { iniciarFirebase(); } catch(e) { console.error('Erro iniciarFirebase:', e); }
