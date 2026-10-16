@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Versão: v2026.10.18 — Relatório de Campo: formulário do publicador (S-4), cadastro de publicadores, painel do secretário com S-1 e cartões S-21. Anterior: v2026.10.17 — Minha Escala mostra o slip S-89-T (verde) para Leitura e Ministério, inclusive para irmãs e ajudantes; só semanas de meses publicados; data da reunião = quarta; lista de nomes inclui o cadastro do VMC. Anterior: v2026.10.16 — Aplicar/entrar/sair do modo responsável NÃO refazem mais a escala (só redesenham a salva); celulares redesenham quando um evento muda; modo teste com faixa visível; reparo protegido; gravação da escala não apaga substituições. Anterior: v2026.10.15 — Microfone/Indicadores: escolher entre irmãos já cadastrados; restaurar backup NÃO regenera mais a escala; backups podem ser apagados. Anterior: v2026.10.14 — Cadastro blindado: liberados/bloqueados em nó separado, gravação sem apagar campos desconhecidos, backups diários com restauração. Anterior: v2026.10.13 — Plano de Segurança COMPLETO (21 itens) + novo ano de serviço/plano novo pelo responsável. Anterior: v2026.10.12 — Plano de Segurança: prazo bloqueia indicador que não leu + avisos ao responsável. Anterior: v2026.10.11 — Plano de Segurança S-288 com trava de leitura reforçada (rolagem + tempo mínimo + perguntas). Anterior: v2026.10.10 — Palco passa a ser UM irmão por reunião (em vez de dupla). Anterior: v2026.10.09 — Liberar/bloquear por treinamento em TODAS as designações (palco, microfone, áudio, vídeo, zoom, indicador). Anterior: v2026.10.08 — Palco: tirar ou trocar um irmão só (sem apagar as duplas à mão). Anterior: v2026.10.07 — Releitura ao voltar ao app, aviso de nova versão e sw.js com rede primeiro. Anterior: v2026.10.06 — Botões de indicadores (atualizar/regenerar) só mexem de hoje em diante; reuniões passadas ficam intactas. Anterior: v2026.10.05 — Treinamento de segurança vence em 12 meses (Plano S-288, item 19) e bloqueia o indicador após vencer. Anterior: v2026.09.04 — bloqueio de indicadores sem treinamento. v2026.09.03 — Botões de WhatsApp (VMC, Discurso Público, Enviar Oradores) + sistema de temas: bloqueio automático de 4 meses, temas indisponíveis temporariamente, repertório por orador -->
+<!-- Versão: v2026.10.19 — Botão 'Não participei neste mês'; avisos Irregular/Inativo só para secretário e responsável. Anterior: v2026.10.18 — Relatório de Campo: formulário do publicador (S-4), cadastro de publicadores, painel do secretário com S-1 e cartões S-21. Anterior: v2026.10.17 — Minha Escala mostra o slip S-89-T (verde) para Leitura e Ministério, inclusive para irmãs e ajudantes; só semanas de meses publicados; data da reunião = quarta; lista de nomes inclui o cadastro do VMC. Anterior: v2026.10.16 — Aplicar/entrar/sair do modo responsável NÃO refazem mais a escala (só redesenham a salva); celulares redesenham quando um evento muda; modo teste com faixa visível; reparo protegido; gravação da escala não apaga substituições. Anterior: v2026.10.15 — Microfone/Indicadores: escolher entre irmãos já cadastrados; restaurar backup NÃO regenera mais a escala; backups podem ser apagados. Anterior: v2026.10.14 — Cadastro blindado: liberados/bloqueados em nó separado, gravação sem apagar campos desconhecidos, backups diários com restauração. Anterior: v2026.10.13 — Plano de Segurança COMPLETO (21 itens) + novo ano de serviço/plano novo pelo responsável. Anterior: v2026.10.12 — Plano de Segurança: prazo bloqueia indicador que não leu + avisos ao responsável. Anterior: v2026.10.11 — Plano de Segurança S-288 com trava de leitura reforçada (rolagem + tempo mínimo + perguntas). Anterior: v2026.10.10 — Palco passa a ser UM irmão por reunião (em vez de dupla). Anterior: v2026.10.09 — Liberar/bloquear por treinamento em TODAS as designações (palco, microfone, áudio, vídeo, zoom, indicador). Anterior: v2026.10.08 — Palco: tirar ou trocar um irmão só (sem apagar as duplas à mão). Anterior: v2026.10.07 — Releitura ao voltar ao app, aviso de nova versão e sw.js com rede primeiro. Anterior: v2026.10.06 — Botões de indicadores (atualizar/regenerar) só mexem de hoje em diante; reuniões passadas ficam intactas. Anterior: v2026.10.05 — Treinamento de segurança vence em 12 meses (Plano S-288, item 19) e bloqueia o indicador após vencer. Anterior: v2026.09.04 — bloqueio de indicadores sem treinamento. v2026.09.03 — Botões de WhatsApp (VMC, Discurso Público, Enviar Oradores) + sistema de temas: bloqueio automático de 4 meses, temas indisponíveis temporariamente, repertório por orador -->
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
@@ -549,7 +549,7 @@ body.dark-mode .conf-badge.pendente { background: #2a2a15; color: #ca8a04; borde
     <div class="modal-cab">
       <span>
         <span class="modal-cab-titulo">👨‍💼 Área do Responsável</span>
-        <span style="font-size:10px;color:#9ca3af;font-weight:normal;margin-left:8px">v2026.10.18</span>
+        <span style="font-size:10px;color:#9ca3af;font-weight:normal;margin-left:8px">v2026.10.19</span>
       </span>
       <button class="btn-fechar" onclick="fecharPrincipal()">✕</button>
     </div>
@@ -3032,6 +3032,7 @@ function ativarModoResponsavel() {
   setTimeout(backupAutomaticoDoDia, 2500); // guarda o cadastro do dia, antes de qualquer alteração
   document.getElementById('badge-responsavel').style.display = 'flex';
   document.getElementById('btn-area-responsavel').style.display = 'none';
+  try { rcOuvirSecretario(); rcAtualizarBadge(); } catch(e) {}
   document.body.classList.add('modo-responsavel-ativo');
   // Responsável sempre vê a lista, mesmo com modo reparo ativo
   var lista = document.getElementById('lista');
@@ -5498,7 +5499,7 @@ setInterval(renderPainelTrocas, 60000);
 
 // ===================== PWA — SERVICE WORKER + ATUALIZAÇÃO =====================
 // Mantenha igual à versão mostrada na Área do Responsável e à VERSAO do sw.js
-window.APP_VERSAO = 'v2026.10.18';
+window.APP_VERSAO = 'v2026.10.19';
 
 function mostrarBannerNovaVersao() {
   if (document.getElementById('banner-nova-versao')) return;
@@ -8951,6 +8952,7 @@ var rcInicio = RC_INICIO_PADRAO;
 var rcSecLogado = false, rcSecOuvindo = false, rcIniciado = false;
 var rcMesSel = '', rcAbaSel = 'pubs', rcCartaoPessoa = '', rcCartaoAno = '';
 var rcFormCat = {}, rcLanc = null, rcMeuCtx = null;
+var rcPriv = {};        // chave -> { desde:'AAAA-MM', ultimoRelato:'AAAA-MM' }  (só o secretário/responsável lê)
 
 // ---------- utilitários ----------
 function rcSlug(nome) {
@@ -9019,6 +9021,64 @@ function rcApagar(caminho) {
   if (r) r.remove().catch(function(e) { alert('Não foi possível apagar: ' + e.message); });
 }
 
+// ---------- avisos: Irregular / Inativo (só secretário e responsável veem) ----------
+function rcMesEncerrado(mes) {   // enviado ao JW Hub, ou já passou do dia 20 do mês seguinte
+  if (rcFechados[mes]) return true;
+  var lim = rcMesDeslocado(mes, 1).split('-');
+  return new Date() > new Date(parseInt(lim[0], 10), parseInt(lim[1], 10) - 1, 20, 23, 59, 59);
+}
+function rcDiffMeses(a, b) {
+  var pa = a.split('-'), pb = b.split('-');
+  return (parseInt(pa[0], 10) * 12 + parseInt(pa[1], 10)) - (parseInt(pb[0], 10) * 12 + parseInt(pb[1], 10));
+}
+function rcPrimeiroMesComDados() {
+  var ks = Object.keys(rcRelatorios).filter(function(k) { return rcRelatorios[k] && Object.keys(rcRelatorios[k]).length; }).sort();
+  return ks[0] || '';
+}
+// Conta os meses SEGUIDOS sem relatar, do mais recente para trás.
+// 1 a 5 meses = irregular; mais de 5 (6 ou mais) = inativo.
+function rcStatusPub(k) {
+  var inicio = rcPrimeiroMesComDados();
+  if (!inicio) return { tipo: 'ok', meses: 0, lista: [] };
+  var priv = rcPriv[k] || {};
+  var desde = (priv.desde && priv.desde > inicio) ? priv.desde : inicio;
+  var lista = [], mes = rcMesAnteriorKey(), parou = false;
+  while (mes >= desde) {
+    var r = (rcRelatorios[mes] || {})[k];
+    if (r && r.participou !== false) { parou = true; break; }
+    if (r && r.participou === false) lista.push(mes);          // avisou que não participou
+    else if (rcMesEncerrado(mes)) lista.push(mes);            // mês encerrado e sem relatório
+    mes = rcMesDeslocado(mes, -1);                            // mês ainda aberto sem relatório: pendente, não conta
+  }
+  var n = lista.length;
+  // quem já estava ausente antes de o app existir: usa o "último relato" informado pelo secretário
+  if (!parou && n > 0 && desde === inicio && priv.ultimoRelato && priv.ultimoRelato < inicio) {
+    n += Math.max(0, rcDiffMeses(inicio, priv.ultimoRelato) - 1);
+  }
+  return { tipo: n > 5 ? 'inativo' : (n >= 1 ? 'irregular' : 'ok'), meses: n, lista: lista };
+}
+function rcAvisos() {
+  var out = [];
+  rcAtivosChaves().forEach(function(k) {
+    var s = rcStatusPub(k);
+    if (s.tipo !== 'ok') out.push({ k: k, tipo: s.tipo, meses: s.meses, lista: s.lista });
+  });
+  out.sort(function(a, b) { return b.meses - a.meses || rcPorNome(a.k, b.k); });
+  return out;
+}
+function rcBadgeStatus(k) {
+  var s = rcStatusPub(k);
+  if (s.tipo === 'inativo') return '<span style="background:#fee2e2;color:#991b1b;font-size:11px;font-weight:bold;padding:2px 7px;border-radius:9px">Inativo</span>';
+  if (s.tipo === 'irregular') return '<span style="background:#fef3c7;color:#92400e;font-size:11px;font-weight:bold;padding:2px 7px;border-radius:9px">Irregular</span>';
+  return '';
+}
+function rcAtualizarBadge() {   // contador vermelho no botão, só para quem está autenticado
+  var b = document.getElementById('btn-secretario');
+  if (!b) return;
+  var n = (modoResponsavel || rcSecLogado) ? rcAvisos().length : 0;
+  b.innerHTML = '🗂️ Secretário' + (n ? ' <span style="background:#ef4444;color:white;border-radius:10px;padding:1px 7px;font-size:12px;margin-left:4px">' + n + '</span>' : '');
+}
+
 // ---------- somas (S-1) ----------
 function rcCalcS1(mes) {
   var o = { pub: { rel: 0, est: 0 }, aux: { rel: 0, hor: 0, est: 0 }, reg: { rel: 0, hor: 0, est: 0 } };
@@ -9057,9 +9117,11 @@ function rcOuvirSecretario() {   // só o secretário/responsável baixa os rela
   rcSecOuvindo = true;
   db.ref('escala/campo/relatorios').on('value', function(s) { rcRelatorios = s.val() || {}; rcAposMudanca(); });
   db.ref('escala/campo/s1').on('value', function(s) { rcS1 = s.val() || {}; rcAposMudanca(); });
+  db.ref('escala/campo/privado').on('value', function(s) { rcPriv = s.val() || {}; rcAposMudanca(); });
 }
 function rcAberto(id) { var e = document.getElementById(id); return !!(e && e.classList.contains('aberto')); }
 function rcAposMudanca() {
+  try { rcAtualizarBadge(); } catch (e) {}
   if (rcAberto('ov-secretario')) rcRenderSec(true);
   // não redesenha o formulário do publicador enquanto ele está preenchendo ou depois de enviar
   if (rcAberto('ov-relcampo') && rcMeuCtx && !rcMeuCtx.enviado && !document.getElementById('rcp-participou')) rcRenderMeu();
@@ -9119,7 +9181,8 @@ function rcSeletorMes() {
 function rcRenderSec(manterScroll) {
   var corpo = document.getElementById('rc-sec-corpo');
   if (!corpo) return;
-  var abas = [['pubs', 'Publicadores'], ['rel', 'Relatórios'], ['s1', 'S-1'], ['cart', 'Cartões S-21']];
+  var nAvisos = rcAvisos().length;
+  var abas = [['pubs', 'Publicadores'], ['rel', 'Relatórios'], ['avisos', 'Avisos' + (nAvisos ? ' (' + nAvisos + ')' : '')], ['s1', 'S-1'], ['cart', 'Cartões S-21']];
   if (modoResponsavel) abas.push(['acesso', 'Acesso']);
   document.getElementById('rc-sec-abas').innerHTML = abas.map(function(a) {
     var at = a[0] === rcAbaSel;
@@ -9131,6 +9194,7 @@ function rcRenderSec(manterScroll) {
   });
   if (rcAbaSel === 'pubs') rcRenderPubs(corpo);
   else if (rcAbaSel === 'rel') rcRenderRel(corpo);
+  else if (rcAbaSel === 'avisos') rcRenderAvisos(corpo);
   else if (rcAbaSel === 's1') rcRenderS1(corpo);
   else if (rcAbaSel === 'cart') rcRenderCartao(corpo);
   else rcRenderAcesso(corpo);
@@ -9161,7 +9225,11 @@ function rcRenderPubs(corpo) {
   if (!ativos.length) h += '<div style="padding:18px;text-align:center;color:#888;background:#f8fafc;border-radius:8px">Lista vazia. Toque em "Importar nomes" para começar.</div>';
   ativos.forEach(function(k) {
     var p = rcPubs[k];
-    h += '<div style="display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid #eef0f3;flex-wrap:wrap"><span style="flex:1;min-width:140px;font-size:14px">' + escHtml(p.nome) + '</span>' +
+    var ult = (rcPriv[k] || {}).ultimoRelato || '';
+    var optsUlt = '<option value="">Último relato: ?</option>';
+    for (var u = 0; u < 24; u++) { var mu = rcMesDeslocado(rcMesAnteriorKey(), -u); optsUlt += '<option value="' + mu + '"' + (mu === ult ? ' selected' : '') + '>' + RC_MESES[parseInt(mu.split('-')[1], 10) - 1].slice(0, 3) + '/' + mu.slice(2, 4) + '</option>'; }
+    h += '<div style="display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid #eef0f3;flex-wrap:wrap"><span style="flex:1;min-width:140px;font-size:14px">' + escHtml(p.nome) + ' ' + rcBadgeStatus(k) + '</span>' +
+      '<select onchange="rcSetUltimo(\'' + k + '\',this.value)" title="Último mês em que a pessoa relatou antes do app (só para quem já estava ausente)" style="padding:6px;border:1px solid #cbd5e1;border-radius:6px;font-size:12px;color:#5e6370">' + optsUlt + '</select>' +
       '<select onchange="rcSetCat(\'' + k + '\',this.value)" style="padding:6px;border:1px solid #cbd5e1;border-radius:6px;font-size:13px"><option value="publicador"' + (p.categoria !== 'regular' ? ' selected' : '') + '>Publicador</option><option value="regular"' + (p.categoria === 'regular' ? ' selected' : '') + '>Pioneiro regular</option></select>' +
       '<button onclick="rcTirar(\'' + k + '\')" style="background:#fee2e2;color:#991b1b;border:1px solid #fca5a5;padding:5px 9px;border-radius:6px;font-size:12px;cursor:pointer">Não é publicador</button></div>';
   });
@@ -9182,14 +9250,17 @@ function rcImportar() {
   var novos = rcNomesEscalaEVmc().filter(function(n) { return n && !existentes[n]; });
   if (!novos.length) { alert('Não há nomes novos para importar.'); return; }
   if (!confirm('Vão entrar ' + novos.length + ' nomes na lista de publicadores (todos como "Publicador"). Depois você tira quem não é publicador e marca os pioneiros regulares. Continuar?')) return;
-  var mapa = {};
+  var mapa = {}, mapaPriv = {};
   novos.forEach(function(n) {
     var k = rcChaveNova(n);
     rcPubs[k] = { nome: n, categoria: 'publicador', ativo: true };
     mapa[k] = rcPubs[k];
+    rcPriv[k] = { desde: rcMesAnteriorKey() }; mapaPriv[k] = rcPriv[k];
   });
   var r = rcRef('publicadores');
   if (r) r.update(mapa).catch(function(e) { alert('Não foi possível salvar: ' + e.message); });
+  var rp = rcRef('privado');
+  if (rp) rp.update(mapaPriv).catch(function(e) { console.warn(e); });
   rcRenderSec();
 }
 function rcAddPub() {
@@ -9200,6 +9271,13 @@ function rcAddPub() {
   var k = rcChaveNova(nome);
   rcPubs[k] = { nome: nome, categoria: cat === 'regular' ? 'regular' : 'publicador', ativo: true };
   rcGravar('publicadores/' + k, rcPubs[k]);
+  rcPriv[k] = { desde: rcMesAnteriorKey() }; rcGravar('privado/' + k, rcPriv[k]);
+  rcRenderSec();
+}
+function rcSetUltimo(k, v) {
+  rcPriv[k] = rcPriv[k] || {};
+  if (v) rcPriv[k].ultimoRelato = v; else delete rcPriv[k].ultimoRelato;
+  rcGravar('privado/' + k + '/ultimoRelato', v || null);
   rcRenderSec();
 }
 function rcSetCat(k, v) { if (!rcPubs[k]) return; rcPubs[k].categoria = (v === 'regular' ? 'regular' : 'publicador'); rcGravar('publicadores/' + k + '/categoria', rcPubs[k].categoria); }
@@ -9220,11 +9298,13 @@ function rcRenderRel(corpo) {
   var mes = rcMesSel, rel = rcRelatorios[mes] || {};
   var ativos = rcAtivosChaves();
   var enviados = Object.keys(rel).filter(function(k) { return rel[k] && rel[k].participou !== false; });
+  var naoPart = Object.keys(rel).filter(function(k) { return rel[k] && rel[k].participou === false; });
+  naoPart.sort(function(a, b) { return (rel[a].nome || a).localeCompare(rel[b].nome || b, 'pt-BR'); });
   enviados.sort(function(a, b) { return (rel[a].nome || a).localeCompare(rel[b].nome || b, 'pt-BR'); });
   var faltam = ativos.filter(function(k) { return !rel[k]; });
   var atrasado = rcAtrasado(mes) && !rcFechados[mes];
   var h = '<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:12px">' + rcSeletorMes() +
-    '<span style="font-size:13px;color:#5e6370"><b>' + enviados.length + '</b> relataram · <b style="color:' + (faltam.length ? '#b45309' : '#0f6e56') + '">' + faltam.length + '</b> faltam</span>' +
+    '<span style="font-size:13px;color:#5e6370"><b>' + enviados.length + '</b> relataram · <b>' + naoPart.length + '</b> não participaram · <b style="color:' + (faltam.length ? '#b45309' : '#0f6e56') + '">' + faltam.length + '</b> faltam</span>' +
     (rcFechados[mes] ? '<span style="background:#e1f5ee;color:#085041;font-size:12px;font-weight:bold;padding:3px 8px;border-radius:10px">✓ mês enviado</span>' : '') + '</div>';
   h += '<div style="font-size:13px;font-weight:bold;margin:10px 0 4px;color:' + (atrasado ? '#b91c1c' : '#b45309') + '">Faltam relatar' + (atrasado ? ' — já passou do dia 10' : '') + '</div>';
   if (!faltam.length) h += '<div style="padding:10px;color:#0f6e56;font-size:13px">Todos da lista já relataram.</div>';
@@ -9233,6 +9313,13 @@ function rcRenderRel(corpo) {
       '<span style="font-size:12px;color:#5e6370">' + rcCatRotulo(rcPubs[k].categoria) + '</span>' +
       '<button onclick="rcLancar(\'' + k + '\')" style="background:#1a4fa3;color:white;border:none;padding:5px 10px;border-radius:6px;font-size:12px;cursor:pointer">Lançar</button></div>';
   });
+  if (naoPart.length) {
+    h += '<div style="font-size:13px;font-weight:bold;margin:16px 0 4px;color:#92400e">Não participaram neste mês</div>';
+    naoPart.forEach(function(k) {
+      h += '<div style="display:flex;align-items:center;gap:8px;padding:7px 10px;margin-bottom:4px;border-radius:8px;background:#fffbeb"><span style="flex:1;font-size:14px">' + escHtml(rel[k].nome || k) + ' ' + (rcPubs[k] ? rcBadgeStatus(k) : '') + '</span>' +
+        '<button onclick="rcLancar(\'' + k + '\')" style="background:white;color:#1a4fa3;border:1px solid #93b4e8;padding:5px 10px;border-radius:6px;font-size:12px;cursor:pointer">Editar</button></div>';
+    });
+  }
   h += '<div style="font-size:13px;font-weight:bold;margin:16px 0 4px;color:#0f6e56">Já relataram</div>';
   if (!enviados.length) h += '<div style="padding:10px;color:#888;font-size:13px">Nenhum relatório neste mês ainda.</div>';
   enviados.forEach(function(k) {
@@ -9242,6 +9329,32 @@ function rcRenderRel(corpo) {
       '<button onclick="rcLancar(\'' + k + '\')" style="background:white;color:#1a4fa3;border:1px solid #93b4e8;padding:5px 10px;border-radius:6px;font-size:12px;cursor:pointer">Editar</button></div>';
   });
   corpo.innerHTML = h;
+}
+
+// ----- aba Avisos (irregulares e inativos) -----
+function rcAbrevMeses(lista) {
+  return lista.slice().reverse().map(function(m) { return RC_MESES[parseInt(m.split('-')[1], 10) - 1].slice(0, 3).toLowerCase(); }).join(', ');
+}
+function rcRenderAvisos(corpo) {
+  var av = rcAvisos(), inativos = av.filter(function(a) { return a.tipo === 'inativo'; }), irreg = av.filter(function(a) { return a.tipo === 'irregular'; });
+  var inicio = rcPrimeiroMesComDados();
+  var h = '<div style="font-size:12px;color:#5e6370;background:#f8fafc;border-radius:8px;padding:9px 11px;margin-bottom:12px;line-height:1.5">' +
+    '<b>Irregular:</b> não participou ou não relatou nos últimos meses (de 1 a 5 meses seguidos). <b>Inativo:</b> mais de 5 meses seguidos sem relatar. ' +
+    'Estes avisos só aparecem para o secretário e para o responsável, nunca para os publicadores.' +
+    (inicio ? ' O app conta a partir de ' + rcMesRotulo(inicio) + '; para quem já estava ausente antes, informe o "Último relato" na aba Publicadores.' : '') + '</div>';
+  if (!inicio) h += '<div style="padding:18px;text-align:center;color:#888">Os avisos começam a aparecer quando houver relatórios lançados.</div>';
+  else if (!av.length) h += '<div style="padding:18px;text-align:center;color:#0f6e56">Nenhum aviso no momento. ✓</div>';
+  var bloco = function(titulo, cor, fundo, lista) {
+    if (!lista.length) return '';
+    var x = '<div style="font-size:13px;font-weight:bold;margin:14px 0 4px;color:' + cor + '">' + titulo + ' (' + lista.length + ')</div>';
+    lista.forEach(function(a) {
+      x += '<div style="display:flex;align-items:center;gap:8px;padding:8px 10px;margin-bottom:4px;border-radius:8px;background:' + fundo + ';flex-wrap:wrap">' +
+        '<span style="flex:1;min-width:150px;font-size:14px">' + escHtml(rcPubs[a.k].nome) + '</span>' +
+        '<span style="font-size:12px;color:#5e6370">' + rcCatRotulo(rcPubs[a.k].categoria) + ' · ' + a.meses + (a.meses === 1 ? ' mês' : ' meses') + ' sem relatar' + (a.lista.length ? ' (' + rcAbrevMeses(a.lista) + ')' : '') + '</span></div>';
+    });
+    return x;
+  };
+  corpo.innerHTML = h + bloco('Inativos', '#991b1b', '#fef2f2', inativos) + bloco('Irregulares', '#92400e', '#fffbeb', irreg);
 }
 
 // ----- aba S-1 -----
@@ -9336,6 +9449,7 @@ function rcRenderCartao(corpo) {
   var th = 'padding:6px 8px;border:1px solid #cbd5e1;background:#e1f5ee;font-size:12px', td = 'padding:6px 8px;border:1px solid #e2e8f0;font-size:13px;text-align:center';
   var linhas = meses.map(function(m) {
     var r = (rcRelatorios[m] || {})[rcCartaoPessoa];
+    if (r && r.participou === false) r = null;     // "não participou" fica sem marca no cartão
     var pio = r && (r.cat === 'regular' || r.cat === 'auxiliar');
     var hor = r ? rcNum(r.horas) + rcNum(r.credito) : 0;
     if (pio) { totalH += hor; usouPioneiro = true; }
@@ -9414,7 +9528,7 @@ function rcFormLer(p, nome) {
   var cat = rcFormCat[p] || 'publicador';
   var aux = cat !== 'regular' && document.getElementById(p + '-aux').checked;
   var pio = (cat === 'regular' || aux);
-  if (!document.getElementById(p + '-participou').checked) { alert('Marque "Participei no ministério neste mês". Se não participou, não precisa enviar relatório.'); return null; }
+  if (!document.getElementById(p + '-participou').checked) { alert('Marque "Participei no ministério neste mês". Se você não participou, use o botão "Não participei neste mês".'); return null; }
   var horas = pio ? rcNum(document.getElementById(p + '-horas').value) : 0;
   var cred = pio ? rcNum(document.getElementById(p + '-credito').value) : 0;
   if (aux && horas + cred <= 0) { alert('Informe as horas do pioneiro auxiliar.'); return null; }
@@ -9456,9 +9570,10 @@ function rcRenderMeu() {
   }
   var ja = c.existente;
   corpo.innerHTML = '<div style="font-size:15px;font-weight:bold;color:#0f6e56;margin-bottom:2px">Relatório de ' + rcMesRotulo(c.mes) + '</div>' +
-    '<div style="font-size:13px;color:#5e6370;margin-bottom:6px">' + escHtml(c.nome) + (ja ? ' · <span style="color:#0f6e56;font-weight:bold">relatório já enviado ✓ (você pode corrigir)</span>' : '') + '</div>' +
+    '<div style="font-size:13px;color:#5e6370;margin-bottom:6px">' + escHtml(c.nome) + (ja ? (ja.participou === false ? ' · <span style="color:#5e6370;font-weight:bold">você registrou que não participou. Se foi engano, preencha abaixo.</span>' : ' · <span style="color:#0f6e56;font-weight:bold">relatório já enviado ✓ (você pode corrigir)</span>') : '') + '</div>' +
     rcCamposHtml('rcp') +
-    '<button onclick="rcEnviarMeu()" style="width:100%;margin-top:18px;background:#0f6e56;color:white;border:none;padding:13px;border-radius:10px;font-size:16px;font-weight:bold;cursor:pointer">' + (ja ? 'Salvar correção' : 'Enviar relatório') + '</button>';
+    '<button onclick="rcEnviarMeu()" style="width:100%;margin-top:18px;background:#0f6e56;color:white;border:none;padding:13px;border-radius:10px;font-size:16px;font-weight:bold;cursor:pointer">' + (ja && ja.participou !== false ? 'Salvar correção' : 'Enviar relatório') + '</button>' +
+    '<button onclick="rcNaoParticipei()" style="width:100%;margin-top:10px;background:white;color:#5e6370;border:1.5px solid #cbd5e1;padding:11px;border-radius:10px;font-size:14px;font-weight:bold;cursor:pointer">Não participei neste mês</button>';
   rcFormPreencher('rcp', pub.categoria === 'regular' ? 'regular' : 'publicador', ja);
 }
 function rcEnviarMeu() {
@@ -9471,6 +9586,18 @@ function rcEnviarMeu() {
   c.existente = r; c.enviado = true;
   rcGravar('relatorios/' + c.mes + '/' + c.chave, r);
   document.getElementById('rc-meu-corpo').innerHTML = '<div style="padding:22px;text-align:center"><div style="font-size:40px">✅</div><div style="font-size:17px;font-weight:bold;color:#0f6e56;margin:8px 0">Relatório enviado!</div><div style="font-size:13px;color:#5e6370">Obrigado. Se precisar corrigir algo, abra o relatório de novo.</div><button onclick="rcFecharMeu()" style="margin-top:16px;background:#0f6e56;color:white;border:none;padding:10px 22px;border-radius:8px;font-size:14px;font-weight:bold;cursor:pointer">Fechar</button></div>';
+}
+
+function rcNaoParticipei() {
+  var c = rcMeuCtx;
+  if (!c || !c.chave) return;
+  if (rcFechados[c.mes]) { alert('Esse mês já foi enviado.'); rcRenderMeu(); return; }
+  if (!confirm('Registrar que você não participou do ministério em ' + rcMesRotulo(c.mes) + '?')) return;
+  var pub = rcPubs[c.chave];
+  var r = { nome: pub ? pub.nome : c.nome, cat: (pub && pub.categoria === 'regular') ? 'regular' : 'publicador', participou: false, estudos: 0, horas: 0, credito: 0, obs: '', enviadoEm: Date.now() };
+  c.existente = r; c.enviado = true;
+  rcGravar('relatorios/' + c.mes + '/' + c.chave, r);
+  document.getElementById('rc-meu-corpo').innerHTML = '<div style="padding:22px;text-align:center"><div style="font-size:17px;font-weight:bold;color:#0f6e56;margin:8px 0">Registrado. Obrigado!</div><div style="font-size:13px;color:#5e6370">Se foi engano, abra o relatório de novo e preencha.</div><button onclick="rcFecharMeu()" style="margin-top:16px;background:#0f6e56;color:white;border:none;padding:10px 22px;border-radius:8px;font-size:14px;font-weight:bold;cursor:pointer">Fechar</button></div>';
 }
 
 // ---------- lançamento pelo secretário ----------
@@ -9491,6 +9618,15 @@ function rcSalvarLanc() {
   var r = rcFormLer('rcl', rcLanc.nome);
   if (!r) return;
   r.por = 'secretário';
+  if (!rcRelatorios[rcLanc.mes]) rcRelatorios[rcLanc.mes] = {};
+  rcRelatorios[rcLanc.mes][rcLanc.chave] = r;
+  rcGravar('relatorios/' + rcLanc.mes + '/' + rcLanc.chave, r);
+  rcFecharLanc(); rcRenderSec();
+}
+function rcSalvarNaoPartLanc() {
+  if (!rcLanc) return;
+  var pub = rcPubs[rcLanc.chave];
+  var r = { nome: rcLanc.nome, cat: (pub && pub.categoria === 'regular') ? 'regular' : 'publicador', participou: false, estudos: 0, horas: 0, credito: 0, obs: '', enviadoEm: Date.now(), por: 'secretário' };
   if (!rcRelatorios[rcLanc.mes]) rcRelatorios[rcLanc.mes] = {};
   rcRelatorios[rcLanc.mes][rcLanc.chave] = r;
   rcGravar('relatorios/' + rcLanc.mes + '/' + rcLanc.chave, r);
@@ -9526,6 +9662,7 @@ function rcMontarOverlays() {
     '<div class="modal-body" style="padding:14px 20px"><div id="rc-lanc-aviso" style="display:none;background:#fff7ed;color:#9a3412;padding:8px 10px;border-radius:8px;font-size:12px;margin-bottom:8px">Este mês já foi marcado como enviado. Mudar aqui não altera o que já foi ao JW Hub.</div>' +
     rcCamposHtml('rcl') +
     '<div style="display:flex;gap:8px;margin-top:18px;flex-wrap:wrap"><button onclick="rcSalvarLanc()" style="flex:1;background:#0f6e56;color:white;border:none;padding:12px;border-radius:8px;font-size:15px;font-weight:bold;cursor:pointer">Salvar</button>' +
+    '<button onclick="rcSalvarNaoPartLanc()" style="background:#fffbeb;color:#92400e;border:1px solid #fcd34d;padding:12px 14px;border-radius:8px;font-size:13px;cursor:pointer">Não participou</button>' +
     '<button id="rc-lanc-excluir" onclick="rcExcluirLanc()" style="background:white;color:#991b1b;border:1px solid #fca5a5;padding:12px 14px;border-radius:8px;font-size:13px;cursor:pointer">Apagar</button></div></div></div></div>';
   document.body.insertAdjacentHTML('beforeend', h);
 }
