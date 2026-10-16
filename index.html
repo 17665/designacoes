@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Versão: v2026.10.17 — Minha Escala mostra o slip S-89-T (verde) para Leitura e Ministério, inclusive para irmãs e ajudantes; só semanas de meses publicados; data da reunião = quarta; lista de nomes inclui o cadastro do VMC. Anterior: v2026.10.16 — Aplicar/entrar/sair do modo responsável NÃO refazem mais a escala (só redesenham a salva); celulares redesenham quando um evento muda; modo teste com faixa visível; reparo protegido; gravação da escala não apaga substituições. Anterior: v2026.10.15 — Microfone/Indicadores: escolher entre irmãos já cadastrados; restaurar backup NÃO regenera mais a escala; backups podem ser apagados. Anterior: v2026.10.14 — Cadastro blindado: liberados/bloqueados em nó separado, gravação sem apagar campos desconhecidos, backups diários com restauração. Anterior: v2026.10.13 — Plano de Segurança COMPLETO (21 itens) + novo ano de serviço/plano novo pelo responsável. Anterior: v2026.10.12 — Plano de Segurança: prazo bloqueia indicador que não leu + avisos ao responsável. Anterior: v2026.10.11 — Plano de Segurança S-288 com trava de leitura reforçada (rolagem + tempo mínimo + perguntas). Anterior: v2026.10.10 — Palco passa a ser UM irmão por reunião (em vez de dupla). Anterior: v2026.10.09 — Liberar/bloquear por treinamento em TODAS as designações (palco, microfone, áudio, vídeo, zoom, indicador). Anterior: v2026.10.08 — Palco: tirar ou trocar um irmão só (sem apagar as duplas à mão). Anterior: v2026.10.07 — Releitura ao voltar ao app, aviso de nova versão e sw.js com rede primeiro. Anterior: v2026.10.06 — Botões de indicadores (atualizar/regenerar) só mexem de hoje em diante; reuniões passadas ficam intactas. Anterior: v2026.10.05 — Treinamento de segurança vence em 12 meses (Plano S-288, item 19) e bloqueia o indicador após vencer. Anterior: v2026.09.04 — bloqueio de indicadores sem treinamento. v2026.09.03 — Botões de WhatsApp (VMC, Discurso Público, Enviar Oradores) + sistema de temas: bloqueio automático de 4 meses, temas indisponíveis temporariamente, repertório por orador -->
+<!-- Versão: v2026.10.18 — Relatório de Campo: formulário do publicador (S-4), cadastro de publicadores, painel do secretário com S-1 e cartões S-21. Anterior: v2026.10.17 — Minha Escala mostra o slip S-89-T (verde) para Leitura e Ministério, inclusive para irmãs e ajudantes; só semanas de meses publicados; data da reunião = quarta; lista de nomes inclui o cadastro do VMC. Anterior: v2026.10.16 — Aplicar/entrar/sair do modo responsável NÃO refazem mais a escala (só redesenham a salva); celulares redesenham quando um evento muda; modo teste com faixa visível; reparo protegido; gravação da escala não apaga substituições. Anterior: v2026.10.15 — Microfone/Indicadores: escolher entre irmãos já cadastrados; restaurar backup NÃO regenera mais a escala; backups podem ser apagados. Anterior: v2026.10.14 — Cadastro blindado: liberados/bloqueados em nó separado, gravação sem apagar campos desconhecidos, backups diários com restauração. Anterior: v2026.10.13 — Plano de Segurança COMPLETO (21 itens) + novo ano de serviço/plano novo pelo responsável. Anterior: v2026.10.12 — Plano de Segurança: prazo bloqueia indicador que não leu + avisos ao responsável. Anterior: v2026.10.11 — Plano de Segurança S-288 com trava de leitura reforçada (rolagem + tempo mínimo + perguntas). Anterior: v2026.10.10 — Palco passa a ser UM irmão por reunião (em vez de dupla). Anterior: v2026.10.09 — Liberar/bloquear por treinamento em TODAS as designações (palco, microfone, áudio, vídeo, zoom, indicador). Anterior: v2026.10.08 — Palco: tirar ou trocar um irmão só (sem apagar as duplas à mão). Anterior: v2026.10.07 — Releitura ao voltar ao app, aviso de nova versão e sw.js com rede primeiro. Anterior: v2026.10.06 — Botões de indicadores (atualizar/regenerar) só mexem de hoje em diante; reuniões passadas ficam intactas. Anterior: v2026.10.05 — Treinamento de segurança vence em 12 meses (Plano S-288, item 19) e bloqueia o indicador após vencer. Anterior: v2026.09.04 — bloqueio de indicadores sem treinamento. v2026.09.03 — Botões de WhatsApp (VMC, Discurso Público, Enviar Oradores) + sistema de temas: bloqueio automático de 4 meses, temas indisponíveis temporariamente, repertório por orador -->
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
@@ -379,6 +379,8 @@ body.dark-mode .conf-badge.pendente { background: #2a2a15; color: #ca8a04; borde
     <button onclick="dpAbrirPrograma()" style="background:#1a4fa3;color:white;border:none;padding:9px 18px;border-radius:8px;font-size:14px;font-weight:bold;cursor:pointer">🎤 Reunião Pública</button>
     <button onclick="abrirHistoricoOradores()" style="background:#0f766e;color:white;border:none;padding:9px 18px;border-radius:8px;font-size:14px;font-weight:bold;cursor:pointer">📋 Meu Histórico</button>
     <button id="btn-minha-escala" onclick="abrirMinhaEscala()" style="background:#7c3aed;color:white;border:none;padding:9px 18px;border-radius:8px;font-size:14px;font-weight:bold;cursor:pointer">👤 Minha Escala</button>
+    <button id="btn-relcampo" onclick="rcAbrirMeuRelatorio()" style="background:#0f6e56;color:white;border:none;padding:9px 18px;border-radius:8px;font-size:14px;font-weight:bold;cursor:pointer">📝 Relatório de Campo</button>
+    <button id="btn-secretario" onclick="rcAbrirSecretario()" style="background:#374151;color:white;border:none;padding:9px 18px;border-radius:8px;font-size:14px;font-weight:bold;cursor:pointer">🗂️ Secretário</button>
     <button id="btn-notif" onclick="pedirPermissaoNotificacao()" style="display:none;background:#0f6e56;color:white;border:none;padding:9px 14px;border-radius:8px;font-size:14px;cursor:pointer" title="Ativar notificações">🔔</button>
     <button id="btn-instalar-pwa" onclick="instalarPWA()" style="display:none;background:#f59e0b;color:white;border:none;padding:9px 14px;border-radius:8px;font-size:13px;font-weight:bold;cursor:pointer">📱 Instalar App</button>
     <button onclick="alternarTema()" style="background:#374151;color:white;border:none;padding:9px 14px;border-radius:8px;font-size:13px;font-weight:bold;cursor:pointer" id="btn-tema">🌙 Escuro</button>
@@ -547,7 +549,7 @@ body.dark-mode .conf-badge.pendente { background: #2a2a15; color: #ca8a04; borde
     <div class="modal-cab">
       <span>
         <span class="modal-cab-titulo">👨‍💼 Área do Responsável</span>
-        <span style="font-size:10px;color:#9ca3af;font-weight:normal;margin-left:8px">v2026.10.17</span>
+        <span style="font-size:10px;color:#9ca3af;font-weight:normal;margin-left:8px">v2026.10.18</span>
       </span>
       <button class="btn-fechar" onclick="fecharPrincipal()">✕</button>
     </div>
@@ -5006,6 +5008,7 @@ function iniciarFirebase() {
     ouvirMeses();
     ouvirTrocas();
     ouvirSubstituicoes();
+    rcIniciar();
     // Ativa visual do modo teste
     setTimeout(ativarVisualModoTeste, 600);
     return;
@@ -5025,6 +5028,7 @@ function iniciarFirebase() {
     planoIniciarOuvinte();
     carregarSenhaFirebase();
     ouvirAvisosAusencia();
+    rcIniciar();
   } catch(e) {
     console.warn('Firebase erro:', e);
     mostrarBannerConfigErro(e.message);
@@ -5066,6 +5070,10 @@ function nomesParaIdentidade() {
   if (typeof vmcTodosNomesCadastrados === 'function') {
     try { vmcTodosNomesCadastrados().forEach(function(n){ if (n && nomes.indexOf(n) < 0) nomes.push(n); }); } catch(e) {}
   }
+  // publicadores cadastrados para o relatório de campo (podem não estar em nenhuma escala)
+  try {
+    Object.keys(rcPubs).forEach(function(k){ var p = rcPubs[k]; if (p && p.ativo !== false && p.nome && nomes.indexOf(p.nome) < 0) nomes.push(p.nome); });
+  } catch(e) {}
   return nomes.sort(function(a, b){ return a.localeCompare(b, 'pt-BR'); });
 }
 
@@ -5490,7 +5498,7 @@ setInterval(renderPainelTrocas, 60000);
 
 // ===================== PWA — SERVICE WORKER + ATUALIZAÇÃO =====================
 // Mantenha igual à versão mostrada na Área do Responsável e à VERSAO do sw.js
-window.APP_VERSAO = 'v2026.10.17';
+window.APP_VERSAO = 'v2026.10.18';
 
 function mostrarBannerNovaVersao() {
   if (document.getElementById('banner-nova-versao')) return;
@@ -8927,6 +8935,602 @@ function slipVerdeHtml(s) {
       '<div style="font-size:9px;color:#0F6E56;margin-top:4px">S-89-T &nbsp; 11/23</div>' +
     '</div>';
 }
+
+// ═══════════════════════════════════════════════════════════
+// RELATÓRIO DE CAMPO (S-4) · CARTÃO DO PUBLICADOR (S-21) · RELATÓRIO DA CONGREGAÇÃO (S-1)
+// Dados em escala/campo/... (publicadores, relatorios/AAAA-MM/chave, s1, fechados, inicio, secretarioHash)
+// ═══════════════════════════════════════════════════════════
+var RC_MESES = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+var RC_INICIO_PADRAO = '2026-10';   // 1º mês recebido pelo app (setembro é lançado à mão pelo secretário)
+var rcPubs = {};        // chave -> { nome, categoria:'publicador'|'regular', ativo:true|false }
+var rcRelatorios = {};  // 'AAAA-MM' -> chave -> { nome, cat, participou, estudos, horas, credito, obs, enviadoEm }
+var rcS1 = {};          // 'AAAA-MM' -> { ativos, assistencia, atualizadoPor, atualizadoEm }
+var rcFechados = {};    // 'AAAA-MM' -> true (mês já enviado ao JW Hub)
+var rcSecHash = '';
+var rcInicio = RC_INICIO_PADRAO;
+var rcSecLogado = false, rcSecOuvindo = false, rcIniciado = false;
+var rcMesSel = '', rcAbaSel = 'pubs', rcCartaoPessoa = '', rcCartaoAno = '';
+var rcFormCat = {}, rcLanc = null, rcMeuCtx = null;
+
+// ---------- utilitários ----------
+function rcSlug(nome) {
+  return (nome || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_+|_+$/g, '') || 'sem_nome';
+}
+function rcChaveNova(nome) {
+  var base = rcSlug(nome), k = base, i = 2;
+  while (rcPubs[k]) { k = base + '_' + i; i++; }
+  return k;
+}
+function rcChaveDe(nome) {
+  var ks = Object.keys(rcPubs);
+  for (var i = 0; i < ks.length; i++) if (rcPubs[ks[i]] && rcPubs[ks[i]].nome === nome) return ks[i];
+  return '';
+}
+function rcMesKey(ano, mesIdx) { return ano + '-' + (mesIdx < 9 ? '0' : '') + (mesIdx + 1); }
+function rcMesAnteriorKey() {
+  var h = new Date(), a = h.getFullYear(), m = h.getMonth() - 1;
+  if (m < 0) { m = 11; a--; }
+  return rcMesKey(a, m);
+}
+function rcMesRotulo(k) { var p = k.split('-'); return RC_MESES[parseInt(p[1], 10) - 1] + ' de ' + p[0]; }
+function rcMesDeslocado(k, delta) {
+  var p = k.split('-'), a = parseInt(p[0], 10), m = parseInt(p[1], 10) - 1 + delta;
+  while (m < 0) { m += 12; a--; }
+  while (m > 11) { m -= 12; a++; }
+  return rcMesKey(a, m);
+}
+function rcAnoServico(k) {   // ano de serviço vai de setembro a agosto
+  var p = k.split('-'), a = parseInt(p[0], 10), m = parseInt(p[1], 10);
+  var ini = m >= 9 ? a : a - 1;
+  return ini + '/' + (ini + 1);
+}
+function rcMesesDoAnoServico(anoSrv) {
+  var ini = parseInt(anoSrv.split('/')[0], 10), r = [];
+  for (var i = 0; i < 12; i++) {
+    var m = 9 + i, a = ini;
+    if (m > 12) { m -= 12; a = ini + 1; }
+    r.push(rcMesKey(a, m - 1));
+  }
+  return r;
+}
+function rcNum(v) { var n = parseInt(v, 10); return (isNaN(n) || n < 0) ? 0 : n; }
+function rcPorNome(a, b) { return (rcPubs[a] ? rcPubs[a].nome : a).localeCompare(rcPubs[b] ? rcPubs[b].nome : b, 'pt-BR'); }
+function rcCatRotulo(c) { return c === 'regular' ? 'Pioneiro regular' : (c === 'auxiliar' ? 'Pioneiro auxiliar' : 'Publicador'); }
+function rcAtivosChaves() { return Object.keys(rcPubs).filter(function(k) { return rcPubs[k] && rcPubs[k].ativo !== false; }).sort(rcPorNome); }
+function rcMesesSelecionaveis() {
+  var base = rcMesAnteriorKey(), set = {}, i;
+  for (i = 0; i < 14; i++) set[rcMesDeslocado(base, -i)] = true;
+  Object.keys(rcRelatorios).forEach(function(k) { set[k] = true; });
+  Object.keys(rcS1).forEach(function(k) { set[k] = true; });
+  return Object.keys(set).sort().reverse();
+}
+function rcAtrasado(mes) {   // passou do dia 10 do mês seguinte? (marcador interno, publicadores não veem)
+  var lim = rcMesDeslocado(mes, 1).split('-');
+  var d = new Date(parseInt(lim[0], 10), parseInt(lim[1], 10) - 1, 10, 23, 59, 59);
+  return new Date() > d;
+}
+function rcRef(caminho) { return (firebaseOk && db) ? db.ref('escala/campo/' + caminho) : null; }
+function rcGravar(caminho, valor) {
+  var r = rcRef(caminho);
+  if (r) r.set(valor).catch(function(e) { alert('Não foi possível salvar: ' + e.message); });
+}
+function rcApagar(caminho) {
+  var r = rcRef(caminho);
+  if (r) r.remove().catch(function(e) { alert('Não foi possível apagar: ' + e.message); });
+}
+
+// ---------- somas (S-1) ----------
+function rcCalcS1(mes) {
+  var o = { pub: { rel: 0, est: 0 }, aux: { rel: 0, hor: 0, est: 0 }, reg: { rel: 0, hor: 0, est: 0 } };
+  var rel = rcRelatorios[mes] || {};
+  Object.keys(rel).forEach(function(k) {
+    var r = rel[k];
+    if (!r || r.participou === false) return;
+    var est = rcNum(r.estudos), hor = rcNum(r.horas) + rcNum(r.credito);
+    if (r.cat === 'regular') { o.reg.rel++; o.reg.hor += hor; o.reg.est += est; }
+    else if (r.cat === 'auxiliar') { o.aux.rel++; o.aux.hor += hor; o.aux.est += est; }
+    else { o.pub.rel++; o.pub.est += est; }
+  });
+  return o;
+}
+function rcAtivosSugeridos(mes) {   // publicadores ativos = relataram em algum dos últimos 6 meses
+  var vistos = {}, i;
+  for (i = 0; i < 6; i++) {
+    var rel = rcRelatorios[rcMesDeslocado(mes, -i)] || {};
+    Object.keys(rel).forEach(function(k) { if (rel[k] && rel[k].participou !== false) vistos[k] = true; });
+  }
+  return Object.keys(vistos).length;
+}
+
+// ---------- Firebase ----------
+function rcIniciar() {
+  if (rcIniciado) return;
+  rcIniciado = true;
+  if (!firebaseOk || !db) return;
+  db.ref('escala/campo/publicadores').on('value', function(s) { rcPubs = s.val() || {}; rcAposMudanca(); });
+  db.ref('escala/campo/fechados').on('value', function(s) { rcFechados = s.val() || {}; rcAposMudanca(); });
+  db.ref('escala/campo/inicio').on('value', function(s) { rcInicio = s.val() || RC_INICIO_PADRAO; rcAposMudanca(); });
+  db.ref('escala/campo/secretarioHash').on('value', function(s) { rcSecHash = s.val() || ''; });
+}
+function rcOuvirSecretario() {   // só o secretário/responsável baixa os relatórios de todos
+  if (rcSecOuvindo || !firebaseOk || !db) return;
+  rcSecOuvindo = true;
+  db.ref('escala/campo/relatorios').on('value', function(s) { rcRelatorios = s.val() || {}; rcAposMudanca(); });
+  db.ref('escala/campo/s1').on('value', function(s) { rcS1 = s.val() || {}; rcAposMudanca(); });
+}
+function rcAberto(id) { var e = document.getElementById(id); return !!(e && e.classList.contains('aberto')); }
+function rcAposMudanca() {
+  if (rcAberto('ov-secretario')) rcRenderSec(true);
+  // não redesenha o formulário do publicador enquanto ele está preenchendo ou depois de enviar
+  if (rcAberto('ov-relcampo') && rcMeuCtx && !rcMeuCtx.enviado && !document.getElementById('rcp-participou')) rcRenderMeu();
+}
+
+// ---------- senha do secretário ----------
+function rcHash(txt) {
+  return new Promise(function(resolve, reject) {
+    try {
+      if (window.crypto && crypto.subtle && window.TextEncoder) {
+        crypto.subtle.digest('SHA-256', new TextEncoder().encode('rc:' + txt)).then(function(buf) {
+          var h = '', v = new Uint8Array(buf);
+          for (var i = 0; i < v.length; i++) h += (v[i] < 16 ? '0' : '') + v[i].toString(16);
+          resolve('s256:' + h);
+        }).catch(reject);
+        return;
+      }
+    } catch (e) {}
+    reject(new Error('Abra o app pelo endereço do site (https) para usar senha.'));
+  });
+}
+function rcAbrirSecretario() {
+  if (modoResponsavel || rcSecLogado) { rcEntrarSecretario(); return; }
+  if (!rcSecHash) { alert('O acesso do secretário ainda não foi criado. Peça ao responsável para criar a senha.'); return; }
+  document.getElementById('rc-senha-campo').value = '';
+  document.getElementById('rc-senha-erro').style.display = 'none';
+  document.getElementById('ov-senha-sec').classList.add('aberto');
+  setTimeout(function() { document.getElementById('rc-senha-campo').focus(); }, 100);
+}
+function rcFecharSenhaSec() { document.getElementById('ov-senha-sec').classList.remove('aberto'); }
+function rcConfirmarSenhaSec() {
+  var dig = document.getElementById('rc-senha-campo').value;
+  rcHash(dig).then(function(h) {
+    if (dig && h === rcSecHash) { rcSecLogado = true; rcFecharSenhaSec(); rcEntrarSecretario(); }
+    else {
+      document.getElementById('rc-senha-erro').style.display = 'block';
+      document.getElementById('rc-senha-campo').value = '';
+    }
+  }).catch(function(e) { alert(e.message); });
+}
+function rcEntrarSecretario() {
+  rcOuvirSecretario();
+  if (!rcMesSel) rcMesSel = rcMesAnteriorKey();
+  document.getElementById('ov-secretario').classList.add('aberto');
+  rcRenderSec();
+}
+function rcFecharSecretario() { document.getElementById('ov-secretario').classList.remove('aberto'); }
+
+// ---------- painel do secretário ----------
+function rcAba(a) { rcAbaSel = a; rcRenderSec(); }
+function rcMudarMes(v) { rcMesSel = v; rcRenderSec(); }
+function rcSeletorMes() {
+  var meses = rcMesesSelecionaveis();
+  return '<select onchange="rcMudarMes(this.value)" style="padding:8px 10px;border:1.5px solid #9fd8c4;border-radius:8px;font-size:14px;background:white;color:#1a1a2e">' +
+    meses.map(function(m) { return '<option value="' + m + '"' + (m === rcMesSel ? ' selected' : '') + '>' + rcMesRotulo(m) + '</option>'; }).join('') + '</select>';
+}
+function rcRenderSec(manterScroll) {
+  var corpo = document.getElementById('rc-sec-corpo');
+  if (!corpo) return;
+  var abas = [['pubs', 'Publicadores'], ['rel', 'Relatórios'], ['s1', 'S-1'], ['cart', 'Cartões S-21']];
+  if (modoResponsavel) abas.push(['acesso', 'Acesso']);
+  document.getElementById('rc-sec-abas').innerHTML = abas.map(function(a) {
+    var at = a[0] === rcAbaSel;
+    return '<button onclick="rcAba(\'' + a[0] + '\')" style="background:none;border:none;padding:10px 13px;font-size:13px;font-weight:bold;cursor:pointer;white-space:nowrap;color:' + (at ? '#0f6e56' : '#5e6370') + ';border-bottom:3px solid ' + (at ? '#0f6e56' : 'transparent') + '">' + a[1] + '</button>';
+  }).join('');
+  var rolagem = corpo.scrollTop, guardados = {};
+  if (manterScroll) ['rc-s1-ativos', 'rc-s1-assist', 'rc-novo-nome', 'rc-nova-cat', 'rc-nova-senha'].forEach(function(id) {
+    var e = document.getElementById(id); if (e) guardados[id] = e.value;
+  });
+  if (rcAbaSel === 'pubs') rcRenderPubs(corpo);
+  else if (rcAbaSel === 'rel') rcRenderRel(corpo);
+  else if (rcAbaSel === 's1') rcRenderS1(corpo);
+  else if (rcAbaSel === 'cart') rcRenderCartao(corpo);
+  else rcRenderAcesso(corpo);
+  if (manterScroll) {
+    corpo.scrollTop = rolagem;
+    Object.keys(guardados).forEach(function(id) { var e = document.getElementById(id); if (e) e.value = guardados[id]; });
+  }
+}
+
+// ----- aba Publicadores (cadastro) -----
+function rcNomesEscalaEVmc() {
+  var nomes = todosIrmaos.slice();
+  if (typeof vmcTodosNomesCadastrados === 'function') {
+    try { vmcTodosNomesCadastrados().forEach(function(n) { if (n && nomes.indexOf(n) < 0) nomes.push(n); }); } catch (e) {}
+  }
+  return nomes;
+}
+function rcRenderPubs(corpo) {
+  var ativos = rcAtivosChaves();
+  var fora = Object.keys(rcPubs).filter(function(k) { return rcPubs[k] && rcPubs[k].ativo === false; }).sort(rcPorNome);
+  var regulares = ativos.filter(function(k) { return rcPubs[k].categoria === 'regular'; }).length;
+  var h = '<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px">' +
+    '<button onclick="rcImportar()" style="background:#0f6e56;color:white;border:none;padding:9px 14px;border-radius:8px;font-size:13px;font-weight:bold;cursor:pointer">📥 Importar nomes da escala e do VMC</button></div>' +
+    '<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px"><input id="rc-novo-nome" placeholder="Adicionar nome" style="flex:1;min-width:160px;padding:8px 10px;border:1.5px solid #9fd8c4;border-radius:8px;font-size:14px">' +
+    '<select id="rc-nova-cat" style="padding:8px;border:1.5px solid #9fd8c4;border-radius:8px;font-size:14px"><option value="publicador">Publicador</option><option value="regular">Pioneiro regular</option></select>' +
+    '<button onclick="rcAddPub()" style="background:#1a4fa3;color:white;border:none;padding:8px 14px;border-radius:8px;font-size:13px;font-weight:bold;cursor:pointer">+ Adicionar</button></div>' +
+    '<div style="font-size:13px;color:#5e6370;margin-bottom:8px"><b>' + ativos.length + '</b> na lista de relatórios, sendo <b>' + regulares + '</b> pioneiros regulares. O pioneiro auxiliar não é cadastro: a pessoa marca isso no relatório do mês.</div>';
+  if (!ativos.length) h += '<div style="padding:18px;text-align:center;color:#888;background:#f8fafc;border-radius:8px">Lista vazia. Toque em "Importar nomes" para começar.</div>';
+  ativos.forEach(function(k) {
+    var p = rcPubs[k];
+    h += '<div style="display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid #eef0f3;flex-wrap:wrap"><span style="flex:1;min-width:140px;font-size:14px">' + escHtml(p.nome) + '</span>' +
+      '<select onchange="rcSetCat(\'' + k + '\',this.value)" style="padding:6px;border:1px solid #cbd5e1;border-radius:6px;font-size:13px"><option value="publicador"' + (p.categoria !== 'regular' ? ' selected' : '') + '>Publicador</option><option value="regular"' + (p.categoria === 'regular' ? ' selected' : '') + '>Pioneiro regular</option></select>' +
+      '<button onclick="rcTirar(\'' + k + '\')" style="background:#fee2e2;color:#991b1b;border:1px solid #fca5a5;padding:5px 9px;border-radius:6px;font-size:12px;cursor:pointer">Não é publicador</button></div>';
+  });
+  if (fora.length) {
+    h += '<details style="margin-top:16px"><summary style="cursor:pointer;font-size:13px;font-weight:bold;color:#5e6370">Fora da lista de relatórios (' + fora.length + ')</summary>';
+    fora.forEach(function(k) {
+      h += '<div style="display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid #eef0f3"><span style="flex:1;font-size:14px;color:#888">' + escHtml(rcPubs[k].nome) + '</span>' +
+        '<button onclick="rcVoltar(\'' + k + '\')" style="background:#e1f5ee;color:#085041;border:1px solid #9fe1cb;padding:5px 9px;border-radius:6px;font-size:12px;cursor:pointer">Voltar</button>' +
+        '<button onclick="rcExcluir(\'' + k + '\')" style="background:white;color:#991b1b;border:1px solid #fca5a5;padding:5px 9px;border-radius:6px;font-size:12px;cursor:pointer">Excluir</button></div>';
+    });
+    h += '</details>';
+  }
+  corpo.innerHTML = h;
+}
+function rcImportar() {
+  var existentes = {};
+  Object.keys(rcPubs).forEach(function(k) { if (rcPubs[k]) existentes[rcPubs[k].nome] = true; });
+  var novos = rcNomesEscalaEVmc().filter(function(n) { return n && !existentes[n]; });
+  if (!novos.length) { alert('Não há nomes novos para importar.'); return; }
+  if (!confirm('Vão entrar ' + novos.length + ' nomes na lista de publicadores (todos como "Publicador"). Depois você tira quem não é publicador e marca os pioneiros regulares. Continuar?')) return;
+  var mapa = {};
+  novos.forEach(function(n) {
+    var k = rcChaveNova(n);
+    rcPubs[k] = { nome: n, categoria: 'publicador', ativo: true };
+    mapa[k] = rcPubs[k];
+  });
+  var r = rcRef('publicadores');
+  if (r) r.update(mapa).catch(function(e) { alert('Não foi possível salvar: ' + e.message); });
+  rcRenderSec();
+}
+function rcAddPub() {
+  var nome = (document.getElementById('rc-novo-nome').value || '').trim();
+  var cat = document.getElementById('rc-nova-cat').value;
+  if (!nome) { alert('Digite o nome.'); return; }
+  if (rcChaveDe(nome)) { alert('Esse nome já está na lista.'); return; }
+  var k = rcChaveNova(nome);
+  rcPubs[k] = { nome: nome, categoria: cat === 'regular' ? 'regular' : 'publicador', ativo: true };
+  rcGravar('publicadores/' + k, rcPubs[k]);
+  rcRenderSec();
+}
+function rcSetCat(k, v) { if (!rcPubs[k]) return; rcPubs[k].categoria = (v === 'regular' ? 'regular' : 'publicador'); rcGravar('publicadores/' + k + '/categoria', rcPubs[k].categoria); }
+function rcTirar(k) {
+  if (!rcPubs[k]) return;
+  if (!confirm('Tirar ' + rcPubs[k].nome + ' da lista de relatórios? A pessoa continua normalmente na escala e no VMC.')) return;
+  rcPubs[k].ativo = false; rcGravar('publicadores/' + k + '/ativo', false); rcRenderSec();
+}
+function rcVoltar(k) { if (!rcPubs[k]) return; rcPubs[k].ativo = true; rcGravar('publicadores/' + k + '/ativo', true); rcRenderSec(); }
+function rcExcluir(k) {
+  if (!rcPubs[k]) return;
+  if (!confirm('Excluir ' + rcPubs[k].nome + ' da lista? Relatórios já enviados dessa pessoa continuam salvos.')) return;
+  delete rcPubs[k]; rcApagar('publicadores/' + k); rcRenderSec();
+}
+
+// ----- aba Relatórios do mês -----
+function rcRenderRel(corpo) {
+  var mes = rcMesSel, rel = rcRelatorios[mes] || {};
+  var ativos = rcAtivosChaves();
+  var enviados = Object.keys(rel).filter(function(k) { return rel[k] && rel[k].participou !== false; });
+  enviados.sort(function(a, b) { return (rel[a].nome || a).localeCompare(rel[b].nome || b, 'pt-BR'); });
+  var faltam = ativos.filter(function(k) { return !rel[k]; });
+  var atrasado = rcAtrasado(mes) && !rcFechados[mes];
+  var h = '<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:12px">' + rcSeletorMes() +
+    '<span style="font-size:13px;color:#5e6370"><b>' + enviados.length + '</b> relataram · <b style="color:' + (faltam.length ? '#b45309' : '#0f6e56') + '">' + faltam.length + '</b> faltam</span>' +
+    (rcFechados[mes] ? '<span style="background:#e1f5ee;color:#085041;font-size:12px;font-weight:bold;padding:3px 8px;border-radius:10px">✓ mês enviado</span>' : '') + '</div>';
+  h += '<div style="font-size:13px;font-weight:bold;margin:10px 0 4px;color:' + (atrasado ? '#b91c1c' : '#b45309') + '">Faltam relatar' + (atrasado ? ' — já passou do dia 10' : '') + '</div>';
+  if (!faltam.length) h += '<div style="padding:10px;color:#0f6e56;font-size:13px">Todos da lista já relataram.</div>';
+  faltam.forEach(function(k) {
+    h += '<div style="display:flex;align-items:center;gap:8px;padding:7px 10px;margin-bottom:4px;border-radius:8px;background:' + (atrasado ? '#fef2f2' : '#fffbeb') + '"><span style="flex:1;font-size:14px">' + escHtml(rcPubs[k].nome) + '</span>' +
+      '<span style="font-size:12px;color:#5e6370">' + rcCatRotulo(rcPubs[k].categoria) + '</span>' +
+      '<button onclick="rcLancar(\'' + k + '\')" style="background:#1a4fa3;color:white;border:none;padding:5px 10px;border-radius:6px;font-size:12px;cursor:pointer">Lançar</button></div>';
+  });
+  h += '<div style="font-size:13px;font-weight:bold;margin:16px 0 4px;color:#0f6e56">Já relataram</div>';
+  if (!enviados.length) h += '<div style="padding:10px;color:#888;font-size:13px">Nenhum relatório neste mês ainda.</div>';
+  enviados.forEach(function(k) {
+    var r = rel[k], hor = rcNum(r.horas) + rcNum(r.credito);
+    h += '<div style="display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid #eef0f3;flex-wrap:wrap"><span style="flex:1;min-width:140px;font-size:14px">' + escHtml(r.nome || k) + '</span>' +
+      '<span style="font-size:12px;color:#5e6370">' + rcCatRotulo(r.cat) + (r.cat !== 'publicador' ? ' · ' + hor + 'h' : '') + (rcNum(r.estudos) ? ' · ' + rcNum(r.estudos) + ' est.' : '') + '</span>' +
+      '<button onclick="rcLancar(\'' + k + '\')" style="background:white;color:#1a4fa3;border:1px solid #93b4e8;padding:5px 10px;border-radius:6px;font-size:12px;cursor:pointer">Editar</button></div>';
+  });
+  corpo.innerHTML = h;
+}
+
+// ----- aba S-1 -----
+function rcRenderS1(corpo) {
+  var mes = rcMesSel, c = rcCalcS1(mes), s = rcS1[mes] || {};
+  var sug = rcAtivosSugeridos(mes);
+  var ativosVal = (s.ativos !== undefined && s.ativos !== null && s.ativos !== '') ? s.ativos : '';
+  var num = function(rot, v) { return '<div style="margin:6px 0"><div style="font-size:12px;color:#6b7280">' + rot + '</div><div style="font-size:20px;font-weight:bold;color:#1a1a2e">' + v + '</div></div>'; };
+  var card = 'border:1px solid #e5e7eb;border-radius:10px;padding:12px 14px;background:white;margin-bottom:12px';
+  var inp = 'width:100%;box-sizing:border-box;padding:9px 11px;border:1.5px solid #9fd8c4;border-radius:8px;font-size:16px';
+  var h = '<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:12px">' + rcSeletorMes() +
+    (rcFechados[mes] ? '<span style="background:#e1f5ee;color:#085041;font-size:12px;font-weight:bold;padding:3px 8px;border-radius:10px">✓ mês enviado</span>' : '') + '</div>' +
+    '<div style="font-size:12px;color:#6b7280;margin-bottom:10px">SERVIÇO DE CAMPO E ASSISTÊNCIA ÀS REUNIÕES (S-1) · ' + rcMesRotulo(mes) + '. As horas incluem as horas de crédito.</div>' +
+    '<div style="' + card + '"><label style="font-size:12px;color:#6b7280">Todos os publicadores ativos <span style="color:#9ca3af">(sugestão pelos relatórios dos últimos 6 meses: ' + sug + ')</span></label>' +
+    '<input type="number" min="0" id="rc-s1-ativos" value="' + escHtml(String(ativosVal)) + '" placeholder="' + sug + '" style="' + inp + ';margin-bottom:10px">' +
+    '<label style="font-size:12px;color:#6b7280">Média de assistência da reunião do fim de semana</label>' +
+    '<input type="number" min="0" id="rc-s1-assist" value="' + escHtml(String(s.assistencia !== undefined && s.assistencia !== null ? s.assistencia : '')) + '" style="' + inp + '"></div>' +
+    '<div style="' + card + '"><b>Publicadores</b>' + num('Número de relatórios', c.pub.rel) + num('Estudos bíblicos', c.pub.est) + '</div>' +
+    '<div style="' + card + '"><b>Pioneiros auxiliares</b>' + num('Número de relatórios', c.aux.rel) + num('Horas', c.aux.hor) + num('Estudos bíblicos', c.aux.est) + '</div>' +
+    '<div style="' + card + '"><b>Pioneiros regulares</b>' + num('Número de relatórios', c.reg.rel) + num('Horas', c.reg.hor) + num('Estudos bíblicos', c.reg.est) + '</div>' +
+    (s.atualizadoPor ? '<div style="font-size:12px;color:#6b7280;margin-bottom:10px">Atualizado por ' + escHtml(s.atualizadoPor) + ' em ' + escHtml(s.atualizadoEm || '') + '</div>' : '') +
+    '<div style="display:flex;gap:8px;flex-wrap:wrap">' +
+    '<button onclick="rcSalvarS1()" style="background:#0f6e56;color:white;border:none;padding:10px 16px;border-radius:8px;font-size:14px;font-weight:bold;cursor:pointer">Salvar</button>' +
+    '<button onclick="rcCopiarS1()" style="background:#1a4fa3;color:white;border:none;padding:10px 16px;border-radius:8px;font-size:14px;font-weight:bold;cursor:pointer">📋 Copiar números</button>' +
+    '<button onclick="rcAlternarFechado()" style="background:' + (rcFechados[mes] ? '#fff7ed;color:#9a3412;border:1px solid #fdba74' : '#7c3aed;color:white;border:none') + ';padding:10px 16px;border-radius:8px;font-size:14px;font-weight:bold;cursor:pointer">' + (rcFechados[mes] ? 'Reabrir mês' : '✓ Marcar como enviado') + '</button></div>';
+  corpo.innerHTML = h;
+}
+function rcNomeSecretario() {
+  var n = localStorage.getItem('rc_sec_nome') || '';
+  if (!n) {
+    n = (prompt('Seu nome (aparece em "Atualizado por"):') || '').trim();
+    if (n) localStorage.setItem('rc_sec_nome', n);
+  }
+  return n;
+}
+function rcSalvarS1(silencioso) {
+  var mes = rcMesSel;
+  var ativosEl = document.getElementById('rc-s1-ativos'), assEl = document.getElementById('rc-s1-assist');
+  var ativos = ativosEl && ativosEl.value !== '' ? rcNum(ativosEl.value) : rcAtivosSugeridos(mes);
+  var nome = rcNomeSecretario();
+  if (!nome) { alert('Informe seu nome para salvar.'); return false; }
+  var dados = { ativos: ativos, assistencia: assEl && assEl.value !== '' ? rcNum(assEl.value) : '', atualizadoPor: nome, atualizadoEm: new Date().toLocaleDateString('pt-BR') };
+  rcS1[mes] = dados;
+  rcGravar('s1/' + mes, dados);
+  if (!silencioso) { alert('S-1 de ' + rcMesRotulo(mes) + ' salvo.'); rcRenderSec(); }
+  return true;
+}
+function rcCopiarS1() {
+  var mes = rcMesSel, c = rcCalcS1(mes), s = rcS1[mes] || {};
+  var ativosEl = document.getElementById('rc-s1-ativos'), assEl = document.getElementById('rc-s1-assist');
+  var ativos = ativosEl && ativosEl.value !== '' ? ativosEl.value : (s.ativos !== undefined ? s.ativos : rcAtivosSugeridos(mes));
+  var ass = assEl && assEl.value !== '' ? assEl.value : (s.assistencia !== undefined ? s.assistencia : '');
+  var t = 'S-1 — ' + rcMesRotulo(mes) + '\n' +
+    'Todos os publicadores ativos: ' + ativos + '\n' +
+    'Média de assistência da reunião do fim de semana: ' + ass + '\n\n' +
+    'Publicadores\n  Número de relatórios: ' + c.pub.rel + '\n  Estudos bíblicos: ' + c.pub.est + '\n\n' +
+    'Pioneiros auxiliares\n  Número de relatórios: ' + c.aux.rel + '\n  Horas: ' + c.aux.hor + '\n  Estudos bíblicos: ' + c.aux.est + '\n\n' +
+    'Pioneiros regulares\n  Número de relatórios: ' + c.reg.rel + '\n  Horas: ' + c.reg.hor + '\n  Estudos bíblicos: ' + c.reg.est;
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(t).then(function() { alert('Números copiados.'); }, function() { prompt('Copie os números:', t); });
+  } else { prompt('Copie os números:', t); }
+}
+function rcAlternarFechado() {
+  var mes = rcMesSel;
+  if (rcFechados[mes]) {
+    if (!confirm('Reabrir ' + rcMesRotulo(mes) + '? Os publicadores poderão corrigir o relatório de novo.')) return;
+    delete rcFechados[mes]; rcApagar('fechados/' + mes); rcRenderSec(); return;
+  }
+  var faltam = rcAtivosChaves().filter(function(k) { return !(rcRelatorios[mes] || {})[k]; }).length;
+  if (!confirm('Marcar ' + rcMesRotulo(mes) + ' como enviado ao JW Hub?' + (faltam ? '\n\nAtenção: ainda faltam ' + faltam + ' relatórios.' : '') + '\n\nOs publicadores não poderão mais mudar o relatório desse mês.')) return;
+  if (rcSalvarS1(true) === false) return;
+  rcFechados[mes] = true; rcGravar('fechados/' + mes, true); rcRenderSec();
+}
+
+// ----- aba Cartões S-21 -----
+function rcRenderCartao(corpo) {
+  var ativos = rcAtivosChaves();
+  if (!rcCartaoPessoa || !rcPubs[rcCartaoPessoa]) rcCartaoPessoa = ativos[0] || '';
+  var anosSet = {}; anosSet[rcAnoServico(rcMesAnteriorKey())] = true;
+  Object.keys(rcRelatorios).forEach(function(m) { anosSet[rcAnoServico(m)] = true; });
+  var anos = Object.keys(anosSet).sort().reverse();
+  if (!rcCartaoAno || !anosSet[rcCartaoAno]) rcCartaoAno = anos[0];
+  var h = '<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px">' +
+    '<select onchange="rcCartaoPessoa=this.value;rcRenderSec()" style="flex:1;min-width:180px;padding:8px;border:1.5px solid #9fd8c4;border-radius:8px;font-size:14px">' +
+    ativos.map(function(k) { return '<option value="' + k + '"' + (k === rcCartaoPessoa ? ' selected' : '') + '>' + escHtml(rcPubs[k].nome) + '</option>'; }).join('') + '</select>' +
+    '<select onchange="rcCartaoAno=this.value;rcRenderSec()" style="padding:8px;border:1.5px solid #9fd8c4;border-radius:8px;font-size:14px">' +
+    anos.map(function(a) { return '<option value="' + a + '"' + (a === rcCartaoAno ? ' selected' : '') + '>' + a + '</option>'; }).join('') + '</select></div>';
+  if (!rcCartaoPessoa) { corpo.innerHTML = h + '<div style="padding:18px;color:#888;text-align:center">Cadastre os publicadores primeiro.</div>'; return; }
+  var meses = rcMesesDoAnoServico(rcCartaoAno), p = rcPubs[rcCartaoPessoa];
+  var totalH = 0, ultimoColetado = -1, usouPioneiro = false;
+  meses.forEach(function(m, i) { if (rcRelatorios[m] && Object.keys(rcRelatorios[m]).length) ultimoColetado = i; });
+  var th = 'padding:6px 8px;border:1px solid #cbd5e1;background:#e1f5ee;font-size:12px', td = 'padding:6px 8px;border:1px solid #e2e8f0;font-size:13px;text-align:center';
+  var linhas = meses.map(function(m) {
+    var r = (rcRelatorios[m] || {})[rcCartaoPessoa];
+    var pio = r && (r.cat === 'regular' || r.cat === 'auxiliar');
+    var hor = r ? rcNum(r.horas) + rcNum(r.credito) : 0;
+    if (pio) { totalH += hor; usouPioneiro = true; }
+    var obs = r ? (escHtml(r.obs || '') + (rcNum(r.credito) ? (r.obs ? ' · ' : '') + 'crédito: ' + rcNum(r.credito) + 'h' : '')) : '';
+    return '<tr><td style="' + td + ';text-align:left">' + RC_MESES[parseInt(m.split('-')[1], 10) - 1] + '</td><td style="' + td + '">' + (r ? '✔' : '') + '</td><td style="' + td + '">' + (r && rcNum(r.estudos) ? rcNum(r.estudos) : '') + '</td><td style="' + td + '">' + (r && r.cat === 'auxiliar' ? '✔' : '') + '</td><td style="' + td + '">' + (pio ? hor : '') + '</td><td style="' + td + ';text-align:left;font-size:12px">' + obs + '</td></tr>';
+  }).join('');
+  h += '<div style="border:1px solid #9fd8c4;border-radius:10px;padding:12px;background:white"><div style="font-weight:bold;font-size:14px;text-align:center;margin-bottom:8px">REGISTRO DE PUBLICADOR DE CONGREGAÇÃO</div>' +
+    '<div style="font-size:13px;margin-bottom:8px"><b>Nome:</b> ' + escHtml(p.nome) + ' · <b>Ano de serviço:</b> ' + rcCartaoAno + ' · ' + (p.categoria === 'regular' ? 'Pioneiro regular' : 'Publicador') + '</div>' +
+    '<div style="overflow-x:auto"><table style="border-collapse:collapse;width:100%;min-width:480px"><tr><th style="' + th + '">Mês</th><th style="' + th + '">Participou</th><th style="' + th + '">Estudos</th><th style="' + th + '">Pioneiro aux.</th><th style="' + th + '">Horas</th><th style="' + th + '">Observações</th></tr>' + linhas +
+    '<tr><td colspan="4" style="' + td + ';text-align:right;font-weight:bold">Total</td><td style="' + td + ';font-weight:bold">' + (usouPioneiro ? totalH : '') + '</td><td style="' + td + '"></td></tr></table></div>';
+  if (p.categoria === 'regular' && ultimoColetado >= 0) {
+    var esperado = 50 * (ultimoColetado + 1), dif = totalH - esperado;
+    var semDados = [];
+    meses.forEach(function(m, i) { if (i < ultimoColetado && !(rcRelatorios[m] && Object.keys(rcRelatorios[m]).length)) semDados.push(RC_MESES[parseInt(m.split('-')[1], 10) - 1]); });
+    if (semDados.length) h += '<div style="margin-top:10px;padding:8px 10px;border-radius:8px;font-size:12px;background:#fff7ed;color:#9a3412">Ainda não há nenhum relatório lançado em: ' + semDados.join(', ') + '. Lance esses meses para o ritmo ficar certo.</div>';
+    h += '<div style="margin-top:10px;padding:8px 10px;border-radius:8px;font-size:13px;background:' + (dif >= 0 ? '#e1f5ee;color:#085041' : '#fffbeb;color:#92400e') + '">Ritmo de 50h/mês: até ' + RC_MESES[parseInt(meses[ultimoColetado].split('-')[1], 10) - 1] + ' o esperado é <b>' + esperado + 'h</b>; tem <b>' + totalH + 'h</b> (' + (dif >= 0 ? dif + 'h acima' : (-dif) + 'h abaixo') + '). Meta do ano: 600h.</div>';
+  }
+  corpo.innerHTML = h + '</div>';
+}
+
+// ----- aba Acesso (só no modo responsável) -----
+function rcRenderAcesso(corpo) {
+  var opts = '';
+  for (var i = -2; i < 14; i++) { var m = rcMesDeslocado('2026-09', i + 2); opts += '<option value="' + m + '"' + (m === rcInicio ? ' selected' : '') + '>' + rcMesRotulo(m) + '</option>'; }
+  corpo.innerHTML = '<div style="font-weight:bold;margin-bottom:6px">Senha do secretário</div>' +
+    '<div style="font-size:13px;color:#5e6370;margin-bottom:8px">' + (rcSecHash ? 'Já existe uma senha. Digite outra para trocar.' : 'Ainda não existe senha. Crie uma para o secretário entrar.') + '</div>' +
+    '<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:6px"><input type="password" id="rc-nova-senha" placeholder="Nova senha (mín. 4 caracteres)" style="flex:1;min-width:180px;padding:9px;border:1.5px solid #9fd8c4;border-radius:8px;font-size:14px"><button onclick="rcSalvarSenhaSec()" style="background:#0f6e56;color:white;border:none;padding:9px 14px;border-radius:8px;font-size:13px;font-weight:bold;cursor:pointer">Salvar senha</button></div>' +
+    '<div style="font-size:12px;color:#92400e;margin-bottom:18px">A senha é uma trava de uso do app. O responsável também entra nesta área, sem senha.</div>' +
+    '<div style="font-weight:bold;margin-bottom:6px">Primeiro mês recebido pelo app</div>' +
+    '<div style="font-size:13px;color:#5e6370;margin-bottom:8px">Os publicadores só veem o formulário a partir do relatório deste mês. Os anteriores são lançados pelo secretário.</div>' +
+    '<select id="rc-inicio-sel" onchange="rcSalvarInicio(this.value)" style="padding:9px;border:1.5px solid #9fd8c4;border-radius:8px;font-size:14px">' + opts + '</select>';
+}
+function rcSalvarSenhaSec() {
+  var s = (document.getElementById('rc-nova-senha').value || '').trim();
+  if (s.length < 4) { alert('A senha precisa ter pelo menos 4 caracteres.'); return; }
+  rcHash(s).then(function(h) {
+    rcSecHash = h; rcGravar('secretarioHash', h);
+    document.getElementById('rc-nova-senha').value = '';
+    alert('Senha do secretário salva.'); rcRenderSec();
+  }).catch(function(e) { alert(e.message); });
+}
+function rcSalvarInicio(v) { rcInicio = v; rcGravar('inicio', v); }
+
+// ---------- formulário (compartilhado: publicador e lançamento do secretário) ----------
+function rcCamposHtml(p) {
+  var lbl = 'display:block;font-size:13px;font-weight:bold;color:#1a1a2e;margin:14px 0 4px';
+  var inp = 'width:100%;box-sizing:border-box;padding:10px 12px;border:1.5px solid #9fd8c4;border-radius:8px;font-size:16px;font-family:Arial,sans-serif';
+  var cb = 'display:flex;gap:10px;align-items:center;font-size:14px;font-weight:bold;cursor:pointer';
+  return '<label style="' + cb + '"><input type="checkbox" id="' + p + '-participou" style="width:20px;height:20px"> Participei no ministério neste mês</label>' +
+    '<label style="' + lbl + '" for="' + p + '-estudos">Estudos bíblicos</label><input type="number" min="0" inputmode="numeric" id="' + p + '-estudos" style="' + inp + '" placeholder="0">' +
+    '<div id="' + p + '-aux-wrap" style="margin-top:14px"><label style="' + cb + '"><input type="checkbox" id="' + p + '-aux" onchange="rcFormMudou(\'' + p + '\')" style="width:20px;height:20px"> Fui pioneiro auxiliar neste mês</label></div>' +
+    '<div id="' + p + '-hor-wrap" style="display:none"><label style="' + lbl + '" for="' + p + '-horas">Horas</label><input type="number" min="0" inputmode="numeric" id="' + p + '-horas" style="' + inp + '" placeholder="0">' +
+    '<label style="' + lbl + '" for="' + p + '-credito">Horas de crédito (outro trabalho teocrático)</label><input type="number" min="0" inputmode="numeric" id="' + p + '-credito" style="' + inp + '" placeholder="0">' +
+    '<div style="font-size:11px;color:#6b7280;margin-top:3px">Preencha só se tiver horas de crédito. O total é horas + crédito.</div></div>' +
+    '<label style="' + lbl + '" for="' + p + '-obs">Observações</label><textarea id="' + p + '-obs" rows="3" maxlength="300" style="' + inp + '"></textarea>';
+}
+function rcFormMudou(p) {
+  var cat = rcFormCat[p] || 'publicador';
+  var auxWrap = document.getElementById(p + '-aux-wrap'), horWrap = document.getElementById(p + '-hor-wrap');
+  var aux = document.getElementById(p + '-aux');
+  if (cat === 'regular') { auxWrap.style.display = 'none'; horWrap.style.display = 'block'; }
+  else { auxWrap.style.display = 'block'; horWrap.style.display = (aux && aux.checked) ? 'block' : 'none'; }
+}
+function rcFormPreencher(p, cat, r) {
+  rcFormCat[p] = cat;
+  r = r || {};
+  document.getElementById(p + '-participou').checked = !!r.participou;
+  document.getElementById(p + '-estudos').value = r.estudos ? r.estudos : '';
+  document.getElementById(p + '-aux').checked = (r.cat === 'auxiliar');
+  document.getElementById(p + '-horas').value = r.horas ? r.horas : '';
+  document.getElementById(p + '-credito').value = r.credito ? r.credito : '';
+  document.getElementById(p + '-obs').value = r.obs || '';
+  rcFormMudou(p);
+}
+function rcFormLer(p, nome) {
+  var cat = rcFormCat[p] || 'publicador';
+  var aux = cat !== 'regular' && document.getElementById(p + '-aux').checked;
+  var pio = (cat === 'regular' || aux);
+  if (!document.getElementById(p + '-participou').checked) { alert('Marque "Participei no ministério neste mês". Se não participou, não precisa enviar relatório.'); return null; }
+  var horas = pio ? rcNum(document.getElementById(p + '-horas').value) : 0;
+  var cred = pio ? rcNum(document.getElementById(p + '-credito').value) : 0;
+  if (aux && horas + cred <= 0) { alert('Informe as horas do pioneiro auxiliar.'); return null; }
+  return {
+    nome: nome, cat: cat === 'regular' ? 'regular' : (aux ? 'auxiliar' : 'publicador'),
+    participou: true, estudos: rcNum(document.getElementById(p + '-estudos').value),
+    horas: horas, credito: cred, obs: (document.getElementById(p + '-obs').value || '').trim().slice(0, 300),
+    enviadoEm: Date.now()
+  };
+}
+
+// ---------- tela do publicador ----------
+function rcAbrirMeuRelatorio() {
+  pedirIdentidade(function(nome) { rcAbrirMeu2(nome); });
+}
+function rcAbrirMeu2(nome) {
+  var mes = rcMesAnteriorKey();
+  rcMeuCtx = { nome: nome, mes: mes, chave: rcChaveDe(nome), existente: null, editando: false, enviado: false };
+  document.getElementById('ov-relcampo').classList.add('aberto');
+  var r = rcMeuCtx.chave ? rcRef('relatorios/' + mes + '/' + rcMeuCtx.chave) : null;
+  if (r && mes >= rcInicio) {
+    r.once('value', function(s) { rcMeuCtx.existente = s.val(); rcRenderMeu(); });
+  }
+  rcRenderMeu();
+}
+function rcFecharMeu() { document.getElementById('ov-relcampo').classList.remove('aberto'); rcMeuCtx = null; }
+function rcRenderMeu() {
+  var corpo = document.getElementById('rc-meu-corpo'), c = rcMeuCtx;
+  if (!corpo || !c) return;
+  var aviso = function(t) { corpo.innerHTML = '<div style="padding:16px;background:#f8fafc;border-radius:10px;font-size:14px;line-height:1.5;color:#1a1a2e">' + t + '</div>'; };
+  var pub = c.chave ? rcPubs[c.chave] : null;
+  if (!pub || pub.ativo === false) { aviso('Seu nome (<b>' + escHtml(c.nome) + '</b>) ainda não está na lista de publicadores. Fale com o secretário.'); return; }
+  if (c.mes < rcInicio) {
+    var ini = rcInicio.split('-'), prim = new Date(parseInt(ini[0], 10), parseInt(ini[1], 10), 1);
+    aviso('O relatório de <b>' + rcMesRotulo(c.mes) + '</b> continua sendo entregue ao secretário, como antes. O app passa a receber os relatórios a partir de <b>1º de ' + RC_MESES[prim.getMonth()].toLowerCase() + '</b>.'); return;
+  }
+  if (rcFechados[c.mes]) {
+    aviso('O relatório de <b>' + rcMesRotulo(c.mes) + '</b> já foi enviado.' + (c.existente ? ' Seu relatório foi recebido. ✓' : ' Se você precisa informar o seu, fale com o secretário.')); return;
+  }
+  var ja = c.existente;
+  corpo.innerHTML = '<div style="font-size:15px;font-weight:bold;color:#0f6e56;margin-bottom:2px">Relatório de ' + rcMesRotulo(c.mes) + '</div>' +
+    '<div style="font-size:13px;color:#5e6370;margin-bottom:6px">' + escHtml(c.nome) + (ja ? ' · <span style="color:#0f6e56;font-weight:bold">relatório já enviado ✓ (você pode corrigir)</span>' : '') + '</div>' +
+    rcCamposHtml('rcp') +
+    '<button onclick="rcEnviarMeu()" style="width:100%;margin-top:18px;background:#0f6e56;color:white;border:none;padding:13px;border-radius:10px;font-size:16px;font-weight:bold;cursor:pointer">' + (ja ? 'Salvar correção' : 'Enviar relatório') + '</button>';
+  rcFormPreencher('rcp', pub.categoria === 'regular' ? 'regular' : 'publicador', ja);
+}
+function rcEnviarMeu() {
+  var c = rcMeuCtx;
+  if (!c || !c.chave) return;
+  if (rcFechados[c.mes]) { alert('Esse mês já foi enviado.'); rcRenderMeu(); return; }
+  var pub = rcPubs[c.chave];
+  var r = rcFormLer('rcp', pub ? pub.nome : c.nome);
+  if (!r) return;
+  c.existente = r; c.enviado = true;
+  rcGravar('relatorios/' + c.mes + '/' + c.chave, r);
+  document.getElementById('rc-meu-corpo').innerHTML = '<div style="padding:22px;text-align:center"><div style="font-size:40px">✅</div><div style="font-size:17px;font-weight:bold;color:#0f6e56;margin:8px 0">Relatório enviado!</div><div style="font-size:13px;color:#5e6370">Obrigado. Se precisar corrigir algo, abra o relatório de novo.</div><button onclick="rcFecharMeu()" style="margin-top:16px;background:#0f6e56;color:white;border:none;padding:10px 22px;border-radius:8px;font-size:14px;font-weight:bold;cursor:pointer">Fechar</button></div>';
+}
+
+// ---------- lançamento pelo secretário ----------
+function rcLancar(chave) {
+  var mes = rcMesSel, pub = rcPubs[chave], r = (rcRelatorios[mes] || {})[chave];
+  var nome = pub ? pub.nome : (r ? r.nome : chave);
+  var cat = pub ? (pub.categoria === 'regular' ? 'regular' : 'publicador') : (r && r.cat === 'regular' ? 'regular' : 'publicador');
+  rcLanc = { chave: chave, mes: mes, nome: nome };
+  document.getElementById('rc-lanc-titulo').textContent = nome + ' — ' + rcMesRotulo(mes);
+  document.getElementById('rc-lanc-aviso').style.display = rcFechados[mes] ? 'block' : 'none';
+  document.getElementById('rc-lanc-excluir').style.display = r ? 'inline-block' : 'none';
+  rcFormPreencher('rcl', cat, r);
+  document.getElementById('ov-rc-lanc').classList.add('aberto');
+}
+function rcFecharLanc() { document.getElementById('ov-rc-lanc').classList.remove('aberto'); rcLanc = null; }
+function rcSalvarLanc() {
+  if (!rcLanc) return;
+  var r = rcFormLer('rcl', rcLanc.nome);
+  if (!r) return;
+  r.por = 'secretário';
+  if (!rcRelatorios[rcLanc.mes]) rcRelatorios[rcLanc.mes] = {};
+  rcRelatorios[rcLanc.mes][rcLanc.chave] = r;
+  rcGravar('relatorios/' + rcLanc.mes + '/' + rcLanc.chave, r);
+  rcFecharLanc(); rcRenderSec();
+}
+function rcExcluirLanc() {
+  if (!rcLanc || !confirm('Apagar o relatório de ' + rcLanc.nome + ' de ' + rcMesRotulo(rcLanc.mes) + '?')) return;
+  if (rcRelatorios[rcLanc.mes]) delete rcRelatorios[rcLanc.mes][rcLanc.chave];
+  rcApagar('relatorios/' + rcLanc.mes + '/' + rcLanc.chave);
+  rcFecharLanc(); rcRenderSec();
+}
+
+// ---------- telas (montadas uma vez) ----------
+function rcMontarOverlays() {
+  if (document.getElementById('ov-relcampo')) return;
+  var h = '<div class="overlay" id="ov-relcampo"><div class="modal-principal" style="max-width:520px">' +
+    '<div class="modal-cab" style="background:#0f6e56;color:white"><span class="modal-cab-titulo" style="color:white">📝 Relatório de Campo</span><button class="btn-fechar" onclick="rcFecharMeu()" style="color:white">✕</button></div>' +
+    '<div class="modal-body" id="rc-meu-corpo" style="padding:16px 20px"></div></div></div>' +
+
+    '<div class="overlay" id="ov-senha-sec"><div class="modal-principal" style="max-width:360px">' +
+    '<div class="modal-cab" style="background:#0f6e56;color:white"><span class="modal-cab-titulo" style="color:white">🗂️ Área do Secretário</span><button class="btn-fechar" onclick="rcFecharSenhaSec()" style="color:white">✕</button></div>' +
+    '<div style="padding:18px 20px"><input type="password" id="rc-senha-campo" placeholder="Senha do secretário" onkeydown="if(event.key===\'Enter\')rcConfirmarSenhaSec()" style="width:100%;box-sizing:border-box;padding:11px;border:1.5px solid #9fd8c4;border-radius:8px;font-size:16px">' +
+    '<div id="rc-senha-erro" style="display:none;color:#b91c1c;font-size:13px;margin-top:8px">Senha incorreta.</div>' +
+    '<button onclick="rcConfirmarSenhaSec()" style="width:100%;margin-top:12px;background:#0f6e56;color:white;border:none;padding:11px;border-radius:8px;font-size:15px;font-weight:bold;cursor:pointer">Entrar</button></div></div></div>' +
+
+    '<div class="overlay" id="ov-secretario"><div class="modal-principal" style="max-width:820px">' +
+    '<div class="modal-cab" style="background:#0f6e56;color:white"><span class="modal-cab-titulo" style="color:white">🗂️ Relatórios de Campo — Secretário</span><button class="btn-fechar" onclick="rcFecharSecretario()" style="color:white">✕</button></div>' +
+    '<div id="rc-sec-abas" style="display:flex;border-bottom:2px solid #e8e8e8;padding:0 14px;overflow-x:auto;flex-shrink:0"></div>' +
+    '<div class="modal-body" id="rc-sec-corpo" style="padding:16px 20px"></div></div></div>' +
+
+    '<div class="overlay" id="ov-rc-lanc"><div class="modal-principal" style="max-width:480px">' +
+    '<div class="modal-cab" style="background:#1a4fa3;color:white"><span class="modal-cab-titulo" style="color:white;font-size:14px" id="rc-lanc-titulo"></span><button class="btn-fechar" onclick="rcFecharLanc()" style="color:white">✕</button></div>' +
+    '<div class="modal-body" style="padding:14px 20px"><div id="rc-lanc-aviso" style="display:none;background:#fff7ed;color:#9a3412;padding:8px 10px;border-radius:8px;font-size:12px;margin-bottom:8px">Este mês já foi marcado como enviado. Mudar aqui não altera o que já foi ao JW Hub.</div>' +
+    rcCamposHtml('rcl') +
+    '<div style="display:flex;gap:8px;margin-top:18px;flex-wrap:wrap"><button onclick="rcSalvarLanc()" style="flex:1;background:#0f6e56;color:white;border:none;padding:12px;border-radius:8px;font-size:15px;font-weight:bold;cursor:pointer">Salvar</button>' +
+    '<button id="rc-lanc-excluir" onclick="rcExcluirLanc()" style="background:white;color:#991b1b;border:1px solid #fca5a5;padding:12px 14px;border-radius:8px;font-size:13px;cursor:pointer">Apagar</button></div></div></div></div>';
+  document.body.insertAdjacentHTML('beforeend', h);
+}
+if (document.body) rcMontarOverlays(); else document.addEventListener('DOMContentLoaded', rcMontarOverlays);
+
 
 try { iniciarFirebase(); } catch(e) { console.error('Erro iniciarFirebase:', e); }
 // Reagenda avisos 24h/1h para quem já tem nome salvo
