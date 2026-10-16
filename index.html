@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Versão: v2026.10.19 — Botão 'Não participei neste mês'; avisos Irregular/Inativo só para secretário e responsável. Anterior: v2026.10.18 — Relatório de Campo: formulário do publicador (S-4), cadastro de publicadores, painel do secretário com S-1 e cartões S-21. Anterior: v2026.10.17 — Minha Escala mostra o slip S-89-T (verde) para Leitura e Ministério, inclusive para irmãs e ajudantes; só semanas de meses publicados; data da reunião = quarta; lista de nomes inclui o cadastro do VMC. Anterior: v2026.10.16 — Aplicar/entrar/sair do modo responsável NÃO refazem mais a escala (só redesenham a salva); celulares redesenham quando um evento muda; modo teste com faixa visível; reparo protegido; gravação da escala não apaga substituições. Anterior: v2026.10.15 — Microfone/Indicadores: escolher entre irmãos já cadastrados; restaurar backup NÃO regenera mais a escala; backups podem ser apagados. Anterior: v2026.10.14 — Cadastro blindado: liberados/bloqueados em nó separado, gravação sem apagar campos desconhecidos, backups diários com restauração. Anterior: v2026.10.13 — Plano de Segurança COMPLETO (21 itens) + novo ano de serviço/plano novo pelo responsável. Anterior: v2026.10.12 — Plano de Segurança: prazo bloqueia indicador que não leu + avisos ao responsável. Anterior: v2026.10.11 — Plano de Segurança S-288 com trava de leitura reforçada (rolagem + tempo mínimo + perguntas). Anterior: v2026.10.10 — Palco passa a ser UM irmão por reunião (em vez de dupla). Anterior: v2026.10.09 — Liberar/bloquear por treinamento em TODAS as designações (palco, microfone, áudio, vídeo, zoom, indicador). Anterior: v2026.10.08 — Palco: tirar ou trocar um irmão só (sem apagar as duplas à mão). Anterior: v2026.10.07 — Releitura ao voltar ao app, aviso de nova versão e sw.js com rede primeiro. Anterior: v2026.10.06 — Botões de indicadores (atualizar/regenerar) só mexem de hoje em diante; reuniões passadas ficam intactas. Anterior: v2026.10.05 — Treinamento de segurança vence em 12 meses (Plano S-288, item 19) e bloqueia o indicador após vencer. Anterior: v2026.09.04 — bloqueio de indicadores sem treinamento. v2026.09.03 — Botões de WhatsApp (VMC, Discurso Público, Enviar Oradores) + sistema de temas: bloqueio automático de 4 meses, temas indisponíveis temporariamente, repertório por orador -->
+<!-- Versão: v2026.10.20 — Grupos de congregação: login do superintendente/ajudante, avisos por grupo e 'já conversei'. Anterior: v2026.10.19 — Botão 'Não participei neste mês'; avisos Irregular/Inativo só para secretário e responsável. Anterior: v2026.10.18 — Relatório de Campo: formulário do publicador (S-4), cadastro de publicadores, painel do secretário com S-1 e cartões S-21. Anterior: v2026.10.17 — Minha Escala mostra o slip S-89-T (verde) para Leitura e Ministério, inclusive para irmãs e ajudantes; só semanas de meses publicados; data da reunião = quarta; lista de nomes inclui o cadastro do VMC. Anterior: v2026.10.16 — Aplicar/entrar/sair do modo responsável NÃO refazem mais a escala (só redesenham a salva); celulares redesenham quando um evento muda; modo teste com faixa visível; reparo protegido; gravação da escala não apaga substituições. Anterior: v2026.10.15 — Microfone/Indicadores: escolher entre irmãos já cadastrados; restaurar backup NÃO regenera mais a escala; backups podem ser apagados. Anterior: v2026.10.14 — Cadastro blindado: liberados/bloqueados em nó separado, gravação sem apagar campos desconhecidos, backups diários com restauração. Anterior: v2026.10.13 — Plano de Segurança COMPLETO (21 itens) + novo ano de serviço/plano novo pelo responsável. Anterior: v2026.10.12 — Plano de Segurança: prazo bloqueia indicador que não leu + avisos ao responsável. Anterior: v2026.10.11 — Plano de Segurança S-288 com trava de leitura reforçada (rolagem + tempo mínimo + perguntas). Anterior: v2026.10.10 — Palco passa a ser UM irmão por reunião (em vez de dupla). Anterior: v2026.10.09 — Liberar/bloquear por treinamento em TODAS as designações (palco, microfone, áudio, vídeo, zoom, indicador). Anterior: v2026.10.08 — Palco: tirar ou trocar um irmão só (sem apagar as duplas à mão). Anterior: v2026.10.07 — Releitura ao voltar ao app, aviso de nova versão e sw.js com rede primeiro. Anterior: v2026.10.06 — Botões de indicadores (atualizar/regenerar) só mexem de hoje em diante; reuniões passadas ficam intactas. Anterior: v2026.10.05 — Treinamento de segurança vence em 12 meses (Plano S-288, item 19) e bloqueia o indicador após vencer. Anterior: v2026.09.04 — bloqueio de indicadores sem treinamento. v2026.09.03 — Botões de WhatsApp (VMC, Discurso Público, Enviar Oradores) + sistema de temas: bloqueio automático de 4 meses, temas indisponíveis temporariamente, repertório por orador -->
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
@@ -381,6 +381,7 @@ body.dark-mode .conf-badge.pendente { background: #2a2a15; color: #ca8a04; borde
     <button id="btn-minha-escala" onclick="abrirMinhaEscala()" style="background:#7c3aed;color:white;border:none;padding:9px 18px;border-radius:8px;font-size:14px;font-weight:bold;cursor:pointer">👤 Minha Escala</button>
     <button id="btn-relcampo" onclick="rcAbrirMeuRelatorio()" style="background:#0f6e56;color:white;border:none;padding:9px 18px;border-radius:8px;font-size:14px;font-weight:bold;cursor:pointer">📝 Relatório de Campo</button>
     <button id="btn-secretario" onclick="rcAbrirSecretario()" style="background:#374151;color:white;border:none;padding:9px 18px;border-radius:8px;font-size:14px;font-weight:bold;cursor:pointer">🗂️ Secretário</button>
+    <button id="btn-grupo" onclick="rcAbrirGrupo()" style="background:#0f6e56;color:white;border:none;padding:9px 18px;border-radius:8px;font-size:14px;font-weight:bold;cursor:pointer">👥 Meu Grupo</button>
     <button id="btn-notif" onclick="pedirPermissaoNotificacao()" style="display:none;background:#0f6e56;color:white;border:none;padding:9px 14px;border-radius:8px;font-size:14px;cursor:pointer" title="Ativar notificações">🔔</button>
     <button id="btn-instalar-pwa" onclick="instalarPWA()" style="display:none;background:#f59e0b;color:white;border:none;padding:9px 14px;border-radius:8px;font-size:13px;font-weight:bold;cursor:pointer">📱 Instalar App</button>
     <button onclick="alternarTema()" style="background:#374151;color:white;border:none;padding:9px 14px;border-radius:8px;font-size:13px;font-weight:bold;cursor:pointer" id="btn-tema">🌙 Escuro</button>
@@ -549,7 +550,7 @@ body.dark-mode .conf-badge.pendente { background: #2a2a15; color: #ca8a04; borde
     <div class="modal-cab">
       <span>
         <span class="modal-cab-titulo">👨‍💼 Área do Responsável</span>
-        <span style="font-size:10px;color:#9ca3af;font-weight:normal;margin-left:8px">v2026.10.19</span>
+        <span style="font-size:10px;color:#9ca3af;font-weight:normal;margin-left:8px">v2026.10.20</span>
       </span>
       <button class="btn-fechar" onclick="fecharPrincipal()">✕</button>
     </div>
@@ -5499,7 +5500,7 @@ setInterval(renderPainelTrocas, 60000);
 
 // ===================== PWA — SERVICE WORKER + ATUALIZAÇÃO =====================
 // Mantenha igual à versão mostrada na Área do Responsável e à VERSAO do sw.js
-window.APP_VERSAO = 'v2026.10.19';
+window.APP_VERSAO = 'v2026.10.20';
 
 function mostrarBannerNovaVersao() {
   if (document.getElementById('banner-nova-versao')) return;
@@ -8952,7 +8953,10 @@ var rcInicio = RC_INICIO_PADRAO;
 var rcSecLogado = false, rcSecOuvindo = false, rcIniciado = false;
 var rcMesSel = '', rcAbaSel = 'pubs', rcCartaoPessoa = '', rcCartaoAno = '';
 var rcFormCat = {}, rcLanc = null, rcMeuCtx = null;
-var rcPriv = {};        // chave -> { desde:'AAAA-MM', ultimoRelato:'AAAA-MM' }  (só o secretário/responsável lê)
+var rcPriv = {};        // chave -> { desde:'AAAA-MM', ultimoRelato:'AAAA-MM', grupo:'1'..'5' }  (só secretário/responsável/grupo leem)
+var rcGrupos = {};      // 'N' -> { sup, aux, senhaHash }
+var rcAcomp = {};       // chave -> { em, mes, por }  ("já conversei")
+var rcFiltroGrupo = '', rcGrupoLogado = '', rcImportRes = null;
 
 // ---------- utilitários ----------
 function rcSlug(nome) {
@@ -9111,6 +9115,7 @@ function rcIniciar() {
   db.ref('escala/campo/fechados').on('value', function(s) { rcFechados = s.val() || {}; rcAposMudanca(); });
   db.ref('escala/campo/inicio').on('value', function(s) { rcInicio = s.val() || RC_INICIO_PADRAO; rcAposMudanca(); });
   db.ref('escala/campo/secretarioHash').on('value', function(s) { rcSecHash = s.val() || ''; });
+  db.ref('escala/campo/grupos').on('value', function(s) { rcGrupos = s.val() || {}; rcAposMudanca(); });
 }
 function rcOuvirSecretario() {   // só o secretário/responsável baixa os relatórios de todos
   if (rcSecOuvindo || !firebaseOk || !db) return;
@@ -9118,11 +9123,13 @@ function rcOuvirSecretario() {   // só o secretário/responsável baixa os rela
   db.ref('escala/campo/relatorios').on('value', function(s) { rcRelatorios = s.val() || {}; rcAposMudanca(); });
   db.ref('escala/campo/s1').on('value', function(s) { rcS1 = s.val() || {}; rcAposMudanca(); });
   db.ref('escala/campo/privado').on('value', function(s) { rcPriv = s.val() || {}; rcAposMudanca(); });
+  db.ref('escala/campo/acompanhamento').on('value', function(s) { rcAcomp = s.val() || {}; rcAposMudanca(); });
 }
 function rcAberto(id) { var e = document.getElementById(id); return !!(e && e.classList.contains('aberto')); }
 function rcAposMudanca() {
   try { rcAtualizarBadge(); } catch (e) {}
   if (rcAberto('ov-secretario')) rcRenderSec(true);
+  if (rcAberto('ov-grupo')) rcRenderGrupo();
   // não redesenha o formulário do publicador enquanto ele está preenchendo ou depois de enviar
   if (rcAberto('ov-relcampo') && rcMeuCtx && !rcMeuCtx.enviado && !document.getElementById('rcp-participou')) rcRenderMeu();
 }
@@ -9182,18 +9189,19 @@ function rcRenderSec(manterScroll) {
   var corpo = document.getElementById('rc-sec-corpo');
   if (!corpo) return;
   var nAvisos = rcAvisos().length;
-  var abas = [['pubs', 'Publicadores'], ['rel', 'Relatórios'], ['avisos', 'Avisos' + (nAvisos ? ' (' + nAvisos + ')' : '')], ['s1', 'S-1'], ['cart', 'Cartões S-21']];
+  var abas = [['pubs', 'Publicadores'], ['grupos', 'Grupos'], ['rel', 'Relatórios'], ['avisos', 'Avisos' + (nAvisos ? ' (' + nAvisos + ')' : '')], ['s1', 'S-1'], ['cart', 'Cartões S-21']];
   if (modoResponsavel) abas.push(['acesso', 'Acesso']);
   document.getElementById('rc-sec-abas').innerHTML = abas.map(function(a) {
     var at = a[0] === rcAbaSel;
     return '<button onclick="rcAba(\'' + a[0] + '\')" style="background:none;border:none;padding:10px 13px;font-size:13px;font-weight:bold;cursor:pointer;white-space:nowrap;color:' + (at ? '#0f6e56' : '#5e6370') + ';border-bottom:3px solid ' + (at ? '#0f6e56' : 'transparent') + '">' + a[1] + '</button>';
   }).join('');
   var rolagem = corpo.scrollTop, guardados = {};
-  if (manterScroll) ['rc-s1-ativos', 'rc-s1-assist', 'rc-novo-nome', 'rc-nova-cat', 'rc-nova-senha'].forEach(function(id) {
+  if (manterScroll) ['rc-s1-ativos', 'rc-s1-assist', 'rc-novo-nome', 'rc-nova-cat', 'rc-nova-senha', 'rc-grupos-texto', 'rc-gsenha-1', 'rc-gsenha-2', 'rc-gsenha-3', 'rc-gsenha-4', 'rc-gsenha-5'].forEach(function(id) {
     var e = document.getElementById(id); if (e) guardados[id] = e.value;
   });
   if (rcAbaSel === 'pubs') rcRenderPubs(corpo);
   else if (rcAbaSel === 'rel') rcRenderRel(corpo);
+  else if (rcAbaSel === 'grupos') rcRenderGruposAba(corpo);
   else if (rcAbaSel === 'avisos') rcRenderAvisos(corpo);
   else if (rcAbaSel === 's1') rcRenderS1(corpo);
   else if (rcAbaSel === 'cart') rcRenderCartao(corpo);
@@ -9229,6 +9237,7 @@ function rcRenderPubs(corpo) {
     var optsUlt = '<option value="">Último relato: ?</option>';
     for (var u = 0; u < 24; u++) { var mu = rcMesDeslocado(rcMesAnteriorKey(), -u); optsUlt += '<option value="' + mu + '"' + (mu === ult ? ' selected' : '') + '>' + RC_MESES[parseInt(mu.split('-')[1], 10) - 1].slice(0, 3) + '/' + mu.slice(2, 4) + '</option>'; }
     h += '<div style="display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid #eef0f3;flex-wrap:wrap"><span style="flex:1;min-width:140px;font-size:14px">' + escHtml(p.nome) + ' ' + rcBadgeStatus(k) + '</span>' +
+      rcSelectGrupo(k) +
       '<select onchange="rcSetUltimo(\'' + k + '\',this.value)" title="Último mês em que a pessoa relatou antes do app (só para quem já estava ausente)" style="padding:6px;border:1px solid #cbd5e1;border-radius:6px;font-size:12px;color:#5e6370">' + optsUlt + '</select>' +
       '<select onchange="rcSetCat(\'' + k + '\',this.value)" style="padding:6px;border:1px solid #cbd5e1;border-radius:6px;font-size:13px"><option value="publicador"' + (p.categoria !== 'regular' ? ' selected' : '') + '>Publicador</option><option value="regular"' + (p.categoria === 'regular' ? ' selected' : '') + '>Pioneiro regular</option></select>' +
       '<button onclick="rcTirar(\'' + k + '\')" style="background:#fee2e2;color:#991b1b;border:1px solid #fca5a5;padding:5px 9px;border-radius:6px;font-size:12px;cursor:pointer">Não é publicador</button></div>';
@@ -9296,14 +9305,14 @@ function rcExcluir(k) {
 // ----- aba Relatórios do mês -----
 function rcRenderRel(corpo) {
   var mes = rcMesSel, rel = rcRelatorios[mes] || {};
-  var ativos = rcAtivosChaves();
-  var enviados = Object.keys(rel).filter(function(k) { return rel[k] && rel[k].participou !== false; });
-  var naoPart = Object.keys(rel).filter(function(k) { return rel[k] && rel[k].participou === false; });
+  var ativos = rcAtivosChaves().filter(rcNoFiltro);
+  var enviados = Object.keys(rel).filter(function(k) { return rel[k] && rel[k].participou !== false && rcNoFiltro(k); });
+  var naoPart = Object.keys(rel).filter(function(k) { return rel[k] && rel[k].participou === false && rcNoFiltro(k); });
   naoPart.sort(function(a, b) { return (rel[a].nome || a).localeCompare(rel[b].nome || b, 'pt-BR'); });
   enviados.sort(function(a, b) { return (rel[a].nome || a).localeCompare(rel[b].nome || b, 'pt-BR'); });
   var faltam = ativos.filter(function(k) { return !rel[k]; });
   var atrasado = rcAtrasado(mes) && !rcFechados[mes];
-  var h = '<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:12px">' + rcSeletorMes() +
+  var h = '<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:12px">' + rcSeletorMes() + rcSeletorGrupo() +
     '<span style="font-size:13px;color:#5e6370"><b>' + enviados.length + '</b> relataram · <b>' + naoPart.length + '</b> não participaram · <b style="color:' + (faltam.length ? '#b45309' : '#0f6e56') + '">' + faltam.length + '</b> faltam</span>' +
     (rcFechados[mes] ? '<span style="background:#e1f5ee;color:#085041;font-size:12px;font-weight:bold;padding:3px 8px;border-radius:10px">✓ mês enviado</span>' : '') + '</div>';
   h += '<div style="font-size:13px;font-weight:bold;margin:10px 0 4px;color:' + (atrasado ? '#b91c1c' : '#b45309') + '">Faltam relatar' + (atrasado ? ' — já passou do dia 10' : '') + '</div>';
@@ -9336,9 +9345,10 @@ function rcAbrevMeses(lista) {
   return lista.slice().reverse().map(function(m) { return RC_MESES[parseInt(m.split('-')[1], 10) - 1].slice(0, 3).toLowerCase(); }).join(', ');
 }
 function rcRenderAvisos(corpo) {
-  var av = rcAvisos(), inativos = av.filter(function(a) { return a.tipo === 'inativo'; }), irreg = av.filter(function(a) { return a.tipo === 'irregular'; });
+  var av = rcAvisos().filter(function(a) { return rcNoFiltro(a.k); }), inativos = av.filter(function(a) { return a.tipo === 'inativo'; }), irreg = av.filter(function(a) { return a.tipo === 'irregular'; });
   var inicio = rcPrimeiroMesComDados();
-  var h = '<div style="font-size:12px;color:#5e6370;background:#f8fafc;border-radius:8px;padding:9px 11px;margin-bottom:12px;line-height:1.5">' +
+  var h = '<div style="margin-bottom:10px">' + rcSeletorGrupo() + '</div>' +
+    '<div style="font-size:12px;color:#5e6370;background:#f8fafc;border-radius:8px;padding:9px 11px;margin-bottom:12px;line-height:1.5">' +
     '<b>Irregular:</b> não participou ou não relatou nos últimos meses (de 1 a 5 meses seguidos). <b>Inativo:</b> mais de 5 meses seguidos sem relatar. ' +
     'Estes avisos só aparecem para o secretário e para o responsável, nunca para os publicadores.' +
     (inicio ? ' O app conta a partir de ' + rcMesRotulo(inicio) + '; para quem já estava ausente antes, informe o "Último relato" na aba Publicadores.' : '') + '</div>';
@@ -9350,7 +9360,9 @@ function rcRenderAvisos(corpo) {
     lista.forEach(function(a) {
       x += '<div style="display:flex;align-items:center;gap:8px;padding:8px 10px;margin-bottom:4px;border-radius:8px;background:' + fundo + ';flex-wrap:wrap">' +
         '<span style="flex:1;min-width:150px;font-size:14px">' + escHtml(rcPubs[a.k].nome) + '</span>' +
-        '<span style="font-size:12px;color:#5e6370">' + rcCatRotulo(rcPubs[a.k].categoria) + ' · ' + a.meses + (a.meses === 1 ? ' mês' : ' meses') + ' sem relatar' + (a.lista.length ? ' (' + rcAbrevMeses(a.lista) + ')' : '') + '</span></div>';
+        '<span style="font-size:12px;color:#5e6370">' + (rcGrupoDe(a.k) ? 'Grupo ' + rcGrupoDe(a.k) + ' · ' : '') + rcCatRotulo(rcPubs[a.k].categoria) + ' · ' + a.meses + (a.meses === 1 ? ' mês' : ' meses') + ' sem relatar' + (a.lista.length ? ' (' + rcAbrevMeses(a.lista) + ')' : '') + '</span>' +
+        (function() { var m = rcAcompAtiva(a.k, a); return m ? '<span style="width:100%;font-size:12px;color:#085041;font-weight:bold">✔ Em acompanhamento: ' + escHtml(m.por || '') + ', ' + escHtml(m.em || '') + '</span>' : '<span style="width:100%;font-size:12px;color:#9ca3af">Sem acompanhamento registrado</span>'; })() +
+        '</div>';
     });
     return x;
   };
@@ -9639,6 +9651,298 @@ function rcExcluirLanc() {
   rcFecharLanc(); rcRenderSec();
 }
 
+// ═══════════════════════════════════════════════════════════
+// GRUPOS DE CONGREGAÇÃO: superintendentes e ajudantes cuidam do próprio grupo
+// Dados: escala/campo/grupos/N {sup, aux, senhaHash} · privado/chave/grupo · acompanhamento/chave {em, mes, por}
+// ═══════════════════════════════════════════════════════════
+function rcNumerosGrupos() {
+  var set = { '1': 1, '2': 1, '3': 1, '4': 1, '5': 1 };
+  Object.keys(rcGrupos).forEach(function(n) { set[n] = 1; });
+  return Object.keys(set).sort(function(a, b) { return parseInt(a, 10) - parseInt(b, 10); });
+}
+function rcGrupoDe(k) { return (rcPriv[k] || {}).grupo || ''; }
+function rcNoFiltro(k) {
+  if (!rcFiltroGrupo) return true;
+  var g = rcGrupoDe(k);
+  return rcFiltroGrupo === '0' ? !g : g === rcFiltroGrupo;
+}
+function rcSeletorGrupo() {
+  var o = '<option value="">Todos os grupos</option>';
+  rcNumerosGrupos().forEach(function(n) { o += '<option value="' + n + '"' + (rcFiltroGrupo === n ? ' selected' : '') + '>Grupo ' + n + '</option>'; });
+  o += '<option value="0"' + (rcFiltroGrupo === '0' ? ' selected' : '') + '>Sem grupo</option>';
+  return '<select onchange="rcFiltroGrupo=this.value;rcRenderSec()" style="padding:8px 10px;border:1.5px solid #9fd8c4;border-radius:8px;font-size:14px;background:white;color:#1a1a2e">' + o + '</select>';
+}
+function rcSetGrupo(k, v) {
+  rcPriv[k] = rcPriv[k] || {};
+  if (v) rcPriv[k].grupo = v; else delete rcPriv[k].grupo;
+  rcGravar('privado/' + k + '/grupo', v || null);
+  rcRenderSec();
+}
+
+// ---------- importar a lista de grupos (texto) e casar os nomes com o cadastro ----------
+function rcParseGrupos(txt) {
+  var grupos = {}, atual = null;
+  (txt || '').split(/\r?\n/).forEach(function(l) {
+    l = l.replace(/\*+/g, '').replace(/\u00a0/g, ' ').trim();
+    if (!l) return;
+    var m = l.match(/^grupo\s*(\d+)\b/i);
+    if (m) { atual = String(parseInt(m[1], 10)); grupos[atual] = { sup: '', aux: '', membros: [] }; return; }
+    if (!atual) return;
+    var s = l.match(/^superintendente\s*:\s*(.+)$/i); if (s) { grupos[atual].sup = s[1].trim(); return; }
+    var a = l.match(/^ajudante\s*:\s*(.+)$/i); if (a) { grupos[atual].aux = a[1].trim(); return; }
+    if (/^\d+\s*membros?$/i.test(l)) return;
+    grupos[atual].membros.push(l);
+  });
+  return grupos;
+}
+function rcTokens(s) {
+  s = (s || '').toLowerCase().replace(/m\u00aa/g, 'maria').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9\s]/g, ' ');
+  return s.split(/\s+/).filter(function(t) { return t.length > 1 && ['de', 'da', 'do', 'dos', 'das', 'e'].indexOf(t) < 0; });
+}
+function rcLev(a, b) {
+  var d = [], i, j;
+  for (i = 0; i <= a.length; i++) { d[i] = [i]; }
+  for (j = 1; j <= b.length; j++) d[0][j] = j;
+  for (i = 1; i <= a.length; i++) for (j = 1; j <= b.length; j++)
+    d[i][j] = Math.min(d[i - 1][j] + 1, d[i][j - 1] + 1, d[i - 1][j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1));
+  return d[a.length][b.length];
+}
+function rcTokIgual(a, b) {
+  if (a === b) return true;
+  return a.length >= 5 && b.length >= 5 && Math.abs(a.length - b.length) <= 1 && rcLev(a, b) <= 1;
+}
+function rcCasaNomes(ta, tb) {   // todas as palavras do nome mais curto aparecem no outro (aceita 1 letra de diferença)
+  var curto = ta.length <= tb.length ? ta : tb, longo = ta.length <= tb.length ? tb : ta;
+  if (curto.length < 2) return false;
+  return curto.every(function(t) { return longo.some(function(u) { return rcTokIgual(t, u); }); });
+}
+function rcAcharPub(nome, chaves, usado, exato) {
+  var tn = rcTokens(nome), achados = [];
+  chaves.forEach(function(k) {
+    if (usado[k]) return;
+    var tk = rcTokens(rcPubs[k].nome);
+    var igual = exato ? (tn.join(' ') === tk.join(' ')) : rcCasaNomes(tn, tk);
+    if (igual) achados.push(k);
+  });
+  return achados.length === 1 ? achados[0] : '';   // 0 = sem correspondência; 2+ = ambíguo (fica para escolha manual)
+}
+function rcImportarGrupos() {
+  var txt = (document.getElementById('rc-grupos-texto').value || '');
+  var gs = rcParseGrupos(txt), nums = Object.keys(gs);
+  if (!nums.length) { alert('Cole a lista de grupos (ou escolha o arquivo grupos_para_importar.txt).'); return; }
+  var chaves = rcAtivosChaves(), usado = {}, pend = [], mapaPriv = {}, ligados = 0, semCorr = [];
+  nums.forEach(function(n) { gs[n].membros.forEach(function(nome) { pend.push({ n: n, nome: nome }); }); });
+  [true, false].forEach(function(exato) {     // 1º nomes iguais, depois nomes parecidos
+    pend = pend.filter(function(p) {
+      var k = rcAcharPub(p.nome, chaves, usado, exato);
+      if (!k) return true;
+      usado[k] = 1; ligados++;
+      rcPriv[k] = rcPriv[k] || {}; rcPriv[k].grupo = p.n; mapaPriv[k + '/grupo'] = p.n;
+      return false;
+    });
+  });
+  semCorr = pend;
+  nums.forEach(function(n) {
+    rcGrupos[n] = rcGrupos[n] || {};
+    rcGrupos[n].sup = gs[n].sup; rcGrupos[n].aux = gs[n].aux;
+    var r = rcRef('grupos/' + n);
+    if (r) r.update({ sup: gs[n].sup, aux: gs[n].aux }).catch(function(e) { console.warn(e); });
+  });
+  var rp = rcRef('privado');
+  if (rp && Object.keys(mapaPriv).length) rp.update(mapaPriv).catch(function(e) { alert('Não foi possível salvar os grupos: ' + e.message); });
+  rcImportRes = { ligados: ligados, semCorr: semCorr };
+  rcRenderSec();
+}
+function rcAddDoImport(i) {
+  if (!rcImportRes || !rcImportRes.semCorr[i]) return;
+  var p = rcImportRes.semCorr[i];
+  if (rcChaveDe(p.nome)) { alert('Esse nome já está no cadastro.'); return; }
+  var k = rcChaveNova(p.nome);
+  rcPubs[k] = { nome: p.nome, categoria: 'publicador', ativo: true };
+  rcGravar('publicadores/' + k, rcPubs[k]);
+  rcPriv[k] = { desde: rcMesAnteriorKey(), grupo: p.n }; rcGravar('privado/' + k, rcPriv[k]);
+  rcImportRes.semCorr.splice(i, 1);
+  rcRenderSec();
+}
+
+// ---------- aba Grupos (secretário/responsável) ----------
+function rcLerArquivoGrupos(input) {
+  var f = input.files && input.files[0];
+  if (!f) return;
+  var rd = new FileReader();
+  rd.onload = function() { document.getElementById('rc-grupos-texto').value = rd.result; };
+  rd.readAsText(f, 'utf-8');
+}
+function rcRenderGruposAba(corpo) {
+  var ativos = rcAtivosChaves();
+  var h = '<div style="font-weight:bold;margin-bottom:6px">Importar grupos</div>' +
+    '<div style="font-size:13px;color:#5e6370;margin-bottom:8px">Escolha o arquivo <b>grupos_para_importar.txt</b> ou cole a lista. O app liga cada nome ao cadastro de publicadores, mesmo com pequenas diferenças de escrita.</div>' +
+    '<input type="file" accept=".txt,text/plain" onchange="rcLerArquivoGrupos(this)" style="margin-bottom:8px;font-size:13px">' +
+    '<textarea id="rc-grupos-texto" rows="5" placeholder="GRUPO 1&#10;Superintendente: ...&#10;Ajudante: ...&#10;Nome do membro" style="width:100%;box-sizing:border-box;padding:9px;border:1.5px solid #9fd8c4;border-radius:8px;font-size:13px;font-family:Arial,sans-serif"></textarea>' +
+    '<button onclick="rcImportarGrupos()" style="margin-top:8px;background:#0f6e56;color:white;border:none;padding:9px 16px;border-radius:8px;font-size:13px;font-weight:bold;cursor:pointer">📥 Importar grupos</button>';
+  if (rcImportRes) {
+    h += '<div style="margin-top:12px;padding:10px 12px;border-radius:8px;background:#e1f5ee;color:#085041;font-size:13px"><b>' + rcImportRes.ligados + '</b> pessoas ligadas ao grupo.</div>';
+    if (rcImportRes.semCorr.length) {
+      h += '<div style="font-size:13px;font-weight:bold;margin:12px 0 4px;color:#92400e">Sem correspondência no cadastro (' + rcImportRes.semCorr.length + ')</div>' +
+        '<div style="font-size:12px;color:#5e6370;margin-bottom:6px">Não achei esses nomes na lista de publicadores. Se a pessoa é publicadora, adicione; se o nome só está escrito diferente, escolha o grupo dela na aba Publicadores.</div>';
+      rcImportRes.semCorr.forEach(function(p, i) {
+        h += '<div style="display:flex;align-items:center;gap:8px;padding:6px 10px;margin-bottom:4px;border-radius:8px;background:#fffbeb"><span style="flex:1;font-size:14px">' + escHtml(p.nome) + ' <span style="font-size:12px;color:#92400e">(Grupo ' + p.n + ')</span></span>' +
+          '<button onclick="rcAddDoImport(' + i + ')" style="background:#1a4fa3;color:white;border:none;padding:5px 10px;border-radius:6px;font-size:12px;cursor:pointer">+ Adicionar</button></div>';
+      });
+    }
+  }
+  h += '<div style="font-weight:bold;margin:20px 0 6px">Grupos e senhas</div>' +
+    '<div style="font-size:12px;color:#5e6370;margin-bottom:8px">O superintendente e o ajudante entram juntos, com a senha do grupo, pelo botão "Meu Grupo".</div>';
+  rcNumerosGrupos().forEach(function(n) {
+    var g = rcGrupos[n] || {};
+    var qtd = ativos.filter(function(k) { return rcGrupoDe(k) === n; }).length;
+    h += '<div style="border:1px solid #e5e7eb;border-radius:10px;padding:10px 12px;margin-bottom:8px;background:white">' +
+      '<div style="font-size:14px;font-weight:bold">Grupo ' + n + ' <span style="font-weight:normal;font-size:12px;color:#5e6370">· ' + qtd + ' no cadastro</span></div>' +
+      '<div style="font-size:12px;color:#5e6370;margin:2px 0 8px">Superintendente: ' + escHtml(g.sup || '—') + ' · Ajudante: ' + escHtml(g.aux || '—') + '</div>' +
+      '<div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center"><input type="password" id="rc-gsenha-' + n + '" placeholder="' + (g.senhaHash ? 'Nova senha (já existe uma)' : 'Criar senha') + '" style="flex:1;min-width:150px;padding:8px;border:1.5px solid #9fd8c4;border-radius:8px;font-size:14px">' +
+      '<button onclick="rcSalvarSenhaGrupo(\'' + n + '\')" style="background:#0f6e56;color:white;border:none;padding:8px 12px;border-radius:8px;font-size:12px;font-weight:bold;cursor:pointer">Salvar senha</button>' +
+      (g.senhaHash ? '<span style="font-size:12px;color:#0f6e56">✓ senha definida</span>' : '<span style="font-size:12px;color:#b45309">sem senha</span>') + '</div></div>';
+  });
+  var sem = ativos.filter(function(k) { return !rcGrupoDe(k); });
+  if (sem.length) {
+    h += '<div style="font-weight:bold;margin:16px 0 4px;color:#92400e">Sem grupo (' + sem.length + ')</div>';
+    sem.forEach(function(k) {
+      h += '<div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid #eef0f3"><span style="flex:1;font-size:14px">' + escHtml(rcPubs[k].nome) + '</span>' + rcSelectGrupo(k) + '</div>';
+    });
+  }
+  corpo.innerHTML = h;
+}
+function rcSelectGrupo(k) {
+  var g = rcGrupoDe(k);
+  return '<select onchange="rcSetGrupo(\'' + k + '\',this.value)" style="padding:6px;border:1px solid #cbd5e1;border-radius:6px;font-size:12px;color:#5e6370"><option value="">Grupo?</option>' +
+    rcNumerosGrupos().map(function(n) { return '<option value="' + n + '"' + (g === n ? ' selected' : '') + '>Grupo ' + n + '</option>'; }).join('') + '</select>';
+}
+function rcSalvarSenhaGrupo(n) {
+  var el = document.getElementById('rc-gsenha-' + n), s = (el && el.value || '').trim();
+  if (s.length < 4) { alert('A senha precisa ter pelo menos 4 caracteres.'); return; }
+  rcHash(s).then(function(h) {
+    rcGrupos[n] = rcGrupos[n] || {}; rcGrupos[n].senhaHash = h;
+    rcGravar('grupos/' + n + '/senhaHash', h);
+    alert('Senha do Grupo ' + n + ' salva.'); rcRenderSec();
+  }).catch(function(e) { alert(e.message); });
+}
+
+// ---------- situação de cada pessoa (usada pelo grupo e pelos avisos) ----------
+function rcSituacaoMes(k, mes) {
+  var r = (rcRelatorios[mes] || {})[k];
+  if (r && r.participou !== false) return 'relatou';
+  if (r && r.participou === false) return 'nao';
+  return rcMesEncerrado(mes) ? 'faltou' : 'pendente';
+}
+function rcAcompAtiva(k, s) {   // "já conversei" só vale para a situação atual da pessoa
+  var m = rcAcomp[k];
+  if (!m || !m.mes) return null;
+  var atual = rcMesAnteriorKey();
+  var ini = s.lista && s.lista.length ? s.lista[s.lista.length - 1] : atual;
+  return m.mes >= ini ? m : null;
+}
+function rcAcompanhar(k, por) {
+  var s = rcStatusPub(k);
+  if (rcAcompAtiva(k, s)) {
+    if (!confirm('Desmarcar "já conversei" de ' + rcPubs[k].nome + '?')) return;
+    delete rcAcomp[k]; rcApagar('acompanhamento/' + k);
+  } else {
+    var d = new Date();
+    rcAcomp[k] = { em: d.toLocaleDateString('pt-BR'), mes: rcMesAnteriorKey(), por: por, ts: Date.now() };
+    rcGravar('acompanhamento/' + k, rcAcomp[k]);
+  }
+  rcAposMudanca();
+}
+
+// ---------- login do superintendente / ajudante ----------
+function rcAbrirGrupo() {
+  var salvo = '';
+  try { salvo = sessionStorage.getItem('rc_grupo') || ''; } catch (e) {}
+  if (salvo) { rcGrupoLogado = salvo; rcEntrarGrupo(); return; }
+  var nums = rcNumerosGrupos().filter(function(n) { return rcGrupos[n] && rcGrupos[n].sup; });
+  if (!nums.length) { alert('Os grupos ainda não foram cadastrados. Peça ao secretário.'); return; }
+  document.getElementById('rc-gl-grupo').innerHTML = nums.map(function(n) {
+    return '<option value="' + n + '">Grupo ' + n + ' — ' + escHtml(rcGrupos[n].sup) + '</option>';
+  }).join('');
+  document.getElementById('rc-gl-senha').value = '';
+  document.getElementById('rc-gl-erro').style.display = 'none';
+  document.getElementById('ov-grupo-login').classList.add('aberto');
+}
+function rcFecharGrupoLogin() { document.getElementById('ov-grupo-login').classList.remove('aberto'); }
+function rcConfirmarSenhaGrupo() {
+  var n = document.getElementById('rc-gl-grupo').value, dig = document.getElementById('rc-gl-senha').value, g = rcGrupos[n] || {};
+  if (!g.senhaHash) { alert('A senha deste grupo ainda não foi criada. Peça ao secretário.'); return; }
+  rcHash(dig).then(function(h) {
+    if (dig && h === g.senhaHash) {
+      rcGrupoLogado = n;
+      try { sessionStorage.setItem('rc_grupo', n); } catch (e) {}
+      rcFecharGrupoLogin(); rcEntrarGrupo();
+    } else {
+      document.getElementById('rc-gl-erro').style.display = 'block';
+      document.getElementById('rc-gl-senha').value = '';
+    }
+  }).catch(function(e) { alert(e.message); });
+}
+function rcEntrarGrupo() {
+  rcOuvirSecretario();
+  document.getElementById('ov-grupo').classList.add('aberto');
+  rcRenderGrupo();
+}
+function rcFecharGrupo() { document.getElementById('ov-grupo').classList.remove('aberto'); }
+function rcSairGrupo() {
+  rcGrupoLogado = '';
+  try { sessionStorage.removeItem('rc_grupo'); } catch (e) {}
+  rcFecharGrupo();
+}
+function rcRenderGrupo() {
+  var corpo = document.getElementById('rc-grupo-corpo'), n = rcGrupoLogado;
+  if (!corpo || !n) return;
+  var g = rcGrupos[n] || {}, mes = rcMesAnteriorKey();
+  document.getElementById('rc-grupo-titulo').textContent = '👥 Grupo ' + n;
+  var membros = Object.keys(rcPubs).filter(function(k) { return rcPubs[k] && rcPubs[k].ativo !== false && rcGrupoDe(k) === n; }).sort(rcPorNome);
+  var cls = { inativo: [], irregular: [], atrasado: [], aguardando: [], ok: [] };
+  membros.forEach(function(k) {
+    var s = rcStatusPub(k), sit = rcSituacaoMes(k, mes), it = { k: k, s: s, sit: sit };
+    if (s.tipo === 'inativo') cls.inativo.push(it);
+    else if (s.tipo === 'irregular') cls.irregular.push(it);
+    else if (sit === 'pendente') (rcAtrasado(mes) ? cls.atrasado : cls.aguardando).push(it);
+    else cls.ok.push(it);
+  });
+  var precisam = cls.inativo.length + cls.irregular.length + cls.atrasado.length;
+  var h = '<div style="font-size:13px;color:#5e6370;margin-bottom:2px">Superintendente: <b>' + escHtml(g.sup || '—') + '</b> · Ajudante: <b>' + escHtml(g.aux || '—') + '</b></div>' +
+    '<div style="font-size:13px;color:#5e6370;margin-bottom:12px">Relatório de ' + rcMesRotulo(mes) + ': <b>' + cls.ok.length + '</b> de ' + membros.length + ' já relataram</div>';
+  if (!membros.length) h += '<div style="padding:16px;background:#f8fafc;border-radius:8px;color:#888;text-align:center">Nenhum membro ligado a este grupo ainda. Fale com o secretário.</div>';
+  if (precisam) h += '<div style="background:#fff7ed;border:1px solid #fdba74;border-radius:10px;padding:11px 13px;margin-bottom:12px;font-size:13px;color:#7c2d12;line-height:1.5"><b>' + precisam + (precisam === 1 ? ' pessoa precisa' : ' pessoas precisam') + ' da sua atenção.</b> Procure cada uma, converse com carinho e veja como ajudar. Quando conversar, toque em "Já conversei".</div>';
+  var card = function(it, rotulo, cor, fundo) {
+    var m = rcAcompAtiva(it.k, it.s), meses = it.s.meses;
+    var detalhe = it.s.tipo === 'ok' ? 'ainda não relatou ' + rcMesRotulo(mes) : meses + (meses === 1 ? ' mês' : ' meses') + ' sem relatar' + (it.s.lista.length ? ' (' + rcAbrevMeses(it.s.lista) + ')' : '');
+    return '<div style="border:1px solid ' + cor + ';background:' + fundo + ';border-radius:10px;padding:10px 12px;margin-bottom:8px">' +
+      '<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap"><span style="flex:1;min-width:140px;font-size:15px;font-weight:bold">' + escHtml(rcPubs[it.k].nome) + '</span>' +
+      '<span style="background:' + cor + ';color:white;font-size:11px;font-weight:bold;padding:2px 8px;border-radius:9px">' + rotulo + '</span></div>' +
+      '<div style="font-size:12px;color:#5e6370;margin:3px 0 8px">' + detalhe + '</div>' +
+      (m ? '<button onclick="rcAcompanhar(\'' + it.k + '\',\'Grupo ' + n + '\')" style="background:#e1f5ee;color:#085041;border:1px solid #9fe1cb;padding:7px 12px;border-radius:8px;font-size:13px;font-weight:bold;cursor:pointer">✔ Já conversei em ' + escHtml(m.em || '') + ' (desfazer)</button>'
+         : '<button onclick="rcAcompanhar(\'' + it.k + '\',\'Grupo ' + n + '\')" style="background:white;color:#1a4fa3;border:1px solid #93b4e8;padding:7px 12px;border-radius:8px;font-size:13px;font-weight:bold;cursor:pointer">Já conversei</button>') + '</div>';
+  };
+  cls.inativo.forEach(function(it) { h += card(it, 'Inativo', '#b91c1c', '#fef2f2'); });
+  cls.irregular.forEach(function(it) { h += card(it, 'Irregular', '#b45309', '#fffbeb'); });
+  cls.atrasado.forEach(function(it) { h += card(it, 'Atrasado', '#c2410c', '#fff7ed'); });
+  if (cls.aguardando.length) h += '<div style="font-size:13px;font-weight:bold;margin:14px 0 4px;color:#5e6370">Ainda não relataram (' + cls.aguardando.length + ')</div><div style="font-size:13px;color:#5e6370">' + cls.aguardando.map(function(it) { return escHtml(rcPubs[it.k].nome); }).join(' · ') + '</div>';
+  if (cls.ok.length) h += '<details style="margin-top:14px"><summary style="cursor:pointer;font-size:13px;font-weight:bold;color:#0f6e56">Já relataram (' + cls.ok.length + ')</summary><div style="font-size:13px;color:#5e6370;margin-top:6px;line-height:1.6">' + cls.ok.map(function(it) { return escHtml(rcPubs[it.k].nome); }).join(' · ') + '</div></details>';
+  h += '<button onclick="rcSairGrupo()" style="margin-top:20px;background:white;color:#5e6370;border:1px solid #cbd5e1;padding:9px 16px;border-radius:8px;font-size:13px;cursor:pointer">Sair do grupo</button>';
+  corpo.innerHTML = h;
+}
+function rcOverlaysGrupo() {
+  return '<div class="overlay" id="ov-grupo-login"><div class="modal-principal" style="max-width:380px">' +
+    '<div class="modal-cab" style="background:#0f6e56;color:white"><span class="modal-cab-titulo" style="color:white">👥 Meu Grupo</span><button class="btn-fechar" onclick="rcFecharGrupoLogin()" style="color:white">✕</button></div>' +
+    '<div style="padding:18px 20px"><select id="rc-gl-grupo" style="width:100%;box-sizing:border-box;padding:11px;border:1.5px solid #9fd8c4;border-radius:8px;font-size:15px;margin-bottom:10px"></select>' +
+    '<input type="password" id="rc-gl-senha" placeholder="Senha do grupo" onkeydown="if(event.key===\'Enter\')rcConfirmarSenhaGrupo()" style="width:100%;box-sizing:border-box;padding:11px;border:1.5px solid #9fd8c4;border-radius:8px;font-size:16px">' +
+    '<div id="rc-gl-erro" style="display:none;color:#b91c1c;font-size:13px;margin-top:8px">Senha incorreta.</div>' +
+    '<button onclick="rcConfirmarSenhaGrupo()" style="width:100%;margin-top:12px;background:#0f6e56;color:white;border:none;padding:11px;border-radius:8px;font-size:15px;font-weight:bold;cursor:pointer">Entrar</button></div></div></div>' +
+    '<div class="overlay" id="ov-grupo"><div class="modal-principal" style="max-width:560px">' +
+    '<div class="modal-cab" style="background:#0f6e56;color:white"><span class="modal-cab-titulo" style="color:white" id="rc-grupo-titulo"></span><button class="btn-fechar" onclick="rcFecharGrupo()" style="color:white">✕</button></div>' +
+    '<div class="modal-body" id="rc-grupo-corpo" style="padding:16px 20px"></div></div></div>';
+}
+
 // ---------- telas (montadas uma vez) ----------
 function rcMontarOverlays() {
   if (document.getElementById('ov-relcampo')) return;
@@ -9664,6 +9968,7 @@ function rcMontarOverlays() {
     '<div style="display:flex;gap:8px;margin-top:18px;flex-wrap:wrap"><button onclick="rcSalvarLanc()" style="flex:1;background:#0f6e56;color:white;border:none;padding:12px;border-radius:8px;font-size:15px;font-weight:bold;cursor:pointer">Salvar</button>' +
     '<button onclick="rcSalvarNaoPartLanc()" style="background:#fffbeb;color:#92400e;border:1px solid #fcd34d;padding:12px 14px;border-radius:8px;font-size:13px;cursor:pointer">Não participou</button>' +
     '<button id="rc-lanc-excluir" onclick="rcExcluirLanc()" style="background:white;color:#991b1b;border:1px solid #fca5a5;padding:12px 14px;border-radius:8px;font-size:13px;cursor:pointer">Apagar</button></div></div></div></div>';
+  h += rcOverlaysGrupo();
   document.body.insertAdjacentHTML('beforeend', h);
 }
 if (document.body) rcMontarOverlays(); else document.addEventListener('DOMContentLoaded', rcMontarOverlays);
