@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Versão: v2026.10.21 — Importar grupos usa os nomes da lista de grupos (corrige o cadastro, adiciona quem falta, aponta quem está fora dos grupos). Anterior: v2026.10.20 — Grupos de congregação: login do superintendente/ajudante, avisos por grupo e 'já conversei'. Anterior: v2026.10.19 — Botão 'Não participei neste mês'; avisos Irregular/Inativo só para secretário e responsável. Anterior: v2026.10.18 — Relatório de Campo: formulário do publicador (S-4), cadastro de publicadores, painel do secretário com S-1 e cartões S-21. Anterior: v2026.10.17 — Minha Escala mostra o slip S-89-T (verde) para Leitura e Ministério, inclusive para irmãs e ajudantes; só semanas de meses publicados; data da reunião = quarta; lista de nomes inclui o cadastro do VMC. Anterior: v2026.10.16 — Aplicar/entrar/sair do modo responsável NÃO refazem mais a escala (só redesenham a salva); celulares redesenham quando um evento muda; modo teste com faixa visível; reparo protegido; gravação da escala não apaga substituições. Anterior: v2026.10.15 — Microfone/Indicadores: escolher entre irmãos já cadastrados; restaurar backup NÃO regenera mais a escala; backups podem ser apagados. Anterior: v2026.10.14 — Cadastro blindado: liberados/bloqueados em nó separado, gravação sem apagar campos desconhecidos, backups diários com restauração. Anterior: v2026.10.13 — Plano de Segurança COMPLETO (21 itens) + novo ano de serviço/plano novo pelo responsável. Anterior: v2026.10.12 — Plano de Segurança: prazo bloqueia indicador que não leu + avisos ao responsável. Anterior: v2026.10.11 — Plano de Segurança S-288 com trava de leitura reforçada (rolagem + tempo mínimo + perguntas). Anterior: v2026.10.10 — Palco passa a ser UM irmão por reunião (em vez de dupla). Anterior: v2026.10.09 — Liberar/bloquear por treinamento em TODAS as designações (palco, microfone, áudio, vídeo, zoom, indicador). Anterior: v2026.10.08 — Palco: tirar ou trocar um irmão só (sem apagar as duplas à mão). Anterior: v2026.10.07 — Releitura ao voltar ao app, aviso de nova versão e sw.js com rede primeiro. Anterior: v2026.10.06 — Botões de indicadores (atualizar/regenerar) só mexem de hoje em diante; reuniões passadas ficam intactas. Anterior: v2026.10.05 — Treinamento de segurança vence em 12 meses (Plano S-288, item 19) e bloqueia o indicador após vencer. Anterior: v2026.09.04 — bloqueio de indicadores sem treinamento. v2026.09.03 — Botões de WhatsApp (VMC, Discurso Público, Enviar Oradores) + sistema de temas: bloqueio automático de 4 meses, temas indisponíveis temporariamente, repertório por orador -->
+<!-- Versão: v2026.10.22 — Identificação do publicador ignora cópias inativas do nome (corrige 'seu nome não está na lista'). Anterior: v2026.10.21 — Importar grupos usa os nomes da lista de grupos (corrige o cadastro, adiciona quem falta, aponta quem está fora dos grupos). Anterior: v2026.10.20 — Grupos de congregação: login do superintendente/ajudante, avisos por grupo e 'já conversei'. Anterior: v2026.10.19 — Botão 'Não participei neste mês'; avisos Irregular/Inativo só para secretário e responsável. Anterior: v2026.10.18 — Relatório de Campo: formulário do publicador (S-4), cadastro de publicadores, painel do secretário com S-1 e cartões S-21. Anterior: v2026.10.17 — Minha Escala mostra o slip S-89-T (verde) para Leitura e Ministério, inclusive para irmãs e ajudantes; só semanas de meses publicados; data da reunião = quarta; lista de nomes inclui o cadastro do VMC. Anterior: v2026.10.16 — Aplicar/entrar/sair do modo responsável NÃO refazem mais a escala (só redesenham a salva); celulares redesenham quando um evento muda; modo teste com faixa visível; reparo protegido; gravação da escala não apaga substituições. Anterior: v2026.10.15 — Microfone/Indicadores: escolher entre irmãos já cadastrados; restaurar backup NÃO regenera mais a escala; backups podem ser apagados. Anterior: v2026.10.14 — Cadastro blindado: liberados/bloqueados em nó separado, gravação sem apagar campos desconhecidos, backups diários com restauração. Anterior: v2026.10.13 — Plano de Segurança COMPLETO (21 itens) + novo ano de serviço/plano novo pelo responsável. Anterior: v2026.10.12 — Plano de Segurança: prazo bloqueia indicador que não leu + avisos ao responsável. Anterior: v2026.10.11 — Plano de Segurança S-288 com trava de leitura reforçada (rolagem + tempo mínimo + perguntas). Anterior: v2026.10.10 — Palco passa a ser UM irmão por reunião (em vez de dupla). Anterior: v2026.10.09 — Liberar/bloquear por treinamento em TODAS as designações (palco, microfone, áudio, vídeo, zoom, indicador). Anterior: v2026.10.08 — Palco: tirar ou trocar um irmão só (sem apagar as duplas à mão). Anterior: v2026.10.07 — Releitura ao voltar ao app, aviso de nova versão e sw.js com rede primeiro. Anterior: v2026.10.06 — Botões de indicadores (atualizar/regenerar) só mexem de hoje em diante; reuniões passadas ficam intactas. Anterior: v2026.10.05 — Treinamento de segurança vence em 12 meses (Plano S-288, item 19) e bloqueia o indicador após vencer. Anterior: v2026.09.04 — bloqueio de indicadores sem treinamento. v2026.09.03 — Botões de WhatsApp (VMC, Discurso Público, Enviar Oradores) + sistema de temas: bloqueio automático de 4 meses, temas indisponíveis temporariamente, repertório por orador -->
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
@@ -550,7 +550,7 @@ body.dark-mode .conf-badge.pendente { background: #2a2a15; color: #ca8a04; borde
     <div class="modal-cab">
       <span>
         <span class="modal-cab-titulo">👨‍💼 Área do Responsável</span>
-        <span style="font-size:10px;color:#9ca3af;font-weight:normal;margin-left:8px">v2026.10.21</span>
+        <span style="font-size:10px;color:#9ca3af;font-weight:normal;margin-left:8px">v2026.10.22</span>
       </span>
       <button class="btn-fechar" onclick="fecharPrincipal()">✕</button>
     </div>
@@ -5508,7 +5508,7 @@ setInterval(renderPainelTrocas, 60000);
 
 // ===================== PWA — SERVICE WORKER + ATUALIZAÇÃO =====================
 // Mantenha igual à versão mostrada na Área do Responsável e à VERSAO do sw.js
-window.APP_VERSAO = 'v2026.10.21';
+window.APP_VERSAO = 'v2026.10.22';
 
 function mostrarBannerNovaVersao() {
   if (document.getElementById('banner-nova-versao')) return;
@@ -8983,10 +8983,14 @@ function rcChaveExata(nome) {
 // Acha a pessoa pelo nome; se a escrita for um pouco diferente (ex.: nome da lista do VMC), aceita
 // quando só um publicador ativo for parecido.
 function rcChaveDe(nome) {
-  var k = rcChaveExata(nome);
-  if (k) return k;
+  // só conta quem está ativo na lista: uma cópia antiga do nome marcada "Não é publicador"
+  // não pode esconder a pessoa de verdade (ex.: "Eriton Oliveira" inativo x "Eriton Silva de Oliveira" ativo)
+  var ks = Object.keys(rcPubs), i;
+  for (i = 0; i < ks.length; i++) {
+    if (rcPubs[ks[i]] && rcPubs[ks[i]].ativo !== false && rcPubs[ks[i]].nome === nome) return ks[i];
+  }
   var tn = rcTokens(nome), achados = [];
-  Object.keys(rcPubs).forEach(function(c) {
+  ks.forEach(function(c) {
     if (rcPubs[c] && rcPubs[c].ativo !== false && rcCasaNomes(tn, rcTokens(rcPubs[c].nome))) achados.push(c);
   });
   return achados.length === 1 ? achados[0] : '';
