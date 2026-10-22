@@ -4469,12 +4469,20 @@ function _backupEscalaAgora(rotulo) {
 function escalaTravarMes(chave, travar) {
   if (!modoResponsavel) { pedirSenhaCallback = function() { escalaTravarMes(chave, travar); }; pedirSenha(); return; }
   if (!firebaseOk || !db) return;
-  var ref = db.ref('escala/estado/travados/' + chave);
+  // Trava o mês (marca usada pelo app) e CADA data dele em escala/estado/datasTravadas
+  // (marca usada pelas Regras do Firebase, que não têm como cortar texto de datas).
+  var datas = Object.keys(_escalaRemota).filter(function(d) { return d.indexOf(chave) === 0; });
+  var up = {};
   if (travar) {
-    ref.set(true).then(function() { alert('🔒 Mês ' + chave + ' travado. Nenhum aparelho consegue alterar as designações dele.'); });
+    up['escala/estado/travados/' + chave] = true;
+    datas.forEach(function(d) { up['escala/estado/datasTravadas/' + d] = true; });
+    db.ref().update(up).then(function() { alert('🔒 Mês ' + chave + ' travado (' + datas.length + ' reuniões). Nenhum aparelho consegue alterar as designações dele.'); })
+      .catch(function(e) { alert('Erro: ' + e.message); });
   } else {
     if (!confirm('Destravar ' + chave + '? Depois disso o mês pode voltar a ser alterado.')) return;
-    ref.remove();
+    up['escala/estado/travados/' + chave] = null;
+    datas.forEach(function(d) { up['escala/estado/datasTravadas/' + d] = null; });
+    db.ref().update(up);
   }
 }
 
