@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Versão: v2026.10.39 — Lista de temas atualizada (4 temas descontinuados: 59, 82, 122, 123; 10 títulos corrigidos) e botão '📥 Atualizar lista de temas' na aba Discurso Público: o responsável escolhe o PDF (ou texto) da lista oficial, vê o que muda e confirma; a lista fica no Firebase (dp_config/temasLista), sem mexer no index.html. Anterior: v2026.10.38 — Discurso Público: botão '🎯 Sugerir temas do mês' (preenche só o tema, respeitando 4 meses antes e depois da data de cada sábado, temas já definidos ficam fixos, mostra prévia antes de gravar); tela '📊 Controle de temas' (livre / em espera / agendado / nunca usado); seletor de ANO (planejar 2027). Anterior: v2026.10.37 — Convites (aba Pioneiros do Secretário): tela para criar/duplicar/apagar convites (texto próprio de cada evento), escolher destinatários (atalhos: pioneiros regulares, auxiliares, todos, grupos; busca; marcação nome a nome), cadastrar o telefone de cada pessoa (privado/<chave>/telefone) e enviar por WhatsApp direto na conversa da pessoa, com marca de quem já teve o WhatsApp aberto; imprime uma carta por página. Convites ficam em dp_config/convites. Anterior: v2026.10.36 — Aba Pioneiros (secretário/responsável): botão "✉️ Cartas convite" gera uma carta por pioneiro regular ativo (uma por página A4, nome preenchido automaticamente; texto, data e horário ficam no objeto CARTA_CONVITE). Anterior: v2026.10.35 — Minha Escala: nome passa a fixar ao fechar/abrir o app; Relatório de campo só mostra 'enviado' quando o servidor confirma; Secretário: botão 'Ocultar do quadro' + inativos (6+ meses) saem da folha dos grupos e da cópia dos usuários. Anterior: v2026.10.34 — Oradores locais: na aba Discurso Público aparece 'Imprimir designação' e 'WhatsApp' sozinhos quando o orador é local (congregação Parque Tietê/local ou nome na lista de oradores locais); aba Enviar Oradores lista os discursos locais automaticamente; ficha do orador local com endereço do salão e horário do sábado. Anterior: v2026.10.33 — Escala: Áudio e Vídeo sorteados PRIMEIRO e nunca ficam vazios (último recurso); rodízio continua de onde a escala gravada parou (corrige Zoom repetido após restaurar outubro); intervalo mínimo conta em todas as passadas; campo vazio aparece como '— designar —' e o responsável pode preencher; Remover mês limpa dados locais. Anterior: v2026.10.32 — Folha do mês do Discurso Público em A4 RETRATO (mês inteiro em uma folha); tela Folhas A4 com todas as folhas gerais (VMC mês/semana, Discurso Público mês/semana, limpeza, grupos) e botão do responsável para LIBERAR/BLOQUEAR cada folha para os usuários (guardado em dp_config/folhasLiberadas). S-89 e Meu Histórico não mudaram. Anterior: v2026.10.31 — VMC do mês e Discurso Público do mês SEMPRE em uma única folha A4 (a letra se ajusta sozinha ao maior tamanho que cabe). Anterior: v2026.10.30 — Folhas A4 bem mais legíveis para os irmãos idosos (VMC do mês, Discurso Público do mês e da semana, histórico, S-89, grupos). Anterior: v2026.10.29 — Meu Campo (cronômetro, diário de campo, meta e progresso de 600 h do pioneiro regular), aba Pioneiros no Secretário (ritmo e quem está abaixo), lembretes de relatório/ritmo, preencher relatório pelo diário. Anterior: v2026.10.28 — Rodízio da escala evita (se possível) quem tem parte na VMC (quarta) ou é presidente/orador/condutor/leitor da Sentinela no Discurso Público (sábado) no mesmo dia; botão 'Conferir conflitos'. Anterior: v2026.10.27 — Escala BLINDADA: gravação só por data (nunca o mapa inteiro), só o responsável grava, datas já salvas nunca são sobrescritas, carimbo de versão (_v=3) para as regras do Firebase barrarem versões antigas, travar mês, backup diário da escala com restauração, restaurar outubro/2026 pelo PDF, sem regeneração silenciosa quando a escala some, trocas arquivadas não são reaplicadas. Folha dos grupos agora em A4 retrato (2 colunas). Anterior: v2026.10.26 — Junção: VMC com treinamento; escala de limpeza (banner, ajustes, avisos, folha A4); folha A4 dos membros dos grupos; tela Folhas A4. A impressão da escala (v2026.10.25) não foi alterada. Anterior: v2026.10.25 — Imprimir escala: Congresso/Assembleia viram quadro largo (período, descrição, tema, ministério normal + Isaías 6:8). Anterior: v2026.10.24 — Imprimir escala: sem "Volante", separador Função│Nome, "Sem reunião" da mesma semana juntos, botão ocultar quadro, ajuste automático p/ mês de 5 semanas caber em 1 folha. Anterior: v2026.10.23 — Imprimir escala: só a lista (sem banners/status/limpeza), A4, letras grandes. Anterior: v2026.10.22 — Identificação do publicador ignora cópias inativas do nome (corrige 'seu nome não está na lista'). Anterior: v2026.10.21 — Importar grupos usa os nomes da lista de grupos (corrige o cadastro, adiciona quem falta, aponta quem está fora dos grupos). Anterior: v2026.10.20 — Grupos de congregação: login do superintendente/ajudante, avisos por grupo e 'já conversei'. Anterior: v2026.10.19 — Botão 'Não participei neste mês'; avisos Irregular/Inativo só para secretário e responsável. Anterior: v2026.10.18 — Relatório de Campo: formulário do publicador (S-4), cadastro de publicadores, painel do secretário com S-1 e cartões S-21. Anterior: v2026.10.17 — Minha Escala mostra o slip S-89-T (verde) para Leitura e Ministério, inclusive para irmãs e ajudantes; só semanas de meses publicados; data da reunião = quarta; lista de nomes inclui o cadastro do VMC. Anterior: v2026.10.16 — Aplicar/entrar/sair do modo responsável NÃO refazem mais a escala (só redesenham a salva); celulares redesenham quando um evento muda; modo teste com faixa visível; reparo protegido; gravação da escala não apaga substituições. Anterior: v2026.10.15 — Microfone/Indicadores: escolher entre irmãos já cadastrados; restaurar backup NÃO regenera mais a escala; backups podem ser apagados. Anterior: v2026.10.14 — Cadastro blindado: liberados/bloqueados em nó separado, gravação sem apagar campos desconhecidos, backups diários com restauração. Anterior: v2026.10.13 — Plano de Segurança COMPLETO (21 itens) + novo ano de serviço/plano novo pelo responsável. Anterior: v2026.10.12 — Plano de Segurança: prazo bloqueia indicador que não leu + avisos ao responsável. Anterior: v2026.10.11 — Plano de Segurança S-288 com trava de leitura reforçada (rolagem + tempo mínimo + perguntas). Anterior: v2026.10.10 — Palco passa a ser UM irmão por reunião (em vez de dupla). Anterior: v2026.10.09 — Liberar/bloquear por treinamento em TODAS as designações (palco, microfone, áudio, vídeo, zoom, indicador). Anterior: v2026.10.08 — Palco: tirar ou trocar um irmão só (sem apagar as duplas à mão). Anterior: v2026.10.07 — Releitura ao voltar ao app, aviso de nova versão e sw.js com rede primeiro. Anterior: v2026.10.06 — Botões de indicadores (atualizar/regenerar) só mexem de hoje em diante; reuniões passadas ficam intactas. Anterior: v2026.10.05 — Treinamento de segurança vence em 12 meses (Plano S-288, item 19) e bloqueia o indicador após vencer. Anterior: v2026.09.04 — bloqueio de indicadores sem treinamento. v2026.09.03 — Botões de WhatsApp (VMC, Discurso Público, Enviar Oradores) + sistema de temas: bloqueio automático de 4 meses, temas indisponíveis temporariamente, repertório por orador -->
+<!-- Versão: v2026.10.40 — Sugerir temas do mês agora com caixinha de aceite por sábado: marcados ficam, 'Sugerir outros' refaz só os não marcados (sem repetir o recusado), 'Gravar os marcados' grava só os aceitos. Anterior: v2026.10.39 — Lista de temas atualizada (4 temas descontinuados: 59, 82, 122, 123; 10 títulos corrigidos) e botão '📥 Atualizar lista de temas' na aba Discurso Público: o responsável escolhe o PDF (ou texto) da lista oficial, vê o que muda e confirma; a lista fica no Firebase (dp_config/temasLista), sem mexer no index.html. Anterior: v2026.10.38 — Discurso Público: botão '🎯 Sugerir temas do mês' (preenche só o tema, respeitando 4 meses antes e depois da data de cada sábado, temas já definidos ficam fixos, mostra prévia antes de gravar); tela '📊 Controle de temas' (livre / em espera / agendado / nunca usado); seletor de ANO (planejar 2027). Anterior: v2026.10.37 — Convites (aba Pioneiros do Secretário): tela para criar/duplicar/apagar convites (texto próprio de cada evento), escolher destinatários (atalhos: pioneiros regulares, auxiliares, todos, grupos; busca; marcação nome a nome), cadastrar o telefone de cada pessoa (privado/<chave>/telefone) e enviar por WhatsApp direto na conversa da pessoa, com marca de quem já teve o WhatsApp aberto; imprime uma carta por página. Convites ficam em dp_config/convites. Anterior: v2026.10.36 — Aba Pioneiros (secretário/responsável): botão "✉️ Cartas convite" gera uma carta por pioneiro regular ativo (uma por página A4, nome preenchido automaticamente; texto, data e horário ficam no objeto CARTA_CONVITE). Anterior: v2026.10.35 — Minha Escala: nome passa a fixar ao fechar/abrir o app; Relatório de campo só mostra 'enviado' quando o servidor confirma; Secretário: botão 'Ocultar do quadro' + inativos (6+ meses) saem da folha dos grupos e da cópia dos usuários. Anterior: v2026.10.34 — Oradores locais: na aba Discurso Público aparece 'Imprimir designação' e 'WhatsApp' sozinhos quando o orador é local (congregação Parque Tietê/local ou nome na lista de oradores locais); aba Enviar Oradores lista os discursos locais automaticamente; ficha do orador local com endereço do salão e horário do sábado. Anterior: v2026.10.33 — Escala: Áudio e Vídeo sorteados PRIMEIRO e nunca ficam vazios (último recurso); rodízio continua de onde a escala gravada parou (corrige Zoom repetido após restaurar outubro); intervalo mínimo conta em todas as passadas; campo vazio aparece como '— designar —' e o responsável pode preencher; Remover mês limpa dados locais. Anterior: v2026.10.32 — Folha do mês do Discurso Público em A4 RETRATO (mês inteiro em uma folha); tela Folhas A4 com todas as folhas gerais (VMC mês/semana, Discurso Público mês/semana, limpeza, grupos) e botão do responsável para LIBERAR/BLOQUEAR cada folha para os usuários (guardado em dp_config/folhasLiberadas). S-89 e Meu Histórico não mudaram. Anterior: v2026.10.31 — VMC do mês e Discurso Público do mês SEMPRE em uma única folha A4 (a letra se ajusta sozinha ao maior tamanho que cabe). Anterior: v2026.10.30 — Folhas A4 bem mais legíveis para os irmãos idosos (VMC do mês, Discurso Público do mês e da semana, histórico, S-89, grupos). Anterior: v2026.10.29 — Meu Campo (cronômetro, diário de campo, meta e progresso de 600 h do pioneiro regular), aba Pioneiros no Secretário (ritmo e quem está abaixo), lembretes de relatório/ritmo, preencher relatório pelo diário. Anterior: v2026.10.28 — Rodízio da escala evita (se possível) quem tem parte na VMC (quarta) ou é presidente/orador/condutor/leitor da Sentinela no Discurso Público (sábado) no mesmo dia; botão 'Conferir conflitos'. Anterior: v2026.10.27 — Escala BLINDADA: gravação só por data (nunca o mapa inteiro), só o responsável grava, datas já salvas nunca são sobrescritas, carimbo de versão (_v=3) para as regras do Firebase barrarem versões antigas, travar mês, backup diário da escala com restauração, restaurar outubro/2026 pelo PDF, sem regeneração silenciosa quando a escala some, trocas arquivadas não são reaplicadas. Folha dos grupos agora em A4 retrato (2 colunas). Anterior: v2026.10.26 — Junção: VMC com treinamento; escala de limpeza (banner, ajustes, avisos, folha A4); folha A4 dos membros dos grupos; tela Folhas A4. A impressão da escala (v2026.10.25) não foi alterada. Anterior: v2026.10.25 — Imprimir escala: Congresso/Assembleia viram quadro largo (período, descrição, tema, ministério normal + Isaías 6:8). Anterior: v2026.10.24 — Imprimir escala: sem "Volante", separador Função│Nome, "Sem reunião" da mesma semana juntos, botão ocultar quadro, ajuste automático p/ mês de 5 semanas caber em 1 folha. Anterior: v2026.10.23 — Imprimir escala: só a lista (sem banners/status/limpeza), A4, letras grandes. Anterior: v2026.10.22 — Identificação do publicador ignora cópias inativas do nome (corrige 'seu nome não está na lista'). Anterior: v2026.10.21 — Importar grupos usa os nomes da lista de grupos (corrige o cadastro, adiciona quem falta, aponta quem está fora dos grupos). Anterior: v2026.10.20 — Grupos de congregação: login do superintendente/ajudante, avisos por grupo e 'já conversei'. Anterior: v2026.10.19 — Botão 'Não participei neste mês'; avisos Irregular/Inativo só para secretário e responsável. Anterior: v2026.10.18 — Relatório de Campo: formulário do publicador (S-4), cadastro de publicadores, painel do secretário com S-1 e cartões S-21. Anterior: v2026.10.17 — Minha Escala mostra o slip S-89-T (verde) para Leitura e Ministério, inclusive para irmãs e ajudantes; só semanas de meses publicados; data da reunião = quarta; lista de nomes inclui o cadastro do VMC. Anterior: v2026.10.16 — Aplicar/entrar/sair do modo responsável NÃO refazem mais a escala (só redesenham a salva); celulares redesenham quando um evento muda; modo teste com faixa visível; reparo protegido; gravação da escala não apaga substituições. Anterior: v2026.10.15 — Microfone/Indicadores: escolher entre irmãos já cadastrados; restaurar backup NÃO regenera mais a escala; backups podem ser apagados. Anterior: v2026.10.14 — Cadastro blindado: liberados/bloqueados em nó separado, gravação sem apagar campos desconhecidos, backups diários com restauração. Anterior: v2026.10.13 — Plano de Segurança COMPLETO (21 itens) + novo ano de serviço/plano novo pelo responsável. Anterior: v2026.10.12 — Plano de Segurança: prazo bloqueia indicador que não leu + avisos ao responsável. Anterior: v2026.10.11 — Plano de Segurança S-288 com trava de leitura reforçada (rolagem + tempo mínimo + perguntas). Anterior: v2026.10.10 — Palco passa a ser UM irmão por reunião (em vez de dupla). Anterior: v2026.10.09 — Liberar/bloquear por treinamento em TODAS as designações (palco, microfone, áudio, vídeo, zoom, indicador). Anterior: v2026.10.08 — Palco: tirar ou trocar um irmão só (sem apagar as duplas à mão). Anterior: v2026.10.07 — Releitura ao voltar ao app, aviso de nova versão e sw.js com rede primeiro. Anterior: v2026.10.06 — Botões de indicadores (atualizar/regenerar) só mexem de hoje em diante; reuniões passadas ficam intactas. Anterior: v2026.10.05 — Treinamento de segurança vence em 12 meses (Plano S-288, item 19) e bloqueia o indicador após vencer. Anterior: v2026.09.04 — bloqueio de indicadores sem treinamento. v2026.09.03 — Botões de WhatsApp (VMC, Discurso Público, Enviar Oradores) + sistema de temas: bloqueio automático de 4 meses, temas indisponíveis temporariamente, repertório por orador -->
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
@@ -581,7 +581,7 @@ body.dark-mode .conf-badge.pendente { background: #2a2a15; color: #ca8a04; borde
     <div class="modal-cab">
       <span>
         <span class="modal-cab-titulo">👨‍💼 Área do Responsável</span>
-        <span style="font-size:10px;color:#9ca3af;font-weight:normal;margin-left:8px">v2026.10.39</span>
+        <span style="font-size:10px;color:#9ca3af;font-weight:normal;margin-left:8px">v2026.10.40</span>
       </span>
       <button class="btn-fechar" onclick="fecharPrincipal()">✕</button>
     </div>
@@ -1112,6 +1112,8 @@ body.dark-mode .conf-badge.pendente { background: #2a2a15; color: #ca8a04; borde
           <button onclick="dpCompartilharWhatsApp()" style="background:#25d366;color:white;border:none;padding:7px 14px;border-radius:6px;font-size:12px;font-weight:bold;cursor:pointer">📱 WhatsApp</button>
           <button onclick="dpImprimirMes()" style="background:#1a4fa3;color:white;border:none;padding:7px 14px;border-radius:6px;font-size:12px;font-weight:bold;cursor:pointer">📅 Imprimir mês (quadro)</button>
         </div>
+
+        <div id="dp-sugestao-painel" style="display:none;margin-bottom:14px;border:1px solid #0e7490;border-radius:8px;padding:10px;background:#f0f9ff"></div>
 
         <div id="dp-controle-temas" style="display:none;margin-bottom:14px;border:1px solid #d0d5dd;border-radius:8px;padding:10px;background:#f8fafc"></div>
 
@@ -6063,7 +6065,7 @@ setInterval(renderPainelTrocas, 60000);
 
 // ===================== PWA — SERVICE WORKER + ATUALIZAÇÃO =====================
 // Mantenha igual à versão mostrada na Área do Responsável e à VERSAO do sw.js
-window.APP_VERSAO = 'v2026.10.39';
+window.APP_VERSAO = 'v2026.10.40';
 
 function mostrarBannerNovaVersao() {
   if (document.getElementById('banner-nova-versao')) return;
@@ -12326,55 +12328,101 @@ function dpTemaConflitaEm(tema, isoAlvo, extra) {
 }
 function dpFmtISO(iso) { return iso ? new Date(iso+'T12:00:00').toLocaleDateString('pt-BR') : ''; }
 
+var dpSug = null; // {rows:[{iso,label,tema,aceito,recusados:[]}], fixos:[label]}
+
+// Escolhe tema para uma linha, respeitando 4 meses (antes/depois), os aceitos e os recusados
+function dpSugEscolher(row, extra) {
+  var catalogo = dpTemasCatalogo.concat(dpTemasEspeciais).filter(function(t){ return dpTemaEstaDisponivel(t); });
+  var orador = (dpDados[row.iso] || {}).orador || '';
+  var rep = orador && vmcCadastro && vmcCadastro.irmaos && vmcCadastro.irmaos[orador] ? dpGetRepertorio(orador) : [];
+  var repNums = rep.map(function(r){ return dpNumTema(r.tema); });
+  var recNums = row.recusados.map(dpNumTema);
+  var cands = catalogo.filter(function(t){
+    if (recNums.indexOf(dpNumTema(t)) >= 0) return false;
+    return !dpTemaConflitaEm(t, row.iso, extra);
+  });
+  var doRep = repNums.length ? cands.filter(function(t){ return repNums.indexOf(dpNumTema(t)) >= 0; }) : [];
+  if (doRep.length) cands = doRep;
+  function ultimo(t) { var u = dpUsosDoTema(t, row.iso, extra); return u.length ? u[u.length-1] : ''; }
+  cands.sort(function(a, b) {
+    var ua = ultimo(a), ub = ultimo(b);
+    if (ua !== ub) return ua < ub ? -1 : 1;
+    return (dpNumTema(a)||9999) - (dpNumTema(b)||9999);
+  });
+  return cands.length ? cands[0] : '';
+}
+function dpSugExtra(excluirRow) {
+  var ex = {};
+  dpSug.rows.forEach(function(r){ if (r !== excluirRow && r.tema && r.aceito) ex[r.iso] = r.tema; });
+  return ex;
+}
+// Sorteia (de novo) as linhas pedidas, uma de cada vez, evitando repetir entre elas
+function dpSugGerar(linhas) {
+  var ex = dpSugExtra(null);
+  linhas.forEach(function(r) {
+    if (r.tema) r.recusados.push(r.tema);
+    r.tema = dpSugEscolher(r, ex);
+    if (r.tema) ex[r.iso] = r.tema;
+  });
+}
+
 function dpSugerirTemasMes() {
   var datas = dpGetDatas();
   if (!datas.length) { alert('Nenhum sábado neste mês.'); return; }
-  var catalogo = dpTemasCatalogo.concat(dpTemasEspeciais).filter(function(t){ return dpTemaEstaDisponivel(t); });
-  var escolhidos = {};   // iso -> tema sugerido nesta rodada
-  var linhas = [], fixos = [], semTema = [];
+  var rows = [], fixos = [];
   datas.forEach(function(d) {
-    var atual = (dpDados[d.iso] || {}).temaDiscurso;
-    if (atual) { fixos.push(d); return; }
-    var orador = (dpDados[d.iso] || {}).orador || '';
-    var rep = orador && vmcCadastro && vmcCadastro.irmaos && vmcCadastro.irmaos[orador] ? dpGetRepertorio(orador) : [];
-    var repNums = rep.map(function(r){ return dpNumTema(r.tema); });
-    function livres(lista) {
-      return lista.filter(function(t){
-        var ex = {}; Object.keys(escolhidos).forEach(function(k){ ex[k] = escolhidos[k]; });
-        return !dpTemaConflitaEm(t, d.iso, ex);
-      });
-    }
-    var cands = livres(catalogo);
-    var doRep = repNums.length ? cands.filter(function(t){ return repNums.indexOf(dpNumTema(t)) >= 0; }) : [];
-    if (doRep.length) cands = doRep;
-    // mais antigo (ou nunca usado) primeiro; empate = menor número
-    function ultimo(t) { var u = dpUsosDoTema(t, d.iso, escolhidos); return u.length ? u[u.length-1] : ''; }
-    cands.sort(function(a, b) {
-      var ua = ultimo(a), ub = ultimo(b);
-      if (ua !== ub) return ua < ub ? -1 : 1;
-      return (dpNumTema(a)||9999) - (dpNumTema(b)||9999);
-    });
-    if (!cands.length) { semTema.push(d); return; }
-    escolhidos[d.iso] = cands[0];
-    linhas.push(d.label + '  →  ' + cands[0] + (doRep.length ? '  (repertório de ' + orador + ')' : ''));
+    if ((dpDados[d.iso] || {}).temaDiscurso) fixos.push(d.label.split(' de ')[0]);
+    else rows.push({ iso: d.iso, label: d.label, tema: '', aceito: true, recusados: [] });
   });
-  if (!linhas.length) {
-    alert('Nada a sugerir: ' + (fixos.length ? 'todos os sábados deste mês já têm tema.' : 'não há tema livre.'));
-    return;
-  }
-  var msg = 'Temas sugeridos (só o campo Tema será preenchido):\n\n' + linhas.join('\n');
-  if (fixos.length) msg += '\n\nJá definidos (não mudam): ' + fixos.map(function(d){ return d.label.split(' de ')[0]; }).join(', ');
-  if (semTema.length) msg += '\n\nSem tema livre: ' + semTema.map(function(d){ return d.label.split(' de ')[0]; }).join(', ');
-  msg += '\n\nGravar estes temas?';
-  if (!confirm(msg)) return;
-  Object.keys(escolhidos).forEach(function(iso) {
-    if (!dpDados[iso]) dpDados[iso] = {};
-    dpDados[iso].temaDiscurso = escolhidos[iso];
-    if (db) db.ref('dp/' + iso + '/temaDiscurso').set(escolhidos[iso]);
+  if (!rows.length) { alert('Todos os sábados deste mês já têm tema.'); return; }
+  dpSug = { rows: rows, fixos: fixos };
+  dpSugGerar(rows);
+  rows.forEach(function(r){ r.aceito = !!r.tema; });
+  dpSugRender();
+}
+
+function dpSugRender() {
+  var el = document.getElementById('dp-sugestao-painel');
+  if (!el) return;
+  if (!dpSug) { el.style.display = 'none'; el.innerHTML = ''; return; }
+  var h = '<div style="font-weight:bold;font-size:13px;margin-bottom:2px">🎯 Temas sugeridos</div>' +
+    '<div style="font-size:11px;color:#475569;margin-bottom:6px">☑ Deixe marcado o que você <b>aceita</b>. Desmarque o que não quer e clique em “Sugerir outros”. Nada é gravado antes de “Gravar os marcados”.' +
+    (dpSug.fixos.length ? ' Já definidos (não mudam): ' + dpSug.fixos.join(', ') + '.' : '') + '</div>';
+  dpSug.rows.forEach(function(r, k) {
+    h += '<label style="display:flex;gap:8px;align-items:center;padding:6px 4px;border-bottom:1px solid #e2e8f0;font-size:12px;cursor:pointer">' +
+      '<input type="checkbox" ' + (r.aceito && r.tema ? 'checked ' : '') + (r.tema ? '' : 'disabled ') + 'onchange="dpSug.rows[' + k + '].aceito=this.checked" style="width:18px;height:18px">' +
+      '<span style="min-width:120px;font-weight:bold">' + escHtml(r.label.replace(/ de 20\d\d$/, '')) + '</span>' +
+      '<span style="flex:1;' + (r.tema ? '' : 'color:#b91c1c') + '">' + (r.tema ? escHtml(r.tema) : 'Sem tema livre para esta data') + '</span></label>';
   });
+  h += '<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px">' +
+    '<button onclick="dpSugOutros()" style="background:#0e7490;color:white;border:none;padding:7px 14px;border-radius:6px;font-size:12px;font-weight:bold;cursor:pointer">🔄 Sugerir outros para os não marcados</button>' +
+    '<button onclick="dpSugGravar()" style="background:#166534;color:white;border:none;padding:7px 14px;border-radius:6px;font-size:12px;font-weight:bold;cursor:pointer">💾 Gravar os marcados</button>' +
+    '<button onclick="dpSug=null;dpSugRender()" style="background:white;border:1px solid #94a3b8;padding:7px 14px;border-radius:6px;font-size:12px;cursor:pointer">Fechar</button></div>';
+  el.innerHTML = h;
+  el.style.display = 'block';
+}
+function dpSugOutros() {
+  if (!dpSug) return;
+  var pend = dpSug.rows.filter(function(r){ return !(r.aceito && r.tema); });
+  if (!pend.length) { alert('Todos estão marcados. Desmarque os que você não quer e clique de novo.'); return; }
+  dpSugGerar(pend);
+  pend.forEach(function(r){ r.aceito = !!r.tema; });
+  dpSugRender();
+}
+function dpSugGravar() {
+  if (!dpSug) return;
+  var ok = dpSug.rows.filter(function(r){ return r.aceito && r.tema; });
+  if (!ok.length) { alert('Nenhum tema marcado para gravar.'); return; }
+  ok.forEach(function(r) {
+    if (!dpDados[r.iso]) dpDados[r.iso] = {};
+    dpDados[r.iso].temaDiscurso = r.tema;
+    if (db) db.ref('dp/' + r.iso + '/temaDiscurso').set(r.tema);
+  });
+  var resto = dpSug.rows.length - ok.length;
+  dpSug = null; dpSugRender();
   dpCarregarSemana();
-  dpRenderControleTemas();
-  alert('✅ Temas gravados. Confira cada sábado e complete orador e demais partes.');
+  try { dpRenderControleTemas(); } catch(e) {}
+  alert('✅ ' + ok.length + ' tema(s) gravado(s).' + (resto ? ' ' + resto + ' sábado(s) ficaram sem tema, para você preencher.' : ''));
 }
 
 function dpToggleControleTemas() {
