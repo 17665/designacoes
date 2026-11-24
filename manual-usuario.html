@@ -3,62 +3,97 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Manual do Irmão — Designações Parque Tietê</title>
+<title>Guia do Irmão — Designações Parque Tietê</title>
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800;900&family=Nunito+Sans:wght@400;600&display=swap" rel="stylesheet">
 <style>
-:root{--az:#1a4fa3;--azcl:#e8f0fb;--vd:#0f6e56;--vdcl:#d1fae5;--lar:#b45309;--larcl:#fef3c7;--rx:#7c3aed;--rxcl:#ede9fe;--cin:#374151;--am:#d97706;--amcl:#fffbeb;--br:white;--tx:#1f2937;--mt:#6b7280;}
+:root{--vd:#0f6e56;--vdcl:#d1fae5;--az:#1a4fa3;--azcl:#e8f0fb;--lar:#b45309;--larcl:#fef3c7;--rx:#7c3aed;--rxcl:#ede9fe;--cin:#374151;--am:#d97706;--amcl:#fffbeb;--verm:#991b1b;--br:white;--tx:#1f2937;--mt:#6b7280;}
 *{box-sizing:border-box;margin:0;padding:0;}
 body{font-family:'Nunito Sans',sans-serif;background:#f0f2f7;color:var(--tx);padding:0 0 60px;}
-.capa{background:linear-gradient(135deg,#1a4fa3,#0d3276 60%,#0a2558);color:white;padding:52px 32px 44px;text-align:center;position:relative;overflow:hidden;}
-.capa::before{content:'';position:absolute;top:-60px;right:-60px;width:220px;height:220px;border-radius:50%;background:rgba(255,255,255,.06);}
-.capa::after{content:'';position:absolute;bottom:-40px;left:-40px;width:160px;height:160px;border-radius:50%;background:rgba(255,255,255,.04);}
+.capa{background:linear-gradient(135deg,#0f6e56,#085e48 55%,#053d2f);color:white;padding:52px 32px 44px;text-align:center;position:relative;overflow:hidden;}
+.capa::before{content:'';position:absolute;top:-70px;right:-50px;width:200px;height:200px;border-radius:50%;background:rgba(255,255,255,.06);}
+.capa::after{content:'';position:absolute;bottom:-50px;left:-30px;width:160px;height:160px;border-radius:50%;background:rgba(255,255,255,.04);}
 .capa-ico{font-size:56px;margin-bottom:14px;}
-.capa h1{font-family:'Nunito',sans-serif;font-size:27px;font-weight:900;line-height:1.3;margin-bottom:8px;}
+.capa h1{font-family:'Nunito',sans-serif;font-size:26px;font-weight:900;line-height:1.3;margin-bottom:8px;}
 .capa-sub{font-size:13px;opacity:.75;font-weight:700;letter-spacing:.5px;text-transform:uppercase;}
 .capa-badge{display:inline-block;margin-top:20px;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);padding:6px 20px;border-radius:20px;font-size:13px;font-weight:700;}
 .wrap{max-width:680px;margin:0 auto;padding:0 20px;}
-.intro{background:white;border-radius:14px;padding:20px 24px;margin:24px 0 20px;border-left:5px solid var(--az);box-shadow:0 2px 8px rgba(0,0,0,.06);}
-.intro p{font-size:15px;line-height:1.8;color:#2a2a3e;}
-.intro strong{color:var(--az);}
-.sec{background:white;border-radius:14px;overflow:hidden;margin-bottom:20px;box-shadow:0 2px 8px rgba(0,0,0,.06);}
+.indice{background:white;border-radius:14px;padding:18px 20px;margin:22px auto 0;max-width:680px;box-shadow:0 2px 8px rgba(0,0,0,.06);}
+.indice-tit{font-family:'Nunito',sans-serif;font-weight:800;font-size:13px;color:var(--vd);margin-bottom:11px;text-transform:uppercase;letter-spacing:.5px;}
+.indice ul{list-style:none;}
+.indice ul li{padding:6px 0;border-bottom:1px solid #f4f4f4;font-size:13px;display:flex;align-items:center;gap:8px;}
+.indice ul li:last-child{border-bottom:none;}
+.inum{background:var(--vd);color:white;width:20px;height:20px;border-radius:50%;font-size:11px;font-weight:800;font-family:'Nunito',sans-serif;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.sec{background:white;border-radius:14px;overflow:hidden;margin-top:20px;margin-bottom:4px;box-shadow:0 2px 8px rgba(0,0,0,.06);}
 .sec-cab{padding:13px 20px;display:flex;align-items:center;gap:10px;color:white;}
-.sec-cab.az{background:var(--az);}
 .sec-cab.vd{background:var(--vd);}
+.sec-cab.az{background:var(--az);}
 .sec-cab.lar{background:var(--lar);}
 .sec-cab.rx{background:var(--rx);}
 .sec-cab.cin{background:var(--cin);}
-.sec-cab.am{background:#92400e;}
+.sec-cab.verm{background:#7f1d1d;}
+.sec-cab.esc{background:#92400e;}
+.sec-cab.graf{background:#1f2937;}
+.sec-cab.ros{background:#be185d;}
 .sec-ico{font-size:20px;}
 .sec-tit{font-family:'Nunito',sans-serif;font-size:16px;font-weight:800;}
 .sec-body{padding:18px 20px;}
+.sub{font-family:'Nunito',sans-serif;font-weight:800;font-size:13px;text-transform:uppercase;letter-spacing:.4px;padding:10px 0 5px;border-bottom:2px solid;margin-bottom:10px;}
+.sub.vd{color:var(--vd);border-color:var(--vdcl);}
+.sub.az{color:var(--az);border-color:var(--azcl);}
+.sub.lar{color:var(--lar);border-color:var(--larcl);}
+.sub.rx{color:var(--rx);border-color:var(--rxcl);}
 ol.passos{list-style:none;}
-ol.passos li{display:flex;gap:13px;margin-bottom:14px;align-items:flex-start;}
+ol.passos li{display:flex;gap:13px;margin-bottom:13px;align-items:flex-start;}
 ol.passos li:last-child{margin-bottom:0;}
 .num{width:27px;height:27px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-family:'Nunito',sans-serif;font-weight:900;font-size:13px;color:white;margin-top:1px;}
-.num.az{background:var(--az);}
 .num.vd{background:var(--vd);}
+.num.az{background:var(--az);}
 .num.lar{background:var(--lar);}
 .num.rx{background:var(--rx);}
 .num.cin{background:var(--cin);}
 .ptxt{font-size:14px;line-height:1.7;}
+.dica{border-left:4px solid;border-radius:6px;padding:11px 14px;font-size:13px;line-height:1.7;margin-top:12px;}
+.dica.vd{background:var(--vdcl);border-color:var(--vd);color:#064e3b;}
+.dica.az{background:var(--azcl);border-color:var(--az);color:#1e3a5f;}
+.dica.rx{background:var(--rxcl);border-color:var(--rx);color:#4c1d95;}
+.aviso{background:var(--amcl);border-left:4px solid var(--am);border-radius:6px;padding:11px 14px;font-size:13px;line-height:1.7;color:#78350f;margin-top:12px;}
+.aviso.verm{background:#fff1f1;border-color:#ef4444;color:#7f1d1d;}
+table.t{width:100%;border-collapse:collapse;font-size:13px;margin-top:8px;}
+table.t th{background:#f3f4f6;padding:8px 10px;text-align:left;font-size:11px;font-weight:700;color:var(--mt);border-bottom:2px solid #e5e7eb;text-transform:uppercase;letter-spacing:.3px;}
+table.t td{padding:8px 10px;border-bottom:1px solid #f3f4f6;line-height:1.6;vertical-align:top;}
+table.t tr:last-child td{border-bottom:none;}
+table.t tr:nth-child(even) td{background:#fafafa;}
+.nivel{display:inline-flex;align-items:center;gap:4px;border-radius:20px;padding:2px 10px;font-size:12px;font-weight:700;}
+.n1{background:#fef3c7;color:#92400e;border:1px solid #fcd34d;}
+.n2{background:#fff7ed;color:#c2410c;border:1px solid #f97316;}
+.box-acesso{background:#f9fafb;border:1.5px solid #e5e7eb;border-radius:10px;padding:14px 16px;margin-bottom:12px;display:flex;align-items:flex-start;gap:12px;}
+.box-ico{font-size:26px;flex-shrink:0;}
+.box-txt{font-size:14px;line-height:1.7;}
+.box-txt code{background:#e8f0fb;color:var(--az);padding:1px 7px;border-radius:4px;font-family:monospace;font-size:13px;font-weight:700;}
+.rodape{text-align:center;margin-top:30px;font-size:12px;color:var(--mt);line-height:1.8;}
+.rodape strong{color:var(--vd);}
+:root{--az:#1a4fa3;--azcl:#e8f0fb;--vd:#0f6e56;--vdcl:#d1fae5;--lar:#b45309;--larcl:#fef3c7;--rx:#7c3aed;--rxcl:#ede9fe;--cin:#374151;--am:#d97706;--amcl:#fffbeb;--br:white;--tx:#1f2937;--mt:#6b7280;}
+.capa{background:linear-gradient(135deg,#1a4fa3,#0d3276 60%,#0a2558);color:white;padding:52px 32px 44px;text-align:center;position:relative;overflow:hidden;}
+.capa::before{content:'';position:absolute;top:-60px;right:-60px;width:220px;height:220px;border-radius:50%;background:rgba(255,255,255,.06);}
+.capa::after{content:'';position:absolute;bottom:-40px;left:-40px;width:160px;height:160px;border-radius:50%;background:rgba(255,255,255,.04);}
+.capa h1{font-family:'Nunito',sans-serif;font-size:27px;font-weight:900;line-height:1.3;margin-bottom:8px;}
+.intro{background:white;border-radius:14px;padding:20px 24px;margin:24px 0 20px;border-left:5px solid var(--az);box-shadow:0 2px 8px rgba(0,0,0,.06);}
+.intro p{font-size:15px;line-height:1.8;color:#2a2a3e;}
+.intro strong{color:var(--az);}
+.sec{background:white;border-radius:14px;overflow:hidden;margin-bottom:20px;box-shadow:0 2px 8px rgba(0,0,0,.06);}
+.sec-cab.am{background:#92400e;}
+ol.passos li{display:flex;gap:13px;margin-bottom:14px;align-items:flex-start;}
 .ptxt em{background:var(--azcl);color:var(--az);padding:1px 7px;border-radius:4px;font-style:normal;font-weight:700;font-size:13px;}
 .ptxt.rx em{background:var(--rxcl);color:var(--rx);}
 .ptxt.vd em{background:var(--vdcl);color:var(--vd);}
 .ptxt.lar em{background:var(--larcl);color:var(--lar);}
 .dica{background:var(--azcl);border-left:4px solid var(--az);border-radius:8px;padding:12px 15px;font-size:13px;line-height:1.7;color:#1e3a5f;margin-top:13px;}
-.dica.rx{background:var(--rxcl);border-color:var(--rx);color:#4c1d95;}
-.dica.vd{background:var(--vdcl);border-color:var(--vd);color:#064e3b;}
 .aviso{background:var(--amcl);border-left:4px solid var(--am);border-radius:8px;padding:12px 15px;font-size:13px;line-height:1.7;color:#78350f;margin-top:13px;}
-table.t{width:100%;border-collapse:collapse;font-size:13px;margin-top:8px;}
-table.t th{background:#f3f4f6;padding:8px 10px;text-align:left;font-size:11px;font-weight:700;color:var(--mt);border-bottom:2px solid #e5e7eb;text-transform:uppercase;letter-spacing:.3px;}
-table.t td{padding:8px 10px;border-bottom:1px solid #f3f4f6;line-height:1.6;vertical-align:top;}
-table.t tr:last-child td{border-bottom:none;}
 .badge-demo{display:inline-flex;align-items:center;gap:4px;border-radius:20px;padding:3px 11px;font-size:12px;font-weight:700;margin:2px;}
 .badge-vd{background:#dcfce7;color:#166534;border:1px solid #86efac;}
 .badge-verm{background:#fee2e2;color:#991b1b;border:1px solid #fca5a5;}
 .badge-am{background:#fef3c7;color:#92400e;border:1px solid #fcd34d;}
 .sep{margin:16px 0;border:none;border-top:2px solid #f0f0f0;}
-.rodape{text-align:center;margin-top:30px;font-size:12px;color:var(--mt);line-height:1.8;}
 .rodape strong{color:var(--az);}
 .pwa-box{border-radius:12px;padding:16px 18px;margin-bottom:12px;}
 .pwa-az{background:linear-gradient(135deg,#1a4fa3,#0d3276);color:white;}
@@ -69,178 +104,34 @@ table.t tr:last-child td{border-bottom:none;}
 .btn-rx{background:var(--rx);color:white;}
 .btn-vd{background:#16a34a;color:white;}
 .btn-verm{background:#dc2626;color:white;}
-</style>
+.sec-cab.tl{background:#0e7490;}.sec-cab.tx{background:#374151;}
+.passos li{display:flex;gap:13px;margin-bottom:13px;align-items:flex-start;}
+.novo{background:#dcfce7;color:#166534;font-size:11px;font-weight:700;border-radius:10px;padding:1px 8px;margin-left:4px;}
+.intro{background:white;border-radius:14px;padding:18px 20px;margin-top:22px;box-shadow:0 2px 8px rgba(0,0,0,.06);font-size:14px;line-height:1.8;}
+.rotina li{margin:6px 0 6px 20px;font-size:14px;line-height:1.7;}
+.capa{background:linear-gradient(135deg,#1a4fa3,#0d3276 55%,#082252);}
+.rodape strong{color:#1a4fa3;}</style>
 </head>
 <body>
-<div class="capa">
-  <div class="capa-ico">📋</div>
-  <h1>Guia do Irmão<br>Sistema de Designações</h1>
-  <div class="capa-sub">Congregação Parque Tietê</div>
-  <div class="capa-badge">📖 Manual do Irmão — Versão 2026</div>
-</div>
+<div class="capa"><div class="capa-ico">📋</div><h1>Guia do Irmão<br>Sistema de Designações</h1><div class="capa-sub">Congregação Parque Tietê</div><div class="capa-badge">📖 Manual do Irmão — Versão 2026 (v2026.10.43)</div></div>
+<div class="indice" style="margin:22px 20px 0;max-width:680px;margin-left:auto;margin-right:auto;"><div class="indice-tit">📋 Índice</div><ul><li><div class="inum">1</div> Instalar o app no celular</li><li><div class="inum">2</div> Minha Escala</li><li><div class="inum">3</div> Confirmar presença ou avisar ausência</li><li><div class="inum">4</div> Ativar avisos</li><li><div class="inum">5</div> Pedir uma troca</li><li><div class="inum">6</div> Reunião Vida e Ministério (quarta)</li><li><div class="inum">7</div> Discurso Público e Estudo de Sentinela (sábado)</li><li><div class="inum">8</div> Relatório de Campo</li><li><div class="inum">9</div> Meu Campo — cronômetro e diário</li><li><div class="inum">10</div> Meu Grupo</li><li><div class="inum">11</div> Folhas A4 e Limpeza do salão</li><li><div class="inum">12</div> Modo escuro, imprimir e manutenção</li><li><div class="inum">13</div> Dúvidas?</li></ul></div>
 <div class="wrap">
-<div class="intro">
-  <p>Este site mostra a <strong>escala de designações</strong> da congregação. Você pode ver quando vai ser designado, confirmar sua presença, pedir troca com outro irmão e instalar o site como um <strong>app no celular</strong> — tudo sem ligar para ninguém.</p>
-</div>
+<div class="intro">Este site mostra a <strong>escala de designações</strong> da congregação, os programas das reuniões e o seu <strong>relatório de campo</strong>. Você vê quando vai ser designado, confirma presença, pede troca com outro irmão, registra o seu serviço e instala o site como um <strong>app no celular</strong> — tudo sem ligar para ninguém.</div>
+<div class="sec"><div class="sec-cab az"><span class="sec-ico">📱</span><span class="sec-tit">1. Instalar o app no celular (recomendado)</span></div><div class="sec-body"><p style="font-size:14px;line-height:1.8;margin-bottom:12px">O site pode ser instalado na tela inicial como um aplicativo — sem loja, sem custo, sem cadastro.</p><div class="pwa-box pwa-az"><h3>📲 Android (Chrome)</h3><p>Abra o link no Chrome → toque nos <strong>3 pontinhos</strong> → <strong>“Adicionar à tela inicial”</strong> ou <strong>“Instalar app”</strong> → confirme.</p></div><div class="pwa-box pwa-dk"><h3>🍎 iPhone (Safari)</h3><p>Abra no Safari → toque em <strong>compartilhar</strong> (quadrado com seta) → <strong>“Adicionar à Tela de Início”</strong> → <strong>Adicionar</strong>.</p></div><div class="dica ">💡 Depois de instalado, o app abre sem barra do navegador. Quando sai uma versão nova, o app avisa.</div></div></div>
+<div class="sec"><div class="sec-cab rx"><span class="sec-ico">👤</span><span class="sec-tit">2. Minha Escala — ver suas designações</span></div><div class="sec-body"><p style="font-size:14px;line-height:1.8;margin-bottom:12px">O botão <span class="btn-show btn-rx">👤 Minha Escala</span> mostra <strong>só as suas designações</strong> dos meses publicados.</p><ol class="passos"><li><div class="num rx">1</div><div class="ptxt rx">Toque em <em>👤 Minha Escala</em>.</div></li><li><div class="num rx">2</div><div class="ptxt rx">Escolha o seu nome. O app <strong>lembra</strong> nas próximas vezes, mesmo fechando e abrindo o app.</div></li><li><div class="num rx">3</div><div class="ptxt rx">Veja as próximas designações em destaque, com setor, data e parceiros.</div></li></ol><p style="font-size:14px;line-height:1.8;margin-bottom:12px">Se você tem <strong>Leitura da Bíblia</strong> ou parte no <strong>Ministério</strong> (inclusive irmãs e ajudantes), o slip <strong>S-89-T</strong> aparece em verde.</p><p style="font-size:14px;line-height:1.8;margin-bottom:12px"><strong>✏️ Trocar nome</strong> libera o nome, se escolheu o errado. O botão <strong>🔑 Trocar</strong> do topo também refaz a identificação.</p><div class="dica rx">💡 Se você é <strong>indicador</strong>, leia o <strong>🛡️ Plano de Segurança S-288</strong> pelo botão em Minha Escala, até o fim, e confirme. Sem a leitura em dia, o indicador fica bloqueado na escala.</div></div></div>
+<div class="sec"><div class="sec-cab vd"><span class="sec-ico">✅</span><span class="sec-tit">3. Confirmar presença ou avisar ausência</span></div><div class="sec-body"><ol class="passos"><li><div class="num vd">1</div><div class="ptxt vd">Abra Minha Escala e ache a reunião.</div></li><li><div class="num vd">2</div><div class="ptxt vd">Toque em <em>✓ Confirmar presença</em> ou <em>✗ Avisar ausência</em>.</div></li><li><div class="num vd">3</div><div class="ptxt vd">O selo muda: <span class="badge-demo badge-vd">✓ Confirmada</span> <span class="badge-demo badge-verm">✗ Ausência</span> <span class="badge-demo badge-am">⏳ Aguardando</span>.</div></li></ol><div class="aviso">⚠️ Ao avisar ausência, o responsável recebe um aviso e providencia substituto.</div></div></div>
+<div class="sec"><div class="sec-cab az"><span class="sec-ico">🔔</span><span class="sec-tit">4. Ativar avisos (notificações)</span></div><div class="sec-body"><ol class="passos"><li><div class="num vd">1</div><div class="ptxt vd">Em Minha Escala, toque em <em>🔔 Ativar avisos</em>.</div></li><li><div class="num vd">2</div><div class="ptxt vd">Permita as notificações quando o navegador perguntar.</div></li><li><div class="num vd">3</div><div class="ptxt vd">Uma notificação de teste confirma.</div></li></ol><div class="dica ">💡 Com o app instalado, os avisos funcionam até com o app fechado.</div></div></div>
+<div class="sec"><div class="sec-cab lar"><span class="sec-ico">🔄</span><span class="sec-tit">5. Pedir uma troca</span></div><div class="sec-body"><ol class="passos"><li><div class="num lar">1</div><div class="ptxt lar">Na escala, ache o seu nome (sublinhado em laranja).</div></li><li><div class="num lar">2</div><div class="ptxt lar">Toque nele. Na primeira vez, o site pede que você se identifique.</div></li><li><div class="num lar">3</div><div class="ptxt lar">Escolha com quem trocar e toque em <em>Enviar pedido</em>.</div></li><li><div class="num lar">4</div><div class="ptxt lar">O irmão tem <strong>48 horas</strong> para responder; depois o pedido expira.</div></li></ol><div class="aviso">⚠️ Você só pode pedir troca no <strong>seu</strong> nome.</div><div class="sub lar">Quando você recebe um pedido</div><ol class="passos"><li><div class="num lar">1</div><div class="ptxt lar">Abra o site: o pedido aparece em amarelo no topo.</div></li><li><div class="num lar">2</div><div class="ptxt lar">Leia quem pediu, o setor e a data.</div></li><li><div class="num lar">3</div><div class="ptxt lar">Toque em <em>✔ Aceitar troca</em> ou <em>✘ Recusar</em>.</div></li></ol><table class="t"><tr><th>Cor</th><th>Significado</th></tr><tr><td>🟡 Amarelo</td><td>Pedido pendente (48 h).</td></tr><tr><td>🟢 Verde</td><td>Troca aceita e aplicada.</td></tr><tr><td>🔴 Vermelho</td><td>Recusada (some em 24 h).</td></tr><tr><td>⚫ Cinza</td><td>Expirou.</td></tr></table></div></div>
+<div class="sec"><div class="sec-cab az"><span class="sec-ico">📖</span><span class="sec-tit">6. Reunião Vida e Ministério (quarta)</span></div><div class="sec-body"><p style="font-size:14px;line-height:1.8;margin-bottom:12px">O botão <span class="btn-show" style="background:#0f6e56;color:white">📖 Reunião Vida e Ministério</span> mostra a programação do <strong>Vida e Ministério Cristão</strong>.</p><ol class="passos"><li><div class="num vd">1</div><div class="ptxt vd">Escolha o <strong>Mês</strong> e a <strong>Semana</strong>.</div></li><li><div class="num vd">2</div><div class="ptxt vd">Veja as partes e quem fará cada uma.</div></li><li><div class="num vd">3</div><div class="ptxt vd">Se quiser, toque em <em>🖨️ Imprimir esta semana</em>.</div></li></ol><div class="dica ">💡 Só aparecem os meses que o responsável já <strong>publicou</strong>.</div></div></div>
+<div class="sec"><div class="sec-cab az"><span class="sec-ico">🎤</span><span class="sec-tit">7. Discurso Público e Estudo de Sentinela (sábado)</span></div><div class="sec-body"><p style="font-size:14px;line-height:1.8;margin-bottom:12px">O botão <span class="btn-show" style="background:#1a4fa3;color:white">🎤 Discurso Público e Estudo de Sentinela</span> mostra o <strong>Discurso Público e a Sentinela</strong>: presidente, orador, tema, condutor e leitor.</p><ol class="passos"><li><div class="num vd">1</div><div class="ptxt vd">Escolha o <strong>Mês</strong> e o <strong>Sábado</strong>.</div></li><li><div class="num vd">2</div><div class="ptxt vd">Veja as designações e, se quiser, <em>🖨️ Imprimir este sábado</em>.</div></li></ol><div class="sub az">📋 Meu Histórico (oradores)</div><p style="font-size:14px;line-height:1.8;margin-bottom:12px">Quem dá discursos pode abrir <strong>📋 Meu Histórico</strong>, escolher o próprio nome e seguir os passos para ver os discursos já dados.</p></div></div>
+<div class="sec"><div class="sec-cab vd"><span class="sec-ico">📝</span><span class="sec-tit">8. Relatório de Campo — todo mês <span class="novo">NOVO</span></span></div><div class="sec-body"><p style="font-size:14px;line-height:1.8;margin-bottom:12px">O botão <span class="btn-show btn-vd">📝 Relatório de Campo</span> é para enviar o seu serviço do mês ao secretário.</p><ol class="passos"><li><div class="num vd">1</div><div class="ptxt vd">Toque em <em>📝 Relatório de Campo</em> e escolha o seu nome.</div></li><li><div class="num vd">2</div><div class="ptxt vd">Marque <em>Participei no ministério neste mês</em>.</div></li><li><div class="num vd">3</div><div class="ptxt vd">Informe os <strong>estudos bíblicos</strong>.</div></li><li><div class="num vd">4</div><div class="ptxt vd">Se foi <strong>pioneiro auxiliar</strong> no mês, marque a opção e preencha as <strong>horas</strong>. O pioneiro regular também informa as horas.</div></li><li><div class="num vd">5</div><div class="ptxt vd">Se tiver <strong>horas de crédito</strong> (outro trabalho teocrático), preencha. O total é horas + crédito.</div></li><li><div class="num vd">6</div><div class="ptxt vd">Escreva uma <em>observação</em>, se precisar, e envie.</div></li></ol><table class="t"><tr><th>Situação</th><th>O que fazer</th></tr><tr><td>Não saiu no mês</td><td>Toque em <strong>Não participei neste mês</strong>. Se foi engano, abra de novo e preencha.</td></tr><tr><td>Enviei errado</td><td>Abra o relatório de novo e corrija — <strong>enquanto o secretário não tiver marcado o mês como enviado</strong>.</td></tr><tr><td>“Seu nome não está na lista”</td><td>Fale com o secretário: ele precisa te incluir na lista de publicadores.</td></tr></table><div class="dica vd">💡 O app só mostra “enviado” quando o servidor <strong>confirmou</strong> o recebimento. Se der erro de internet, ele avisa que o relatório não foi enviado — tente de novo.</div></div></div>
+<div class="sec"><div class="sec-cab tl"><span class="sec-ico">⏱️</span><span class="sec-tit">9. Meu Campo — cronômetro e diário <span class="novo">NOVO</span></span></div><div class="sec-body"><p style="font-size:14px;line-height:1.8;margin-bottom:12px">O botão <span class="btn-show" style="background:#0e7490;color:white">⏱️ Meu Campo</span> ajuda a controlar o serviço durante o mês.</p><ul class="rotina" style="list-style:disc"><li><strong>⏱️ Cronômetro:</strong> ligue quando sair e desligue ao terminar. Fica guardado no aparelho e continua contando com a tela bloqueada.</li><li><strong>📒 Diário de campo:</strong> some horas, crédito, estudos e uma anotação por dia (dá para corrigir um dia já lançado).</li><li><strong>Meta (pioneiro regular):</strong> mostra as horas do ano de serviço, a meta, quanto falta e quanto precisa por mês.</li><li><strong>⏱️ Preencher com meu diário de campo:</strong> no Relatório de Campo, copia os números do diário para o formulário.</li></ul><div class="dica vd">💡 O diário é <strong>só seu</strong>. O secretário recebe apenas o relatório que você enviar.</div></div></div>
+<div class="sec"><div class="sec-cab vd"><span class="sec-ico">👥</span><span class="sec-tit">10. Meu Grupo — superintendente e ajudante <span class="novo">NOVO</span></span></div><div class="sec-body"><p style="font-size:14px;line-height:1.8;margin-bottom:12px">Só para o <strong>superintendente</strong> e o <strong>ajudante</strong> de grupo. Entram juntos com a <strong>senha do grupo</strong>, dada pelo secretário.</p><ol class="passos"><li><div class="num vd">1</div><div class="ptxt vd">Toque em <em>👥 Meu Grupo</em> e digite a senha do grupo.</div></li><li><div class="num vd">2</div><div class="ptxt vd">Veja quem do grupo <strong>ainda não relatou</strong> e quem precisa de atenção.</div></li><li><div class="num vd">3</div><div class="ptxt vd">Depois de conversar com alguém, toque em <em>✔ Já conversei</em> para registrar.</div></li></ol></div></div>
+<div class="sec"><div class="sec-cab graf"><span class="sec-ico">🖨️</span><span class="sec-tit">11. Folhas A4 e Limpeza do salão</span></div><div class="sec-body"><p style="font-size:14px;line-height:1.8;margin-bottom:12px"><strong>🖨️ Folhas A4</strong> reúne as folhas do quadro (VMC, Discurso Público, limpeza, grupos). Aparecem as que o responsável <strong>liberou</strong>.</p><p style="font-size:14px;line-height:1.8;margin-bottom:12px">Se você é superintendente ou ajudante de um grupo, o app mostra quando <strong>é a vez do seu grupo</strong> na limpeza do salão e avisa antes da semana (abra o app de vez em quando para os avisos chegarem).</p></div></div>
+<div class="sec"><div class="sec-cab cin"><span class="sec-ico">🌙</span><span class="sec-tit">12. Modo escuro, imprimir e manutenção</span></div><div class="sec-body"><p style="font-size:14px;line-height:1.8;margin-bottom:12px"><strong>🌙 Escuro / ☀️ Claro</strong> muda o visual e fica salvo. <strong>🖨️ Imprimir escala</strong> imprime a lista do mês numa folha A4.</p><p style="font-size:14px;line-height:1.8;margin-bottom:12px">Às vezes o responsável faz ajustes e o site mostra uma <strong>tela escura de manutenção</strong>. É normal e temporário; as designações continuam no quadro de anúncios e no grupo. O site volta sozinho.</p></div></div>
+<div class="sec"><div class="sec-cab az"><span class="sec-ico">❓</span><span class="sec-tit">13. Dúvidas?</span></div><div class="sec-body"><p style="font-size:14px;line-height:1.8;margin-bottom:12px">Fale com o responsável <strong>Eriton Oliveira</strong>. Para dúvidas sobre o <strong>relatório de campo</strong>, fale com o <strong>secretário</strong>.</p></div></div>
 
-<!-- 1 INSTALAR APP -->
-<div class="sec">
-  <div class="sec-cab az"><span class="sec-ico">📱</span><span class="sec-tit">1. Instalar o app no celular (recomendado)</span></div>
-  <div class="sec-body">
-    <p style="font-size:14px;line-height:1.8;margin-bottom:14px">O site pode ser instalado diretamente na tela inicial do celular como um aplicativo — sem loja, sem custo, sem cadastro.</p>
-    <div class="pwa-box pwa-az">
-      <h3>📲 Android (Chrome)</h3>
-      <p>Abra o link no Chrome → toque nos <strong>3 pontinhos</strong> no canto superior direito → <strong>"Adicionar à tela inicial"</strong> ou <strong>"Instalar app"</strong> → confirme.</p>
-    </div>
-    <div class="pwa-box pwa-dk">
-      <h3>🍎 iPhone (Safari)</h3>
-      <p>Abra no Safari → toque no ícone de <strong>compartilhar</strong> (quadrado com seta) → role a lista → <strong>"Adicionar à Tela de Início"</strong> → <strong>Adicionar</strong>.</p>
-    </div>
-    <div class="dica">💡 Depois de instalado, o app abre sem barra do navegador. O ícone CPT aparece na tela inicial — igual a um app normal.</div>
-  </div>
-</div>
-
-<!-- 2 MINHA ESCALA -->
-<div class="sec">
-  <div class="sec-cab rx"><span class="sec-ico">👤</span><span class="sec-tit">2. Minha Escala — ver suas designações</span></div>
-  <div class="sec-body">
-    <p style="font-size:14px;line-height:1.8;margin-bottom:14px">O botão <span class="btn-show btn-rx">👤 Minha Escala</span> mostra <strong>apenas as suas designações</strong> em todos os meses gerados.</p>
-    <ol class="passos">
-      <li><div class="num rx">1</div><div class="ptxt rx">Clique em <em>👤 Minha Escala</em> no topo da página.</div></li>
-      <li><div class="num rx">2</div><div class="ptxt rx">Selecione seu nome na lista. O sistema lembrará automaticamente nas próximas vezes.</div></li>
-      <li><div class="num rx">3</div><div class="ptxt rx">Suas <strong>próximas designações</strong> aparecem em destaque com setor, data e parceiros. As passadas ficam listadas abaixo.</div></li>
-    </ol>
-    <div class="dica rx">💡 Cada designação mostra o setor (Palco, Microfone, Áudio…), a data da reunião e quem mais estará com você.</div>
-    <hr class="sep">
-    <p style="font-size:14px;font-weight:bold;margin-bottom:6px">✏️ Trocar nome</p>
-    <p style="font-size:14px;line-height:1.7">Se selecionou o nome errado, clique em <strong>✏️ Trocar nome</strong> (botão vermelho claro na tela Minha Escala) para liberar o nome e escolher outro.</p>
-  </div>
-</div>
-
-<!-- 3 CONFIRMAR PRESENÇA -->
-<div class="sec">
-  <div class="sec-cab vd"><span class="sec-ico">✅</span><span class="sec-tit">3. Confirmar presença ou avisar ausência</span></div>
-  <div class="sec-body">
-    <p style="font-size:14px;line-height:1.8;margin-bottom:12px">Em cada designação futura em <strong>Minha Escala</strong> você verá dois botões:</p>
-    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px">
-      <span class="btn-show btn-vd">✓ Confirmar presença</span>
-      <span class="btn-show btn-verm">✗ Avisar ausência</span>
-    </div>
-    <ol class="passos">
-      <li><div class="num vd">1</div><div class="ptxt vd">Abra <em>Minha Escala</em> e encontre a reunião desejada.</div></li>
-      <li><div class="num vd">2</div><div class="ptxt vd">Clique em <em>✓ Confirmar presença</em> se vai comparecer, ou <em>✗ Avisar ausência</em> se não puder ir.</div></li>
-      <li><div class="num vd">3</div><div class="ptxt vd">O badge muda para mostrar sua resposta:</div></li>
-    </ol>
-    <div style="margin-top:10px;display:flex;gap:6px;flex-wrap:wrap">
-      <span class="badge-demo badge-vd">✓ Presença confirmada</span>
-      <span class="badge-demo badge-verm">✗ Avisou ausência</span>
-      <span class="badge-demo badge-am">⏳ Aguardando confirmação</span>
-    </div>
-    <div class="aviso" style="margin-top:14px">⚠️ Se você <strong>avisar ausência</strong>, o responsável recebe um aviso automático e pode providenciar um substituto.</div>
-  </div>
-</div>
-
-<!-- 4 NOTIFICAÇÕES -->
-<div class="sec">
-  <div class="sec-cab vd"><span class="sec-ico">🔔</span><span class="sec-tit">4. Ativar avisos (notificações)</span></div>
-  <div class="sec-body">
-    <p style="font-size:14px;line-height:1.8;margin-bottom:12px">Ative avisos para ser notificado quando for designado.</p>
-    <ol class="passos">
-      <li><div class="num vd">1</div><div class="ptxt vd">Abra <em>Minha Escala</em> e clique em <em>🔔 Ativar avisos</em>.</div></li>
-      <li><div class="num vd">2</div><div class="ptxt vd">O navegador pergunta se você permite notificações — clique em <strong>Permitir</strong>.</div></li>
-      <li><div class="num vd">3</div><div class="ptxt vd">Uma notificação de teste confirma que está ativo.</div></li>
-    </ol>
-    <div class="dica vd">💡 Com o app instalado, notificações funcionam mesmo com o app fechado — como no WhatsApp.</div>
-  </div>
-</div>
-
-<!-- 5 PEDIR TROCA -->
-<div class="sec">
-  <div class="sec-cab lar"><span class="sec-ico">🔄</span><span class="sec-tit">5. Pedir uma troca de designação</span></div>
-  <div class="sec-body">
-    <p style="font-size:14px;line-height:1.8;margin-bottom:12px">Se não puder comparecer, você pode pedir troca diretamente pelo site.</p>
-    <ol class="passos">
-      <li><div class="num lar">1</div><div class="ptxt lar">Na escala, encontre seu nome — aparece <strong>sublinhado em laranja</strong> e clicável.</div></li>
-      <li><div class="num lar">2</div><div class="ptxt lar"><strong>Clique no seu nome.</strong> Na primeira vez, o site pede que você se identifique. Nas próximas ele já te reconhece.</div></li>
-      <li><div class="num lar">3</div><div class="ptxt lar">Escolha com qual irmão quer trocar e clique em <em>Enviar pedido</em>.</div></li>
-      <li><div class="num lar">4</div><div class="ptxt lar">O irmão tem <strong>48 horas</strong> para responder. Se não responder, o pedido expira sozinho.</div></li>
-    </ol>
-    <div class="aviso">⚠️ Você só pode clicar no <strong>seu próprio nome</strong>. Não é possível pedir troca no lugar de outro irmão.</div>
-  </div>
-</div>
-
-<!-- 6 ACEITAR TROCA -->
-<div class="sec">
-  <div class="sec-cab vd"><span class="sec-ico">✅</span><span class="sec-tit">6. Quando receber um pedido de troca</span></div>
-  <div class="sec-body">
-    <ol class="passos">
-      <li><div class="num vd">1</div><div class="ptxt vd">Abra o site — o pedido aparece em <strong>destaque amarelo</strong> bem no topo da página.</div></li>
-      <li><div class="num vd">2</div><div class="ptxt vd">Leia os detalhes: quem pediu, setor e data.</div></li>
-      <li><div class="num vd">3</div><div class="ptxt vd">Clique em <em>✔ Aceitar troca</em> para confirmar, ou <em>✘ Recusar</em> se não puder.</div></li>
-    </ol>
-    <div class="dica vd">💡 Se aceitar, a troca é salva permanentemente — fica visível para todos mesmo após recarregar a página.</div>
-  </div>
-</div>
-
-<!-- 7 CORES -->
-<div class="sec">
-  <div class="sec-cab cin"><span class="sec-ico">🎨</span><span class="sec-tit">7. O que cada cor significa</span></div>
-  <div class="sec-body">
-    <table class="t">
-      <thead><tr><th>Cor</th><th>Significado</th><th>Detalhe</th></tr></thead>
-      <tbody>
-        <tr><td>🟡 Amarelo</td><td><strong>Pedido pendente</strong></td><td>Aguardando resposta do irmão. Prazo de 48h correndo.</td></tr>
-        <tr><td>🟢 Verde</td><td><strong>Troca aceita</strong></td><td>Confirmada e já aplicada na escala.</td></tr>
-        <tr><td>🔴 Vermelho</td><td><strong>Troca recusada</strong></td><td>O irmão não pode aceitar. Some em 24h.</td></tr>
-        <tr><td>⚫ Cinza</td><td><strong>Expirado</strong></td><td>As 48h passaram sem resposta.</td></tr>
-      </tbody>
-    </table>
-  </div>
-</div>
-
-<!-- NOVO: MODO ESCURO -->
-<div class="sec">
-  <div class="sec-cab cin"><span class="sec-ico">🌙</span><span class="sec-tit">8. Modo escuro / claro</span></div>
-  <div class="sec-body">
-    <p style="font-size:14px;line-height:1.8;margin-bottom:12px">O site tem um <strong>modo escuro</strong> para uso noturno ou em ambientes com pouca luz. O botão fica no topo da página:</p>
-    <table class="t">
-      <thead><tr><th>Botão</th><th>O que faz</th></tr></thead>
-      <tbody>
-        <tr><td>🌙 Escuro</td><td>Muda o site para fundo escuro — ideal para usar à noite ou em reuniões com luz baixa.</td></tr>
-        <tr><td>☀️ Claro</td><td>Volta ao visual padrão com fundo branco.</td></tr>
-      </tbody>
-    </table>
-    <div class="dica">💡 A preferência é salva automaticamente — se você escolheu o modo escuro, ele volta escuro na próxima vez que abrir o site.</div>
-  </div>
-</div>
-
-<!-- 9 MODO REPARO -->
-<div class="sec">
-  <div class="sec-cab cin"><span class="sec-ico">🛠️</span><span class="sec-tit">9. Tela de Manutenção</span></div>
-  <div class="sec-body">
-    <p style="font-size:14px;line-height:1.8;margin-bottom:12px">Às vezes o responsável precisa fazer ajustes no sistema. Quando isso acontece, você verá uma <strong>tela escura com a mensagem de manutenção</strong> ao abrir o site.</p>
-    <div class="aviso">⚠️ Isso é normal e temporário. As designações continuam disponíveis no <strong>quadro de anúncios</strong> e no <strong>grupo Departamentos</strong> enquanto o sistema está em manutenção.</div>
-    <div class="dica" style="margin-top:12px">💡 Assim que o responsável terminar os ajustes, o site volta ao normal automaticamente — sem precisar recarregar.</div>
-  </div>
-</div>
-
-<!-- 10 MANUAL PDF -->
-<div class="sec">
-  <div class="sec-cab rx"><span class="sec-ico">📄</span><span class="sec-tit">10. Manual em PDF</span></div>
-  <div class="sec-body">
-    <p style="font-size:14px;line-height:1.8">O botão <span class="btn-show btn-rx">📖 Manual do Irmão</span> no topo da página abre este manual em formato de página web para leitura fácil no celular ou computador. Um PDF completo também está disponível para baixar e guardar.</p>
-  </div>
-</div>
-
-<!-- 9 DÚVIDAS -->
-<div class="sec">
-  <div class="sec-cab az"><span class="sec-ico">❓</span><span class="sec-tit">11. Dúvidas?</span></div>
-  <div class="sec-body">
-    <p style="font-size:14px;line-height:1.8">Em caso de dúvida ou problema, fale com o responsável <strong>Eriton Oliveira</strong>.</p>
-  </div>
-</div>
-
-<div class="rodape">Congregação Parque Tietê<br><strong>Sistema de Designações — Versão 2026</strong></div>
+<div class="rodape">Congregação Parque Tietê<br><strong>Manual do Irmão — Versão 2026</strong></div>
 </div>
 </body>
 </html>
