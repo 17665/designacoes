@@ -72,307 +72,68 @@ table.t tr:nth-child(even) td{background:#fafafa;}
 .box-txt code{background:#e8f0fb;color:var(--az);padding:1px 7px;border-radius:4px;font-family:monospace;font-size:13px;font-weight:700;}
 .rodape{text-align:center;margin-top:30px;font-size:12px;color:var(--mt);line-height:1.8;}
 .rodape strong{color:var(--vd);}
-</style>
+:root{--az:#1a4fa3;--azcl:#e8f0fb;--vd:#0f6e56;--vdcl:#d1fae5;--lar:#b45309;--larcl:#fef3c7;--rx:#7c3aed;--rxcl:#ede9fe;--cin:#374151;--am:#d97706;--amcl:#fffbeb;--br:white;--tx:#1f2937;--mt:#6b7280;}
+.capa{background:linear-gradient(135deg,#1a4fa3,#0d3276 60%,#0a2558);color:white;padding:52px 32px 44px;text-align:center;position:relative;overflow:hidden;}
+.capa::before{content:'';position:absolute;top:-60px;right:-60px;width:220px;height:220px;border-radius:50%;background:rgba(255,255,255,.06);}
+.capa::after{content:'';position:absolute;bottom:-40px;left:-40px;width:160px;height:160px;border-radius:50%;background:rgba(255,255,255,.04);}
+.capa h1{font-family:'Nunito',sans-serif;font-size:27px;font-weight:900;line-height:1.3;margin-bottom:8px;}
+.intro{background:white;border-radius:14px;padding:20px 24px;margin:24px 0 20px;border-left:5px solid var(--az);box-shadow:0 2px 8px rgba(0,0,0,.06);}
+.intro p{font-size:15px;line-height:1.8;color:#2a2a3e;}
+.intro strong{color:var(--az);}
+.sec{background:white;border-radius:14px;overflow:hidden;margin-bottom:20px;box-shadow:0 2px 8px rgba(0,0,0,.06);}
+.sec-cab.am{background:#92400e;}
+ol.passos li{display:flex;gap:13px;margin-bottom:14px;align-items:flex-start;}
+.ptxt em{background:var(--azcl);color:var(--az);padding:1px 7px;border-radius:4px;font-style:normal;font-weight:700;font-size:13px;}
+.ptxt.rx em{background:var(--rxcl);color:var(--rx);}
+.ptxt.vd em{background:var(--vdcl);color:var(--vd);}
+.ptxt.lar em{background:var(--larcl);color:var(--lar);}
+.dica{background:var(--azcl);border-left:4px solid var(--az);border-radius:8px;padding:12px 15px;font-size:13px;line-height:1.7;color:#1e3a5f;margin-top:13px;}
+.aviso{background:var(--amcl);border-left:4px solid var(--am);border-radius:8px;padding:12px 15px;font-size:13px;line-height:1.7;color:#78350f;margin-top:13px;}
+.badge-demo{display:inline-flex;align-items:center;gap:4px;border-radius:20px;padding:3px 11px;font-size:12px;font-weight:700;margin:2px;}
+.badge-vd{background:#dcfce7;color:#166534;border:1px solid #86efac;}
+.badge-verm{background:#fee2e2;color:#991b1b;border:1px solid #fca5a5;}
+.badge-am{background:#fef3c7;color:#92400e;border:1px solid #fcd34d;}
+.sep{margin:16px 0;border:none;border-top:2px solid #f0f0f0;}
+.rodape strong{color:var(--az);}
+.pwa-box{border-radius:12px;padding:16px 18px;margin-bottom:12px;}
+.pwa-az{background:linear-gradient(135deg,#1a4fa3,#0d3276);color:white;}
+.pwa-dk{background:#1c1c1e;color:white;}
+.pwa-box h3{font-family:'Nunito',sans-serif;font-size:14px;font-weight:800;margin-bottom:7px;}
+.pwa-box p{font-size:13px;line-height:1.6;opacity:.9;}
+.btn-show{display:inline-flex;align-items:center;gap:5px;border-radius:8px;padding:5px 13px;font-size:12px;font-weight:700;}
+.btn-rx{background:var(--rx);color:white;}
+.btn-vd{background:#16a34a;color:white;}
+.btn-verm{background:#dc2626;color:white;}
+.sec-cab.tl{background:#0e7490;}.sec-cab.tx{background:#374151;}
+.passos li{display:flex;gap:13px;margin-bottom:13px;align-items:flex-start;}
+.novo{background:#dcfce7;color:#166534;font-size:11px;font-weight:700;border-radius:10px;padding:1px 8px;margin-left:4px;}
+.intro{background:white;border-radius:14px;padding:18px 20px;margin-top:22px;box-shadow:0 2px 8px rgba(0,0,0,.06);font-size:14px;line-height:1.8;}
+.rotina li{margin:6px 0 6px 20px;font-size:14px;line-height:1.7;}
+
+.rodape strong{color:#0f6e56;}</style>
 </head>
 <body>
-<div class="capa">
-  <div class="capa-ico">⚙️</div>
-  <h1>Manual do Responsável<br>Sistema de Designações</h1>
-  <div class="capa-sub">Congregação Parque Tietê</div>
-  <div class="capa-badge">🔒 Eriton Oliveira — Versão 2026</div>
-</div>
-
-<div class="indice" style="margin:22px 20px 0;max-width:680px;margin-left:auto;margin-right:auto;">
-  <div class="indice-tit">📋 Índice</div>
-  <ul>
-    <li><div class="inum">1</div> Acessar a Área do Responsável</li>
-    <li><div class="inum">2</div> Aba Eventos</li>
-    <li><div class="inum">3</div> Aba Irmãos</li>
-    <li><div class="inum">4</div> Aba Treinamento</li>
-    <li><div class="inum">5</div> Aba Gerar Meses</li>
-    <li><div class="inum">6</div> Aba Trocas</li>
-    <li><div class="inum">7</div> Aba Histórico</li>
-    <li><div class="inum">8</div> Aba Presenças <span style="background:#dcfce7;color:#166534;font-size:11px;font-weight:700;border-radius:10px;padding:1px 8px;margin-left:4px">NOVO</span></li>
-    <li><div class="inum">9</div> Aba Senha e Recuperação</li>
-    <li><div class="inum">10</div> Substituição direta na escala</li>
-    <li><div class="inum">11</div> Avisos de ausência</li>
-    <li><div class="inum">12</div> Modo escuro / claro</li>
-    <li><div class="inum">13</div> Badge de Status da Página Principal</li>
-    <li><div class="inum">14</div> Modo Reparo (Manutenção) <span style="background:#dcfce7;color:#166534;font-size:11px;font-weight:700;border-radius:10px;padding:1px 8px;margin-left:4px">NOVO</span></li>
-    <li><div class="inum">15</div> Substituições — como funcionam</li>
-  </ul>
-</div>
-
+<div class="capa"><div class="capa-ico">⚙️</div><h1>Manual do Responsável<br>Sistema de Designações</h1><div class="capa-sub">Congregação Parque Tietê</div><div class="capa-badge">🔒 Eriton Oliveira — Versão 2026 (v2026.10.43)</div></div>
+<div class="indice" style="margin:22px 20px 0;max-width:680px;margin-left:auto;margin-right:auto;"><div class="indice-tit">📋 Índice</div><ul><li><div class="inum">1</div> Acessar a Área do Responsável</li><li><div class="inum">2</div> Aba Eventos</li><li><div class="inum">3</div> Aba Irmãos</li><li><div class="inum">4</div> Plano de Segurança S-288</li><li><div class="inum">5</div> Aba Treinamento</li><li><div class="inum">6</div> Aba Gerar Meses</li><li><div class="inum">7</div> Trocas e Histórico</li><li><div class="inum">8</div> Aba VMC — Vida e Ministério</li><li><div class="inum">9</div> Aba Discurso Público e Sentinela</li><li><div class="inum">10</div> Aba Enviar Oradores</li><li><div class="inum">11</div> Folhas A4</li><li><div class="inum">12</div> Limpeza do salão</li><li><div class="inum">13</div> Relatórios de campo (o que é seu)</li><li><div class="inum">14</div> Aba Presenças e avisos de ausência</li><li><div class="inum">15</div> Aba Senha e recuperação</li><li><div class="inum">16</div> Substituição direta e substituições</li><li><div class="inum">17</div> Modo Reparo e Modo Teste</li><li><div class="inum">18</div> Atualizar o sistema (versão nova)</li></ul></div>
 <div class="wrap">
-
-<!-- 1 ACESSO -->
-<div class="sec">
-  <div class="sec-cab vd"><span class="sec-ico">🔒</span><span class="sec-tit">1. Acessar a Área do Responsável</span></div>
-  <div class="sec-body">
-    <div class="box-acesso"><div class="box-ico">🖥️</div><div class="box-txt">Clique no botão verde <code>👤 Área do Responsável</code> no topo da página e digite a senha.</div></div>
-    <div class="box-acesso"><div class="box-ico">📱</div><div class="box-txt">No celular com app instalado, o botão fica na tela principal — sem barra do navegador.</div></div>
-    <div class="dica vd">💡 Dentro da Área há <strong>9 abas</strong>: Eventos · Irmãos · Treinamento · Gerar Meses · Trocas · Histórico · Presenças · Manual · Senha</div>
-  </div>
-</div>
-
-<!-- 2 EVENTOS -->
-<div class="sec">
-  <div class="sec-cab lar"><span class="sec-ico">📅</span><span class="sec-tit">2. Aba Eventos</span></div>
-  <div class="sec-body">
-    <p style="font-size:14px;line-height:1.8;margin-bottom:12px">Cadastre eventos que afetam o calendário de reuniões. 5 tipos disponíveis:</p>
-    <table class="t">
-      <thead><tr><th>Tipo</th><th>Efeito na escala</th></tr></thead>
-      <tbody>
-        <tr><td>🚫 Congresso (sem reunião)</td><td>Bloqueia o período. Aparece como "Sem reunião — Congresso Regional".</td></tr>
-        <tr><td>🚫 Assembleia de Circuito</td><td>Igual ao congresso — bloqueia o período.</td></tr>
-        <tr><td>📅 Visita do Superintendente</td><td>Quarta muda para terça. Permite cadastrar ausentes nessa semana.</td></tr>
-        <tr><td>🚫 Outro evento (sem reunião)</td><td>Cancela a reunião. Nome do evento é editável livremente.</td></tr>
-        <tr><td>🔔 Aviso / informação</td><td>Não cancela. Aparece como banner informativo na escala.</td></tr>
-      </tbody>
-    </table>
-    <div class="sub lar" style="margin-top:18px">Como adicionar</div>
-    <ol class="passos">
-      <li><div class="num lar">1</div><div class="ptxt">Clique em <strong>+ Adicionar evento</strong>.</div></li>
-      <li><div class="num lar">2</div><div class="ptxt">Preencha datas de início e fim. Selecione o tipo — o nome é preenchido automaticamente mas pode ser editado.</div></li>
-      <li><div class="num lar">3</div><div class="ptxt">Clique em <strong>✔ Aplicar e atualizar escala</strong>.</div></li>
-    </ol>
-  </div>
-</div>
-
-<!-- 3 IRMÃOS -->
-<div class="sec">
-  <div class="sec-cab az"><span class="sec-ico">👥</span><span class="sec-tit">3. Aba Irmãos</span></div>
-  <div class="sec-body">
-    <div class="sub az">Cadastrar irmão novo</div>
-    <p style="font-size:14px;line-height:1.7;margin-bottom:10px">No campo azul no topo da aba, digite o nome completo e clique em <strong>✓ Cadastrar</strong>. O irmão entra na lista geral e fica disponível para ser adicionado aos setores.</p>
-    <div class="aviso">⚠️ Irmãos novos <strong>não entram automaticamente</strong> em nenhum setor. Após cadastrar, adicione-o nos setores desejados usando o select de cada setor.</div>
-    <div class="sub az" style="margin-top:18px">Adicionar a um setor</div>
-    <ol class="passos">
-      <li><div class="num az">1</div><div class="ptxt">Role até o setor desejado (ex: Microfone).</div></li>
-      <li><div class="num az">2</div><div class="ptxt">Selecione o nome no menu <strong>"selecionar irmão"</strong> e clique em <strong>+ Adicionar</strong>.</div></li>
-    </ol>
-    <div class="sub az" style="margin-top:16px">Palco — funciona por pares</div>
-    <p style="font-size:14px;line-height:1.7">Escolha o <strong>Irmão 1</strong> e <strong>Irmão 2</strong> e clique em <strong>+ Adicionar par</strong>. O sistema sorteia um par por reunião.</p>
-  </div>
-</div>
-
-<!-- 4 TREINAMENTO -->
-<div class="sec">
-  <div class="sec-cab esc"><span class="sec-ico">🎓</span><span class="sec-tit">4. Aba Treinamento</span></div>
-  <div class="sec-body">
-    <p style="font-size:14px;line-height:1.7;margin-bottom:12px">Reduz a frequência de um irmão nos setores marcados enquanto aprende, mantendo o rodízio normal nos demais.</p>
-    <table class="t">
-      <thead><tr><th>Nível</th><th>Símbolo</th><th>Frequência</th></tr></thead>
-      <tbody>
-        <tr><td><span class="nivel n1">Nível 1</span></td><td>🎓</td><td>Aparece a cada <strong>3 reuniões</strong> (pula 2)</td></tr>
-        <tr><td><span class="nivel n2">Nível 2</span></td><td>⭐</td><td>Aparece a cada <strong>2 reuniões</strong> (pula 1) — mais avançado</td></tr>
-      </tbody>
-    </table>
-    <div class="sub lar" style="margin-top:16px">Como configurar</div>
-    <ol class="passos">
-      <li><div class="num lar">1</div><div class="ptxt">Selecione o nome (ou digite novo no campo de texto) e clique em <strong>+ Adicionar</strong>.</div></li>
-      <li><div class="num lar">2</div><div class="ptxt">Defina a <strong>data de início</strong> — reuniões anteriores não são afetadas (escala já impressa fica intacta).</div></li>
-      <li><div class="num lar">3</div><div class="ptxt">Clique nos setores para marcar o nível. Cada clique cicla: <strong>Desativado → N1 → N2 → Desativado</strong>.</div></li>
-      <li><div class="num lar">4</div><div class="ptxt">Para encerrar, clique no <strong>✕</strong> do card — o irmão volta ao rodízio normal imediatamente.</div></li>
-    </ol>
-  </div>
-</div>
-
-<!-- 5 GERAR MESES -->
-<div class="sec">
-  <div class="sec-cab az"><span class="sec-ico">📆</span><span class="sec-tit">5. Aba Gerar Meses</span></div>
-  <div class="sec-body">
-    <table class="t">
-      <thead><tr><th>Botão</th><th>O que faz</th><th>Quando usar</th></tr></thead>
-      <tbody>
-        <tr><td>📅 Adicionar meses</td><td>Adiciona novos meses à escala existente. Não apaga nada.</td><td>Modo normal — uso frequente.</td></tr>
-        <tr><td>⚠ Regenerar tudo</td><td>Apaga toda a escala e recria do zero.</td><td>Após muitas mudanças de irmãos ou eventos.</td></tr>
-        <tr><td>🗑 Limpar Firebase e recomeçar</td><td>Apaga <strong>todos</strong> os dados do Firebase (escala, trocas, confirmações) e recomeça do zero.</td><td>Apenas em caso extremo.</td></tr>
-      </tbody>
-    </table>
-    <div class="aviso verm" style="margin-top:12px">🔴 <strong>Limpar Firebase</strong> é irreversível. Apaga escala, trocas, confirmações de presença e substituições. Use com muito cuidado.</div>
-  </div>
-</div>
-
-<!-- 6 TROCAS -->
-<div class="sec">
-  <div class="sec-cab cin"><span class="sec-ico">🔄</span><span class="sec-tit">6. Aba Trocas</span></div>
-  <div class="sec-body">
-    <p style="font-size:14px;line-height:1.8;margin-bottom:12px">Mostra todas as trocas solicitadas pelos irmãos com status, setor, data e quando o pedido foi criado.</p>
-    <table class="t">
-      <thead><tr><th>Ação</th><th>Como fazer</th></tr></thead>
-      <tbody>
-        <tr><td>Apagar uma troca</td><td>Clique no ícone da lixeira na linha.</td></tr>
-        <tr><td>Apagar todas</td><td>Clique em <strong>🗑 Apagar todas as trocas</strong> no topo da aba.</td></tr>
-      </tbody>
-    </table>
-    <div class="aviso">⚠️ Limpe as trocas antigas ao publicar uma escala nova. Trocas de meses passados não afetam mais nada.</div>
-  </div>
-</div>
-
-<!-- 7 HISTÓRICO -->
-<div class="sec">
-  <div class="sec-cab rx"><span class="sec-ico">📊</span><span class="sec-tit">7. Aba Histórico</span></div>
-  <div class="sec-body">
-    <p style="font-size:14px;line-height:1.8;margin-bottom:12px">Mostra quantas vezes cada irmão foi designado em cada setor nos meses gerados.</p>
-    <ol class="passos">
-      <li><div class="num rx">1</div><div class="ptxt">Abra a aba <strong>📊 Histórico</strong>.</div></li>
-      <li><div class="num rx">2</div><div class="ptxt">Use os filtros <strong>Irmão</strong> e <strong>Setor</strong> para focar.</div></li>
-      <li><div class="num rx">3</div><div class="ptxt">A tabela mostra barras proporcionais e total por irmão — fácil de ver quem aparece mais.</div></li>
-    </ol>
-    <div class="dica rx">💡 Se um irmão aparece muito mais que os outros, revise a lista do setor ou configure o treinamento.</div>
-  </div>
-</div>
-
-<!-- 8 PRESENÇAS -->
-<div class="sec">
-  <div class="sec-cab ros"><span class="sec-ico">📋</span><span class="sec-tit">8. Aba Presenças</span></div>
-  <div class="sec-body">
-    <p style="font-size:14px;line-height:1.8;margin-bottom:12px">Centraliza todas as <strong>confirmações de presença</strong> e <strong>avisos de ausência</strong> enviados pelos irmãos pela tela Minha Escala.</p>
-    <table class="t">
-      <thead><tr><th>Status</th><th>Significado</th></tr></thead>
-      <tbody>
-        <tr><td>✓ Confirmado</td><td>O irmão confirmou que vai estar presente.</td></tr>
-        <tr><td>✗ Ausente</td><td>O irmão avisou que não poderá ir — providencie um substituto.</td></tr>
-        <tr><td>⏳ Pendente</td><td>Ainda não respondeu.</td></tr>
-      </tbody>
-    </table>
-    <div class="sub vd" style="margin-top:16px">Gerenciar confirmações</div>
-    <table class="t">
-      <thead><tr><th>Botão</th><th>O que faz</th></tr></thead>
-      <tbody>
-        <tr><td>🗑 Limpar avisos antigos</td><td>Remove avisos de reuniões já passadas. Mantém os futuros.</td></tr>
-        <tr><td>🗑 Apagar tudo</td><td>Remove todas as confirmações do Firebase. Use ao iniciar um novo período.</td></tr>
-        <tr><td>🔓 Liberar nome específico</td><td>Libera o nome de um irmão que ficou "preso" numa confirmação incorreta, permitindo que ele selecione o nome novamente em Minha Escala.</td></tr>
-      </tbody>
-    </table>
-    <div class="dica vd">💡 Quando um irmão avisa ausência, você recebe um alerta na página principal. Use a <strong>Substituição Direta</strong> para colocar outro irmão no lugar.</div>
-  </div>
-</div>
-
-<!-- 9 SENHA -->
-<div class="sec">
-  <div class="sec-cab graf"><span class="sec-ico">🔑</span><span class="sec-tit">9. Aba Senha e Recuperação</span></div>
-  <div class="sec-body">
-    <div class="sub az">Alterar senha</div>
-    <ol class="passos">
-      <li><div class="num cin">1</div><div class="ptxt">Digite a <strong>senha atual</strong>.</div></li>
-      <li><div class="num cin">2</div><div class="ptxt">Digite a <strong>nova senha</strong> e repita para confirmar.</div></li>
-      <li><div class="num cin">3</div><div class="ptxt">Clique em <strong>🔒 Salvar nova senha</strong>.</div></li>
-    </ol>
-    <div class="sub az" style="margin-top:18px">Pergunta secreta para recuperação</div>
-    <p style="font-size:14px;line-height:1.7;margin-bottom:10px">Configure uma <strong>pergunta secreta e resposta</strong> para recuperar o acesso caso a senha seja esquecida — sem precisar revelar a senha a ninguém.</p>
-    <ol class="passos">
-      <li><div class="num cin">1</div><div class="ptxt">Na seção "Pergunta secreta", escreva a pergunta (ex: <em>Nome do meu primeiro animal de estimação</em>).</div></li>
-      <li><div class="num cin">2</div><div class="ptxt">Escreva a resposta (não diferencia maiúsculas).</div></li>
-      <li><div class="num cin">3</div><div class="ptxt">Clique em <strong>✓ Salvar pergunta secreta</strong>.</div></li>
-    </ol>
-    <p style="font-size:13px;line-height:1.7;color:#5e6370;margin-top:10px">Na tela de login aparece o link <strong>"Esqueci a senha"</strong> — ao clicar, o sistema exibe a pergunta secreta para verificação.</p>
-    <div class="aviso">⚠️ Não compartilhe a senha. A Área do Responsável dá acesso total ao sistema.</div>
-  </div>
-</div>
-
-<!-- 10 SUBSTITUIÇÃO DIRETA -->
-<div class="sec">
-  <div class="sec-cab verm"><span class="sec-ico">✏️</span><span class="sec-tit">10. Substituição direta na escala</span></div>
-  <div class="sec-body">
-    <p style="font-size:14px;line-height:1.8;margin-bottom:12px">Substitua qualquer nome diretamente na escala — útil para trocas de última hora sem entrar na Área do Responsável.</p>
-    <ol class="passos">
-      <li><div class="num cin">1</div><div class="ptxt">Na escala, clique no nome sublinhado que deseja substituir.</div></li>
-      <li><div class="num cin">2</div><div class="ptxt">Uma janela mostra setor, data e nome atual.</div></li>
-      <li><div class="num cin">3</div><div class="ptxt">Escolha o novo irmão no menu e clique em <strong>✔ Confirmar</strong>.</div></li>
-    </ol>
-    <div class="aviso">⚠️ A substituição é salva no Firebase e fica visível para todos imediatamente. Para desfazer, clique no nome novamente e escolha o original.</div>
-  </div>
-</div>
-
-<!-- 11 AVISOS DE AUSÊNCIA -->
-<div class="sec">
-  <div class="sec-cab verm"><span class="sec-ico">⚠️</span><span class="sec-tit">11. Avisos de ausência dos irmãos</span></div>
-  <div class="sec-body">
-    <p style="font-size:14px;line-height:1.8;margin-bottom:12px">Quando um irmão clica em <strong>✗ Avisar ausência</strong> na tela Minha Escala, o sistema registra automaticamente.</p>
-    <ol class="passos">
-      <li><div class="num cin">1</div><div class="ptxt">O aviso aparece na aba <strong>Presenças</strong> com nome, setor e data.</div></li>
-      <li><div class="num cin">2</div><div class="ptxt">Use a <strong>Substituição Direta</strong> (item 10) para colocar outro irmão no lugar.</div></li>
-      <li><div class="num cin">3</div><div class="ptxt">Consulte o <strong>Histórico</strong> para escolher o substituto mais adequado — o que foi designado há mais tempo naquele setor.</div></li>
-    </ol>
-  </div>
-</div>
-
-<!-- NOVO: MODO ESCURO -->
-<div class="sec">
-  <div class="sec-cab graf"><span class="sec-ico">🌙</span><span class="sec-tit">12. Modo escuro / claro</span></div>
-  <div class="sec-body">
-    <p style="font-size:14px;line-height:1.8;margin-bottom:12px">O site tem um <strong>modo escuro</strong> ativado pelo botão <strong>🌙 Escuro</strong> no topo da página. Útil para uso noturno ou em reuniões com luz baixa.</p>
-    <table class="t">
-      <thead><tr><th>Botão</th><th>Efeito</th></tr></thead>
-      <tbody>
-        <tr><td>🌙 Escuro</td><td>Aplica fundo escuro em toda a escala, modal e cards.</td></tr>
-        <tr><td>☀️ Claro</td><td>Volta ao visual padrão com fundo branco.</td></tr>
-      </tbody>
-    </table>
-    <div class="dica az">💡 A preferência é salva automaticamente no dispositivo — o irmão que ativou o modo escuro verá sempre escuro ao reabrir.</div>
-  </div>
-</div>
-
-<!-- 13 BADGE STATUS -->
-<div class="sec">
-  <div class="sec-cab az"><span class="sec-ico">📋</span><span class="sec-tit">13. Badge de Status na página principal</span></div>
-  <div class="sec-body">
-    <p style="font-size:14px;line-height:1.8;margin-bottom:12px">Na página principal aparece um card <strong>"Status das Designações"</strong> que mostra um resumo das confirmações e avisos de ausência das próximas reuniões.</p>
-    <table class="t">
-      <thead><tr><th>Informação</th><th>Detalhe</th></tr></thead>
-      <tbody>
-        <tr><td>Quantos confirmaram</td><td>Irmãos que clicaram em "Confirmar presença" para reuniões futuras.</td></tr>
-        <tr><td>Quantos avisaram ausência</td><td>Irmãos que precisam de substituto.</td></tr>
-        <tr><td>Botão "Ver ➔"</td><td>Clicando no card, abre a Área do Responsável direto na aba Presenças.</td></tr>
-      </tbody>
-    </table>
-    <div class="dica az">💡 O badge fica visível para todos na página principal — serve como painel rápido do estado das próximas reuniões.</div>
-  </div>
-</div>
-
-<!-- 14 MODO REPARO -->
-<div class="sec">
-  <div class="sec-cab cin"><span class="sec-ico">🛠️</span><span class="sec-tit">14. Modo Reparo (Manutenção) <span style="background:rgba(255,255,255,.2);font-size:12px;padding:2px 10px;border-radius:10px;margin-left:6px">NOVO</span></span></div>
-  <div class="sec-body">
-    <p style="font-size:14px;line-height:1.8;margin-bottom:12px">Ativa uma tela escura para todos os usuários enquanto você faz ajustes. Você continua vendo e editando a escala normalmente.</p>
-    <div class="sub vd">Como ativar</div>
-    <ol class="passos">
-      <li><div class="num cin">1</div><div class="ptxt">Acesse <strong>Área do Responsável → aba Reparo</strong>.</div></li>
-      <li><div class="num cin">2</div><div class="ptxt">Edite a mensagem se quiser (ou use a padrão) e clique em <strong>🔧 Ativar Modo Reparo</strong>.</div></li>
-      <li><div class="num cin">3</div><div class="ptxt">Os outros usuários verão imediatamente a tela escura com sua mensagem. Você vê a escala normalmente.</div></li>
-      <li><div class="num cin">4</div><div class="ptxt">Quando terminar, clique em <strong>⏹ Desativar Modo Reparo</strong>.</div></li>
-    </ol>
-    <div class="dica vd">💡 Enquanto o reparo está ativo, você pode fazer substituições, apagar meses e qualquer ajuste normalmente — só você vê as mudanças em tempo real.</div>
-    <div class="aviso">⚠️ Se fechar o navegador durante o reparo, precisará inserir a senha novamente ao reabrir para voltar a ver a escala. O modo reparo continua ativo para os outros até você desativar.</div>
-  </div>
-</div>
-
-<!-- 15 SUBSTITUIÇÕES -->
-<div class="sec">
-  <div class="sec-cab verm"><span class="sec-ico">✏️</span><span class="sec-tit">15. Substituições — como funcionam <span style="background:rgba(255,255,255,.2);font-size:12px;padding:2px 10px;border-radius:10px;margin-left:6px">NOVO</span></span></div>
-  <div class="sec-body">
-    <p style="font-size:14px;line-height:1.8;margin-bottom:12px">O sistema mantém os <strong>nomes originais do rodízio</strong> separados das substituições. Isso garante que as substituições nunca se percam ao recarregar a página.</p>
-    <table class="t">
-      <thead><tr><th>Regra</th><th>Por quê</th></tr></thead>
-      <tbody>
-        <tr><td>Substituições são salvas separadamente</td><td>O nome original do rodízio fica intacto — a substituição é aplicada por cima</td></tr>
-        <tr><td>Persistem após recarregar</td><td>Salvos no Firebase imediatamente ao confirmar</td></tr>
-        <tr><td>Visíveis para todos em tempo real</td><td>Qualquer dispositivo vê o nome atualizado sem recarregar</td></tr>
-        <tr><td>Para substituir por nome não cadastrado</td><td>Cadastre o irmão em qualquer setor primeiro (aba Irmãos)</td></tr>
-      </tbody>
-    </table>
-    <div class="sub vd" style="margin-top:16px">Passo a passo</div>
-    <ol class="passos">
-      <li><div class="num cin">1</div><div class="ptxt">Entre como responsável e <strong>feche o modal</strong> (X). Os nomes ficam em azul e clicáveis na escala.</div></li>
-      <li><div class="num cin">2</div><div class="ptxt">Clique no nome que deseja substituir.</div></li>
-      <li><div class="num cin">3</div><div class="ptxt">Escolha o substituto e clique em <strong>✔ Confirmar substituição</strong>.</div></li>
-      <li><div class="num cin">4</div><div class="ptxt">O nome muda imediatamente na sua tela e em todos os outros dispositivos.</div></li>
-    </ol>
-    <div class="aviso">⚠️ Para desfazer uma substituição, clique no nome substituído e escolha o nome original de volta.</div>
-  </div>
-</div>
+<div class="sec"><div class="sec-cab vd"><span class="sec-ico">🔒</span><span class="sec-tit">1. Acessar a Área do Responsável</span></div><div class="sec-body"><div class="box-acesso"><div class="box-ico">🖥️</div><div class="box-txt">Clique no botão <code>👨‍💼 Área do Responsável</code> no topo da página e digite a senha.</div></div><div class="box-acesso"><div class="box-ico">📱</div><div class="box-txt">No celular com o app instalado, o botão fica na tela principal — sem barra do navegador.</div></div><p style="font-size:14px;line-height:1.8;margin-bottom:12px">Quando você entra, aparece a faixa verde <strong>🔐 Modo Responsável</strong> no topo, com o botão <em>Sair</em>. Só no Modo Responsável o sistema grava mudanças na escala.</p><div class="dica vd">💡 A Área tem estas abas: ⚙️ Eventos · 👥 Irmãos · 📚 Treinamento · 📅 Gerar Meses · 🔄 Trocas · 📊 Histórico · 📖 VMC · 🎤 Discurso Público · 📤 Enviar Oradores · 🔑 Senha · ✅ Presenças · 📘 Manual · 🔧 Reparo · 🧪 Teste.</div><div class="sub vd">Outros acessos do sistema</div><table class="t"><tr><th>Botão</th><th>Quem usa</th></tr><tr><td><strong>🌾 Acesso VMC</strong></td><td>Assistentes que você autoriza a editar <em>só</em> a aba VMC (senha própria — veja o item 9).</td></tr><tr><td><strong>🗂️ Secretário</strong></td><td>O secretário, com a senha dele. Você entra sem senha. O manual dele é separado.</td></tr><tr><td><strong>👥 Meu Grupo</strong></td><td>Superintendente e ajudante de cada grupo, com a senha do grupo.</td></tr></table></div></div>
+<div class="sec"><div class="sec-cab az"><span class="sec-ico">📅</span><span class="sec-tit">2. Aba Eventos</span></div><div class="sec-body"><p style="font-size:14px;line-height:1.8;margin-bottom:12px">Cadastre eventos que afetam o calendário. 5 tipos:</p><table class="t"><tr><th>Tipo</th><th>Efeito na escala</th></tr><tr><td>🚫 Congresso (sem reunião)</td><td>Bloqueia o período. Aparece como “Sem reunião”.</td></tr><tr><td>🚫 Assembleia de Circuito</td><td>Igual ao congresso — bloqueia o período e o sábado não recebe discurso.</td></tr><tr><td>📅 Visita do Superintendente</td><td>A quarta muda para terça. Permite cadastrar ausentes nessa semana.</td></tr><tr><td>🚫 Outro evento (sem reunião)</td><td>Cancela a reunião. O nome é editável.</td></tr><tr><td>🔔 Aviso / informação</td><td>Não cancela. Aparece como banner informativo.</td></tr></table><div class="sub az">Como adicionar</div><ol class="passos"><li><div class="num az">1</div><div class="ptxt ">Clique em <em>+ Adicionar evento</em>.</div></li><li><div class="num az">2</div><div class="ptxt ">Preencha início e fim e escolha o tipo (o nome vem preenchido, mas pode ser editado).</div></li><li><div class="num az">3</div><div class="ptxt ">Clique em <em>✔ Aplicar e atualizar escala</em>.</div></li></ol><div class="dica ">💡 Com um evento de congresso ou assembleia cadastrado, o sábado correspondente <strong>não aparece</strong> para designar na aba Discurso Público, e a escala mostra o quadro largo ao imprimir.</div></div></div>
+<div class="sec"><div class="sec-cab rx"><span class="sec-ico">👥</span><span class="sec-tit">3. Aba Irmãos</span></div><div class="sec-body"><div class="sub rx">Cadastrar e distribuir</div><ol class="passos"><li><div class="num rx">1</div><div class="ptxt rx">No campo azul do topo, digite o nome completo e clique em <em>✓ Cadastrar</em>.</div></li><li><div class="num rx">2</div><div class="ptxt rx">Role até o setor (ex.: Microfone), escolha o nome em <em>selecionar irmão</em> e clique em <em>+ Adicionar</em>.</div></li></ol><div class="aviso">⚠️ Irmão novo <strong>não entra sozinho</strong> em nenhum setor. Depois de cadastrar, adicione-o nos setores desejados.</div><p style="font-size:14px;line-height:1.8;margin-bottom:12px"><strong>Palco</strong> agora é <strong>um irmão por reunião</strong> (não mais dupla). Dá para tirar ou trocar um irmão só, sem refazer a lista.</p><p style="font-size:14px;line-height:1.8;margin-bottom:12px"><strong>Irmãos Espectadores</strong> são nomes de teste: aparecem na lista, mas não entram nas designações.</p><div class="sub rx">Backups do cadastro</div><p style="font-size:14px;line-height:1.8;margin-bottom:12px">O botão <em>💾 Fazer backup agora</em> guarda os irmãos de cada setor e quem está liberado ou bloqueado. Um backup é criado sozinho no 1º acesso do dia como responsável e ficam os últimos 20. Faça um manual <strong>antes de trocar a versão do app</strong>.</p></div></div>
+<div class="sec"><div class="sec-cab verm"><span class="sec-ico">🛡️</span><span class="sec-tit">4. Plano de Segurança S-288 <span class="novo">NOVO</span></span></div><div class="sec-body"><p style="font-size:14px;line-height:1.8;margin-bottom:12px">Fica na aba <em>Irmãos</em>. Controla a leitura do plano de segurança pelos <strong>indicadores</strong>.</p><table class="t"><tr><th>O que</th><th>Como funciona</th></tr><tr><td>Leitura pelo irmão</td><td>Em <em>Minha Escala</em>, o botão 🛡️ Plano de Segurança S-288 abre o texto. A leitura tem trava (rolagem + tempo mínimo + perguntas) e termina com a confirmação e a assinatura digital.</td></tr><tr><td>Validade</td><td>O treinamento vale <strong>12 meses</strong>. Vencido ou não feito, o indicador fica <strong>bloqueado</strong> na escala.</td></tr><tr><td>Prazo</td><td>Você define o prazo para os indicadores confirmarem a leitura; depois dele, quem não leu é bloqueado e você recebe avisos.</td></tr><tr><td>Acompanhar</td><td>Clique em <em>🔄 Atualizar</em> para ver o status de leitura de cada indicador.</td></tr></table><div class="sub verm">Novo ano de serviço / plano novo</div><ol class="passos"><li><div class="num ">1</div><div class="ptxt ">Abra <em>📅 Novo ano de serviço / atualizar o plano</em>.</div></li><li><div class="num ">2</div><div class="ptxt ">Informe o ano de serviço, o prazo e a data da reunião de treinamento (marque a afirmação de que a reunião dos esboços S-289 foi realizada).</div></li><li><div class="num ">3</div><div class="ptxt ">Se o plano mudou, cole o <strong>texto novo</strong> e as perguntas de verificação (uma por linha). Se não mudou, deixe em branco: o texto atual continua valendo.</div></li><li><div class="num ">4</div><div class="ptxt ">Clique em <em>✅ Publicar</em>.</div></li></ol><div class="dica ">💡 Use <em>Copiar o texto atual para editar</em> para partir do plano em uso.</div></div></div>
+<div class="sec"><div class="sec-cab lar"><span class="sec-ico">🎓</span><span class="sec-tit">5. Aba Treinamento</span></div><div class="sec-body"><p style="font-size:14px;line-height:1.8;margin-bottom:12px">Reduz a frequência de um irmão nos setores marcados enquanto aprende, mantendo o rodízio normal nos demais.</p><table class="t"><tr><th>Nível</th><th>Frequência</th></tr><tr><td><span class="nivel n1">🎓 Nível 1</span></td><td>Aparece a cada 3 reuniões (pula 2)</td></tr><tr><td><span class="nivel n2">⭐ Nível 2</span></td><td>Aparece a cada 2 reuniões (pula 1)</td></tr></table><ol class="passos"><li><div class="num lar">1</div><div class="ptxt lar">Selecione o nome e clique em <em>+ Adicionar</em>.</div></li><li><div class="num lar">2</div><div class="ptxt lar">Defina a data de início (reuniões anteriores não mudam).</div></li><li><div class="num lar">3</div><div class="ptxt lar">Clique nos setores para marcar o nível: Desativado → N1 → N2 → Desativado.</div></li><li><div class="num lar">4</div><div class="ptxt lar">Para encerrar, clique no ✕ do card: o irmão volta ao rodízio normal.</div></li></ol><p style="font-size:14px;line-height:1.8;margin-bottom:12px">O treinamento vale também para o <strong>VMC</strong> (partes da reunião de quarta).</p></div></div>
+<div class="sec"><div class="sec-cab esc"><span class="sec-ico">📆</span><span class="sec-tit">6. Aba Gerar Meses</span></div><div class="sec-body"><table class="t"><tr><th>Botão</th><th>O que faz</th><th>Quando usar</th></tr><tr><td>📅 Adicionar meses</td><td>Adiciona meses à escala existente. Não apaga nem duplica.</td><td>Uso normal.</td></tr><tr><td>⚠ Regenerar tudo</td><td>Apaga a escala e recria do zero.</td><td>Só depois de muitas mudanças.</td></tr><tr><td>🗑 Limpar Firebase e recomeçar</td><td>Apaga todos os dados e recomeça.</td><td>Caso extremo.</td></tr><tr><td>🔄 Atualizar só os indicadores</td><td>Refaz só os indicadores, <strong>de hoje em diante</strong>.</td><td>Quando mudar a lista de indicadores.</td></tr><tr><td>🎲 Novo rodízio de indicadores</td><td>Sorteia de novo os indicadores, de hoje em diante.</td><td>Rodízio ficou ruim.</td></tr><tr><td>🔎 Conferir conflitos</td><td>Mostra quem está na escala e também tem parte no VMC (quarta) ou no Discurso Público (sábado) no mesmo dia.</td><td>Antes de publicar o mês.</td></tr></table><div class="aviso">⚠️ Limpar Firebase é <strong>irreversível</strong>: apaga escala, trocas, confirmações e substituições.</div><div class="sub lar">Como a escala é gerada</div><ul class="rotina" style="list-style:disc"><li><strong>Áudio e Vídeo</strong> são sorteados primeiro e nunca ficam vazios.</li><li>O rodízio evita, se possível, quem tem parte no VMC ou é presidente/orador/condutor/leitor da Sentinela no mesmo dia.</li><li>O rodízio continua de onde a escala gravada parou.</li><li>Campo sem ninguém aparece como <em>— designar —</em>, para você preencher.</li></ul><div class="sub lar">Proteção da escala <span class="novo">NOVO</span></div><ul class="rotina" style="list-style:disc"><li>A escala é gravada <strong>por data</strong> e só o responsável grava; datas já salvas não são sobrescritas.</li><li><strong>🔒 Travar mês</strong> (na lista de <em>Meses gerados</em>): nenhum aparelho consegue alterar as designações daquele mês. Dá para destravar.</li><li><strong>💾 Backups da escala</strong>: um por dia, com restauração. Restaurar não regenera a escala.</li><li><strong>Apagar</strong> um mês remove só ele (inclusive dados locais).</li></ul></div></div>
+<div class="sec"><div class="sec-cab cin"><span class="sec-ico">🔄</span><span class="sec-tit">7. Trocas e Histórico</span></div><div class="sec-body"><p style="font-size:14px;line-height:1.8;margin-bottom:12px"><strong>🔄 Trocas</strong> lista os pedidos dos irmãos com status, setor, data e criação. Use a lixeira para apagar uma, ou <em>🗑 Apagar todas as trocas</em> ao publicar uma escala nova (trocas de meses passados não afetam mais nada).</p><p style="font-size:14px;line-height:1.8;margin-bottom:12px"><strong>📊 Histórico</strong> mostra quantas vezes cada irmão foi designado em cada setor, com filtros por Irmão e Setor. Útil para escolher substitutos e ver quem aparece demais.</p></div></div>
+<div class="sec"><div class="sec-cab vd"><span class="sec-ico">📖</span><span class="sec-tit">8. Aba VMC — Vida e Ministério <span class="novo">NOVO</span></span></div><div class="sec-body"><p style="font-size:14px;line-height:1.8;margin-bottom:12px">Designações da reunião de quarta, semana a semana.</p><ol class="passos"><li><div class="num vd">1</div><div class="ptxt vd">Escolha a <strong>Semana</strong>.</div></li><li><div class="num vd">2</div><div class="ptxt vd">Clique em <em>🌐 Abrir JW.org</em>, copie a programação e use <em>📋 Colar programação</em>: o sistema monta as partes.</div></li><li><div class="num vd">3</div><div class="ptxt vd">Designe cada parte (presidente, orações, Tesouros, Joias, Leitura, ministério, vida cristã, Estudo Bíblico) ou use <em>🎲 Rodízio automático</em>.</div></li><li><div class="num vd">4</div><div class="ptxt vd">Clique em <em>💾 Salvar semana</em>.</div></li><li><div class="num vd">5</div><div class="ptxt vd">Quando o mês estiver pronto, <em>📢 Publicar mês</em> libera para os irmãos.</div></li></ol><table class="t"><tr><th>Botão</th><th>Para que serve</th></tr><tr><td>🖨️ Imprimir semana / 📅 Imprimir mês</td><td>Folha da semana ou quadro do mês (uma folha A4).</td></tr><tr><td>📱 WhatsApp</td><td>Compartilha a semana.</td></tr><tr><td>🌾 Slips (S-89-T)</td><td>Gera os slips de Leitura e Ministério. Cada irmão (e irmã/ajudante) também vê o seu verde em <em>Minha Escala</em>.</td></tr></table><div class="sub vd">Cadastro de participantes</div><p style="font-size:14px;line-height:1.8;margin-bottom:12px">Cadastre <strong>Irmãos</strong>, <strong>Publicadoras</strong> (partes principais do ministério) e <strong>Ajudantes</strong>, marcando em que funções cada um pode participar. Use <em>🔗 Vínculos</em> para marcar cônjuge/pai/mãe/filho(a)/irmão(ã): permite formar dupla mesmo de sexo diferente.</p><div class="dica vd">💡 O <strong>✏️</strong> do cadastro corrige um nome e <strong>propaga para todas as semanas</strong> já designadas (presidente, orações, partes, condutor e leitor).</div><div class="sub vd">Assistentes e horário</div><p style="font-size:14px;line-height:1.8;margin-bottom:12px">Em <em>🌾 Assistentes com acesso só à aba VMC</em> você dá uma senha própria a alguém para editar só esta aba (inclusive publicar meses). Em <em>🕐 Horário de início da reunião</em> define o horário usado nos avisos do presidente (3 e 1 minuto antes) na impressão.</p><p style="font-size:14px;line-height:1.8;margin-bottom:12px">Semana com visita do superintendente aparece com o aviso e muda a oração de abertura.</p></div></div>
+<div class="sec"><div class="sec-cab az"><span class="sec-ico">🎤</span><span class="sec-tit">9. Aba Discurso Público e Sentinela <span class="novo">NOVO</span></span></div><div class="sec-body"><p style="font-size:14px;line-height:1.8;margin-bottom:12px">Reunião de sábado: presidente, discurso, Sentinela.</p><ol class="passos"><li><div class="num az">1</div><div class="ptxt ">Escolha o <strong>Mês</strong> (e o <strong>ano</strong>, para planejar o ano seguinte) e o <strong>Sábado</strong>.</div></li><li><div class="num az">2</div><div class="ptxt ">Preencha presidente, cânticos, oração inicial, <strong>Orador</strong> e <strong>Congregação</strong>, e o <strong>Tema</strong>.</div></li><li><div class="num az">3</div><div class="ptxt ">Na Sentinela, use <em>📋 Colar programação</em> para trazer o tema, o texto base e o estudo; designe condutor e leitor (ou use <em>🎲 Rodízio automático</em>).</div></li><li><div class="num az">4</div><div class="ptxt ">Clique em <em>💾 Salvar sábado</em>. Para liberar aos irmãos, <em>📢 Publicar mês</em>.</div></li></ol><table class="t"><tr><th>Botão</th><th>Para que serve</th></tr><tr><td>🖨️ Imprimir sábado / 📅 Imprimir mês (quadro)</td><td>Folha do sábado, ou o mês inteiro numa folha A4 retrato.</td></tr><tr><td>📱 WhatsApp</td><td>Compartilha o sábado.</td></tr><tr><td>🏠 Orador local</td><td>Quando o orador é nosso (congregação “Parque Tietê”/local, ou nome na lista de oradores locais), aparecem <em>Imprimir designação</em> e <em>WhatsApp</em> sozinhos, com o endereço do salão e o horário.</td></tr></table><div class="sub az">Temas — controle automático <span class="novo">NOVO</span></div><p style="font-size:14px;line-height:1.8;margin-bottom:12px">O sistema bloqueia repetir um tema em <strong>menos de 4 meses</strong> (contando antes e depois da data do sábado). Há também <strong>temas indisponíveis</strong> (temporários), <strong>temas especiais</strong> (fora dos 194) e o <strong>repertório</strong> de cada orador.</p><ol class="passos"><li><div class="num az">1</div><div class="ptxt "><strong>🎯 Sugerir temas do mês</strong> abre uma lista com um sábado por linha e uma caixinha ☑ em cada tema sugerido. Só os sábados <em>sem tema</em> entram.</div></li><li><div class="num az">2</div><div class="ptxt ">Deixe marcado o que você aceita. Desmarque o que não quer e clique em <em>🔄 Sugerir outros para os não marcados</em>: só essas linhas são refeitas, sem repetir o tema recusado.</div></li><li><div class="num az">3</div><div class="ptxt ">Clique em <em>💾 Gravar os marcados</em>. Nada é gravado antes disso.</div></li></ol><p style="font-size:14px;line-height:1.8;margin-bottom:12px"><strong>📊 Controle de temas</strong> lista todos os temas em uso com a situação de cada um: <em>Nunca usado</em>, <em>Livre</em>, <em>Em espera</em> (com a data em que fica livre) e <em>Agendado</em>.</p><div class="dica vd">💡 Trocar o tema de um sábado (ou apagá-lo) <strong>devolve</strong> o tema antigo à lista de livres: a regra olha só o que está gravado nos sábados.</div><div class="sub az">Atualizar a lista de temas por arquivo <span class="novo">NOVO</span></div><ol class="passos"><li><div class="num az">1</div><div class="ptxt ">Salve a lista oficial atual em <strong>PDF</strong> (ou copie o texto).</div></li><li><div class="num az">2</div><div class="ptxt ">Na área de configuração da aba, clique em <em>📄 Escolher arquivo</em> (ou <em>📋 Colar texto</em>).</div></li><li><div class="num az">3</div><div class="ptxt ">Confira o que muda: <em>temas novos</em>, <em>voltaram</em>, <em>título mudou</em> e <em>saem da lista</em>; avisos mostram sábados já marcados que usam tema alterado.</div></li><li><div class="num az">4</div><div class="ptxt ">Clique em <em>✅ Confirmar atualização</em>.</div></li></ol><p style="font-size:14px;line-height:1.8;margin-bottom:12px">A lista fica no Firebase e vale para todos os aparelhos. Se o arquivo trouxer menos de 100 temas, nada é alterado. <em>↩️ Voltar à lista original do sistema</em> desfaz.</p><div class="aviso">⚠️ O leitor de PDF precisa de internet. Se o PDF for imagem escaneada, use <em>Colar texto</em>.</div></div></div>
+<div class="sec"><div class="sec-cab tl"><span class="sec-ico">📤</span><span class="sec-tit">10. Aba Enviar Oradores</span></div><div class="sec-body"><p style="font-size:14px;line-height:1.8;margin-bottom:12px">Gerencie os discursos que os irmãos darão em <strong>outras congregações</strong> e imprima a ficha de designação.</p><ul class="rotina" style="list-style:disc"><li>Informe o nome e o endereço da nossa congregação (usados na ficha dos oradores locais).</li><li>Cadastre as <strong>Congregações Convidadas</strong> uma vez (dia, horário, endereço) e reutilize.</li><li>Em <em>➕ Nova designação de envio</em>: congregação, data, orador, cântico e tema.</li><li><strong>Oradores locais</strong> (discursos aqui) aparecem sozinhos, vindos da aba Discurso Público.</li><li>O <strong>Repertório de Temas por Orador</strong> guarda os temas que cada irmão pode dar e gera a lista para as congregações escolherem.</li></ul></div></div>
+<div class="sec"><div class="sec-cab graf"><span class="sec-ico">🖨️</span><span class="sec-tit">11. Folhas A4 <span class="novo">NOVO</span></span></div><div class="sec-body"><p style="font-size:14px;line-height:1.8;margin-bottom:12px">O botão <strong>🖨️ Folhas A4</strong> reúne as folhas do quadro: VMC (mês/semana), Discurso Público (mês/semana), limpeza e grupos. A letra se ajusta para o mês caber em <strong>uma folha</strong>.</p><p style="font-size:14px;line-height:1.8;margin-bottom:12px">Você, como responsável, decide <strong>quais folhas ficam liberadas</strong> para os usuários: há um botão para <em>liberar</em> ou <em>bloquear</em> cada folha.</p></div></div>
+<div class="sec"><div class="sec-cab ros"><span class="sec-ico">🧹</span><span class="sec-tit">12. Limpeza do salão <span class="novo">NOVO</span></span></div><div class="sec-body"><p style="font-size:14px;line-height:1.8;margin-bottom:12px">Um <strong>grupo por semana</strong>, em rodízio. O <strong>banner de limpeza</strong> na página principal mostra de quem é a vez; só o responsável vê nele o botão (<em>⚙️ Definir</em>) que abre a escala para ajustar.</p><ol class="passos"><li><div class="num ">1</div><div class="ptxt ">Em <strong>Ponto de partida</strong>, escolha qual grupo faz a limpeza nesta semana. Os outros seguem 1, 2, 3… e voltam ao 1.</div></li><li><div class="num ">2</div><div class="ptxt ">Em <strong>Próximas semanas</strong>, dá para <em>pular</em> uma semana ou <em>trocar</em> o grupo dela. Semanas sem reunião aparecem como tal.</div></li><li><div class="num ">3</div><div class="ptxt ">Use <em>🖨️ Imprimir folha A4</em> para o quadro.</div></li></ol><p style="font-size:14px;line-height:1.8;margin-bottom:12px">O superintendente e o ajudante do grupo recebem <strong>avisos</strong>: 7 dias antes, na véspera (domingo às 18h) e, se ainda não avisados, no começo da semana. O aparelho precisa ter aberto o app. <em>🔔 Testar aviso neste aparelho</em> confirma que funciona.</p><div class="dica ">💡 Os nomes de superintendente e ajudante vêm da lista de grupos, que o secretário importa.</div></div></div>
+<div class="sec"><div class="sec-cab cin"><span class="sec-ico">🗂️</span><span class="sec-tit">13. Relatórios de campo (o que é seu)</span></div><div class="sec-body"><p style="font-size:14px;line-height:1.8;margin-bottom:12px">O dia a dia dos relatórios é do secretário. A você cabe a aba <strong>Acesso</strong>, que só aparece no Modo Responsável:</p><ul class="rotina" style="list-style:disc"><li><strong>Senha do secretário</strong> — crie ou troque (mínimo 4 caracteres).</li><li><strong>Meta anual</strong> do pioneiro regular — padrão 600 horas por ano de serviço (setembro a agosto); a mensal é a anual ÷ 12.</li><li><strong>Primeiro mês recebido pelo app</strong> — os publicadores só veem o formulário a partir dele; os anteriores o secretário lança.</li></ul><div class="dica vd">💡 Veja o <strong>Manual do Secretário</strong> para o passo a passo completo.</div></div></div>
+<div class="sec"><div class="sec-cab vd"><span class="sec-ico">✅</span><span class="sec-tit">14. Aba Presenças e avisos de ausência</span></div><div class="sec-body"><table class="t"><tr><th>Status</th><th>Significado</th></tr><tr><td>✓ Confirmado</td><td>Vai estar presente.</td></tr><tr><td>✗ Ausente</td><td>Avisou que não pode ir — providencie substituto.</td></tr><tr><td>⏳ Pendente</td><td>Ainda não respondeu.</td></tr></table><table class="t"><tr><th>Botão</th><th>O que faz</th></tr><tr><td>🗑 Limpar avisos antigos</td><td>Remove avisos de reuniões já passadas.</td></tr><tr><td>🗑 Apagar tudo</td><td>Remove todas as confirmações. Use ao iniciar novo período.</td></tr><tr><td>🔓 Liberar nome específico</td><td>Solta um nome “preso” numa confirmação errada.</td></tr></table><p style="font-size:14px;line-height:1.8;margin-bottom:12px">Na página principal, o card <strong>Status das Designações</strong> resume confirmações e ausências das próximas reuniões; <em>Ver ➔</em> abre direto esta aba. Quando alguém avisa ausência, use a <strong>Substituição direta</strong> (item 16) e consulte o Histórico para escolher quem foi designado há mais tempo no setor.</p></div></div>
+<div class="sec"><div class="sec-cab az"><span class="sec-ico">🔑</span><span class="sec-tit">15. Aba Senha e recuperação</span></div><div class="sec-body"><ol class="passos"><li><div class="num az">1</div><div class="ptxt ">Digite a senha atual, depois a nova (duas vezes) e clique em <em>🔒 Salvar nova senha</em>.</div></li><li><div class="num az">2</div><div class="ptxt ">Em <em>Pergunta secreta</em>, escreva uma pergunta e a resposta (não diferencia maiúsculas) e clique em <em>✓ Salvar pergunta secreta</em>.</div></li></ol><p style="font-size:14px;line-height:1.8;margin-bottom:12px">Na tela de login aparece <strong>Esqueci a senha</strong>, que mostra a pergunta secreta.</p><div class="aviso">⚠️ Não compartilhe a senha: a Área do Responsável dá acesso total.</div></div></div>
+<div class="sec"><div class="sec-cab cin"><span class="sec-ico">✏️</span><span class="sec-tit">16. Substituição direta e como funcionam as substituições</span></div><div class="sec-body"><ol class="passos"><li><div class="num cin">1</div><div class="ptxt ">Na escala, clique no nome sublinhado que deseja trocar.</div></li><li><div class="num cin">2</div><div class="ptxt ">Veja setor, data e nome atual e escolha o novo irmão.</div></li><li><div class="num cin">3</div><div class="ptxt ">Clique em <em>✔ Confirmar</em>. O nome muda na hora em todos os aparelhos.</div></li></ol><p style="font-size:14px;line-height:1.8;margin-bottom:12px">O sistema guarda o <strong>nome original do rodízio</strong> separado da substituição, por isso ela nunca se perde ao recarregar. Para desfazer, clique no nome e escolha o original. Campos vazios (<em>— designar —</em>) também são preenchidos assim.</p><div class="aviso">⚠️ Mês <strong>travado</strong> não aceita mudança em nenhum aparelho. Destrave antes, se precisar.</div></div></div>
+<div class="sec"><div class="sec-cab graf"><span class="sec-ico">🔧</span><span class="sec-tit">17. Modo Reparo e Modo Teste</span></div><div class="sec-body"><div class="sub vd">Reparo</div><ol class="passos"><li><div class="num vd">1</div><div class="ptxt vd">Aba <em>Reparo</em>: edite a mensagem (opcional) e clique em <em>🔧 Ativar Modo Reparo</em>.</div></li><li><div class="num vd">2</div><div class="ptxt vd">Os outros usuários veem a tela escura com a mensagem; você continua vendo e editando normalmente.</div></li><li><div class="num vd">3</div><div class="ptxt vd">Ao terminar, clique em <em>⏹ Desativar</em>.</div></li></ol><div class="aviso">⚠️ Se fechar o navegador durante o reparo, será preciso digitar a senha de novo. O reparo continua ativo para os outros até você desativar.</div><div class="sub vd">Teste <span class="novo">NOVO</span></div><p style="font-size:14px;line-height:1.8;margin-bottom:12px">Aba <em>Teste</em> → <em>🧪 Ativar Modo Teste</em>. Você pode mexer em tudo, mas <strong>nada é gravado</strong> no Firebase e os outros usuários não são afetados. Fica uma faixa visível enquanto estiver ativo, com o log do que foi bloqueado. Desliga ao fechar ou recarregar a página.</p><div class="sub vd">Modo escuro / claro</div><p style="font-size:14px;line-height:1.8;margin-bottom:12px">O botão <em>🌙 Escuro / ☀️ Claro</em> no topo muda o visual e fica salvo no aparelho.</p></div></div>
+<div class="sec"><div class="sec-cab verm"><span class="sec-ico">🔄</span><span class="sec-tit">18. Atualizar o sistema (versão nova)</span></div><div class="sec-body"><ol class="passos"><li><div class="num ">1</div><div class="ptxt ">Faça um <strong>backup do cadastro</strong> (aba Irmãos) e confira os backups da escala.</div></li><li><div class="num ">2</div><div class="ptxt ">Substitua no servidor os <strong>dois arquivos juntos</strong>: <code>index.html</code> e <code>sw.js</code>. O número de versão deve ser o mesmo nos dois.</div></li><li><div class="num ">3</div><div class="ptxt ">Abra o app: um aviso de nova versão aparece para os irmãos, e o cache antigo é descartado.</div></li></ol><div class="aviso">⚠️ Se subir só o <code>index.html</code>, os celulares podem continuar abrindo a versão antiga.</div></div></div>
 
 <div class="rodape">Congregação Parque Tietê<br><strong>Manual do Responsável — Eriton Oliveira — Versão 2026</strong></div>
 </div>
